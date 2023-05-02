@@ -1,0 +1,17 @@
+local K = unpack(KkthnxUI)
+local Module = K:NewModule("Automation")
+
+function Module:OnEnable()
+	self:CreateAutoAcceptSummon()
+	self:CreateAutoBadBuffs()
+	self:CreateAutoBestReward()
+	self:CreateAutoDeclineDuels()
+	self:CreateAutoGoodbye()
+	self:CreateAutoInvite()
+	self:CreateAutoOpenItems()
+	self:CreateAutoRelease()
+	self:CreateAutoResurrect()
+	self:CreateAutoScreenShot()
+	self:CreateAutoWhisperInvite()
+	self:CreateSkipCinematic()
+end
