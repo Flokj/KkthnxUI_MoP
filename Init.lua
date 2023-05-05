@@ -27,7 +27,6 @@ local CreateFrame = _G.CreateFrame
 local Enum = _G.Enum
 local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
-local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
@@ -46,6 +45,8 @@ local UnitRace = _G.UnitRace
 local UnitSex = _G.UnitSex
 
 -- Deprecated
+GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+
 LE_ITEM_CLASS_CONSUMABLE = LE_ITEM_CLASS_CONSUMABLE or Enum.ItemClass.Consumable
 LE_ITEM_CLASS_CONTAINER = LE_ITEM_CLASS_CONTAINER or Enum.ItemClass.Container
 LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON or Enum.ItemClass.Weapon
