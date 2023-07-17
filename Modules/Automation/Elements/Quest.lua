@@ -60,7 +60,7 @@ local function SetupAutoQuestCheckButton()
 	end
 
 	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
-	AutoQuestCheckButton:SetPoint("TOPRIGHT", -160, -80)
+	AutoQuestCheckButton:SetPoint("TOPLEFT", 40, -80)
 	AutoQuestCheckButton:SetSize(18, 18)
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")

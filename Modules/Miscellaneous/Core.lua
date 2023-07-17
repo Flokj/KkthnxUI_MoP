@@ -289,19 +289,13 @@ end
 
 local function MainMenu_OnShow(self)
 	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + 24)
+	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15)
 
 	_G.GameMenuButtonStore:ClearAllPoints()
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
 
-	_G.GameMenuButtonUIOptions:ClearAllPoints()
-	_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonKeybindings:ClearAllPoints()
-	_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
-
 	_G.GameMenuButtonMacros:ClearAllPoints()
-	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
+	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
 
 	_G.GameMenuButtonAddons:ClearAllPoints()
 	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)

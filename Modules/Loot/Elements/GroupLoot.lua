@@ -17,6 +17,7 @@ local DressUpItemLink = _G.DressUpItemLink
 local GREED = _G.GREED
 local GameTooltip = _G.GameTooltip
 local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
+local GameTooltip_Hide = GameTooltip_Hide
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
@@ -43,15 +44,6 @@ Module.RollBars = {}
 
 local function ClickRoll(frame)
 	RollOnLoot(frame.parent.rollID, frame.rolltype)
-end
-
-local function HideTip()
-	GameTooltip:Hide()
-end
-
-local function HideTip2()
-	GameTooltip:Hide()
-	ResetCursor()
 end
 
 local rolltypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass" }
@@ -148,7 +140,7 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	f.parent = parent
 	f.tiptext = tiptext
 	f:SetScript("OnEnter", SetTip)
-	f:SetScript("OnLeave", HideTip)
+	f:SetScript("OnLeave", GameTooltip_Hide)
 	f:SetScript("OnClick", ClickRoll)
 	f:SetMotionScriptsWhileDisabled(true)
 	f:SetHitRectInsets(3, 3, 3, 3)
@@ -176,7 +168,7 @@ function Module:CreateRollFrame()
 	button:CreateBorder()
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
-	button:SetScript("OnLeave", HideTip2)
+	button:SetScript("OnLeave", GameTooltip_Hide)
 	button:SetScript("OnUpdate", ItemOnUpdate)
 	button:SetScript("OnClick", LootClick)
 	frame.button = button
@@ -233,7 +225,7 @@ function Module:CreateRollFrame()
 
 	frame.rolls = {}
 
-	-- tinsert(Module.RollBars, frame)
+	--tinsert(Module.RollBars, frame)
 
 	return frame
 end

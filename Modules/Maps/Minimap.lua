@@ -353,7 +353,7 @@ function Module:ReskinRegions()
 		local difficultyFlag = _G[v]
 		difficultyFlag:ClearAllPoints()
 		difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		difficultyFlag:SetScale(0.9)
+		difficultyFlag:SetScale(1.1)
 	end
 
 	-- Tracking icon

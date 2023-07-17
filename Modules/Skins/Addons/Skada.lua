@@ -94,10 +94,10 @@ function Module:ReskinSkada()
 	local windows = {}
 	local function EmbedSkada()
 		if #windows == 1 then
-			EmbedWindow(windows[1], 320, 18, 208, 4, -4)
+			EmbedWindow(windows[1], 320, 18, 190)
 		elseif #windows == 2 then
-			EmbedWindow(windows[1], 320, 18, 109, -5, 147)
-			EmbedWindow(windows[2], 320, 18, 109, -5, 28)
+			EmbedWindow(windows[1], 320, 18, 190)
+			EmbedWindow(windows[2], 260, 18, 150)
 		end
 	end
 

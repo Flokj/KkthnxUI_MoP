@@ -175,6 +175,7 @@
    <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <Include file="Skins\Addons\Skada.lua" />
+   <Include file="Skins\Addons\BugSack.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\ChocolateBar.lua" />

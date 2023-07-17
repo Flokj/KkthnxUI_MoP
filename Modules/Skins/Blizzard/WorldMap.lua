@@ -38,7 +38,7 @@ tinsert(C.defaultThemes, function()
 	border:SetPoint("BOTTOMRIGHT", -6, 6)
 	border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 24 or nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
 
-	C_Timer.After(10, function()
+	--[[C_Timer.After(10, function()
 		if Questie_Toggle then
 			-- Hide original toggle button
 			Questie_Toggle:Hide()
@@ -66,8 +66,8 @@ tinsert(C.defaultThemes, function()
 
 			QuestButton.Texture = QuestButton.Texture or QuestButton:CreateTexture(nil, "OVERLAY")
 			QuestButton.Texture:SetSize(18, 18)
-			QuestButton.Texture:SetPoint("CENTER")
-			QuestButton.Texture:SetTexture([[Interface\AddOns\Questie\Icons\available]])
-		end
-	end)
+			QuestButton.Texture:SetPoint("CENTER")]]
+			--QuestButton.Texture:SetTexture([[Interface\AddOns\Questie\Icons\available]])
+		--end
+	--end)
 end)

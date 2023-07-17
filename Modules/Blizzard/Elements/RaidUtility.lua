@@ -26,7 +26,6 @@ local GetSpellCharges = _G.GetSpellCharges
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellTexture = _G.GetSpellTexture
 local GetTime = _G.GetTime
-local HasLFGRestrictions = _G.HasLFGRestrictions
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -588,7 +587,7 @@ function Module:RaidTool_CreateMenu(parent)
 		{
 			CONVERT_TO_RAID,
 			function()
-				if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
+				if UnitIsGroupLeader("player") and GetNumGroupMembers() <= 5 then
 					if IsInRaid() then
 						C_PartyInfo.ConvertToParty()
 					else
@@ -605,7 +604,7 @@ function Module:RaidTool_CreateMenu(parent)
 		{
 			ROLE_POLL,
 			function()
-				if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
+				if IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
 					_G.InitiateRolePoll()
 				else
 					UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
