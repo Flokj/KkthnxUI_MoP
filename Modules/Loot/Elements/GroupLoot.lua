@@ -66,11 +66,9 @@ local function SetTip(frame)
 end
 
 local function SetItemTip(frame, event)
-	if not frame.rollID or (event == "MODIFIER_STATE_CHANGED" and not frame:IsMouseOver()) then
-		return
-	end
+	if not frame.link or (event == "MODIFIER_STATE_CHANGED" and not frame:IsMouseOver()) then	return end
 
-	GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT")
+	GameTooltip:SetOwner(frame, "ANCHOR_TOPRIGHT")
 	GameTooltip:SetHyperlink(frame.link)
 
 	if IsShiftKeyDown() then
@@ -167,7 +165,6 @@ function Module:CreateRollFrame()
 	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
 	button:CreateBorder()
 	button:SetScript("OnEnter", SetItemTip)
-	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnLeave", GameTooltip_Hide)
 	button:SetScript("OnUpdate", ItemOnUpdate)
 	button:SetScript("OnClick", LootClick)
@@ -175,14 +172,13 @@ function Module:CreateRollFrame()
 
 	button.icon = button:CreateTexture(nil, "OVERLAY")
 	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	button.icon:SetTexCoord(0, 1, 0, 1)
 
 	local tfade = frame:CreateTexture(nil, "BORDER")
 	tfade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, 0)
 	tfade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 0)
 	tfade:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
 	tfade:SetBlendMode("ADD")
-	--tfade:SetGradientAlpha("VERTICAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0)
 	tfade:SetGradient("HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 0))
 
 	local status = CreateFrame("StatusBar", nil, frame)
@@ -293,9 +289,6 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	local needTexture = f.needbutt:GetNormalTexture()
 	local greenTexture = f.greedbutt:GetNormalTexture()
 	local disenchantTexture = f.disenchantbutt:GetNormalTexture()
-	--needTexture:SetDesaturation(not canNeed)
-	--greenTexture:SetDesaturation(not canGreed)
-	--disenchantTexture:SetDesaturation(not canDisenchant)
 
 	if canNeed then
 		f.needbutt:SetAlpha(1)
