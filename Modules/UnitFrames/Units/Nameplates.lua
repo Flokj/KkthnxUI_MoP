@@ -57,11 +57,6 @@ local NPClassifies = {
 	worldboss = { 0, 1, 0 },
 }
 
-local ShowTargetNPCs = {
-	[165251] = true, -- 仙林狐狸
-	[174773] = true, -- 怨毒怪
-}
-
 -- Init
 function Module:UpdatePlateRange()
 	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
@@ -838,7 +833,7 @@ function Module:CreatePlates()
 
 	self.Auras = CreateFrame("Frame", nil, self)
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
-	self.Auras.spacing = 4
+	self.Auras.spacing = 8
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].NameplateClassPower then
@@ -1100,8 +1095,6 @@ function Module:PostUpdatePlates(event, unit)
 		Module.UpdateUnitClassify(self, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
-
-		self.tarName:SetShown(ShowTargetNPCs[self.npcID])
 	end
 	Module.UpdateExplosives(self, event, unit)
 end

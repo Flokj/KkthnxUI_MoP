@@ -39,8 +39,8 @@ local function reskinTotemArrow(button, direction)
 	tex:SetPoint("CENTER")
 	K.SetupArrow(tex, direction)
 	button.__texture = tex
-	-- button:HookScript("OnEnter", K.Texture_OnEnter)
-	-- button:HookScript("OnLeave", K.Texture_OnLeave)
+	--button:HookScript("OnEnter", K.Texture_OnEnter)
+	--button:HookScript("OnLeave", K.Texture_OnLeave)
 end
 -- TODO: Add custom options
 function Bar:CreateTotemBar()
@@ -57,12 +57,15 @@ function Bar:CreateTotemBar()
 	frame:SetSize(iconSize * 6 + margin * 5, iconSize)
 	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", 0, 164 })
 	frame:SetPoint("TOPLEFT", frame.Mover, -5, -6)
+	frame.Mover:HookScript("OnSizeChanged", function()
+		MultiCastSummonSpellButton_Update(MultiCastSummonSpellButton) -- fix mover anchor
+	end)
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	MultiCastActionBarFrame:SetParent(frame)
-	MultiCastActionBarFrame.SetParent = K.Noop
+	--MultiCastActionBarFrame.SetParent = K.Noop
 	MultiCastActionBarFrame:ClearAllPoints()
 	MultiCastActionBarFrame:SetPoint("BOTTOMLEFT", 0, margin / 2)
 	MultiCastActionBarFrame.SetPoint = K.Noop
@@ -104,7 +107,7 @@ function Bar:CreateTotemBar()
 		local button = _G["MultiCastActionButton" .. i]
 		reskinTotemButton(button, true)
 		button:SetAttribute("type2", "destroytotem")
-		button:SetAttribute("*totem-slot*", i == 1 and 2 or i == 2 and 1 or i)
+		button:SetAttribute("*totem-slot*", SHAMAN_TOTEM_PRIORITIES[i])
 	end
 
 	hooksecurefunc("MultiCastSlotButton_Update", function(button, slot)
