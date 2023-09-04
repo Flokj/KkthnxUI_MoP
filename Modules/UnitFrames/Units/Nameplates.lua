@@ -39,15 +39,10 @@ local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
-local aksCacheData = {}
 local customUnits = {}
-local groupRoles = {}
 local showPowerList = {}
 
-local hasExplosives
-local isInGroup
 local isInInstance
-local explosivesID = 120651
 
 -- Unit classification
 local NPClassifies = {
@@ -175,10 +170,12 @@ function Module:UpdateUnitPower()
 end
 
 -- Off-tank threat color
+local groupRoles, isInGroup, myRole = {}
 local function refreshGroupRoles()
 	local isInRaid = IsInRaid()
 	isInGroup = isInRaid or IsInGroup()
 	table_wipe(groupRoles)
+	myRole = UnitGroupRolesAssigned("player")
 
 	if isInGroup then
 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
@@ -211,7 +208,7 @@ function Module:CheckThreatStatus(unit)
 	local unitTarget = unit .. "target"
 	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
-	if K.Role == "Tank" and unitRole == "TANK" then
+	if myRole == "Tank" and unitRole == "TANK" then
 		return true, UnitThreatSituation(unitTarget, unit)
 	else
 		return false, UnitThreatSituation("player", unit)
@@ -263,9 +260,9 @@ function Module:UpdateColor(_, unit)
 			r, g, b = 0.6, 0.6, 0.6
 		else
 			r, g, b = K.UnitColor(unit)
-			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
+			if status and (C["Nameplate"].TankMode or myRole == "Tank") then
 				if status == 3 then
-					if K.Role ~= "Tank" and revertThreat then
+					if myRole ~= "Tank" and revertThreat then
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					else
 						if isOffTank then
@@ -277,7 +274,7 @@ function Module:UpdateColor(_, unit)
 				elseif status == 2 or status == 1 then
 					r, g, b = transColor[1], transColor[2], transColor[3]
 				elseif status == 0 then
-					if K.Role ~= "Tank" and revertThreat then
+					if myRole ~= "Tank" and revertThreat then
 						r, g, b = secureColor[1], secureColor[2], secureColor[3]
 					else
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
@@ -292,7 +289,7 @@ function Module:UpdateColor(_, unit)
 	end
 
 	self.ThreatIndicator:Hide()
-	if status and (isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank")) then
+	if status and (isCustomUnit or (not C["Nameplate"].TankMode and myRole ~= "Tank")) then
 		if status == 3 then
 			self.ThreatIndicator:SetBackdropBorderColor(1, 0, 0)
 			self.ThreatIndicator:Show()
@@ -618,39 +615,6 @@ function Module:UpdateUnitClassify(unit)
 		self.ClassifyIndicator:SetDesaturated(desature)
 		self.ClassifyIndicator:Show()
 	end
-end
-
--- Scale plates for explosives
-function Module:UpdateExplosives(event, unit)
-	if not hasExplosives or unit ~= self.unit then
-		return
-	end
-
-	local npcID = self.npcID
-	if event == "NAME_PLATE_UNIT_ADDED" and npcID == explosivesID then
-		self:SetScale(C["General"].UIScale * 1.25)
-	elseif event == "NAME_PLATE_UNIT_REMOVED" then
-		self:SetScale(C["General"].UIScale)
-	end
-end
-
-local function checkAffixes()
-	local _, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-	if affixes[3] and affixes[3] == 13 then
-		hasExplosives = true
-	else
-		hasExplosives = false
-	end
-end
-
-function Module:CheckExplosives()
-	if not C["Nameplate"].ExplosivesScale then
-		return
-	end
-
-	checkAffixes()
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkAffixes)
-	K:RegisterEvent("CHALLENGE_MODE_START", checkAffixes)
 end
 
 -- Mouseover indicator
@@ -1091,12 +1055,11 @@ function Module:PostUpdatePlates(event, unit)
 	if event ~= "NAME_PLATE_UNIT_REMOVED" then
 		Module.UpdateUnitPower(self)
 		Module.UpdateTargetChange(self)
-		Module.UpdateQuestUnit(self, event, unit)
+		--Module.UpdateQuestUnit(self, event, unit)
 		Module.UpdateUnitClassify(self, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
 	end
-	Module.UpdateExplosives(self, event, unit)
 end
 
 -- Player Nameplate
