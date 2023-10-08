@@ -149,7 +149,7 @@ function Module:CreatePet()
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
 	end
-	RaidTargetIndicator:SetSize(12, 12)
+	RaidTargetIndicator:SetSize(18, 18)
 
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")

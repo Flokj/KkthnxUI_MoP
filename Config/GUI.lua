@@ -220,9 +220,7 @@ local function UpdateFilterWhiteList()
 end
 
 local function UpdateTotemBar()
-	if not C["Auras"].Totems then
-		return
-	end
+	if not C["Auras"].Totems then return end
 
 	K:GetModule("Auras"):TotemBar_Init()
 end
@@ -492,6 +490,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoSkipCinematic", L["Auto Skip All Cinematic/Movies"])
 	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
+	Window:CreateSwitch("Automation", "AutoLoggingCombat", "Auto enables Combat Log in raid instances")
 	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 end
 
@@ -525,6 +524,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "FilterJunk", L["Filter Junk Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterLegendary", L["Filter Legendary Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterQuest", L["Filter Quest Items"], nil, UpdateBagStatus)
+	--Window:CreateSwitch("Inventory", "FilterCollection", L["Filter Collection Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
 
 	Window:CreateSection(L["Sizes"])
@@ -574,6 +574,7 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
+	Window:CreateSwitch("Chat", "Chatbar", "Show Chat Bars")
 	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExampleIcon)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
 	Window:CreateSwitch("Chat", "Lock", L["Lock Chat"])
@@ -821,6 +822,7 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "CombatHide", L["Hide Tooltip in Combat"])
 	Window:CreateSwitch("Tooltip", "Cursor", L["Follow Cursor"])
 	Window:CreateSwitch("Tooltip", "FactionIcon", L["Show Faction Icon"])
+	Window:CreateSwitch("Tooltip", "ShowTalents", "Show Talents in tooltip")
 	Window:CreateSwitch("Tooltip", "HideJunkGuild", L["Abbreviate Guild Names"])
 	Window:CreateSwitch("Tooltip", "HideRank", L["Hide Guild Rank"])
 	Window:CreateSwitch("Tooltip", "HideRealm", L["Show realm name by SHIFT"])

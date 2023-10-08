@@ -2,7 +2,17 @@ local K, C = unpack(KkthnxUI)
 local S = K:GetModule("Skins")
 
 local _G = _G
-local GetNumQuestLogEntries, GetQuestLogTitle = _G.GetNumQuestLogEntries, _G.GetQuestLogTitle
+local pairs, tinsert, select = pairs, tinsert, select
+local GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches = GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches
+local IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool = IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool
+local GetQuestIndexForWatch, GetNumQuestLeaderBoards, GetQuestLogLeaderBoard = GetQuestIndexForWatch, GetNumQuestLeaderBoards, GetQuestLogLeaderBoard
+local FauxScrollFrame_GetOffset = FauxScrollFrame_GetOffset
+
+local cr, cg, cb = K.r, K.g, K.b
+local QUESTS_DISPLAYED = QUESTS_DISPLAYED or 22
+local MAX_QUESTLOG_QUESTS = MAX_QUESTLOG_QUESTS or 20
+local MAX_WATCHABLE_QUESTS = MAX_WATCHABLE_QUESTS or 5
+local headerString = QUESTS_LABEL.." %s/%s"
 
 local frame
 
@@ -21,20 +31,13 @@ function S:ExtQuestLogFrame()
 	tex:SetTexCoord(0.125, 0.875, 0, 0.5)
 
 	toggleMap:SetScript("OnClick", ToggleWorldMap)
-	toggleMap:SetScript("OnMouseUp", function()
-		tex:SetTexCoord(0.125, 0.875, 0, 0.5)
-	end)
-
-	toggleMap:SetScript("OnMouseDown", function()
-		tex:SetTexCoord(0.125, 0.875, 0.5, 1)
-	end)
+	toggleMap:SetScript("OnMouseUp", function() tex:SetTexCoord(0.125, 0.875, 0, 0.5) end)
+	toggleMap:SetScript("OnMouseDown", function() tex:SetTexCoord(0.125, 0.875, 0.5, 1) end)
 
 	-- Move ClassicCodex
 	if CodexQuest then
 		local buttonShow = CodexQuest.buttonShow
-		if not buttonShow then
-			return
-		end
+		if not buttonShow then return end
 
 		buttonShow:SetWidth(55)
 		buttonShow:SetText(K.InfoColor .. SHOW)
@@ -63,9 +66,7 @@ function S:QuestLogLevel()
 
 	for i = 1, QUESTS_DISPLAYED, 1 do
 		questLogTitle = buttons[i]
-		if not questLogTitle then -- precaution for other addons
-			break
-		end
+		if not questLogTitle then break end -- precaution for other addons
 
 		questIndex = i + scrollOffset
 		questTitleTag = questLogTitle.tag
@@ -110,20 +111,9 @@ local function updateMinimizeButton(self)
 	WatchFrame.header:SetShown(not self.collapsed)
 end
 
-local function reskinMinimizeButton(button)
-	-- B.ReskinCollapse(button)
-	-- button:GetNormalTexture():SetAlpha(0)
-	-- button:GetPushedTexture():SetAlpha(0)
-	-- button.__texture:DoCollapse(false)
-end
-
 local function reskinQuestIcon(button)
-	if not button then
-		return
-	end
-	if not button.SetNormalTexture then
-		return
-	end
+	if not button then return end
+	if not button.SetNormalTexture then return end
 
 	if not button.styled then
 		button:SetSize(24, 24)
@@ -131,9 +121,7 @@ local function reskinQuestIcon(button)
 		button:SetPushedTexture(0)
 		button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 		local icon = _G[button:GetName() .. "IconTexture"]
-		if icon then
-		end
-
+		
 		button.styled = true
 	end
 
@@ -164,7 +152,6 @@ function S:QuestTracker()
 		reskinQuestIcon(button)
 	end)
 
-	reskinMinimizeButton(WatchFrameCollapseExpandButton)
 	hooksecurefunc("WatchFrame_Collapse", updateMinimizeButton)
 	hooksecurefunc("WatchFrame_Expand", updateMinimizeButton)
 
@@ -173,9 +160,12 @@ function S:QuestTracker()
 	header:SetPoint("TOPLEFT")
 	WatchFrame.header = header
 
-	-- if not C["Skins"].QuestTracker then
-	-- 	return
-	-- end
+	local bg = header:CreateTexture(nil, "ARTWORK")
+	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
+	bg:SetTexCoord(0, .66, 0, .31)
+	bg:SetVertexColor(cr, cg, cb, .8)
+	bg:SetPoint("TOPLEFT", -25, 5)
+	bg:SetSize(250, 30)
 
 	S:ExtQuestLogFrame()
 	hooksecurefunc("QuestLog_Update", S.QuestLogLevel)
@@ -183,9 +173,7 @@ function S:QuestTracker()
 
 	-- Extend the wrap text on WatchFrame, needs review
 	hooksecurefunc("WatchFrame_SetLine", function(line)
-		if not line.text then
-			return
-		end
+		if not line.text then return end
 
 		local height = line:GetHeight()
 		if height > 28 and height < 34 then

@@ -2,13 +2,8 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
 function Module:ReskinRareScanner()
-	if not IsAddOnLoaded("RareScanner") then
-		return
-	end
-
-	if not C["Skins"].RareScanner then
-		return
-	end
+	if not IsAddOnLoaded("RareScanner") then return end
+	if not C["Skins"].RareScanner then return end
 
 	scanner_button:StripTextures()
 	scanner_button:CreateBorder()

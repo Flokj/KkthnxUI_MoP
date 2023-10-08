@@ -115,9 +115,7 @@ end
 
 -- The Famous Shadow?
 local function CreateShadow(f, bd)
-	if f.Shadow then
-		return
-	end
+	if f.Shadow then return end
 
 	local frame = f
 	if f:GetObjectType() == "Texture" then
@@ -315,21 +313,10 @@ local blizzButtonRegions = {
 }
 
 local function SkinButton(f, forceStrip)
-	if f.SetNormalTexture then
-		f:SetNormalTexture(0)
-	end
-
-	if f.SetHighlightTexture then
-		f:SetHighlightTexture(0)
-	end
-
-	if f.SetPushedTexture then
-		f:SetPushedTexture(0)
-	end
-
-	if f.SetDisabledTexture then
-		f:SetDisabledTexture(0)
-	end
+	if f.SetNormalTexture then f:SetNormalTexture(0) end
+	if f.SetHighlightTexture then f:SetHighlightTexture(0) end
+	if f.SetPushedTexture then f:SetPushedTexture(0) end
+	if f.SetDisabledTexture then f:SetDisabledTexture(0) end
 
 	local buttonName = f.GetName and f:GetName()
 	for _, region in pairs(blizzButtonRegions) do
@@ -339,9 +326,7 @@ local function SkinButton(f, forceStrip)
 		end
 	end
 
-	if forceStrip then
-		f:StripTextures()
-	end
+	if forceStrip then f:StripTextures() end
 
 	f:CreateBorder()
 
@@ -429,6 +414,28 @@ function K.ReskinArrow(self, direction)
 	tex:SetAllPoints()
 	K.SetupArrow(tex, direction)
 	self.__texture = tex
+
+	self:HookScript("OnEnter", K.Texture_OnEnter)
+	self:HookScript("OnLeave", K.Texture_OnLeave)
+end
+
+-- Handle close button
+function K:Texture_OnEnter()
+	if self:IsEnabled() then
+		if self.bg then
+			self.bg:SetBackdropColor(cr, cg, cb, .25)
+		else
+			self.__texture:SetVertexColor(0, .6, 1)
+		end
+	end
+end
+
+function K:Texture_OnLeave()
+	if self.bg then
+		self.bg:SetBackdropColor(0, 0, 0, .25)
+	else
+		self.__texture:SetVertexColor(1, 1, 1)
+	end
 end
 
 local function GrabScrollBarElement(frame, element)
@@ -470,50 +477,17 @@ end
 
 local function addapi(object)
 	local mt = getmetatable(object).__index
-
-	if not object.CreateBorder then
-		mt.CreateBorder = CreateBorder
-	end
-
-	if not object.CreateBackdrop then
-		mt.CreateBackdrop = CreateBackdrop
-	end
-
-	if not object.CreateShadow then
-		mt.CreateShadow = CreateShadow
-	end
-
-	if not object.Kill then
-		mt.Kill = Kill
-	end
-
-	if not object.SkinButton then
-		mt.SkinButton = SkinButton
-	end
-
-	if not object.StripTextures then
-		mt.StripTextures = StripTextures
-	end
-
-	if not object.StyleButton then
-		mt.StyleButton = StyleButton
-	end
-
-	if not object.SkinCloseButton then
-		mt.SkinCloseButton = SkinCloseButton
-	end
-
-	if not object.SkinCheckBox then
-		mt.SkinCheckBox = SkinCheckBox
-	end
-
-	if not object.SkinScrollBar then
-		mt.SkinScrollBar = SkinScrollBar
-	end
-
-	if not object.HideBackdrop then
-		mt.HideBackdrop = HideBackdrop
-	end
+	if not object.CreateBorder then	mt.CreateBorder = CreateBorder end
+	if not object.CreateBackdrop then mt.CreateBackdrop = CreateBackdrop end
+	if not object.CreateShadow then	mt.CreateShadow = CreateShadow end
+	if not object.Kill then	mt.Kill = Kill end
+	if not object.SkinButton then mt.SkinButton = SkinButton end
+	if not object.StripTextures then mt.StripTextures = StripTextures end
+	if not object.StyleButton then mt.StyleButton = StyleButton	end
+	if not object.SkinCloseButton then mt.SkinCloseButton = SkinCloseButton	end
+	if not object.SkinCheckBox then	mt.SkinCheckBox = SkinCheckBox end
+	if not object.SkinScrollBar then mt.SkinScrollBar = SkinScrollBar end
+	if not object.HideBackdrop then	mt.HideBackdrop = HideBackdrop end
 end
 
 local handled = { Frame = true }

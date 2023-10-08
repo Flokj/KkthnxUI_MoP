@@ -15,56 +15,23 @@ local GetItemStats = _G.GetItemStats
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 
-local itemCache = {}
-
-local socketWatchList = {
-	["BLUE"] = true,
-	["RED"] = true,
-	["YELLOW"] = true,
-	["COGWHEEL"] = true,
-	["HYDRAULIC"] = true,
-	["META"] = true,
-	["PRISMATIC"] = true,
-}
-
 -- Show itemlevel on chat hyperlinks
 local function isItemHasLevel(link)
 	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
 	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
-		local itemLevel = K.GetItemLevel(link)
-		return name, itemLevel
+		return name, level
 	end
-end
-
-local function GetSocketTexture(socket, count)
-	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-" .. socket .. ":0|t", count)
-end
-
-function IsItemHasGem(link)
-	local text = ""
-	local stats = GetItemStats(link)
-	if stats then
-		for stat, count in pairs(stats) do
-			local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
-			if socket and socketWatchList[socket] then
-				text = text .. GetSocketTexture(socket, count)
-			end
-		end
-	end
-
-	return text
 end
 
 local itemCache = {}
 local function convertItemLevel(link)
-
 	if itemCache[link] then	return itemCache[link] end
-
-	local name, itemLevel = isItemHasLevel(link)
-	if name and itemLevel then
-		link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. IsItemHasGem(link))
-		itemCache[link] = link
-	end
+		
+		local name, itemLevel = isItemHasLevel(link)
+		if name and itemLevel then
+			link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h")
+			itemCache[link] = link
+		end
 
 	return link
 end

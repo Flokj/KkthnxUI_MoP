@@ -42,13 +42,13 @@ function Module:CreateTargetOfTarget()
 		Health.colorReaction = true
 	end
 
-	Health.Value = Health:CreateFontString(nil, "OVERLAY")
-	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(K.UIFont)
-	Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
-	self:Tag(Health.Value, "[hp]")
+	--Health.Value = Health:CreateFontString(nil, "OVERLAY")
+	--Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
+	--Health.Value:SetFontObject(K.UIFont)
+	--Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
+	--self:Tag(Health.Value, "[hp]")
 
-	local Power = CreateFrame("StatusBar", nil, self)
+	--[[local Power = CreateFrame("StatusBar", nil, self)
 	Power:SetHeight(C["Unitframe"].TargetTargetPowerHeight)
 	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -6)
 	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -6)
@@ -56,11 +56,11 @@ function Module:CreateTargetOfTarget()
 	Power:CreateBorder()
 
 	Power.colorPower = true
-	Power.frequentUpdates = false
+	Power.frequentUpdates = false]]
 
-	local Name = self:CreateFontString(nil, "OVERLAY")
-	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
-	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
+	local Name = Health:CreateFontString(nil, "OVERLAY")
+	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, -18)
+	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, -18)
 	Name:SetFontObject(K.UIFont)
 	Name:SetWordWrap(false)
 
@@ -91,15 +91,15 @@ function Module:CreateTargetOfTarget()
 		elseif targetOfTargetPortraitStyle == "ThreeDPortraits" then
 			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			Portrait:SetSize(Health:GetHeight()+6, Health:GetHeight()+6)
+			Portrait:SetPoint("BOTTOM", self, "TOP", 0, 10)
 			Portrait:CreateBorder()
 
 			self.Portrait = Portrait
 		elseif targetOfTargetPortraitStyle ~= "ThreeDPortraits" and targetOfTargetPortraitStyle ~= "OverlayPortrait" then
 			local Portrait = Health:CreateTexture("KKUI_TargetTargetPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
+			Portrait:SetSize(Health:GetHeight(), Health:GetHeight())
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			Portrait.Border = CreateFrame("Frame", nil, self)
@@ -127,11 +127,11 @@ function Module:CreateTargetOfTarget()
 
 	local Debuffs = CreateFrame("Frame", nil, self)
 	Debuffs.spacing = 6
-	Debuffs.initialAnchor = "TOPLEFT"
+	Debuffs.initialAnchor = "BOTTOMLEFT"
 	Debuffs["growth-x"] = "RIGHT"
 	Debuffs["growth-y"] = "DOWN"
-	Debuffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
-	Debuffs:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
+	Debuffs:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 6)
+	Debuffs:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 6)
 	Debuffs.num = 3
 	Debuffs.iconsPerRow = 3
 
@@ -146,7 +146,7 @@ function Module:CreateTargetOfTarget()
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
 	end
-	RaidTargetIndicator:SetSize(12, 12)
+	RaidTargetIndicator:SetSize(18, 18)
 
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
@@ -165,7 +165,7 @@ function Module:CreateTargetOfTarget()
 
 	self.Overlay = Overlay
 	self.Health = Health
-	self.Power = Power
+	--self.Power = Power
 	self.Name = Name
 	self.Level = Level
 	self.Debuffs = Debuffs

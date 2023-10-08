@@ -175,16 +175,6 @@ _G.SLASH_KKUI_RESETINSTANCE1 = "/ri"
 _G.SLASH_KKUI_RESETINSTANCE2 = "/instancereset"
 _G.SLASH_KKUI_RESETINSTANCE3 = "/resetinstance"
 
--- Toggle the binding frame incase we unbind esc.
-SlashCmdList["KKUI_KEYBINDFRAME"] = function()
-	if not _G.KeyBindingFrame then
-		_G.KeyBindingFrame_LoadUI()
-	end
-
-	_G.ShowUIPanel(_G.KeyBindingFrame)
-end
-_G.SLASH_KKUI_KEYBINDFRAME1 = "/binds"
-
 -- Fix The CombatLog.
 SlashCmdList["KKUI_CLEARCOMBATLOG"] = function()
 	CombatLogClearEntries()

@@ -27,7 +27,8 @@
    <Script file="Chat\Elements\ILevel.lua" />
    <Script file="Chat\Elements\Rename.lua" />
    <Script file="Chat\Elements\URL.lua" />
-   <Script file="Chat\Elements\Voice.lua" />
+   <Script file="Chat\Elements\ChatBars.lua" />
+   <!--Script file="Chat\Elements\Voice.lua" /-->
    <!-- Inventory -->
    <Script file="Inventory\Elements\SortBags.lua" />
    <Script file="Inventory\Core.lua" />
@@ -141,6 +142,7 @@
    <Script file="Automation\Elements\ScreenShot.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />
    <Script file="Automation\Elements\Summon.lua" />
+   <Script file="Automation\Elements\LoggingCombat.lua" />
    <Script file="Automation\Elements\WhisperInvite.lua" />
    <!-- Loot -->
    <Script file="Loot\Core.lua" />
@@ -156,7 +158,7 @@
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
-   <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
+   <!--Include file="Skins\Blizzard\FrameXML\Fonts.lua" /!-->
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
@@ -177,8 +179,7 @@
    <Include file="Skins\Addons\Skada.lua" />
    <Include file="Skins\Addons\BugSack.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!-- <Include file="Skins\Addons\BugSack.lua" />
-   <Include file="Skins\Addons\ChocolateBar.lua" />
+   <!--Include file="Skins\Addons\ChocolateBar.lua" />
    <Include file="Skins\Addons\Immersion.lua" />
    <Include file="Skins\Addons\OPie.lua" />
    <Include file="Skins\Addons\RaiderIO.lua" />

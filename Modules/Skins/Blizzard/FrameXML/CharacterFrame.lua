@@ -11,9 +11,7 @@ local function clearPopout(self)
 end
 
 tinsert(C.defaultThemes, function()
-	if not C["Skins"].BlizzardFrames then
-		return
-	end
+	if not C["Skins"].BlizzardFrames then return end
 
 	local slots = {
 		"Head",
@@ -71,35 +69,8 @@ tinsert(C.defaultThemes, function()
 	CharacterAmmoSlotIconTexture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	CharacterAmmoSlot:CreateBorder()
 
-	-- hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-	-- 	if button.icon then
-	-- 		button.icon:SetShown(button.hasItem)
-	-- 	end
-	-- end)
-
-	-- local newResIcons = { 136116, 135826, 136074, 135843, 135945 }
-	-- for i = 1, 5 do
-	-- 	local bu = _G["MagicResFrame" .. i]
-	-- 	bu:SetSize(25, 25)
-	-- 	local icon = bu:GetRegions()
-
-	-- 	bu.bg = CreateFrame("Frame", nil, bu)
-	-- 	bu.bg:SetAllPoints(icon)
-	-- 	bu.bg:SetFrameLevel(bu:GetFrameLevel())
-	-- 	bu.bg:CreateBorder()
-
-	-- 	icon:SetTexture(newResIcons[i])
-	-- 	icon:SetAlpha(0.5)
-	-- end
-
-	-- needs review
-	for _, direc in pairs({ "Left", "Right" }) do
-		for i = 1, 6 do
-			local frameName = "PlayerStatFrame" .. direc .. i
-			local label = _G[frameName .. "Label"]
-			local text = _G[frameName .. "StatText"]
-			label:SetFontObject(Game13Font)
-			text:SetFontObject(Game13Font)
-		end
-	end
+	 --hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
+	 --	local icon = button.icon
+	 --	if icon then icon:SetShown(button.hasItem) end
+	 --end)
 end)

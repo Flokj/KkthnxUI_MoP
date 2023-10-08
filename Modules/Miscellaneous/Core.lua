@@ -53,7 +53,7 @@ function Module:OnEnable()
 	Module:CreateMinimapButtonToggle()
 	Module:CreateObjectiveSizeUpdate()
 	Module:CreatePetHappiness()
-	Module:CreateQuestSizeUpdate()
+	--Module:CreateQuestSizeUpdate()
 	Module:CreateTaxiDismount()
 	Module:CreateTicketStatusFrameMove()
 	Module:CreateTradeTargetInfo()
@@ -466,6 +466,33 @@ do
 	end
 end
 
+--[[ Fix Drag Collections taint
+do
+	local done
+	local function setupMisc(event, addon)
+		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
+			CollectionsJournal:HookScript("OnShow", function()
+				if not done then
+					if InCombatLockdown() then
+						K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+					else
+						K.CreateMoverFrame(CollectionsJournal)
+					end
+					done = true
+				end
+			end)
+			K:UnregisterEvent(event, setupMisc)
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			K.CreateMoverFrame(CollectionsJournal)
+			K:UnregisterEvent(event, setupMisc)
+		end
+	end
+
+	K:RegisterEvent("ADDON_LOADED", setupMisc)
+
+	end
+end]]
+
 -- Select target when click on raid units
 do
 	local function fixRaidGroupButton()
@@ -573,3 +600,38 @@ end
 function Module:UpdateMaxCameraZoom()
 	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end
+
+--[[ Range frame 
+local ADDON_MESSAGE_PREFIX = "RangeAddon"
+local PLAYER_NAME = UnitName("player")  -- Получаем имя вашего персонажа
+local lastRangeValue
+
+-- Функция для отправки события дальности
+local function sendRangeEvent(rangeValue)
+    local message = rangeValue and "_RANGE_SET:" .. rangeValue or "_RANGE_CLEAR"
+    C_ChatInfo.SendAddonMessage(ADDON_MESSAGE_PREFIX, message, "WHISPER", PLAYER_NAME)
+end
+
+-- Функция для обработки команды /range
+SLASH_RANGE1 = "/range"
+SlashCmdList["RANGE"] = function(msg)
+    local input = strtrim(msg)
+
+    if input:match("^%d+$") then
+        local rangeValue = tonumber(input)
+        lastRangeValue = rangeValue
+    elseif input == "" and lastRangeValue then
+        lastRangeValue = nil
+    elseif input == "cancel" then
+        lastRangeValue = nil
+    else
+        print("Invalid command. Use '/range X' where X is a number, or '/range cancel'.")
+        return
+    end
+    sendRangeEvent(lastRangeValue)
+end
+
+-- Проверка, что DBM-Core и BigWigs не загружены
+if not IsAddOnLoaded("DBM-Core") and not IsAddOnLoaded("BigWigs") then
+    C_ChatInfo.RegisterAddonMessagePrefix(ADDON_MESSAGE_PREFIX)
+end]]

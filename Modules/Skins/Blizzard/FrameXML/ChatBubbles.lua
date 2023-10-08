@@ -6,9 +6,7 @@ local table_insert = _G.table.insert
 local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
-	if chatbubble.styled then
-		return
-	end
+	if chatbubble.styled then return end
 
 	local frame = chatbubble:GetChildren()
 	if frame and not frame:IsForbidden() then
@@ -27,9 +25,7 @@ local function reskinChatBubble(chatbubble)
 end
 
 table_insert(C.defaultThemes, function()
-	if not C["Skins"].ChatBubbles then
-		return
-	end
+	if not C["Skins"].ChatBubbles then return end
 
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",

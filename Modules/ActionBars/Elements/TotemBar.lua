@@ -39,8 +39,8 @@ local function reskinTotemArrow(button, direction)
 	tex:SetPoint("CENTER")
 	K.SetupArrow(tex, direction)
 	button.__texture = tex
-	--button:HookScript("OnEnter", K.Texture_OnEnter)
-	--button:HookScript("OnLeave", K.Texture_OnLeave)
+	button:HookScript("OnEnter", K.Texture_OnEnter)
+	button:HookScript("OnLeave", K.Texture_OnLeave)
 end
 -- TODO: Add custom options
 function Bar:CreateTotemBar()

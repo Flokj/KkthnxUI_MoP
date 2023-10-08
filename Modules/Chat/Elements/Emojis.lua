@@ -32,9 +32,7 @@ function Module:ApplyEmojis(event, msg, ...)
 end
 
 function Module:CreateEmojis()
-	if not C["Chat"].Emojis then
-		return
-	end
+	if not C["Chat"].Emojis then return end
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", Module.ApplyEmojis)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER_INFORM", Module.ApplyEmojis)

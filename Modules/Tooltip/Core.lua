@@ -66,6 +66,8 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 local YOU = _G.YOU
 local hooksecurefunc = _G.hooksecurefunc
 
+local CI = LibStub("LibClassicInspector")
+
 local tipTable = {}
 local GameTooltip_Mover
 
@@ -236,6 +238,86 @@ function Module:OnTooltipSetUnit()
 				Module.InsertFactionFrame(self, faction)
 			end
 		end
+
+		if C["Tooltip"].ShowTalents then
+    		local name, unit = self:GetUnit()
+    		
+    		if not unit then return end
+    		
+    		local guid = UnitGUID(unit)
+    		local text = {}
+    		local linesToAdd = {}
+    		
+    		local numLines = GameTooltip:NumLines()
+    		
+    		for i = 1, numLines do
+    		    text[i] = _G["GameTooltipTextLeft" .. i]:GetText()
+    		end
+    		
+    		if not text[1] or text[1] == "" or not text[2] or text[2] == "" then return end
+    		
+    		local localizedClass, class = UnitClass(unit)
+    		local show_titles = true
+    		
+    		if not show_titles and string.find(text[1], name) then
+    		    text[1] = name
+    		end
+    		
+    		if not InCombatLockdown() then
+    		    local x1, x2, x3 = 0, 0, 0
+    		    local y1, y2, y3 = 0, 0, 0
+    		    local spec1 = CI:GetSpecialization(guid, 1)
+    		    local spec2 = CI:GetSpecialization(guid, 2)
+    		    
+    		    if spec1 then
+    		        x1, x2, x3 = CI:GetTalentPoints(guid, 1)
+    		    end
+    		    
+    		    if spec2 then
+    		        y1, y2, y3 = CI:GetTalentPoints(guid, 2)
+    		    end
+    		    
+    		    local active = CI:GetActiveTalentGroup(guid)
+    		    
+    		    if active == 2 then
+				    if spec2 then
+				        tinsert(linesToAdd, {
+				            string.format("%s:|cFFFFFFFF %s [%d/%d/%d]|r", "M", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
+				        })
+				    end
+				
+				    if spec1 then
+				        tinsert(linesToAdd, {
+				            string.format("%s:|cFF808080 %s [%d/%d/%d]|r", "O", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
+				        })
+				    end
+				elseif active == 1 then
+				    if spec1 then
+				        tinsert(linesToAdd, {
+				            string.format("%s:|cFFFFFFFF %s [%d/%d/%d]|r", "M", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
+				        })
+				    end
+				
+				    if spec2 then
+				        tinsert(linesToAdd, {
+				            string.format("%s:|cFF808080 %s [%d/%d/%d]|r", "O", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
+				        })
+				    end
+				end
+    		end
+    		
+    		local n = 0
+    		for i = 1, numLines do
+    		    if text[i] and text[i] ~= "" then
+    		        n = n + 1
+    		        _G["GameTooltipTextLeft" .. n]:SetText(text[i])
+    		    end
+    		end
+    		    
+    		for _, v in ipairs(linesToAdd) do
+    			self:AddLine(unpack(v))
+    		end
+    	end
 
 		if C["Tooltip"].LFDRole then
 			local role = UnitGroupRolesAssigned(unit)

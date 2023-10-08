@@ -2,13 +2,8 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
 function Module:ReskinSpy()
-	if not C["Skins"].Spy then
-		return
-	end
-
-	if not K.CheckAddOnState("Spy") then
-		return
-	end
+	if not C["Skins"].Spy then return end
+	if not K.CheckAddOnState("Spy") then return end
 
 	if Spy_MainWindow.Background then
 		Spy_MainWindow.Background:StripTextures()

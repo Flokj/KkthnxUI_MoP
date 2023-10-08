@@ -59,14 +59,20 @@ function Module:Bind_RegisterButton(button)
 end
 
 function Module:Bind_RegisterMacro()
-	if self ~= "Blizzard_MacroUI" then
-		return
-	end
+	if self ~= "Blizzard_MacroUI" then return end
+	if macroInit then return end
 
-	for i = 1, MAX_ACCOUNT_MACROS do
-		local button = _G["MacroButton" .. i]
-		button:HookScript("OnEnter", hookMacroButton)
-	end
+	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local button = select(i, self.ScrollTarget:GetChildren())
+			if not button.bindHooked then
+				button:HookScript("OnEnter", hookMacroButton)
+				button.bindHooked = true
+			end
+		end
+	end)
+
+	macroInit = true
 end
 
 function Module:Bind_Create()
@@ -151,22 +157,19 @@ function Module:Bind_Update(button, spellmacro)
 	frame:Show()
 
 	if spellmacro == "SPELL" then
-		frame.id = SpellBook_GetSpellBookSlot(frame.button)
+		frame.id = SpellBook_GetSpellBookSlot(button)
 		frame.name = GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
-		frame.id = frame.button:GetID()
-		local colorIndex = K.Round(select(2, MacroFrameTab1Text:GetTextColor()), 1)
-		if colorIndex == 0.8 then
+		frame.id = button.selectionIndex or button:GetID()
+		if MacroFrame.selectedTab == 2 then
 			frame.id = frame.id + MAX_ACCOUNT_MACROS
 		end
 		frame.name = GetMacroInfo(frame.id)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "STANCE" or spellmacro == "PET" then
 		frame.name = button:GetName()
-		if not frame.name then
-			return
-		end
+		if not frame.name then return end
 		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.id = tonumber(button:GetID())
@@ -178,13 +181,13 @@ function Module:Bind_Update(button, spellmacro)
 		frame.bindings = { GetBindingKey(frame.bindstring) }
 	else
 		frame.name = button:GetName()
-		if not frame.name then
-			return
-		end
+		if not frame.name then return end
 		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.action = tonumber(button.action)
-		if button.isCustomButton or not frame.action or frame.action < 1 or frame.action > 168 then
+		if button.keyBoundTarget then
+			frame.bindstring = button.keyBoundTarget
+		elseif not frame.action or frame.action < 1 or frame.action > 180 then
 			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
 		else
 			local modact = 1 + (frame.action - 1) % 12
@@ -206,7 +209,7 @@ function Module:Bind_Update(button, spellmacro)
 	end
 
 	-- Refresh tooltip
-	frame:GetScript("OnEnter")(self)
+	frame:GetScript("OnEnter")()
 end
 
 local ignoreKeys = {

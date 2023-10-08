@@ -16,6 +16,8 @@ local Minimap = _G.Minimap
 local PlaySound = _G.PlaySound
 local UIParent = _G.UIParent
 
+local UIFrameFadeOut, UIFrameFadeIn = UIFrameFadeOut, UIFrameFadeIn
+
 function Module:CreateRecycleBin()
 	if not C["Minimap"].ShowRecycleBin then
 		return
@@ -140,17 +142,9 @@ function Module:CreateRecycleBin()
 		for _, child in pairs(buttons) do
 			if not child.styled then
 				child:SetParent(bin)
-				if child:HasScript("OnDragStop") then
-					child:SetScript("OnDragStop", nil)
-				end
-
-				if child:HasScript("OnDragStart") then
-					child:SetScript("OnDragStart", nil)
-				end
-
-				-- if child:HasScript("OnClick") then
-				-- 	child:HookScript("OnClick", clickFunc)
-				-- end
+				if child:HasScript("OnDragStop") then child:SetScript("OnDragStop", nil) end
+				if child:HasScript("OnDragStart") then child:SetScript("OnDragStart", nil) end
+				--if child:HasScript("OnClick") then child:HookScript("OnClick", clickFunc) end
 
 				if child:IsObjectType("Button") then
 					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
@@ -168,7 +162,7 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					-- child:HookScript("OnMouseUp", clickFunc)
+					--child:HookScript("OnMouseUp", clickFunc)
 				end
 
 				child.styled = true

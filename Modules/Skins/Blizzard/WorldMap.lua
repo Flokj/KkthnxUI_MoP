@@ -37,37 +37,4 @@ tinsert(C.defaultThemes, function()
 	border:SetPoint("TOPLEFT", 6, -6)
 	border:SetPoint("BOTTOMRIGHT", -6, 6)
 	border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 24 or nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
-
-	--[[C_Timer.After(10, function()
-		if Questie_Toggle then
-			-- Hide original toggle button
-			Questie_Toggle:Hide()
-
-			-- Create our own button
-			local QuestButton = CreateFrame("Button", nil, WorldMapFrame)
-			QuestButton:SetSize(18, 18)
-			QuestButton:SetPoint("TOPRIGHT", -50, -76)
-			QuestButton:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel())
-
-			QuestButton:SetScript("OnClick", function()
-				PlaySound(825)
-				Questie_Toggle:Click()
-			end)
-
-			QuestButton:SetScript("OnEnter", function(self)
-				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -1, 5)
-				GameTooltip:AddLine("Toggle Questie")
-				GameTooltip:Show()
-			end)
-
-			QuestButton:SetScript("OnLeave", K.HideTooltip)
-
-			QuestButton:SkinButton()
-
-			QuestButton.Texture = QuestButton.Texture or QuestButton:CreateTexture(nil, "OVERLAY")
-			QuestButton.Texture:SetSize(18, 18)
-			QuestButton.Texture:SetPoint("CENTER")]]
-			--QuestButton.Texture:SetTexture([[Interface\AddOns\Questie\Icons\available]])
-		--end
-	--end)
 end)

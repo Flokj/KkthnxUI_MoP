@@ -111,9 +111,7 @@ function Module:ReskinTooltipIcons()
 end
 
 function Module:CreateTooltipIcons()
-	if not C["Tooltip"].Icons then
-		return
-	end
+	if not C["Tooltip"].Icons then return end
 
 	self:ReskinTooltipIcons()
 end

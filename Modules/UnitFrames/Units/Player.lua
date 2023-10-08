@@ -412,7 +412,7 @@ function Module:CreatePlayer()
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
 	end
-	RaidTargetIndicator:SetSize(20, 20)
+	RaidTargetIndicator:SetSize(24, 24)
 
 	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then

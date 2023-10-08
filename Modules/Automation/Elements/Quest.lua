@@ -60,8 +60,8 @@ local function SetupAutoQuestCheckButton()
 	end
 
 	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
-	AutoQuestCheckButton:SetPoint("TOPLEFT", 40, -80)
-	AutoQuestCheckButton:SetSize(18, 18)
+	AutoQuestCheckButton:SetPoint("BOTTOMLEFT", 25, 90)
+	AutoQuestCheckButton:SetSize(16, 16)
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
@@ -73,7 +73,7 @@ local function SetupAutoQuestCheckButton()
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
 
-	AutoQuestCheckButton:SkinCheckBox(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 20 or nil, nil, -8, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	AutoQuestCheckButton:SkinCheckBox()
 	AutoQuestCheckButton:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel())
 
 	isCheckButtonCreated = true

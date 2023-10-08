@@ -21,7 +21,6 @@ local HEIRLOOMS = _G.HEIRLOOMS
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local OPTIONS_MENU = _G.OPTIONS_MENU
-local PlaySound = _G.PlaySound
 local QUESTS_LABEL = _G.QUESTS_LABEL
 local RELOADUI = _G.RELOADUI
 local ReloadUI = _G.ReloadUI
@@ -188,7 +187,6 @@ local menuList = {
 					end
 
 					if IsAddOnLoaded("Details") then
-						PlaySound(21968)
 						_G._detalhes:ToggleWindows()
 					else
 						K.Print("Details is not loaded!")
@@ -213,7 +211,6 @@ local menuList = {
 					end
 
 					if IsAddOnLoaded("Skada") then
-						PlaySound(21968)
 						_G.Skada:ToggleWindow()
 					else
 						K.Print("Skada is not loaded!")
@@ -228,9 +225,7 @@ local menuList = {
 }
 
 local function canChangeMessage(arg1, id)
-	if id and arg1 == "" then
-		return id
-	end
+	if id and arg1 == "" then return id end
 end
 
 local function isMessageProtected(msg)
@@ -265,7 +260,6 @@ function Module:ChatCopy_OnClick(btn)
 			local chatframe = _G.SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
 			FCF_SetChatWindowFontSize(chatframe, chatframe, 0.01)
-			PlaySound(21968)
 			frame:Show()
 
 			local lineCt = Module.GetChatLines(chatframe)
@@ -299,16 +293,6 @@ function Module:ChatCopy_CreateMenu()
 	_G.ChatFrameChannelButton:SetPoint("TOP", _G.ChatFrameMenuButton, "BOTTOM", 0, -6)
 	_G.ChatFrameChannelButton:SetParent(menu)
 
-	-- _G.ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
-	-- _G.ChatFrameToggleVoiceDeafenButton:SetPoint("TOP", _G.ChatFrameChannelButton, "BOTTOM", 0, -6)
-	-- _G.ChatFrameToggleVoiceDeafenButton:SetParent(menu)
-
-	-- _G.ChatFrameToggleVoiceMuteButton:ClearAllPoints()
-	-- _G.ChatFrameToggleVoiceMuteButton:SetPoint("TOP", _G.ChatFrameToggleVoiceDeafenButton, "BOTTOM", 0, -6)
-	-- _G.ChatFrameToggleVoiceMuteButton:SetParent(menu)
-
-	-- _G.QuickJoinToastButton:SetParent(menu)
-
 	_G.ChatAlertFrame:ClearAllPoints()
 	_G.ChatAlertFrame:SetPoint("BOTTOMLEFT", _G.ChatFrame1Tab, "TOPLEFT", 5, 25)
 
@@ -341,15 +325,10 @@ function Module:ChatCopy_Create()
 	editBox:SetAutoFocus(false)
 	editBox:SetFontObject(K.UIFont)
 	editBox:SetWidth(scrollArea:GetWidth())
-	editBox:SetHeight(400)
-	editBox:SetScript("OnEscapePressed", function()
-		frame:Hide()
-	end)
-
-	editBox:SetScript("OnTextChanged", function(_, userInput)
-		if userInput then
-			return
-		end
+	editBox:SetHeight(scrollArea:GetHeight())
+	editBox:SetScript("OnEscapePressed", function() frame:Hide() end)
+	editBox:SetScript("OnTextChanged", function(_, userInput) 
+		if userInput then return end
 
 		local _, max = scrollArea.ScrollBar:GetMinMaxValues()
 		for _ = 1, max do
@@ -407,7 +386,6 @@ function Module:ChatCopy_Create()
 	kkuiconfig:RegisterForClicks("AnyUp")
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
-			PlaySound(111)
 			_G.EasyMenu(menuList, menuFrame, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.GUI:Toggle()

@@ -1,7 +1,7 @@
 local K = unpack(KkthnxUI)
 
 K.Devs = {
-	["Kkthnx-Sulfuras"] = true,
+	["Неотжал-Пламегор"] = true,
 }
 
 local function isDeveloper()

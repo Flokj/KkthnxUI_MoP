@@ -2,13 +2,8 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 function Module:ReskinAtlasLoot()
-	if not C["Skins"].AtlasLoot then
-		return
-	end
-
-	if not K.CheckAddOnState("AtlasLootClassic") then
-		return
-	end
+	if not C["Skins"].AtlasLoot then return	end
+	if not K.CheckAddOnState("AtlasLootClassic") then return end
 
 	local AtlasLootFrame = _G["AtlasLoot_GUI-Frame"]
 	AtlasLootFrame:StripTextures()
@@ -41,6 +36,9 @@ function Module:ReskinAtlasLoot()
 					CatFrame:GetScript("OnShow")(CatFrame)
 					CatFrame.IsSkinned = true
 				end
+				local DropdownTitle = _G[Frame..'-title']
+				DropdownTitle:ClearAllPoints()
+				DropdownTitle:SetPoint("BOTTOMLEFT", _G[Frame], "TOPLEFT", 0, 3)
 			end
 		end)
 	end

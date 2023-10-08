@@ -7,9 +7,9 @@ local GetAddOnInfo = _G.GetAddOnInfo
 local GetCVarBool = _G.GetCVarBool
 local GetNumAddOns = _G.GetNumAddOns
 local GetRealZoneText = _G.GetRealZoneText
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
 local UNKNOWN = _G.UNKNOWN
+
+local CI = LibStub("LibClassicInspector")
 
 local function AreOtherAddOnsEnabled()
 	local addons
@@ -45,49 +45,6 @@ local EnglishClassName = {
 	WARLOCK = K.AddClassIconToColor("WARLOCK", "|CFF8787ED") .. "Warlock",
 	WARRIOR = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E") .. "Warrior",
 }
-
-local EnglishSpecName = {
-	[250] = "Blood",
-	[251] = "Frost",
-	[252] = "Unholy",
-	[102] = "Balance",
-	[103] = "Feral",
-	[104] = "Guardian",
-	[105] = "Restoration",
-	[253] = "Beast Mastery",
-	[254] = "Marksmanship",
-	[255] = "Survival",
-	[62] = "Arcane",
-	[63] = "Fire",
-	[64] = "Frost",
-	[268] = "Brewmaster",
-	[270] = "Mistweaver",
-	[269] = "Windwalker",
-	[65] = "Holy",
-	[66] = "Protection",
-	[70] = "Retribution",
-	[256] = "Discipline",
-	[257] = "Holy",
-	[258] = "Shadow",
-	[259] = "Assasination",
-	[260] = "Combat",
-	[261] = "Sublety",
-	[262] = "Elemental",
-	[263] = "Enhancement",
-	[264] = "Restoration",
-	[265] = "Affliction",
-	[266] = "Demonoligy",
-	[267] = "Destruction",
-	[71] = "Arms",
-	[72] = "Fury",
-	[73] = "Protection",
-	[577] = "Havoc",
-	[581] = "Vengeance",
-}
-
-local function GetSpecName()
-	return EnglishSpecName[GetSpecializationInfo(GetSpecialization())]
-end
 
 local function CreateStatusContent(num, width, parent, anchorTo, content)
 	if not content then
@@ -206,14 +163,14 @@ local function CreateStatusFrame()
 	LogoCenter:SetPoint("CENTER", StatusFrame, "CENTER", 0, 0)
 
 	-- Sections
-	StatusFrame.Section1 = CreateStatusSection(300, 125, nil, 30, StatusFrame, "TOP", StatusFrame, "TOP", -30)
-	StatusFrame.Section2 = CreateStatusSection(300, 130, nil, 30, StatusFrame, "TOP", StatusFrame.Section1, "BOTTOM", 0)
-	StatusFrame.Section3 = CreateStatusSection(300, 185, nil, 30, StatusFrame, "TOP", StatusFrame.Section2, "BOTTOM", 0)
+	StatusFrame.Section1 = CreateStatusSection(400, 125, nil, 30, StatusFrame, "TOP", StatusFrame, "TOP", -30)
+	StatusFrame.Section2 = CreateStatusSection(400, 130, nil, 30, StatusFrame, "TOP", StatusFrame.Section1, "BOTTOM", 0)
+	StatusFrame.Section3 = CreateStatusSection(400, 185, nil, 30, StatusFrame, "TOP", StatusFrame.Section2, "BOTTOM", 0)
 
 	-- Section content
-	StatusFrame.Section1.Content = CreateStatusContent(4, 260, StatusFrame.Section1, StatusFrame.Section1.Header)
-	StatusFrame.Section2.Content = CreateStatusContent(5, 260, StatusFrame.Section2, StatusFrame.Section2.Header)
-	StatusFrame.Section3.Content = CreateStatusContent(6, 260, StatusFrame.Section3, StatusFrame.Section3.Header)
+	StatusFrame.Section1.Content = CreateStatusContent(4, 320, StatusFrame.Section1, StatusFrame.Section1.Header)
+	StatusFrame.Section2.Content = CreateStatusContent(5, 320, StatusFrame.Section2, StatusFrame.Section2.Header)
+	StatusFrame.Section3.Content = CreateStatusContent(6, 320, StatusFrame.Section3, StatusFrame.Section3.Header)
 
 	local factionColor
 	local factionIcon
@@ -262,7 +219,6 @@ local function UpdateStatusFrame()
 	local Section3 = StatusFrame.Section3
 	Section3.Content.Line4.Text:SetFormattedText("Level: " .. K.SystemColor .. "%s|r", K.Level)
 	Section3.Content.Line5.Text:SetFormattedText("Zone: " .. K.SystemColor .. "%s|r", GetRealZoneText() or UNKNOWN)
-	Section3.Content.Line6.Text:SetFormattedText("Specialization: " .. K.SystemColor .. "%s|r", GetSpecName() or UNKNOWN)
 end
 
 function K:ShowStatusReport()

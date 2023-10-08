@@ -16,220 +16,6 @@ local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
--- Create the minimap micro menu
-local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
-local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
-local journalText = K.Client == "ruRU" and ENCOUNTER_JOURNAL or ADVENTURE_JOURNAL
-local menuList = {
-	{
-		text = CHARACTER_BUTTON,
-		notCheckable = 1,
-		func = function()
-			ToggleCharacter("PaperDollFrame")
-		end,
-	},
-	{
-		text = SPELLBOOK_ABILITIES_BUTTON,
-		notCheckable = 1,
-		func = function()
-			if InCombatLockdown() then
-				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-				return
-			end
-			ToggleFrame(SpellBookFrame)
-		end,
-	},
-	{
-		text = TALENTS_BUTTON,
-		notCheckable = 1,
-		func = function()
-			if not PlayerTalentFrame then
-				TalentFrame_LoadUI()
-			end
-			if K.Level >= 10 then
-				ShowUIPanel(PlayerTalentFrame)
-			else
-				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
-			end
-		end,
-	},
-	{
-		text = ACHIEVEMENT_BUTTON,
-		notCheckable = 1,
-		func = function()
-			ToggleAchievementFrame()
-		end,
-	},
-	{
-		text = QUESTLOG_BUTTON,
-		notCheckable = 1,
-		func = function()
-			ToggleQuestLog()
-		end,
-	},
-	{
-		text = guildText,
-		notCheckable = 1,
-		func = function()
-			ToggleGuildFrame()
-		end,
-	},
-	{
-		text = SOCIAL_BUTTON,
-		notCheckable = 1,
-		func = function()
-			ToggleFriendsFrame()
-		end,
-	},
-	{
-		text = CHAT_CHANNELS,
-		notCheckable = 1,
-		func = function()
-			ToggleChannelFrame()
-		end,
-	},
-	{
-		text = PLAYER_V_PLAYER,
-		notCheckable = 1,
-		func = function()
-			if K.Level >= 10 then
-				TogglePVPUI()
-			else
-				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
-			end
-		end,
-	},
-	{
-		text = GROUP_FINDER,
-		notCheckable = 1,
-		func = function()
-			if K.Level >= 10 then
-				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
-			else
-				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
-			end
-		end,
-	},
-	{
-		text = journalText,
-		notCheckable = 1,
-		func = function()
-			if C_AdventureJournal.CanBeShown() then
-				ToggleEncounterJournal()
-			else
-				UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. FEATURE_NOT_YET_AVAILABLE .. "|r")
-			end
-		end,
-	},
-	{
-		text = COLLECTIONS,
-		notCheckable = 1,
-		func = function()
-			if InCombatLockdown() then
-				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-				return
-			end
-			ToggleCollectionsJournal()
-		end,
-	},
-	{
-		text = "Calendar",
-		notCheckable = 1,
-		func = function()
-			ToggleCalendar()
-		end,
-	},
-	{
-		text = BATTLEFIELD_MINIMAP,
-		notCheckable = 1,
-		func = function()
-			ToggleBattlefieldMap()
-		end,
-	},
-}
-
-if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
-	table_insert(menuList, {
-		text = BLIZZARD_STORE,
-		notCheckable = 1,
-		func = function()
-			StoreMicroButton:Click()
-		end,
-	})
-end
-
-if K.Level == MAX_PLAYER_LEVEL then
-	table_insert(menuList, {
-		text = RATED_PVP_WEEKLY_VAULT,
-		notCheckable = 1,
-		func = function()
-			if not WeeklyRewardsFrame then
-				WeeklyRewards_LoadUI()
-			end
-			ToggleFrame(WeeklyRewardsFrame)
-		end,
-	})
-end
-
-table_insert(menuList, {
-	text = K.Title,
-	notCheckable = 1,
-	bottom = true,
-	func = function()
-		-- Prevent options panel from showing if Blizzard options panel is showing
-		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
-			return
-		end
-
-		-- No modifier key toggles the options panel
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-			return
-		end
-
-		K["GUI"]:Toggle()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	end,
-})
-
-table_sort(menuList, function(a, b)
-	if a and b and a.text and b.text then
-		return a.text < b.text
-	end
-end)
-
--- We want these two on the bottom
-table_insert(menuList, {
-	text = _G.MAINMENU_BUTTON,
-	notCheckable = 1,
-	func = function()
-		if not _G.GameMenuFrame:IsShown() then
-			if _G.VideoOptionsFrame:IsShown() then
-				_G.VideoOptionsFrameCancel:Click()
-			elseif _G.AudioOptionsFrame:IsShown() then
-				_G.AudioOptionsFrameCancel:Click()
-			elseif _G.InterfaceOptionsFrame:IsShown() then
-				_G.InterfaceOptionsFrameCancel:Click()
-			end
-
-			CloseMenus()
-			CloseAllWindows()
-			PlaySound(850) -- IG_MAINMENU_OPEN
-			ShowUIPanel(_G.GameMenuFrame)
-		else
-			PlaySound(854) -- IG_MAINMENU_QUIT
-			HideUIPanel(_G.GameMenuFrame)
-			MainMenuMicroButton_SetNormal()
-		end
-	end,
-})
-
-table_insert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, func = ToggleHelpFrame })
-
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
 	minimapBorder:SetAllPoints(Minimap)
@@ -243,9 +29,7 @@ function Module:CreateStyle()
 	minimapBackground:SetFrameStrata("BACKGROUND")
 	minimapBackground:CreateBorder(nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
-	if not C["Minimap"].MailPulse then
-		return
-	end
+	if not C["Minimap"].MailPulse then return end
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
@@ -386,22 +170,10 @@ function Module:ReskinRegions()
 		MiniMapMailIcon:SetAlpha(0.9)
 	end
 
-	--[[ Invites Icon
-	if GameTimeCalendarInvitesTexture then
-		GameTimeCalendarInvitesTexture:ClearAllPoints()
-		GameTimeCalendarInvitesTexture:SetParent("Minimap")
-		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
-	end]]
-
-	--[[ Streaming icon
-	if StreamingIcon then
-		StreamingIcon:ClearAllPoints()
-		StreamingIcon:SetParent("Minimap")
-		StreamingIcon:SetPoint("LEFT", -6, 0)
-		StreamingIcon:SetAlpha(0.5)
-		StreamingIcon:SetScale(0.8)
-		StreamingIcon:SetFrameStrata("LOW")
-	end]]
+	-- Invites Icon
+	GameTimeCalendarInvitesTexture:ClearAllPoints()
+	GameTimeCalendarInvitesTexture:SetParent(Minimap)
+	GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
 	inviteNotification:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
@@ -605,7 +377,6 @@ function Module:Minimap_TrackingDropdown()
 end
 
 function Module:Minimap_OnMouseUp(btn)
-	menuFrame:Hide()
 
 	if Module.TrackingDropdown then
 		_G.HideDropDownMenu(1, nil, Module.TrackingDropdown)
@@ -618,11 +389,6 @@ function Module:Minimap_OnMouseUp(btn)
 			return
 		end
 
-		if position:match("LEFT") then
-			EasyMenu(menuList, menuFrame, "cursor", 0, 0)
-		else
-			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
-		end
 	elseif btn == "RightButton" and Module.TrackingDropdown then
 		if position:match("LEFT") then
 			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", 0, 0)

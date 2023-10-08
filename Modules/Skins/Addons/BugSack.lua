@@ -7,14 +7,10 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
 function Module:ReskinBugSack()
-	if not IsAddOnLoaded("BugSack") then
-		return
-	end
+	if not IsAddOnLoaded("BugSack") then return end
 
 	hooksecurefunc(BugSack, "OpenSack", function()
-		if BugSackFrame.IsSkinned then
-			return
-		end
+		if BugSackFrame.IsSkinned then return end
 
 		BugSackFrame:StripTextures()
 		BugSackFrame:CreateBorder()

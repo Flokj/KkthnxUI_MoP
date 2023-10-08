@@ -16,6 +16,7 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local hooksecurefunc = _G.hooksecurefunc
 
 local foundurl = false
+
 local function convertLink(text, value)
 	return "|Hurl:" .. tostring(value) .. "|h" .. K.InfoColor .. text .. "|r|h"
 end

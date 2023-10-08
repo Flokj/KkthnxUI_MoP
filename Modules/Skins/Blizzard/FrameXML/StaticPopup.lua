@@ -59,13 +59,9 @@ local function ReskinEditBox(self, height, width)
 	bg:SetPoint("BOTTOMRIGHT")
 	bg:CreateBorder()
 
-	if height then
-		self:SetHeight(height)
-	end
+	if height then self:SetHeight(height) end
 
-	if width then
-		self:SetWidth(width)
-	end
+	if width then self:SetWidth(width) end
 end
 
 table_insert(C.defaultThemes, function()
@@ -107,9 +103,7 @@ table_insert(C.defaultThemes, function()
 	hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
 		local info = StaticPopupDialogs[which]
 
-		if not info then
-			return
-		end
+		if not info then return	end
 
 		local dialog = nil
 		dialog = StaticPopup_FindVisible(which, data)
@@ -139,9 +133,7 @@ table_insert(C.defaultThemes, function()
 			end
 		end
 
-		if not dialog then
-			return
-		end
+		if not dialog then return end
 
 		if info.closeButton then
 			local closeButton = _G[dialog:GetName().."CloseButton"]

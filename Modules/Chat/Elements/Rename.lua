@@ -4,7 +4,6 @@ local Module = K:GetModule("Chat")
 local _G = _G
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
--- local string_match = _G.string.match
 
 local BetterDate = _G.BetterDate
 local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
@@ -19,9 +18,7 @@ local timestampFormat = {
 }
 
 function Module:SetupChannelNames(text, ...)
-	if string_find(text, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
-		return
-	end
+	if string_find(text, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then return end
 
 	local r, g, b = ...
 	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
@@ -70,9 +67,55 @@ function Module:CreateChatRename()
 	_G.CHAT_SAY_GET = "%s "
 	_G.CHAT_YELL_GET = "%s "
 
-	if C["Chat"].OldChatNames then
-		return
-	end
+	-- Loot mods
+	_G.LOOT_ITEM = "%s + %s"
+	_G.LOOT_ITEM_MULTIPLE = "%s + % sx%d"
+	_G.LOOT_ITEM_CREATED_SELF = "+ %s"
+	_G.LOOT_ITEM_CREATED_SELF_MULTIPLE = "+ %s"
+	_G.LOOT_ITEM_SELF = "+ %s"
+	_G.LOOT_ITEM_SELF_MULTIPLE = "+ %s x%d"
+	_G.LOOT_ITEM_PUSHED_SELF = "+ %s"
+	_G.LOOT_ITEM_PUSHED_SELF_MULTIPLE = "+ %s x%d"
+	_G.CREATED_ITEM = "%s + %s"
+	_G.CREATED_ITEM_MULTIPLE = "%s + % sx%d"
+	_G.LOOT_MONEY = "|cff00a956+|r |cffffffff%s"
+	_G.YOU_LOOT_MONEY = "|cff00a956+|r |cffffffff%s"
+	_G.LOOT_MONEY_SPLIT = "|cff00a956+|r |cffffffff%s"
+	_G.CURRENCY_GAINED = "|cff00a956+|r |cffffffff%s"
+	_G.CURRENCY_GAINED_MULTIPLE = "|cff00a956+|r |cffffffff%s"
+	_G.LOOT_ROLL_ALL_PASSED = "All passed on %s"
+	_G.LOOT_ROLL_PASSED_AUTO = "%s passed %s (auto)"
+	_G.LOOT_ROLL_PASSED_SELF_AUTO = "pass %s (auto)"
+	_G.LOOT_ROLL_WON = "%s wins %s"
+	_G.LOOT_ROLL_YOU_WON = "You won %s"
+	_G.LOOT_ROLL_WON_NO_SPAM_DE = "%1$s wins %3$s |cff818181(de %2$d)|r"
+	_G.LOOT_ROLL_WON_NO_SPAM_NEED = "%1$s wins %3$s |cff818181(need %2$d)|r"
+	_G.LOOT_ROLL_WON_NO_SPAM_GREED = "%1$s wins %3$s |cff818181(greed %2$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_DE = "You won %2$s |cff818181(de %1$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_NEED = "You won %2$s |cff818181(need %1$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_GREED = "You won %2$s |cff818181(greed %1$d)|r"
+
+	_G.COPPER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
+	_G.SILVER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
+	_G.GOLD_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t"
+
+	-- Chat mods
+	_G.ACHIEVEMENT_BROADCAST = "%s achieved %s!"
+	_G.BN_INLINE_TOAST_FRIEND_OFFLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has gone |cffff0000offline|r."
+	_G.BN_INLINE_TOAST_FRIEND_ONLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has come |cff00ff00online|r."
+	_G.CHAT_YOU_CHANGED_NOTICE = "|Hchannel:%d|h[%s]|h"
+	_G.ERR_SKILL_UP_SI = "%s |cff1eff00%d|r"
+	_G.FACTION_STANDING_DECREASED = "|3-7(%s) -%d"
+	_G.FACTION_STANDING_INCREASED = "|3-7(%s) +%d"
+
+	-- Chat colours
+	_G.NORMAL_QUEST_DISPLAY = "|cffffffff%s|r"
+	_G.TRIVIAL_QUEST_DISPLAY = "|cffffffff%s (low level)|r"
+
+	-- Misc
+	_G.ERR_AUCTION_SOLD_S = "|cff1eff00%s|r |cffffffffsold.|r"
+
+	if C["Chat"].OldChatNames then return end
 
 	-- Guild
 	_G.CHAT_GUILD_GET = "|Hchannel:GUILD|h[G]|h %s "

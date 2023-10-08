@@ -1,5 +1,5 @@
 local K, C = unpack(KkthnxUI)
-local module = K:NewModule("WorldMap")
+local Module = K:NewModule("WorldMap")
 
 local select, wipe, strmatch, gmatch, tinsert, pairs = select, wipe, strmatch, gmatch, tinsert, pairs
 local tonumber, format, ceil, mod = tonumber, format, ceil, mod
@@ -17,7 +17,7 @@ local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
 local currentMapID, playerCoords, cursorCoords
 
-function module:GetPlayerMapPos(mapID)
+function Module:GetPlayerMapPos(mapID)
 	if not mapID then
 		return
 	end
@@ -40,7 +40,7 @@ function module:GetPlayerMapPos(mapID)
 	return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 end
 
-function module:GetCursorCoords()
+function Module:GetCursorCoords()
 	if not WorldMapFrame.ScrollContainer:IsMouseOver() then
 		return
 	end
@@ -57,10 +57,10 @@ local function CoordsFormat(owner, none)
 	return owner .. K.MyClassColor .. text
 end
 
-function module:UpdateCoords(elapsed)
+function Module:UpdateCoords(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local cursorX, cursorY = module:GetCursorCoords()
+		local cursorX, cursorY = Module:GetCursorCoords()
 		if cursorX and cursorY then
 			cursorCoords:SetFormattedText(CoordsFormat("Cursor"), 100 * cursorX, 100 * cursorY)
 		else
@@ -70,7 +70,7 @@ function module:UpdateCoords(elapsed)
 		if not currentMapID then
 			playerCoords:SetText(CoordsFormat(PLAYER, true))
 		else
-			local x, y = module:GetPlayerMapPos(currentMapID)
+			local x, y = Module:GetPlayerMapPos(currentMapID)
 			if not x or (x == 0 and y == 0) then
 				playerCoords:SetText(CoordsFormat(PLAYER, true))
 			else
@@ -82,7 +82,7 @@ function module:UpdateCoords(elapsed)
 	end
 end
 
-function module:UpdateMapID()
+function Module:UpdateMapID()
 	if self:GetMapID() == C_Map_GetBestMapForUnit("player") then
 		currentMapID = self:GetMapID()
 	else
@@ -90,7 +90,7 @@ function module:UpdateMapID()
 	end
 end
 
-function module:SetupCoords()
+function Module:SetupCoords()
 	local coordsFrame = CreateFrame("FRAME", nil, WorldMapFrame.ScrollContainer)
 	coordsFrame:SetSize(WorldMapFrame:GetWidth(), 17)
 	coordsFrame:SetPoint("BOTTOMLEFT", 17)
@@ -104,24 +104,25 @@ function module:SetupCoords()
 	playerCoords = K.CreateFontString(coordsFrame, 13, "", "", false, "BOTTOMRIGHT", -132, 1)
 	cursorCoords = K.CreateFontString(coordsFrame, 13, "", "", false, "BOTTOMLEFT", 152, 1)
 
-	hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", module.UpdateMapID)
-	hooksecurefunc(WorldMapFrame, "OnMapChanged", module.UpdateMapID)
+	hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", Module.UpdateMapID)
+	hooksecurefunc(WorldMapFrame, "OnMapChanged", Module.UpdateMapID)
 
 	local CoordsUpdater = CreateFrame("Frame", nil, WorldMapFrame)
-	CoordsUpdater:SetScript("OnUpdate", module.UpdateCoords)
+	CoordsUpdater:SetScript("OnUpdate", Module.UpdateCoords)
 end
 
 local setMapScale = 0.8
-function module:UpdateMapScale()
-	if self.isMaximized and self:GetScale() ~= 1 then
-		self:SetScale(1)
+local MaxMapScale = 1
+function Module:UpdateMapScale()
+	if self.isMaximized and self:GetScale() ~= MaxMapScale then
+		self:SetScale(MaxMapScale)
 	elseif not self.isMaximized and self:GetScale() ~= setMapScale then
 		self:SetScale(setMapScale)
 	end
 end
 
-function module:UpdateMapAnchor()
-	module.UpdateMapScale(self)
+function Module:UpdateMapAnchor()
+	Module.UpdateMapScale(self)
 	if not self.isMaximized then
 		K.RestoreMoverFrame(self)
 	end
@@ -131,7 +132,7 @@ local function isMouseOverMap()
 	return not WorldMapFrame:IsMouseOver()
 end
 
-function module:MapFader()
+function Module:MapFader()
 	if C["WorldMap"].FadeWhenMoving then
 		PlayerMovementFrameFader.AddDeferredFrame(WorldMapFrame, 0.5, 1, 0.5, isMouseOverMap)
 	else
@@ -139,7 +140,7 @@ function module:MapFader()
 	end
 end
 
-function module:MapPartyDots()
+function Module:MapPartyDots()
 	local WorldMapUnitPin, WorldMapUnitPinSizes
 	--local partyTexture = "WhiteCircle-RaidBlips"
 	local partyTexture = "Interface\\OptionsFrame\\VoiceChat-Record"
@@ -185,7 +186,7 @@ local function RefreshFileIDsByString(str)
 	end
 end
 
-function module:MapData_RefreshOverlays(fullUpdate)
+function Module:MapData_RefreshOverlays(fullUpdate)
 	wipe(shownMapCache)
 	wipe(exploredCache)
 
@@ -285,44 +286,10 @@ function module:MapData_RefreshOverlays(fullUpdate)
 	end
 end
 
-function module:MapData_ResetTexturePool(texture)
-	texture:SetVertexColor(1, 1, 1)
-	texture:SetAlpha(1)
-	return TexturePool_HideAndClearAnchors(self, texture)
-end
+function Module:OnEnable()
 
-function module:RemoveMapFog()
-	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	bu:SetHitRectInsets(-5, -5, -5, -5)
-	bu:SetPoint("TOPRIGHT", -260, 0)
-	bu:SetSize(24, 24)
-	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
-
-	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	bu.text:SetPoint("LEFT", 24, 0)
-	bu.text:SetText("Map Reveal")
-
-	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
-		hooksecurefunc(pin, "RefreshOverlays", module.MapData_RefreshOverlays)
-		pin.overlayTexturePool.resetterFunc = module.MapData_ResetTexturePool
-	end
-
-	bu:SetScript("OnClick", function(self)
-		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = self:GetChecked()
-
-		for i = 1, #shownMapCache do
-			shownMapCache[i]:SetShown(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
-		end
-	end)
-end
-
-function module:OnEnable()
-	-- if C.db["Map"]["DisableMap"] then
-	-- 	return
-	-- end
-	if IsAddOnLoaded("Mapster") then
-		return
-	end
+	if IsAddOnLoaded("Leatrix_Maps") then return end
+	if IsAddOnLoaded("Mapster") then return end
 
 	-- Fix worldmap cursor when scaling
 	WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
@@ -349,9 +316,11 @@ function module:OnEnable()
 	K.CreateMoverFrame(WorldMapFrame, nil, true)
 	self.UpdateMapScale(WorldMapFrame)
 	WorldMapFrame:HookScript("OnShow", self.UpdateMapAnchor)
+	-- WorldMapFrame:HookScript(WorldMapFrame, "SynchronizeDisplayState", self.UpdateMapAnchor) 
 
 	-- Default elements
-	WorldMapFrame.BlackoutFrame:Hide()
+	WorldMapFrame.BlackoutFrame:SetAlpha(0)
+	WorldMapFrame.BlackoutFrame:EnableMouse(false)
 	WorldMapFrame:SetFrameStrata("MEDIUM")
 	WorldMapFrame.BorderFrame:SetFrameStrata("MEDIUM")
 	WorldMapFrame.BorderFrame:SetFrameLevel(1)
@@ -359,16 +328,13 @@ function module:OnEnable()
 	WorldMapFrame:SetAttribute("UIPanelLayout-enabled", false)
 	WorldMapFrame:SetAttribute("UIPanelLayout-allowOtherPanels", true)
 	WorldMapFrame.HandleUserActionToggleSelf = function()
-		if WorldMapFrame:IsShown() then
-			WorldMapFrame:Hide()
-		else
-			WorldMapFrame:Show()
-		end
-	end
+		if WorldMapFrame:IsShown() then WorldMapFrame:Hide() else WorldMapFrame:Show() end end
 	tinsert(UISpecialFrames, "WorldMapFrame")
 
 	self:MapPartyDots()
 	self:SetupCoords()
 	self:MapFader()
-	self:RemoveMapFog()
+
+	self:CreateWowHeadLinks()
+	self:CreateWorldMapReveal()
 end

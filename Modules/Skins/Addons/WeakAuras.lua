@@ -5,7 +5,7 @@ local _G = _G
 local pairs = _G.pairs
 local unpack = _G.unpack
 
-local hooksecurefunc = _G.hooksecurefunc
+local x1, x2, y1, y2 = unpack(K.TexCoords)
 
 local function IconBgOnUpdate(self)
 	self:SetAlpha(self.__icon:GetAlpha())
@@ -17,7 +17,7 @@ local function UpdateIconTexCoord(icon)
 
 	local width, height = icon:GetSize()
 	if width ~= 0 and height ~= 0 then
-		local left, right, top, bottom = unpack(K.TexCoords) -- normal icon
+		local left, right, top, bottom = x1, x2, y1, y2 -- normal icon
 		local ratio = width / height
 		if ratio > 1 then -- fat icon
 			local offset = (1 - 1 / ratio) / 2
@@ -52,7 +52,7 @@ local function Skin_WeakAuras(f, fType)
 		if not f.styled then
 			f.bg = CreateFrame("Frame", nil, f.bar, "BackdropTemplate")
 			f.bg:SetAllPoints(f.bar)
-			f.bg:SetFrameLevel(f.bar:GetFrameLevel())
+			f.bg:SetFrameLevel(0)
 			f.bg:CreateBorder()
 			UpdateIconTexCoord(f.icon)
 			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
@@ -66,6 +66,7 @@ end
 
 local function ReskinWeakAuras()
 	if not C["Skins"].WeakAuras then return end
+	if not WeakAuras.regionPrototype then return end -- WA alpha version
 
 	local function OnPrototypeCreate(region)
 		Skin_WeakAuras(region, region.regionType)

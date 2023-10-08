@@ -11,24 +11,12 @@ local GetChatFontHeights = { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }
 local GetLastFont = {}
 
 local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
-	if not obj then
-		return
-	end
+	if not obj then	return end
 	obj:SetFont(font, size, style)
 
-	if sr and sg and sb then
-		obj:SetShadowColor(sr, sg, sb, sa)
-	end
-
-	if sox and soy then
-		obj:SetShadowOffset(sox, soy)
-	end
-
-	if r and g and b then
-		obj:SetTextColor(r, g, b)
-	elseif r then
-		obj:SetAlpha(r)
-	end
+	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb, sa) end
+	if sox and soy then	obj:SetShadowOffset(sox, soy) end
+	if r and g and b then obj:SetTextColor(r, g, b) elseif r then obj:SetAlpha(r) end
 end
 
 table_insert(C.defaultThemes, function()

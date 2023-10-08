@@ -2,13 +2,8 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
 function Module:ReskinTitanPanel()
-	if not C["Skins"].TitanPanel then
-		return
-	end
-
-	if not (K.CheckAddOnState("Titan")) then
-		return
-	end
+	if not C["Skins"].TitanPanel then return end
+	if not (K.CheckAddOnState("Titan")) then return end
 
 	C_Timer.After(2, function()
 		Titan_Bar__Display_Bar:StripTextures()

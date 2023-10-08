@@ -150,6 +150,7 @@ function Module:CreateMicroMenu()
 		{ "GuildMicroButton", "SocialsMicroButton", MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL") },
 		{ "LFDMicroButton", "PVPMicroButton", MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4") },
 		{ "LFDMicroButton", "LFGMicroButton", MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFG") },
+		--{"collections", "CollectionsMicroButton", MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS") },
 		{
 			"StoreMicroButton",
 			function()

@@ -359,7 +359,7 @@ local function YesTutor()
 		elseif currentPage == 4 then
 			StopSound(21968)
 			KkthnxUIDB.Variables["DBMRequest"] = true
-			KkthnxUIDB.Variables["SkadaRequest"] = true
+			--KkthnxUIDB.Variables["SkadaRequest"] = true
 			KkthnxUIDB.Variables["BWRequest"] = true
 			KkthnxUIDB.Variables["MaxDpsRequest"] = true
 			KkthnxUIDB.Variables["CursorTrailRequest"] = true

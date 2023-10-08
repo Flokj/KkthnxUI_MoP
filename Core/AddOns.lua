@@ -220,7 +220,7 @@ local function ForceDBMOptions()
 	KkthnxUIDB.Variables["DBMRequest"] = false
 end
 
--- Skada
+--[[ Skada
 local function ForceSkadaOptions()
 	if not IsAddOnLoaded("Skada") then
 		return
@@ -288,7 +288,7 @@ local function ForceSkadaOptions()
 
 	KkthnxUIDB.Variables["SkadaRequest"] = false
 end
-
+]]
 local function ForceCursorTrail()
 	if not IsAddOnLoaded("CursorTrail") then
 		return
@@ -409,9 +409,9 @@ function Module:ForceAddonSkins()
 		ForceDBMOptions()
 	end
 
-	if KkthnxUIDB.Variables["SkadaRequest"] then
+	--[[if KkthnxUIDB.Variables["SkadaRequest"] then
 		ForceSkadaOptions()
-	end
+	end]]
 
 	if KkthnxUIDB.Variables["BWRequest"] then
 		ForceBigwigs()

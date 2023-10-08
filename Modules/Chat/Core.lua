@@ -47,18 +47,9 @@ local whisperEvents = {
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
-	if instanceType == "pvp" then
-		return "/bg "
-	end
-
-	if IsInRaid() then
-		return "/ra "
-	end
-
-	if IsInGroup() then
-		return "/p "
-	end
-
+	if instanceType == "pvp" then return "/bg " end
+	if IsInRaid() then return "/ra " end
+	if IsInGroup() then return "/p " end
 	return "/s "
 end
 
@@ -138,13 +129,8 @@ end
 
 local isScaling = false
 function Module:UpdateChatSize()
-	if not C["Chat"].Lock then
-		return
-	end
-
-	if isScaling then
-		return
-	end
+	if not C["Chat"].Lock then return end
+	if isScaling then return end
 	isScaling = true
 
 	if ChatFrame1:IsMovable() then
@@ -261,57 +247,19 @@ end
 
 -- Swith channels by Tab
 local cycles = {
-	{
-		chatType = "SAY",
-		IsActive = function()
-			return true
-		end,
-	},
-	{
-		chatType = "PARTY",
-		IsActive = function()
-			return IsInGroup(LE_PARTY_CATEGORY_HOME)
-		end,
-	},
-	{
-		chatType = "RAID",
-		IsActive = function()
-			return IsInRaid(LE_PARTY_CATEGORY_HOME)
-		end,
-	},
-	{
-		chatType = "INSTANCE_CHAT",
-		IsActive = function()
-			return IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-		end,
-	},
-	{
-		chatType = "GUILD",
-		IsActive = function()
-			return IsInGuild()
-		end,
-	},
-	{
-		chatType = "OFFICER",
-		IsActive = function()
-			return C_GuildInfo_IsGuildOfficer()
-		end,
-	},
-	{
-		chatType = "CHANNEL",
-		IsActive = function(_, editbox)
-			if Module.InWorldChannel and Module.WorldChannelID then
+	{ chatType = "SAY", IsActive = function() return true end, },
+	{ chatType = "PARTY", IsActive = function() return IsInGroup(LE_PARTY_CATEGORY_HOME) end, },
+	{ chatType = "RAID", IsActive = function() return IsInRaid(LE_PARTY_CATEGORY_HOME) end, },
+	{ chatType = "INSTANCE_CHAT", IsActive = function() return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) end, },
+	{ chatType = "GUILD", IsActive = function() return IsInGuild() end, },
+	{ chatType = "OFFICER", IsActive = function() return C_GuildInfo_IsGuildOfficer() end, },
+	{ chatType = "CHANNEL", IsActive = function(_, editbox) 
+		if Module.InWorldChannel and Module.WorldChannelID then
 				editbox:SetAttribute("channelTarget", Module.WorldChannelID)
 				return true
 			end
-		end,
-	},
-	{
-		chatType = "SAY",
-		IsActive = function()
-			return true
-		end,
-	},
+		end },
+	{ chatType = "SAY", IsActive = function() return true end, },
 }
 
 -- Update editbox border color
@@ -366,17 +314,11 @@ function Module:SwitchToChannel(chatType)
 end
 
 function Module:UpdateTabChannelSwitch()
-	if not C["Chat"].Enable then
-		return
-	end
+	if not C["Chat"].Enable then return end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
-		return
-	end
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
 
-	if string_sub(self:GetText(), 1, 1) == "/" then
-		return
-	end
+	if string_sub(self:GetText(), 1, 1) == "/" then return end
 
 	local isShiftKeyDown = IsShiftKeyDown()
 	local currentType = self:GetAttribute("chatType")
@@ -408,13 +350,9 @@ hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
-	if not C["Chat"].Enable then
-		return
-	end
+	if not C["Chat"].Enable then return end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
-		return
-	end
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
 
 	if dir > 0 then
 		if IsShiftKeyDown() then
@@ -480,16 +418,29 @@ function Module:PlayWhisperSound(event, _, author)
 	if whisperEvents[event] then
 		local name = Ambiguate(author, "none")
 		local currentTime = GetTime()
-
-		if Module.MuteCache[name] == currentTime then
-			return
-		end
+		
+		if Module.MuteCache[name] == currentTime then return end
 
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
 		end
 
 		self.soundTimer = currentTime + 5
+	end
+end
+
+-- ProfanityFilter
+function Module:ToggleLanguageFilter()
+	if C["Chat"].Freedom then
+		if GetCVar("portal") == "CN" then
+			ConsoleExec("portal TW")
+		end
+		SetCVar("profanityFilter", 0)
+	else
+		if sideEffectFixed then
+			ConsoleExec("portal CN")
+		end
+		SetCVar("profanityFilter", 1)
 	end
 end
 
@@ -554,7 +505,8 @@ function Module:OnEnable()
 	Module:CreateCopyChat()
 	Module:CreateCopyURL()
 	Module:CreateEmojis()
-	Module:CreateVoiceActivity()
+	Module:CreateChatbar()
+	Module:ToggleLanguageFilter()
 
 	-- Lock chatframe
 	if C["Chat"].Lock then
@@ -562,19 +514,5 @@ function Module:OnEnable()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
 		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
 		FCF_SavePositionAndDimensions(ChatFrame1)
-	end
-
-	-- ProfanityFilter
-	if not BNFeaturesEnabledAndConnected() then
-		return
-	end
-
-	if C["Chat"].Freedom then
-		if GetCVar("portal") == "CN" then
-			ConsoleExec("portal TW")
-		end
-		SetCVar("profanityFilter", 0)
-	else
-		SetCVar("profanityFilter", 1)
 	end
 end

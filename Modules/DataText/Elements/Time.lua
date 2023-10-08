@@ -164,13 +164,8 @@ function Module:TimeOnMouseUp(btn)
 end
 
 function Module:CreateTimeDataText()
-	if not C["DataText"].Time then
-		return
-	end
-
-	if not Minimap then
-		return
-	end
+	if not C["DataText"].Time then return end
+	if not Minimap then	return end
 
 	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
 	TimeDataText:SetFrameLevel(8)

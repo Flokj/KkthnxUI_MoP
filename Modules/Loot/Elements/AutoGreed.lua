@@ -25,9 +25,7 @@ local function SetupAutoGreed(_, _, id)
 end
 
 function Module:CreateAutoGreed()
-	if not C["Loot"].AutoGreed or K.Level ~= MAX_PLAYER_LEVEL then
-		return
-	end
+	if not C["Loot"].AutoGreed or K.Level ~= MAX_PLAYER_LEVEL then return end
 
 	K:RegisterEvent("START_LOOT_ROLL", SetupAutoGreed)
 end

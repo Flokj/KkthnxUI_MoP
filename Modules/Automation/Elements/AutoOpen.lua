@@ -14,42 +14,15 @@ local atBank
 local atMail
 local atMerchant
 
-local function BankOpened()
-	atBank = true
-end
-
-local function BankClosed()
-	atBank = false
-end
-
-local function GuildBankOpened()
-	atBank = true
-end
-
-local function GuildBankClosed()
-	atBank = false
-end
-
-local function MailOpened()
-	atMail = true
-end
-
-local function MailClosed()
-	atMail = false
-end
-
-local function MerchantOpened()
-	atMerchant = true
-end
-
-local function MerchantClosed()
-	atMerchant = false
-end
-
-local function BagDelayedUpdate()
-	if atBank or atMail or atMerchant then
-		return
-	end
+local function BankOpened() atBank = true end
+local function BankClosed()	atBank = false end
+local function GuildBankOpened() atBank = true end
+local function GuildBankClosed() atBank = false end
+local function MailOpened()	atMail = true end
+local function MailClosed()	atMail = false end
+local function MerchantOpened()	atMerchant = true end
+local function MerchantClosed()	atMerchant = false end
+local function BagDelayedUpdate() if atBank or atMail or atMerchant then return	end
 
 	for bag = 0, 4 do
 		for slot = 0, GetContainerNumSlots(bag) do

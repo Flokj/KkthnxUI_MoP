@@ -17,11 +17,8 @@ local function SetupAutoConfirm()
 end
 
 function Module:CreateAutoConfirm()
-	if not C["Loot"].AutoConfirmLoot then
-		return
-	end
+	if not C["Loot"].AutoConfirmLoot then return end
 
-	K:RegisterEvent("CONFIRM_DISENCHANT_ROLL", SetupAutoConfirm)
 	K:RegisterEvent("CONFIRM_LOOT_ROLL", SetupAutoConfirm)
 	K:RegisterEvent("LOOT_BIND_CONFIRM", SetupAutoConfirm)
 end

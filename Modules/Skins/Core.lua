@@ -15,23 +15,16 @@ function Module:RegisterSkin(addonName, func)
 end
 
 function Module:LoadSkins(list)
-	if not next(list) then
-		return
-	end
+	if not next(list) then return end
 
 	for addonName, func in pairs(list) do
 		local isLoaded, isFinished = IsAddOnLoaded(addonName)
-		if isLoaded and isFinished then
-			func()
-			list[addonName] = nil
-		end
+		if isLoaded and isFinished then func() list[addonName] = nil end
 	end
 end
 
 function Module:LoadDefaultSkins()
-	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then
-		return
-	end
+	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then return end
 
 	-- Reskin Blizzard UIs
 	for _, func in pairs(C.defaultThemes) do
@@ -39,25 +32,17 @@ function Module:LoadDefaultSkins()
 	end
 	table_wipe(C.defaultThemes)
 
-	if not C["Skins"].BlizzardFrames then
-		table_wipe(C.themes)
-	end
+	if not C["Skins"].BlizzardFrames then table_wipe(C.themes) end
 
 	Module:LoadSkins(C.themes) -- blizzard ui
 	Module:LoadSkins(C.otherSkins) -- other addons
 
 	K:RegisterEvent("ADDON_LOADED", function(_, addonName)
 		local func = C.themes[addonName]
-		if func then
-			func()
-			C.themes[addonName] = nil
-		end
+		if func then func() C.themes[addonName] = nil end
 
 		local func = C.otherSkins[addonName]
-		if func then
-			func()
-			C.otherSkins[addonName] = nil
-		end
+		if func then func() C.otherSkins[addonName] = nil end
 	end)
 end
 

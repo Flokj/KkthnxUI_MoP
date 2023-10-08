@@ -4,9 +4,7 @@ local _, C = unpack(KkthnxUI)
 local _G = _G
 
 C.themes["Blizzard_InspectUI"] = function()
-	if not C["Skins"].BlizzardFrames then
-		return
-	end
+	if not C["Skins"].BlizzardFrames then return end
 
 	-- Inspect
 	local slots = {

@@ -5,73 +5,22 @@ local _G = _G
 
 local cfgFont = K.UIFontOutline
 local cfg = {
-	icon = {
-		texCoord = K.TexCoords,
-	},
-
-	flyoutBorder = {
-		file = "",
-	},
-
-	flyoutBorderShadow = {
-		file = "",
-	},
-
-	border = {
-		file = "",
-	},
-
-	normalTexture = {
-		file = "",
-	},
-
-	flash = {
-		file = "",
-	},
-
-	cooldown = {
-		points = {
-			{ "TOPLEFT", 1, -1 },
-			{ "BOTTOMRIGHT", -1, 1 },
-		},
-	},
-
-	name = {
-		font = cfgFont,
-		points = {
-			{ "BOTTOMLEFT", 0, 0 },
-			{ "BOTTOMRIGHT", 0, 0 },
-		},
-	},
-
-	hotkey = {
-		font = cfgFont,
-		points = {
-			{ "TOPRIGHT", 0, -3 },
-			{ "TOPLEFT", 0, -3 },
-		},
-	},
-
-	count = {
-		font = cfgFont,
-		points = {
-			{ "BOTTOMRIGHT", 2, 0 },
-		},
-	},
-
-	buttonstyle = {
-		file = "",
-	},
+	icon = { texCoord = K.TexCoords, },
+	flyoutBorder = { file = "",	},
+	flyoutBorderShadow = { file = "", },
+	border = { file = "", },
+	normalTexture = { file = "", },
+	flash = { file = "", },
+	cooldown = { points = {	{ "TOPLEFT", 1, -1 }, { "BOTTOMRIGHT", -1, 1 },	}, },
+	name = { font = cfgFont, points = { { "BOTTOMLEFT", 0, 0 },	{ "BOTTOMRIGHT", 0, 0 }, },	},
+	hotkey = { font = cfgFont, points = { { "TOPRIGHT", 0, -3 }, { "TOPLEFT", 0, -3 }, }, },
+	count = { font = cfgFont, points = { { "BOTTOMRIGHT", 2, 0 }, }, },
+	buttonstyle = {	file = "", },
 }
 
 function Module:ReskinButtonForge()
-	if not C["Skins"].ButtonForge then
-		return
-	end
-
-	if not IsAddOnLoaded("ButtonForge") then
-		return
-	end
+	if not C["Skins"].ButtonForge then return end
+	if not IsAddOnLoaded("ButtonForge") then return	end
 
 	local ActionBar = K:GetModule("ActionBar")
 

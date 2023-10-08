@@ -59,8 +59,8 @@ end
 
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
+		SetCVar("nameplateOtherTopInset", 0.10)
+		SetCVar("nameplateOtherBottomInset", 0.12)
 	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
@@ -550,9 +550,7 @@ function Module:AddQuestIcon(self)
 end
 
 function Module:AddClassIcon(self)
-	if not C["Nameplate"].ClassIcon then
-		return
-	end
+	if not C["Nameplate"].ClassIcon then return	end
 
 	self.Class = CreateFrame("Frame", nil, self)
 	self.Class:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
@@ -566,9 +564,7 @@ function Module:AddClassIcon(self)
 end
 
 function Module:UpdateClassIcon(self, unit)
-	if not C["Nameplate"].ClassIcon then
-		return
-	end
+	if not C["Nameplate"].ClassIcon then return	end
 
 	local reaction = UnitReaction(unit, "player")
 	if UnitIsPlayer(unit) and (reaction and reaction <= 4) then
@@ -769,9 +765,9 @@ function Module:CreatePlates()
 	Module:CreateCastBar(self)
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
+	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
 	self.RaidTargetIndicator:SetParent(self.Health)
-	self.RaidTargetIndicator:SetSize(24, 24)
+	self.RaidTargetIndicator:SetSize(40, 40)
 
 	--[[do
 		local frame = CreateFrame("Frame", nil, self)
@@ -900,8 +896,8 @@ function Module:UpdateNameplateSize()
 
 	self.Castbar.Icon:SetSize(iconSize, iconSize)
 	self.Castbar:SetHeight(plateHeight)
-	self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
 	self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
 
 	self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
@@ -920,7 +916,6 @@ function Module:RefreshNameplats()
 end
 
 function Module:RefreshAllPlates()
-	-- Module:ResizePlayerPlate()
 	Module:RefreshNameplats()
 	Module:ResizeTargetPower()
 end
@@ -989,7 +984,7 @@ function Module:UpdatePlateByType()
 		title:Hide()
 		guild:Hide()
 
-		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
+		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
 
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)

@@ -111,7 +111,7 @@ function Module:CreateTarget()
 			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			Portrait:CreateBorder()
 
 			self.Portrait = Portrait
@@ -119,7 +119,7 @@ function Module:CreateTarget()
 			local Portrait = Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 			Portrait.Border = CreateFrame("Frame", nil, self)
 			Portrait.Border:SetAllPoints(Portrait)
@@ -262,7 +262,7 @@ function Module:CreateTarget()
 	else
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
 	end
-	RaidTargetIndicator:SetSize(20, 20)
+	RaidTargetIndicator:SetSize(24, 24)
 
 	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
