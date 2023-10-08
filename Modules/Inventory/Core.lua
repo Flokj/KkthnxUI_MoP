@@ -916,7 +916,6 @@ function Module:OnEnable()
 	-- Settings
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
-	local showBindOnEquip = C["Inventory"].BagsBindOnEquip
 	local showNewItem = C["Inventory"].ShowNewItem
 	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")
@@ -1173,16 +1172,6 @@ function Module:OnEnable()
 				local color = K.QualityColors[item.quality]
 				self.iLvl:SetText(level)
 				self.iLvl:SetTextColor(color.r, color.g, color.b)
-			end
-		end
-
-		self.bindType:SetText("")
-		if showBindOnEquip then
-			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if not item.bound and (BoE or BoU) and (item.quality and item.quality > LE_ITEM_QUALITY_COMMON) then
-				local color = K.QualityColors[item.quality]
-				self.bindType:SetText(BoE and "BoE" or "BoU") -- Local these asap
-				self.bindType:SetTextColor(color.r, color.g, color.b)
 			end
 		end
 

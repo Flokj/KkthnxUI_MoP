@@ -132,7 +132,6 @@ C["Inventory"] = {
 	["BagBar"] = true,
 	["BagBarMouseover"] = true,
 	["BagsItemLevel"] = true,
-	["BagsBindOnEquip"] = true,
 	["BagsPerRow"] = 6,
 	["BagsWidth"] = 10,
 	["BankPerRow"] = 10,
