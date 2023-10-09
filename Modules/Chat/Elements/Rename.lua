@@ -83,13 +83,24 @@ function Module:CreateChatRename()
 	_G.LOOT_MONEY_SPLIT = "|cff00a956+|r |cffffffff%s"
 	_G.CURRENCY_GAINED = "|cff00a956+|r |cffffffff%s"
 	_G.CURRENCY_GAINED_MULTIPLE = "|cff00a956+|r |cffffffff%s"
+	_G.LOOT_ROLL_ALL_PASSED = "All passed on %s"
+	_G.LOOT_ROLL_PASSED_AUTO = "%s passed %s (auto)"
+	_G.LOOT_ROLL_PASSED_SELF_AUTO = "pass %s (auto)"
+	_G.LOOT_ROLL_WON = "%s wins %s"
+	_G.LOOT_ROLL_YOU_WON = "You won %s"
+	_G.LOOT_ROLL_WON_NO_SPAM_DE = "%2$s wins %4$s |cff818181(\"de\" - %3$d)|r"
+	_G.LOOT_ROLL_WON_NO_SPAM_NEED = "%2$s wins %4$s |cff818181(\"need\" - %3$d)|r"
+	_G.LOOT_ROLL_WON_NO_SPAM_GREED = "%2$s wins %4$s |cff818181(\"greed\" - %3$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_DE = "You won %3$s |cff818181(\"de\" - %2$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_NEED = "You won %3$s |cff818181(\"need\" - %2$d)|r"
+	_G.LOOT_ROLL_YOU_WON_NO_SPAM_GREED = "You won %3$s |cff818181(\"greed\" - %2$d)|r"
 
 	_G.COPPER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
 	_G.SILVER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
 	_G.GOLD_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t"
 
 	-- Chat mods
-	_G.ACHIEVEMENT_BROADCAST = "%s achieved %s!"
+	_G.ACHIEVEMENT_BROADCAST = "\"%s\" achieved $a!"
 	_G.BN_INLINE_TOAST_FRIEND_OFFLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has gone |cffff0000offline|r."
 	_G.BN_INLINE_TOAST_FRIEND_ONLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has come |cff00ff00online|r."
 	_G.CHAT_YOU_CHANGED_NOTICE = "|Hchannel:%d|h[%s]|h"
@@ -102,7 +113,7 @@ function Module:CreateChatRename()
 	_G.TRIVIAL_QUEST_DISPLAY = "|cffffffff%s (low level)|r"
 
 	-- Misc
-	_G.ERR_AUCTION_SOLD_S = "|cff1eff00%s|r |cffffffffsold.|r"
+	_G.ERR_AUCTION_SOLD_S = "|cff1eff00\"%s\"|r |cffffffffsold.|r"
 
 	if C["Chat"].OldChatNames then return end
 
