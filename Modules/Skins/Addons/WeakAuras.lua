@@ -34,6 +34,10 @@ local function UpdateIconTexCoord(icon)
 	icon.isCutting = nil
 end
 
+local function ResetBGLevel(frame)
+	frame.bg:SetFrameLevel(0)
+end
+
 local function Skin_WeakAuras(f, fType)
 	if fType == "icon" then
 		if not f.styled then
@@ -52,12 +56,13 @@ local function Skin_WeakAuras(f, fType)
 		if not f.styled then
 			f.bg = CreateFrame("Frame", nil, f.bar, "BackdropTemplate")
 			f.bg:SetAllPoints(f.bar)
-			f.bg:SetFrameLevel(0)
+			f.bg:SetFrameLevel(f.bar:GetFrameLevel())
 			f.bg:CreateBorder()
-			UpdateIconTexCoord(f.icon)
-			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
 			f.iconFrame:SetAllPoints(f.icon)
 			f.iconFrame:CreateBorder()
+			UpdateIconTexCoord(f.icon)
+			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
+			hooksecurefunc(f, "SetFrameStrata", ResetBGLevel)
 
 			f.styled = true
 		end
@@ -66,18 +71,29 @@ end
 
 local function ReskinWeakAuras()
 	if not C["Skins"].WeakAuras then return end
-	if not WeakAuras.regionPrototype then return end -- WA alpha version
 
-	local function OnPrototypeCreate(region)
-		Skin_WeakAuras(region, region.regionType)
-	end
+	if WeakAuras.regionPrototype then
+		local function OnPrototypeCreate(region)
+			Skin_WeakAuras(region, region.regionType)
+		end
 
-	local function OnPrototypeModifyFinish(_, region)
-		Skin_WeakAuras(region, region.regionType)
+		local function OnPrototypeModifyFinish(_, region)
+			Skin_WeakAuras(region, region.regionType)
+		end
+
+		hooksecurefunc(WeakAuras.regionPrototype, "create", OnPrototypeCreate)
+		hooksecurefunc(WeakAuras.regionPrototype, "modifyFinish", OnPrototypeModifyFinish)
+	elseif WeakAuras.SetTextureOrAtlas then
+		hooksecurefunc(WeakAuras, "SetTextureOrAtlas", function(icon)
+			local parent = icon:GetParent()
+			if parent then
+				local region = parent.regionType and parent or parent:GetParent()
+				if region.regionType then
+					Skin_WeakAuras(region, region.regionType)
+				end
+			end
+		end)
 	end
-	
-	hooksecurefunc(WeakAuras.regionPrototype, "create", OnPrototypeCreate)
-	hooksecurefunc(WeakAuras.regionPrototype, "modifyFinish", OnPrototypeModifyFinish)
 end
 
 Module:RegisterSkin("WeakAuras", ReskinWeakAuras)
