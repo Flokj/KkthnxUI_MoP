@@ -35,7 +35,7 @@ local function UpdateIconTexCoord(icon)
 end
 
 local function ResetBGLevel(frame)
-	frame.bg:SetFrameLevel(0)
+	frame.bg:SetFrameLevel(frame.bar:GetFrameLevel())
 end
 
 local function Skin_WeakAuras(f, fType)
