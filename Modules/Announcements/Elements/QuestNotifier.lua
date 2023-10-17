@@ -42,9 +42,7 @@ local function completeText(link)
 end
 
 local function sendQuestMsg(msg)
-	if C["Announcements"].OnlyCompleteRing then
-		return
-	end
+	if C["Announcements"].OnlyCompleteRing then return end
 
 	if debugMode and K.isDeveloper then
 		print(msg)
@@ -74,13 +72,9 @@ local questMatches = {
 }
 
 function Module:FindQuestProgress(_, msg)
-	if not C["Announcements"].QuestProgress then
-		return
-	end
+	if not C["Announcements"].QuestProgress then return end
 
-	if C["Announcements"].OnlyCompleteRing then
-		return
-	end
+	if C["Announcements"].OnlyCompleteRing then return end
 
 	for _, pattern in pairs(questMatches) do
 		if string_match(msg, pattern) then

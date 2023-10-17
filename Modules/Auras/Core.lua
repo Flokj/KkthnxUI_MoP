@@ -33,18 +33,14 @@ function Module:OnEnable()
 end
 
 function Module:HideBlizBuff()
-	if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then
-		return
-	end
+	if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then return end
 
 	K.HideInterfaceOption(_G.BuffFrame)
 	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
 end
 
 function Module:BuildBuffFrame()
-	if not C["Auras"].Enable then
-		return
-	end
+	if not C["Auras"].Enable then return end
 
 	-- Config
 	Module.settings = {

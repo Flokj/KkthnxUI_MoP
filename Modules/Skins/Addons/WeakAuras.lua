@@ -66,6 +66,8 @@ local function Skin_WeakAuras(f, fType)
 
 			f.styled = true
 		end
+
+		f.iconFrame:SetShown(not not f.iconVisible)
 	end
 end
 

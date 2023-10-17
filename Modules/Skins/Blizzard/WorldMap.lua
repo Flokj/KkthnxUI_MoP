@@ -5,7 +5,7 @@ local table_insert = _G.table.insert
 
 tinsert(C.defaultThemes, function()
 
-	local WorldMapFrame = _G.WorldMapFrame
+	--[[local WorldMapFrame = _G.WorldMapFrame
 	
 	-- Hide border frame
 	WorldMapFrame.BorderFrame:Hide()
@@ -36,5 +36,5 @@ tinsert(C.defaultThemes, function()
 	local border = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 	border:SetPoint("TOPLEFT", 6, -6)
 	border:SetPoint("BOTTOMRIGHT", -6, 6)
-	border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 24 or nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
+	border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 24 or nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)]]
 end)

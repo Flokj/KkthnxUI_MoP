@@ -25,9 +25,7 @@ local function SetupResetInstance(_, text)
 end
 
 function Module:CreateResetInstance()
-	if not C["Announcements"].ResetInstance then
-		return
-	end
+	if not C["Announcements"].ResetInstance then return end
 
 	K:RegisterEvent("CHAT_MSG_SYSTEM", SetupResetInstance)
 end

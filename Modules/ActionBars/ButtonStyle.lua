@@ -32,33 +32,23 @@ local function CallButtonFunctionByName(button, func, ...)
 end
 
 local function ResetNormalTexture(self, file)
-	if not self.__normalTextureFile then
-		return
-	end
+	if not self.__normalTextureFile then return end
 
-	if file == self.__normalTextureFile then
-		return
-	end
+	if file == self.__normalTextureFile then return end
 
 	self:SetNormalTexture(self.__normalTextureFile)
 end
 
 local function ResetTexture(self, file)
-	if not self.__textureFile then
-		return
-	end
+	if not self.__textureFile then return end
 
-	if file == self.__textureFile then
-		return
-	end
+	if file == self.__textureFile then return end
 
 	self:SetTexture(self.__textureFile)
 end
 
 local function ResetVertexColor(self, r, g, b, a)
-	if not self.__vertexColor then
-		return
-	end
+	if not self.__vertexColor then return end
 
 	local r2, g2, b2, a2 = unpack(self.__vertexColor)
 	if not a2 then
@@ -71,9 +61,7 @@ local function ResetVertexColor(self, r, g, b, a)
 end
 
 local function ApplyPoints(self, points)
-	if not points then
-		return
-	end
+	if not points then return end
 
 	self:ClearAllPoints()
 	for _, point in next, points do
@@ -82,17 +70,13 @@ local function ApplyPoints(self, points)
 end
 
 local function ApplyTexCoord(texture, texCoord)
-	if texture.__lockdown or not texCoord then
-		return
-	end
+	if texture.__lockdown or not texCoord then return end
 
 	texture:SetTexCoord(unpack(texCoord))
 end
 
 local function ApplyVertexColor(texture, color)
-	if not color then
-		return
-	end
+	if not color then return end
 
 	texture.__vertexColor = color
 	texture:SetVertexColor(unpack(color))
@@ -100,41 +84,31 @@ local function ApplyVertexColor(texture, color)
 end
 
 local function ApplyAlpha(region, alpha)
-	if not alpha then
-		return
-	end
+	if not alpha then return end
 
 	region:SetAlpha(alpha)
 end
 
 local function ApplyFont(fontString, font)
-	if not font then
-		return
-	end
+	if not font then return end
 
 	fontString:SetFontObject(font)
 end
 
 local function ApplyHorizontalAlign(fontString, align)
-	if not align then
-		return
-	end
+	if not align then return end
 
 	fontString:SetJustifyH(align)
 end
 
 local function ApplyVerticalAlign(fontString, align)
-	if not align then
-		return
-	end
+	if not align then return end
 
 	fontString:SetJustifyV(align)
 end
 
 local function ApplyTexture(texture, file)
-	if not file then
-		return
-	end
+	if not file then return end
 
 	texture.__textureFile = file
 	texture:SetTexture(file)
@@ -142,9 +116,7 @@ local function ApplyTexture(texture, file)
 end
 
 local function ApplyNormalTexture(button, file)
-	if not file then
-		return
-	end
+	if not file then return end
 
 	button.__normalTextureFile = file
 	button:SetNormalTexture(file)
@@ -152,9 +124,7 @@ local function ApplyNormalTexture(button, file)
 end
 
 local function SetupTexture(texture, cfg, func, button)
-	if not texture or not cfg then
-		return
-	end
+	if not texture or not cfg then return end
 
 	ApplyTexCoord(texture, cfg.texCoord)
 	ApplyPoints(texture, cfg.points)
@@ -171,9 +141,7 @@ local function SetupTexture(texture, cfg, func, button)
 end
 
 local function SetupFontString(fontString, cfg)
-	if not fontString or not cfg then
-		return
-	end
+	if not fontString or not cfg then return end
 
 	ApplyPoints(fontString, cfg.points)
 	ApplyFont(fontString, cfg.font)
@@ -183,9 +151,7 @@ local function SetupFontString(fontString, cfg)
 end
 
 local function SetupCooldown(cooldown, cfg)
-	if not cooldown or not cfg then
-		return
-	end
+	if not cooldown or not cfg then return end
 
 	ApplyPoints(cooldown, cfg.points)
 end
@@ -224,9 +190,7 @@ function Module:UpdateHotKey()
 	end
 
 	local text = hotkey:GetText()
-	if not text then
-		return
-	end
+	if not text then return end
 
 	for _, value in pairs(replaces) do
 		text = string_gsub(text, value[1], value[2])
@@ -240,9 +204,7 @@ function Module:UpdateHotKey()
 end
 
 function Module:UpdateEquipItemColor()
-	if not self.KKUI_Border then
-		return
-	end
+	if not self.KKUI_Border then return end
 
 	if IsEquippedAction(self.action) then
 		self.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
@@ -256,13 +218,9 @@ function Module:UpdateEquipItemColor()
 end
 
 function Module:StyleActionButton(button, cfg)
-	if not button then
-		return
-	end
+	if not button then return end
 
-	if button.__styled then
-		return
-	end
+	if button.__styled then return end
 
 	local buttonName = button:GetName()
 	local icon = _G[buttonName.."Icon"]
@@ -289,23 +247,15 @@ function Module:StyleActionButton(button, cfg)
 	local normal2 = button:GetNormalTexture()
 	-- Pet stuff
 	local petShine = _G[buttonName .. "Shine"]
-	if petShine then
-		petShine:SetAllPoints()
-	end
+	if petShine then petShine:SetAllPoints() end
 
 	-- Hide stuff
 	local floatingBG = _G[buttonName .. "FloatingBG"]
-	if floatingBG then
-		floatingBG:Hide()
-	end
+	if floatingBG then floatingBG:Hide() end
 
-	if NewActionTexture then
-		NewActionTexture:SetTexture(nil)
-	end
+	if NewActionTexture then NewActionTexture:SetTexture(nil) end
 
-	if flyoutArrow then
-		flyoutArrow:SetDrawLayer("OVERLAY", 5)
-	end
+	if flyoutArrow then flyoutArrow:SetDrawLayer("OVERLAY", 5) end
 	if normal then
 		normal:SetTexture()
 		normal:Hide()
@@ -376,9 +326,7 @@ end
 
 function Module:StyleExtraActionButton(cfg)
 	local button = ExtraActionButton1
-	if button.__styled then
-		return
-	end
+	if button.__styled then return end
 
 	local buttonName = button:GetName()
 	local icon = _G[buttonName .. "Icon"]

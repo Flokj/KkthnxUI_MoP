@@ -155,8 +155,8 @@ function Module:CreateBoss()
 	self.Debuffs.initialAnchor = "RIGHT"
 	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.num = 5
-	self.Debuffs.iconsPerRow = 5
+	self.Debuffs.num = 3
+	self.Debuffs.iconsPerRow = 3
 
 	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 

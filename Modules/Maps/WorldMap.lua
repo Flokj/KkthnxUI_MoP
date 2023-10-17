@@ -111,8 +111,8 @@ function Module:SetupCoords()
 	CoordsUpdater:SetScript("OnUpdate", Module.UpdateCoords)
 end
 
-local setMapScale = 0.8
-local MaxMapScale = 1
+local setMapScale = 1
+local MaxMapScale = 0.8
 function Module:UpdateMapScale()
 	if self.isMaximized and self:GetScale() ~= MaxMapScale then
 		self:SetScale(MaxMapScale)
@@ -123,9 +123,7 @@ end
 
 function Module:UpdateMapAnchor()
 	Module.UpdateMapScale(self)
-	if not self.isMaximized then
-		K.RestoreMoverFrame(self)
-	end
+	K.RestoreMoverFrame(self)
 end
 
 local function isMouseOverMap()

@@ -114,13 +114,9 @@ function Module:OnCreate()
 end
 
 function Module:StartTimer(start, duration, modRate)
-	if self:IsForbidden() then
-		return
-	end
+	if self:IsForbidden() then return end
 
-	if self.noCooldownCount or hideNumbers[self] then
-		return
-	end
+	if self.noCooldownCount or hideNumbers[self] then return end
 
 	local frameName = self.GetName and self:GetName()
 	if C["ActionBar"].OverrideWA and frameName and string_find(frameName, "WeakAuras") then

@@ -30,34 +30,22 @@ local function handleFrame(baseName, doNotReparent)
 		frame:UnregisterAllEvents()
 		frame:Hide()
 
-		if(not doNotReparent) then
-			frame:SetParent(hiddenParent)
-		end
+		if(not doNotReparent) then frame:SetParent(hiddenParent) end
 
 		local health = frame.healthBar or frame.healthbar
-		if(health) then
-			health:UnregisterAllEvents()
-		end
+		if(health) then health:UnregisterAllEvents() end
 
 		local power = frame.manabar
-		if(power) then
-			power:UnregisterAllEvents()
-		end
+		if(power) then power:UnregisterAllEvents() end
 
 		local spell = frame.castBar or frame.spellbar
-		if(spell) then
-			spell:UnregisterAllEvents()
-		end
+		if(spell) then spell:UnregisterAllEvents() end
 
 		local altpowerbar = frame.powerBarAlt
-		if(altpowerbar) then
-			altpowerbar:UnregisterAllEvents()
-		end
+		if(altpowerbar) then altpowerbar:UnregisterAllEvents() end
 
 		local buffFrame = frame.BuffFrame
-		if(buffFrame) then
-			buffFrame:UnregisterAllEvents()
-		end
+		if(buffFrame) then buffFrame:UnregisterAllEvents() end
 	end
 end
 
@@ -87,7 +75,7 @@ function oUF:DisableBlizzard(unit)
 		handleFrame(TargetofFocusFrame)
 	elseif(unit == 'targettarget') then
 		handleFrame(TargetFrameToT)
---[[elseif(unit:match('boss%d?$')) then
+	elseif(unit:match('boss%d?$')) then
 		local id = unit:match('boss(%d)')
 		if(id) then
 			handleFrame('Boss' .. id .. 'TargetFrame')
@@ -95,7 +83,7 @@ function oUF:DisableBlizzard(unit)
 			for i = 1, MAX_BOSS_FRAMES do
 				handleFrame(string.format('Boss%dTargetFrame', i))
 			end
-		end]]
+		end
 	elseif(unit:match('party%d?$')) then
 		local id = unit:match('party(%d)')
 		if(id) then

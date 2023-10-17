@@ -108,7 +108,7 @@ local function isItemLegendary(item)
 	return item.quality == LE_ITEM_QUALITY_LEGENDARY
 end
 
---[[local collectionBlackList = {}
+local collectionBlackList = {}
 local collectionIDs = {
 	[LE_ITEM_MISCELLANEOUS_MOUNT] = LE_ITEM_CLASS_MISCELLANEOUS,
 	[LE_ITEM_MISCELLANEOUS_COMPANION_PET] = LE_ITEM_CLASS_MISCELLANEOUS,
@@ -122,7 +122,7 @@ function isItemCollection(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterCollection then return end
 	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item)
-end]]
+end
 
 local function isItemCustom(item, index)
 	if not C["Inventory"].ItemFilter then return end

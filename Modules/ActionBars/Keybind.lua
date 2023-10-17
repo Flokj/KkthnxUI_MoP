@@ -146,9 +146,7 @@ end
 
 function Module:Bind_Update(button, spellmacro)
 	local frame = Module.keybindFrame
-	if not frame.enabled or InCombatLockdown() then
-		return
-	end
+	if not frame.enabled or InCombatLockdown() then return end
 
 	frame.button = button
 	frame.spellmacro = spellmacro
@@ -296,10 +294,7 @@ end
 
 function Module:Bind_CreateDialog()
 	local dialog = Module.keybindDialog
-	if dialog then
-		dialog:Show()
-		return
-	end
+	if dialog then dialog:Show() return end
 
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(320, 100)

@@ -17,9 +17,7 @@ local function SetupSaySapped()
 end
 
 function Module:CreateSaySappedAnnounce()
-	if not C["Announcements"].SaySapped then
-		return
-	end
+	if not C["Announcements"].SaySapped then return end
 
 	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", SetupSaySapped)
 end

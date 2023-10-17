@@ -130,9 +130,7 @@ function Module:MicroButton_Create(parent, data)
 end
 
 function Module:CreateMicroMenu()
-	if not C["ActionBar"].MicroBar then
-		return
-	end
+	if not C["ActionBar"].MicroBar then return end
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(280, 20 * 1.4)
@@ -150,15 +148,8 @@ function Module:CreateMicroMenu()
 		{ "GuildMicroButton", "SocialsMicroButton", MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL") },
 		{ "LFDMicroButton", "PVPMicroButton", MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4") },
 		{ "LFDMicroButton", "LFGMicroButton", MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFG") },
-		--{"collections", "CollectionsMicroButton", MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS") },
-		{
-			"StoreMicroButton",
-			function()
-				ToggleStoreUI()
-			end,
-			BLIZZARD_STORE,
-		},
-		{ "MainMenuMicroButton", "HelpMicroButton", MicroButtonTooltipText(HELP_BUTTON, "TOGGLEHELP") },
+		{ "CollectionsMicroButton", "CollectionsMicroButton", MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS") },
+		{ "StoreMicroButton", function() ToggleStoreUI() end, BLIZZARD_STORE},
 		{ "MainMenuMicroButton", "MainMenuMicroButton", MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU") },
 	}
 
