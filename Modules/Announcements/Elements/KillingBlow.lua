@@ -19,59 +19,12 @@ local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitGUID = _G.UnitGUID
 
 local pvpEmoteList = {
-	"ANGRY",
-	"BARK",
-	"BECKON",
-	"BITE",
-	"BONK",
-	"BURP",
-	"BYE",
-	"CACKLE",
-	"CALM",
-	"CHUCKLE",
-	"COMFORT",
-	"CRACK",
-	"CUDDLE",
-	"CURTSEY",
-	"FLEX",
-	"GIGGLE",
-	"GLOAT",
-	"GRIN",
-	"GROWL",
-	"GUFFAW",
-	"INSULT",
-	"LAUGH",
-	"LICK",
-	"MOCK",
-	"MOO",
-	"MOON",
-	"MOURN",
-	"NO",
-	"NOSEPICK",
-	"PITY",
-	"RASP",
-	"ROAR",
-	"ROFL",
-	"RUDE",
-	"SCRATCH",
-	"SHOO",
-	"SIGH",
-	"SLAP",
-	"SMIRK",
-	"SNARL",
-	"SNICKER",
-	"SNIFF",
-	"SNUB",
-	"SOOTHE",
-	"TAP",
-	"TAUNT",
-	"TEASE",
-	"THANK",
-	"THREATEN",
-	"TICKLE",
-	"VETO",
-	"VIOLIN",
-	"YAWN",
+	"ANGRY", "BARK", "BECKON", "BITE", "BONK", "BURP", "BYE", "CACKLE", "CALM", "CHUCKLE",
+	"COMFORT", "CRACK", "CUDDLE", "CURTSEY", "FLEX", "GIGGLE", "GLOAT", "GRIN", "GROWL",
+	"GUFFAW", "INSULT", "LAUGH", "LICK", "MOCK", "MOO", "MOON", "MOURN", "NO", "NOSEPICK",
+	"PITY", "RASP", "ROAR", "ROFL", "RUDE", "SCRATCH", "SHOO", "SIGH", "SLAP", "SMIRK",
+	"SNARL", "SNICKER", "SNIFF", "SNUB", "SOOTHE", "TAP", "TAUNT", "TEASE", "THANK",
+	"THREATEN", "TICKLE", "VETO", "VIOLIN", "YAWN",
 }
 
 local BG_Opponents = {}
@@ -79,9 +32,7 @@ local function SetupOpponentsTable()
 	table_wipe(BG_Opponents)
 	for index = 1, GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = GetBattlefieldScore(index)
-		if not name then
-			return
-		end
+		if not name then return end
 
 		if (K.Faction == "Horde" and faction == 1) or (K.Faction == "Alliance" and faction == 0) then
 			BG_Opponents[name] = classToken
@@ -91,9 +42,7 @@ end
 
 local function SetupKillingBlow()
 	local _, subevent, sourceGUID, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
-	if not TargetName then
-		return
-	end
+	if not TargetName then return end
 
 	if subevent == "PARTY_KILL" and sourceGUID == UnitGUID("player") then
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)

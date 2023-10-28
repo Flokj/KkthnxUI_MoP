@@ -153,9 +153,7 @@ function Module:TradeTabs_Create(spellID, tradeName)
 
 	local cover = CreateFrame("Frame", nil, tab)
 	cover:SetAllPoints()
-	if tradeName ~= "Enchanting" then
-		cover:EnableMouse(true)
-	end -- clickthru on enchant
+	if tradeName ~= "Enchanting" then cover:EnableMouse(true) end -- clickthru on enchant
 	tab.cover = cover
 
 	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -33, -70 - (index - 1) * 45)
@@ -211,7 +209,7 @@ function Module.TradeTabs_OnEvent(event, addon)
 end
 
 function Module:CreateTradeTabs()
-	 if not C["Misc"].TradeTabs then return end
+	if not C["Misc"].TradeTabs then return end
 
 	K:RegisterEvent("ADDON_LOADED", Module.TradeTabs_OnEvent)
 end

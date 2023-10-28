@@ -76,9 +76,7 @@ function Module:Bind_RegisterMacro()
 end
 
 function Module:Bind_Create()
-	if Module.keybindFrame then
-		return
-	end
+	if Module.keybindFrame then return end
 
 	local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	frame:SetFrameStrata("DIALOG")
@@ -236,9 +234,7 @@ function Module:Bind_Listener(key)
 	end
 
 	local isKeyIgnore = ignoreKeys[key]
-	if isKeyIgnore then
-		return
-	end
+	if isKeyIgnore then return end
 
 	if key == "MiddleButton" then
 		key = "BUTTON3"
@@ -267,9 +263,7 @@ function Module:Bind_HideFrame()
 	frame:ClearAllPoints()
 	frame:Hide()
 
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-	end
+	if not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 end
 
 function Module:Bind_Activate()

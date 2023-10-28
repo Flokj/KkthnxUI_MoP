@@ -80,9 +80,7 @@ local function CreateStatusContent(num, width, parent, anchorTo, content)
 end
 
 local function CloseClicked()
-	if K.StatusFrame:IsShown() then
-		K.StatusFrame:Hide()
-	end
+	if K.StatusFrame:IsShown() then K.StatusFrame:Hide() end
 end
 
 local function CreateStatusSection(width, height, headerWidth, headerHeight, parent, anchor1, anchorTo, anchor2, yOffset)
@@ -222,14 +220,7 @@ local function UpdateStatusFrame()
 end
 
 function K:ShowStatusReport()
-	if not K.StatusFrame then
-		K.StatusFrame = CreateStatusFrame()
-	end
-
-	if not K.StatusFrame:IsShown() then
-		UpdateStatusFrame()
-		K.StatusFrame:Show()
-	else
-		K.StatusFrame:Hide()
-	end
+	if not K.StatusFrame then K.StatusFrame = CreateStatusFrame() end
+	if not K.StatusFrame:IsShown() then UpdateStatusFrame() K.StatusFrame:Show()
+	else K.StatusFrame:Hide() end
 end

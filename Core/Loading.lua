@@ -69,9 +69,7 @@ local function KKUI_LoadProfiles()
 	local Nickname = K.Name
 	local Server = K.Realm
 
-	if not GUISettings then
-		return
-	end
+	if not GUISettings then return end
 
 	for Index, Table in pairs(GUISettings) do
 		local Server = Index
@@ -88,156 +86,67 @@ local function KKUI_LoadProfiles()
 end
 
 local function KKUI_VerifyDatabase()
-	if not KkthnxUIDB then
-		KkthnxUIDB = {}
-	end
+	if not KkthnxUIDB then KkthnxUIDB = {} end
 
 	-- VARIABLES
-	if not KkthnxUIDB.Variables then
-		KkthnxUIDB.Variables = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm] then
-		KkthnxUIDB.Variables[K.Realm] = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name] then
-		KkthnxUIDB.Variables[K.Realm][K.Name] = {}
-	end
-
-	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest == nil then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = false
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].BindType then
-		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = 1
-	end
+	if not KkthnxUIDB.Variables then KkthnxUIDB.Variables = {} end
+	if not KkthnxUIDB.Variables[K.Realm] then KkthnxUIDB.Variables[K.Realm] = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name] then KkthnxUIDB.Variables[K.Realm][K.Name] = {} end
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest == nil then KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = false end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].BindType then KkthnxUIDB.Variables[K.Realm][K.Name].BindType = 1 end
 
 	-- Transfer favourite items since we made a custom filter
 	if KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems and next(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) then
 		for itemID in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) do
-			if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then
-				KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {}
-			end
+			if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {} end
 			KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = 1
 		end
 		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = nil
 	end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then
-		KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {}
-	end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames then KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Mover then KkthnxUIDB.Variables[K.Realm][K.Name].Mover = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover then KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking then KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP then KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE then KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE = {} end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames then
-		KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames = {}
-	end
+	if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == nil then	KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = false end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Mover then
-		KkthnxUIDB.Variables[K.Realm][K.Name].Mover = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking then
-		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP then
-		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE then
-		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE = {}
-	end
-
-	if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == nil then
-		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = false
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
-		KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount = 1
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor then
-		KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD then
-		KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
-		end
-	end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount = 1 end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor then KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD then KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {} end
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher then 
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {} end end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
-		end
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {} end
 	end
 
 	-- Settings
-	if not KkthnxUIDB.Settings then
-		KkthnxUIDB.Settings = {}
-	end
-
-	if not KkthnxUIDB.Settings[K.Realm] then
-		KkthnxUIDB.Settings[K.Realm] = {}
-	end
-
-	if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-	end
+	if not KkthnxUIDB.Settings then KkthnxUIDB.Settings = {} end
+	if not KkthnxUIDB.Settings[K.Realm] then KkthnxUIDB.Settings[K.Realm] = {} end
+	if not KkthnxUIDB.Settings[K.Realm][K.Name] then KkthnxUIDB.Settings[K.Realm][K.Name] = {} end
 
 	-- Chat History
-	if not KkthnxUIDB.ChatHistory then
-		KkthnxUIDB.ChatHistory = {}
-	end
+	if not KkthnxUIDB.ChatHistory then KkthnxUIDB.ChatHistory = {} end
 
 	-- Gold
-	if not KkthnxUIDB.Gold then
-		KkthnxUIDB.Gold = {}
-	end
-
-	if KkthnxUIDB.ShowSlots == nil then
-		KkthnxUIDB.ShowSlots = false
-	end
-
-	if not KkthnxUIDB.ChangeLog then
-		KkthnxUIDB.ChangeLog = {}
-	end
-
-	if KkthnxUIDB.DetectVersion == nil then
-		KkthnxUIDB.DetectVersion = K.Version
-	end
-
-	if not KkthnxUIDB.KeystoneInfo then
-		KkthnxUIDB.KeystoneInfo = {}
-	end
-
-	if not KkthnxUIDB.CustomJunkList then
-		KkthnxUIDB.CustomJunkList = {}
-	end
-
-	if not KkthnxUIDB.MajorSpells then
-		KkthnxUIDB.MajorSpells = {}
-	end
+	if not KkthnxUIDB.Gold then KkthnxUIDB.Gold = {} end
+	if KkthnxUIDB.ShowSlots == nil then KkthnxUIDB.ShowSlots = false end
+	if not KkthnxUIDB.ChangeLog then KkthnxUIDB.ChangeLog = {} end
+	if KkthnxUIDB.DetectVersion == nil then KkthnxUIDB.DetectVersion = K.Version end
+	if not KkthnxUIDB.KeystoneInfo then KkthnxUIDB.KeystoneInfo = {} end
+	if not KkthnxUIDB.CustomJunkList then KkthnxUIDB.CustomJunkList = {} end
+	if not KkthnxUIDB.MajorSpells then KkthnxUIDB.MajorSpells = {} end
 end
 
 local addonLoader = CreateFrame("Frame")
 addonLoader:RegisterEvent("ADDON_LOADED")
 addonLoader:SetScript("OnEvent", function(self, _, addon)
-	if addon ~= "KkthnxUI" then
-		return
-	end
+	if addon ~= "KkthnxUI" then return end
 
 	KKUI_VerifyDatabase()
 	KKUI_CreateDefaults()

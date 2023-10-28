@@ -49,9 +49,7 @@ local frames = {
 }
 
 local function CharacterFrameMoveCheck()
-	if IsAddOnLoaded("RXPGuides") then
-		return
-	end
+	if IsAddOnLoaded("RXPGuides") then return end
 
 	frames["PetPaperDollFrameCompanionFrame"] = "CharacterFrame"
 	frames["PetPaperDollFramePetFrame"] = "CharacterFrame"
@@ -129,9 +127,7 @@ local function MouseUpHandler(frame, button)
 end
 
 local function HookScript(frame, script, handler)
-	if not frame.GetScript then
-		return
-	end
+	if not frame.GetScript then return end
 
 	local oldHandler = frame:GetScript(script)
 	if oldHandler then

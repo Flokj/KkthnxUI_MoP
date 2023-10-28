@@ -127,89 +127,31 @@ local function GetNPCID()
 end
 
 local ignoreQuestNPC = {
-	[15192] = true, -- Anachronos (Caverns of Time)
-	[3430] = true, -- Mangletooth (Blood Shard quests, Barrens)
-	[14828] = true, -- Gelvas Grimegate (Darkmoon Faire Ticket Redemption, Elwynn Forest and Mulgore)
-	[14921] = true, -- Rin'wosho the Trader (Zul'Gurub Isle, Stranglethorn Vale)
-	[18166] = true, -- Khadgar (Allegiance to Aldor/Scryer, Shattrath)
-	[18253] = true, -- Archmage Leryda (Violet Signet, Karazhan)
-
-	-- Classic escort quests
-	[467] = true, -- The Defias Traitor (The Defias Brotherhood)
-	[349] = true, -- Corporal Keeshan (Missing In Action)
-	[1379] = true, -- Miran (Protecting the Shipment)
-	[7766] = true, -- Tyrion (The Attack!)
-	[1978] = true, -- Deathstalker Erland (Escorting Erland)
-	[7784] = true, -- Homing Robot OOX-17/TN (Rescue OOX-17/TN!)
-	[2713] = true, -- Kinelory (Hints of a New Plague?)
-	[2768] = true, -- Professor Phizzlethorpe (Sunken Treasure)
-	[2610] = true, -- Shakes O'Breen (Death From Below)
-	[2917] = true, -- Prospector Remtravel (The Absent Minded Prospector)
-	[7806] = true, -- Homing Robot OOX-09/HL (Rescue OOX-09/HL!)
-	[3439] = true, -- Wizzlecrank's Shredder (The Escape)
-	[3465] = true, -- Gilthares Firebough (Free From the Hold)
-	[3568] = true, -- Mist (Mist)
-	[3584] = true, -- Therylune (Therylune's Escape)
-	[4484] = true, -- Feero Ironhand (Supplies to Auberdine)
-	[3692] = true, -- Volcor (Escape Through Force)
-	[4508] = true, -- Willix the Importer (Willix the Importer)
-	[4880] = true, -- "Stinky" Ignatz (Stinky's Escape)
-	[4983] = true, -- Ogron (Questioning Reethe)
-	[5391] = true, -- Galen Goodward (Galen's Escape)
-	[5644] = true, -- Dalinda Malem (Return to Vahlarriel)
-	[5955] = true, -- Tooga (Tooga's Quest)
-	[7780] = true, -- Rin'ji (Rin'ji is Trapped!)
-	[7807] = true, -- Homing Robot OOX-22/FE (Rescue OOX-22/FE!)
-	[7774] = true, -- Shay Leafrunner (Wandering Shay)
-	[7850] = true, -- Kernobee (A Fine Mess)
-	[8284] = true, -- Dorius Stonetender (Suntara Stones)
-	[8380] = true, -- Captain Vanessa Beltis (A Crew Under Fire)
-	[8516] = true, -- Belnistrasz (Extinguishing the Idol)
-	[9020] = true, -- Commander Gor'shak (What Is Going On?)
-	[9520] = true, -- Grark Lorkrub (Precarious Predicament)
-	[9623] = true, -- A-Me 01 (Chasing A-Me 01)
-	[9598] = true, -- Arei (Ancient Spirit)
-	[9023] = true, -- Marshal Windsor (Jail Break!)
-	[9999] = true, -- Ringo (A Little Help From My Friends)
-	[10427] = true, -- Pao'ka Swiftmountain (Homeward Bound)
-	[10300] = true, -- Ranshalla (Guardians of the Altar)
-	[10646] = true, -- Lakota Windsong (Free at Last)
-	[10638] = true, -- Kanati Greycloud (Protect Kanati Greycloud)
-	[11016] = true, -- Captured Arko'narin (Rescue From Jaedenar)
-	[11218] = true, -- Kerlonian Evershade (The Sleeper Has Awakened)
-	[11711] = true, -- Sentinel Aynasha (One Shot. One Kill.)
-	[11625] = true, -- Cork Gizelton (Bodyguard for Hire)
-	[11626] = true, -- Rigger Gizelton (Gizelton Caravan)
-	[1842] = true, -- Highlord Taelan Fordring (In Dreams)
-	[12277] = true, -- Melizza Brimbuzzle (Get Me Out of Here!)
-	[12580] = true, -- Reginald Windsor (The Great Masquerade)
-	[12818] = true, -- Ruul Snowhoof (Freedom to Ruul)
-	[11856] = true, -- Kaya Flathoof (Protect Kaya)
-	[12858] = true, -- Torek (Torek's Assault)
-	[12717] = true, -- Muglash (Vorsha the Lasher)
-	[13716] = true, -- Celebras the Redeemed (The Scepter of Celebras)
-	[19401] = true, -- Wing Commander Brack (Return to the Abyssal Shelf) (Horde)
-	[20235] = true, -- Gryphoneer Windbellow (Return to the Abyssal Shelf) (Alliance)
-
-	-- BCC escort quests
-	[16295] = true, -- Ranger Lilatha (Escape from the Catacombs)
-	[17238] = true, -- Anchorite Truuen (Tomb of the Lightbringer)
-	[17312] = true, -- Magwin (A Cry For Help)
-	[17877] = true, -- Fhwoor (Fhwoor Smash!)
-	[17969] = true, -- Kayra Longmane (Escape from Umbrafen)
-	[18210] = true, -- Mag'har Captive (The Totem of Kar'dash, Horde)
-	[18209] = true, -- Kurenai Captive (The Totem of Kar'dash, Alliance)
-	[18760] = true, -- Isla Starmane (Escape from Firewing Point!)
-	[19589] = true, -- Maxx A. Million Mk. V (Mark V is Alive!)
-	[19671] = true, -- Cryo-Engineer Sha'heen (Someone Else's Hard Work Pays Off)
-	[20281] = true, -- Drijya (Sabotage the Warp-Gate!)
-	[20415] = true, -- Bessy (When the Cows Come Home)
-	[20482] = true, -- Image of Commander Ameer (Delivering the Message)
-	[20763] = true, -- Captured Protectorate Vanguard (Escape from the Staging Grounds)
-	[21027] = true, -- Earthmender Wilda (Escape from Coilskar Cistern)
-	[22424] = true, -- Skywing (Skywing)
-	[22458] = true, -- Chief Archaeologist Letoll (Digging Through Bones)
-	[23383] = true, -- Skyguard Prisoner (Escape from Skettis)
+	[88570] = true,		-- Fate-Twister Tiklal
+	[87391] = true,		-- Fate-Twister Seress
+	[111243] = true,	-- Archmage Lan'dalock
+	[108868] = true,	-- Hunter's order hall
+	[101462] = true,	-- Reaves
+	[43929] = true,		-- 4000
+	[14847] = true,		-- DarkMoon
+	[119388] = true,	-- 酋长哈顿
+	[114719] = true,	-- 商人塞林
+	[121263] = true,	-- 大技师罗姆尔
+	[126954] = true,	-- 图拉扬
+	[124312] = true,	-- 图拉扬
+	[103792] = true,	-- 格里伏塔
+	[101880] = true,	-- 泰克泰克
+	[141584] = true,	-- 祖尔温
+	[142063] = true,	-- 特兹兰
+	[143388] = true,	-- 德鲁扎
+	[98489] = true,		-- 海难俘虏
+	[135690] = true,	-- 亡灵舰长
+	[105387] = true,	-- 安杜斯
+	[93538] = true,		-- 达瑞妮斯
+	[154534] = true,	-- 大杂院阿畅
+	[150987] = true,	-- 肖恩·维克斯，斯坦索姆
+	[150563] = true,	-- 斯卡基特，麦卡贡订单日常
+	[143555] = true,	-- 山德·希尔伯曼，祖达萨PVP军需官
 }
 
 local function GetQuestLogQuests(onlyComplete)
@@ -229,9 +171,7 @@ end
 
 QuickQuest:Register("QUEST_GREETING", function()
 	local npcID = GetNPCID()
-	if ignoreQuestNPC[npcID] then
-		return
-	end
+	if ignoreQuestNPC[npcID] then return end
 
 	local active = GetNumActiveQuests()
 	if active > 0 then
@@ -275,61 +215,37 @@ local function GetActiveGossipQuestInfo(index)
 end
 
 local ignoreGossipNPC = {
-	-- Ignore specific NPCs for selecting quests only (only used for items that have no other purpose)
-	[12944] = true, -- Lokhtos Darkbargainer (Thorium Brotherhood, Blackrock Depths)
-	[10307] = true, -- Witch Doctor Mau'ari (E'Ko quests, Winterspring)
-	-- Ahn'Qiraj War Effort (Alliance, Ironforge)
-	[15446] = true, -- Bonnie Stoneflayer (Light Leather Collector)
-	[15458] = true, -- Commander Stronghammer (Alliance Ambassador)
-	[15431] = true, -- Corporal Carnes (Iron Bar Collector)
-	[15432] = true, -- Dame Twinbraid (Thorium Bar Collector)
-	[15453] = true, -- Keeper Moonshade (Runecloth Bandage Collector)
-	[15457] = true, -- Huntress Swiftriver (Spotted Yellowtail Collector)
-	[15450] = true, -- Marta Finespindle (Thick Leather Collector)
-	[15437] = true, -- Master Nightsong (Purple Lotus Collector)
-	[15452] = true, -- Nurse Stonefield (Silk Bandage Collector)
-	[15434] = true, -- Private Draxlegauge (Stranglekelp Collector)
-	[15448] = true, -- Private Porter (Medium Leather Collector)
-	[15456] = true, -- Sarah Sadwhistle (Roast Raptor Collector)
-	[15451] = true, -- Sentinel Silversky (Linen Bandage Collector)
-	[15445] = true, -- Sergeant Major Germaine (Arthas' Tears Collector)
-	[15383] = true, -- Sergeant Stonebrow (Copper Bar Collector)
-	[15455] = true, -- Slicky Gastronome (Rainbow Fin Albacore Collector)
-	-- Ahn'Qiraj War Effort (Horde, Orgrimmar)
-	[15512] = true, -- Apothecary Jezel (Purple Lotus Collector)
-	[15508] = true, -- Batrider Pele'keiki (Firebloom Collector)
-	[15533] = true, -- Bloodguard Rawtar (Lean Wolf Steak Collector)
-	[15535] = true, -- Chief Sharpclaw (Baked Salmon Collector)
-	[15525] = true, -- Doctor Serratus (Rugged Leather Collector)
-	[15534] = true, -- Fisherman Lin'do (Spotted Yellowtail Collector)
-	[15539] = true, -- General Zog (Horde Ambassador)
-	[15460] = true, -- Grunt Maug (Tin Bar Collector)
-	[15528] = true, -- Healer Longrunner (Wool Bandage Collector)
-	[15477] = true, -- Herbalist Proudfeather (Peacebloom Collector)
-	[15529] = true, -- Lady Callow (Mageweave Bandage Collector)
-	[15459] = true, -- Miner Cromwell (Copper Bar Collector)
-	[15469] = true, -- Senior Sergeant T'kelah (Mithril Bar Collector)
-	[15522] = true, -- Sergeant Umala (Thick Leather Collector)
-	[15515] = true, -- Skinner Jamani (Heavy Leather Collector)
-	[15532] = true, -- Stoneguard Clayhoof (Runecloth Bandage Collector)
-	-- Alliance Commendations
-	[15764] = true, -- Officer Ironbeard (Ironforge Commendations)
-	[15762] = true, -- Officer Lunalight (Darnassus Commendations)
-	[15766] = true, -- Officer Maloof (Stormwind Commendations)
-	[15763] = true, -- Officer Porterhouse (Gnomeregan Commendations)
-	-- Horde Commendations
-	[15768] = true, -- Officer Gothena (Undercity Commendations)
-	[15765] = true, -- Officer Redblade (Orgrimmar Commendations)
-	[15767] = true, -- Officer Thunderstrider (Thunder Bluff Commendations)
-	[15761] = true, -- Officer Vu'Shalay (Darkspear Commendations)
-	-- Battlegrounds (Alliance)
-	[13442] = true, -- Arch Druid Renferal (Storm Crystal, Alterac Valley)
-	-- Battlegrounds (Horde)
-	[13236] = true, -- Primalist Thurloga (Stormpike Soldier's Blood, Alterac Valley)
-	-- Scourgestones
-	[11039] = true, -- Duke Nicholas Zverenhoff (Eastern Plaguelands)
-	-- Un'Goro crystals
-	[9117] = true, -- J. D. Collie (Un'Goro Crater)
+	-- Bodyguards
+	[86945] = true, -- Aeda Brightdawn (Horde)
+	[86933] = true, -- Vivianne (Horde)
+	[86927] = true, -- Delvar Ironfist (Alliance)
+	[86934] = true, -- Defender Illona (Alliance)
+	[86682] = true, -- Tormmok
+	[86964] = true, -- Leorajh
+	[86946] = true, -- Talonpriest Ishaal
+
+	-- Sassy Imps
+	[95139] = true,
+	[95141] = true,
+	[95142] = true,
+	[95143] = true,
+	[95144] = true,
+	[95145] = true,
+	[95146] = true,
+	[95200] = true,
+	[95201] = true,
+
+	-- Misc NPCs
+	[79740] = true, -- Warmaster Zog (Horde)
+	[79953] = true, -- Lieutenant Thorn (Alliance)
+	[84268] = true, -- Lieutenant Thorn (Alliance)
+	[84511] = true, -- Lieutenant Thorn (Alliance)
+	[84684] = true, -- Lieutenant Thorn (Alliance)
+	[117871] = true, -- War Councilor Victoria (Class Challenges @ Broken Shore)
+	[155101] = true, -- 元素精华融合器
+	[155261] = true, -- 肖恩·维克斯，斯坦索姆
+	[150122] = true, -- 荣耀堡法师
+	[150131] = true, -- 萨尔玛法师
 }
 
 local autoGossipTypes = {
@@ -342,9 +258,7 @@ local autoGossipTypes = {
 
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = GetNPCID()
-	if ignoreQuestNPC[npcID] then
-		return
-	end
+	if ignoreQuestNPC[npcID] then return end
 
 	local active = GetNumGossipActiveQuests()
 	if active > 0 then

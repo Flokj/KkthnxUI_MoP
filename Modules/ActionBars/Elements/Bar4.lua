@@ -14,9 +14,7 @@ local cfg = C.Bars.Bar4
 
 function Module:ToggleBarFader(name)
 	local frame = _G["KKUI_Action" .. name]
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	frame.isDisable = not C["ActionBar"][name .. "Fader"]
 	if frame.isDisable then

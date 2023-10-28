@@ -13,17 +13,17 @@ C.Bars = {
 	BarPadding = 0,
 
 	Bar1 = {
-		size = 34,
+		size = 32,
 		fader = nil,
 	},
 
 	Bar2 = {
-		size = 34,
+		size = 32,
 		fader = nil,
 	},
 
 	Bar3 = {
-		size = 34,
+		size = 32,
 		fader = nil,
 	},
 
@@ -43,7 +43,7 @@ C.Bars = {
 	},
 
 	BarPet = {
-		size = 30,
+		size = 24,
 		fader = nil,
 	},
 

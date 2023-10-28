@@ -536,7 +536,6 @@ C["Unitframe"] = {
 	["PlayerPowerPrediction"] = true,
 
 	["PvPIndicator"] = true,
-	["ResurrectSound"] = false,
 	["ShowHealPrediction"] = true,
 	["ShowPlayerLevel"] = true,
 	["Smooth"] = false,

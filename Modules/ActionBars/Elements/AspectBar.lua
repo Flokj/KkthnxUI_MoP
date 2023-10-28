@@ -98,9 +98,7 @@ function Bar:CheckKnownAspects()
 end
 
 function Bar:CheckActiveAspect(unit)
-	if unit ~= "player" then
-		return
-	end
+	if unit ~= "player" then return end
 
 	local foundAspect
 	for i = 1, 40 do
@@ -120,9 +118,7 @@ function Bar:CheckActiveAspect(unit)
 end
 
 function Bar:UpdateAspectStatus()
-	if not aspectFrame then
-		return
-	end
+	if not aspectFrame then return end
 
 	local size = C["ActionBar"].AspectSize
 	local width, height = size * numAspects + 3 * (numAspects + 1), size + 3 * 2
@@ -141,9 +137,7 @@ function Bar:UpdateAspectStatus()
 end
 
 function Bar:ToggleAspectBar()
-	if not aspectFrame then
-		return
-	end
+	if not aspectFrame then return end
 
 	if C["ActionBar"].AspectBar then
 		Bar.CheckKnownAspects()
@@ -159,9 +153,7 @@ function Bar:ToggleAspectBar()
 end
 
 function Bar:CreateAspectBar()
-	if K.Class ~= "HUNTER" then
-		return
-	end
+	if K.Class ~= "HUNTER" then return end
 
 	local size = C["ActionBar"].AspectSize or 50
 	local width, height = size * numAspects + 3 * (numAspects + 1), size + 3 * 2

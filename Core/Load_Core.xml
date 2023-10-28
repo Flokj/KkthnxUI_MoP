@@ -16,6 +16,6 @@
    <Script file="GUI.lua"/>
    <Script file="Profiles.lua"/>
    <Script file="HelpInfo.lua"/>
-   <Script file="AddOns.lua"/>
+   <!--Script file="AddOns.lua"/-->
    <Script file="StatusReport.lua"/>
 </Ui>

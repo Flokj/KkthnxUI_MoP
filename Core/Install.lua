@@ -39,84 +39,38 @@ end
 
 function Module:ResetData()
 	KkthnxUIDB.Variables[K.Realm][K.Name] = {}
-
 	FCF_ResetChatWindows()
-
-	if _G.ChatConfigFrame:IsShown() then
-		ChatConfig_UpdateChatSettings()
-	end
-
+	if _G.ChatConfigFrame:IsShown() then ChatConfig_UpdateChatSettings() end
 	Module:ForceDefaultCVars()
-
 	ReloadUI()
 end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("RotateMinimap", 0)
-	SetCVar("UberTooltips", 1)
-	SetCVar("alwaysCompareItems", 0)
 	SetCVar("autoLootDefault", 1)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
-	SetCVar("autoQuestWatch", 1)
+	SetCVar("alwaysCompareItems", 1)
 	SetCVar("autoSelfCast", 1)
-	SetCVar("buffDurations", 1)
-	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "classic")
-	SetCVar("floatingCombatTextCombatDamage", 1)
-	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
-	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
-	SetCVar("floatingCombatTextCombatHealing", 1)
-	SetCVar("floatingCombatTextFloatMode", 1)
-	SetCVar("fstack_preferParentKeys", 0)
-	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
-	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
-	SetCVar("showNPETutorials", 0)
-	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
-	SetCVar("spamFilter", 0)
-	SetCVar("speechToText", 0)
-	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("taintLog", 0)
-	SetCVar("textToSpeech", 0)
-	SetCVar("threatWarning", 3)
-	SetCVar("whisperMode", "inline")
-	SetCVar("wholeChatWindowClickable", 0)
-
+	SetCVar("ActionButtonUseKeyDown", 1)
+	SetCVar("lockActionBars", 1)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("overrideArchive", 0)
 	SetActionBarToggles(1, 1, 1, 1)
 
 	if not InCombatLockdown() then
-		SetCVar("alwaysShowActionBars", 1)
 		SetCVar("nameplateMotion", 1)
 		SetCVar("nameplateShowAll", 1)
 		SetCVar("nameplateShowEnemies", 1)
-	end
-
-	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", 25)
-		SetCVar("WorldTextScale", 1)
-		SetCVar("ffxGlow", 0)
-		SetCVar("floatingCombatTextCombatDamage", 0)
-		SetCVar("floatingCombatTextCombatHealing", 0)
+		SetCVar("alwaysShowActionBars", 1)
 	end
 end
 
 local function ForceRaidFrame()
-	if InCombatLockdown() then
-		return
-	end
-
-	if not _G.CompactUnitFrameProfiles then
-		return
-	end
-
+	if InCombatLockdown() then return end
+	if not _G.CompactUnitFrameProfiles then return end
 	SetCVar("useCompactPartyFrames", 1)
-
 	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "useClassColors", true)
 	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "displayPowerBar", true)
 	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "displayBorder", false)
@@ -228,10 +182,7 @@ end
 -- Tutorial
 local tutor
 local function YesTutor()
-	if tutor then
-		tutor:Show()
-		return
-	end
+	if tutor then tutor:Show() return end
 
 	tutor = CreateFrame("Frame", nil, UIParent)
 	tutor:SetPoint("CENTER")
@@ -364,7 +315,7 @@ local function YesTutor()
 			KkthnxUIDB.Variables["MaxDpsRequest"] = true
 			KkthnxUIDB.Variables["CursorTrailRequest"] = true
 			KkthnxUIDB.Variables["HekiliRequest"] = true
-			Module.ForceAddonSkins()
+--			Module.ForceAddonSkins()
 			UIErrorsFrame:AddMessage(K.InfoColor .. "Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 			PlaySound(21968)
@@ -387,10 +338,7 @@ end
 
 local welcome
 local function HelloWorld()
-	if welcome then
-		welcome:Show()
-		return
-	end
+	if welcome then welcome:Show() return end
 
 	welcome = CreateFrame("Frame", "KKUI_Tutorial", UIParent)
 	welcome:SetPoint("CENTER")
@@ -550,11 +498,10 @@ _G.SLASH_KKUI_INSTALLER1 = "/install"
 function Module:OnEnable()
 	print(K.Title .. " " .. K.GreyColor .. K.Version .. "|r " .. K.SystemColor .. K.Client .. "|r")
 	-- Hide options
-	K.HideInterfaceOption(_G.Display_UseUIScale)
-	K.HideInterfaceOption(_G.Display_UIScaleSlider)
+	K.HideInterfaceOption(_G.Advanced_UseUIScale)
+	K.HideInterfaceOption(_G.Advanced_UIScaleSlider)
 
 	-- Tutorial and settings
-	Module.ForceAddonSkins()
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		HelloWorld()
 	end

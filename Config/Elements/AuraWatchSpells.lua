@@ -51,13 +51,8 @@ function Module:AddNewAuraWatch(class, list)
 		end
 	end
 
-	if class ~= "ALL" and class ~= K.Class then
-		return
-	end
-
-	if not AuraWatchList[class] then
-		AuraWatchList[class] = {}
-	end
+	if class ~= "ALL" and class ~= K.Class then return end
+	if not AuraWatchList[class] then AuraWatchList[class] = {} end
 
 	for name, v in pairs(list) do
 		local direction, interval, mode, size, pos, width = unpack(groups[name])
@@ -96,7 +91,6 @@ function Module:CheckMajorSpells()
 end
 
 function Module:OnEnable()
-	-- Module:AddDeprecatedGroup()
 	C.AuraWatchList = AuraWatchList
 	Module:CheckMajorSpells()
 end

@@ -26,9 +26,7 @@ function Module:OnUpdateRange(elapsed)
 	if self.elapsed <= 0 then
 		self.elapsed = UPDATE_DELAY
 
-		if not Module:UpdateButtons() then
-			self:Hide()
-		end
+		if not Module:UpdateButtons() then self:Hide() end
 	end
 end
 updater:SetScript("OnUpdate", Module.OnUpdateRange)

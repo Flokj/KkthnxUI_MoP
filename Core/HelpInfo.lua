@@ -72,7 +72,5 @@ end
 
 Help:OnEnable()
 
-SlashCmdList["KKUI_HELP"] = function()
-	Help:Show()
-end
+SlashCmdList["KKUI_HELP"] = function() Help:Show() end
 _G.SLASH_KKUI_HELP1 = "/kkhelp"

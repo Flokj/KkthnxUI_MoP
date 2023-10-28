@@ -138,10 +138,10 @@ function Module:CreateBoss()
 	self.Buffs.initialAnchor = "TOPLEFT"
 	self.Buffs["growth-x"] = "RIGHT"
 	self.Buffs["growth-y"] = "DOWN"
-	self.Buffs.num = 6
+	self.Buffs.num = 5
 	self.Buffs.spacing = 6
-	self.Buffs.iconsPerRow = 6
-	self.Buffs.onlyShowPlayer = false
+	self.Buffs.iconsPerRow = 5
+	self.Buffs.onlyShowPlayer = true
 
 	Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
@@ -155,12 +155,12 @@ function Module:CreateBoss()
 	self.Debuffs.initialAnchor = "RIGHT"
 	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.num = 3
-	self.Debuffs.iconsPerRow = 3
+	self.Debuffs.num = 4
+	self.Debuffs.iconsPerRow = 4
 
-	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(bossWidth - 18, self.Debuffs, self.Debuffs.num)
 
-	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs.onlyShowPlayer = true
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 

@@ -47,9 +47,7 @@ function Module:UpdateStanceBar()
 end
 
 function Module:CreateStancebar()
-	if not C["ActionBar"].StanceBar then
-		return
-	end
+	if not C["ActionBar"].StanceBar then return end
 
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")

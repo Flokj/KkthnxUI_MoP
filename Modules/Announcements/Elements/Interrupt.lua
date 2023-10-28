@@ -54,42 +54,30 @@ end
 
 function Module:InterruptAlert_IsEnabled()
 	for _, value in pairs(infoType) do
-		if value then
-			return true
-		end
+		if value then return true end
 	end
 end
 
 function Module:IsAllyPet(sourceFlags)
-	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
-		return true
-	end
+	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then return true end
 end
 
 function Module:InterruptAlert_Update(...)
 	local _, eventType, _, sourceGUID, sourceName, sourceFlags, _, _, destName, _, _, spellID, _, _, extraskillID, _, _, auraType = ...
-	if not sourceGUID or sourceName == destName then
-		return
-	end
+	if not sourceGUID or sourceName == destName then return end
 
 	if UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
 		local infoText = infoType[eventType]
 		if infoText then
 			local sourceSpellID, destSpellID
 			if infoText == L["BrokenSpell"] then
-				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
-					return
-				end
+				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then return end
 				sourceSpellID, destSpellID = extraskillID, spellID
 			elseif infoText == L["Interrupt"] then
-				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
-					return
-				end
+				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then return end
 				sourceSpellID, destSpellID = spellID, extraskillID
 			else
-				if C["Announcements"].OwnDispell and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
-					return
-				end
+				if C["Announcements"].OwnDispell and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then return end
 				sourceSpellID, destSpellID = spellID, extraskillID
 			end
 

@@ -113,9 +113,7 @@ do
 	end
 
 	function K.SplitList(list, variable, cleanup)
-		if cleanup then
-			table_wipe(list)
-		end
+		if cleanup then table_wipe(list) end
 
 		for word in gmatch(variable, "%S+") do
 			word = tonumber(word) or word -- use number if exists, needs review
@@ -153,9 +151,7 @@ do
 	end
 
 	function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, y)
-		if not self then
-			return
-		end
+		if not self then return end
 
 		local fs = self:CreateFontString(nil, "OVERLAY")
 
@@ -189,9 +185,7 @@ end
 do
 	function K.ColorClass(class)
 		local color = K.ClassColors[class]
-		if not color then
-			return 1, 1, 1
-		end
+		if not color then return 1, 1, 1 end
 
 		return color.r, color.g, color.b
 	end
@@ -220,11 +214,8 @@ end
 
 do
 	function K.TogglePanel(frame)
-		if frame:IsShown() then
-			frame:Hide()
-		else
-			frame:Show()
-		end
+		if frame:IsShown() then frame:Hide()
+		else frame:Show() end
 	end
 
 	function K.GetNPCID(guid)
@@ -287,9 +278,7 @@ do
 
 	function K.InspectItemInfo(text, slotInfo)
 		local itemLevel = string_find(text, itemLevelString) and string_match(text, "(%d+)%)?$")
-		if itemLevel then
-			slotInfo.iLvl = tonumber(itemLevel)
-		end
+		if itemLevel then slotInfo.iLvl = tonumber(itemLevel) end
 
 		local enchant = string_match(text, enchantString)
 		if enchant then
@@ -387,9 +376,7 @@ do
 	function K.GetAnchors(frame)
 		local x, y = frame:GetCenter()
 
-		if not x or not y then
-			return "CENTER"
-		end
+		if not x or not y then return "CENTER" end
 
 		local hhalf = (x > UIParent:GetWidth() * 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
 		local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
@@ -398,17 +385,12 @@ do
 	end
 
 	function K.HideTooltip()
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:Hide()
 	end
 
 	local function tooltipOnEnter(self)
-		if GameTooltip:IsForbidden() then
-			return
-		end
+		if GameTooltip:IsForbidden() then return end
 
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(self))
@@ -439,9 +421,7 @@ do
 	end
 
 	function K.AddTooltip(self, anchor, text, color)
-		if not self then
-			return
-		end
+		if not self then return end
 
 		self.anchor = anchor
 		self.text = text
@@ -522,9 +502,7 @@ end
 
 do
 	function K.HideInterfaceOption(self)
-		if not self then
-			return
-		end
+		if not self then return end
 
 		self:SetAlpha(0)
 		self:SetScale(0.0001)
@@ -580,9 +558,7 @@ end
 
 do
 	function K.GetPlayerMapPos(mapID)
-		if not mapID then
-			return
-		end
+		if not mapID then return end
 
 		tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
 		if not tempVec2D.x then

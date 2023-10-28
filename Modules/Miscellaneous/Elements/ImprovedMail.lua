@@ -85,13 +85,8 @@ function Module:MailBox_CollectGold()
 end
 
 function Module:MailBox_CollectAllGold()
-	if isGoldCollecting then
-		return
-	end
-
-	if totalCash == 0 then
-		return
-	end
+	if isGoldCollecting then return end
+	if totalCash == 0 then return end
 
 	isGoldCollecting = true
 	mailIndex = GetInboxNumItems()
@@ -101,9 +96,7 @@ end
 
 function Module:TotalCash_OnEnter()
 	local numItems = GetInboxNumItems()
-	if numItems == 0 then
-		return
-	end
+	if numItems == 0 then return end
 
 	for i = 1, numItems do
 		totalCash = totalCash + select(5, GetInboxHeaderInfo(i))
@@ -207,13 +200,9 @@ function Module:ArrangeDefaultElements()
 end
 
 function Module:CreateImprovedMail()
-	if not C["Misc"].EnhancedMail then
-		return
-	end
-
-	if IsAddOnLoaded("Postal") then
-		return
-	end
+	if not C["Misc"].EnhancedMail then return end
+	
+	if IsAddOnLoaded("Postal") then return end
 
 	-- Delete buttons
 	for i = 1, 7 do

@@ -6,10 +6,7 @@ local GetSpellInfo = _G.GetSpellInfo
 
 local function SpellName(id)
 	local name = GetSpellInfo(id)
-	if name then
-		return name
-	else
-		-- stylua: ignore
+	if name then return name else
 		K.Print("|cffff0000WARNING: [BadBuffsFilter] - spell ID ["..tostring(id).."] no longer exists! Report this to Kkthnx.|r")
 		return "Empty"
 	end

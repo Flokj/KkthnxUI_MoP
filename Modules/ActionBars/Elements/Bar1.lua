@@ -15,9 +15,7 @@ local cfg = C.Bars.Bar1
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 function Module:UpdateAllScale()
-	if not C["ActionBar"].Enable then
-		return
-	end
+	if not C["ActionBar"].Enable then return end
 
 	Module:UpdateActionSize("Bar1")
 	Module:UpdateActionSize("Bar2")
@@ -43,9 +41,7 @@ end
 
 function Module:UpdateActionSize(name)
 	local frame = _G["KKUI_Action" .. name]
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local size = C["ActionBar"][name .. "Size"]
 	local fontSize = C["ActionBar"][name .. "Font"]
@@ -131,21 +127,6 @@ function Module:CreateBar1()
 	end
 
 	local actionPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
-	--[[if K.Class == "WARLOCK" then
-		actionPage = "[form:2] 10;"
-	end
-	if K.Class == "DRUID" then
-		actionPage = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
-	end
-	if K.Class == "WARRIOR" then
-		actionPage = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;"
-	end
-	if K.Class == "PRIEST" then
-		actionPage = "[bonusbar:1] 7;"
-	end
-	if K.Class == "ROGUE" then
-		actionPage = "[bonusbar:1] 7; [form:3] 7;"
-	end]]
 
 	local buttonName = "ActionButton"
 	for i, button in next, buttonList do

@@ -16,9 +16,7 @@ local function FaderOnUpdate(self)
 end
 
 local function CreateFaderAnimation(frame)
-	if frame.fader then
-		return
-	end
+	if frame.fader then return end
 
 	local animFrame = CreateFrame("Frame", nil, frame)
 	animFrame.__owner = frame
@@ -33,9 +31,7 @@ local function CreateFaderAnimation(frame)
 end
 
 function Module:StartFadeIn(frame)
-	if frame.fader.direction == "in" then
-		return
-	end
+	if frame.fader.direction == "in" then return end
 
 	frame.fader:Pause()
 	frame.fader.anim:SetFromAlpha(frame.faderConfig.fadeOutAlpha or 0)
@@ -50,9 +46,7 @@ function Module:StartFadeIn(frame)
 end
 
 function Module:StartFadeOut(frame)
-	if frame.fader.direction == "out" then
-		return
-	end
+	if frame.fader.direction == "out" then return end
 
 	frame.fader:Pause()
 	frame.fader.anim:SetFromAlpha(frame.faderConfig.fadeInAlpha or 1)
@@ -67,17 +61,12 @@ function Module:StartFadeOut(frame)
 end
 
 local function IsMouseOverFrame(frame)
-	if MouseIsOver(frame) then
-		return true
-	end
-
+	if MouseIsOver(frame) then return true end
 	return false
 end
 
 local function FrameHandler(frame)
-	if frame.isDisable then
-		return
-	end
+	if frame.isDisable then return end
 
 	if IsMouseOverFrame(frame) then
 		Module:StartFadeIn(frame)
@@ -87,17 +76,12 @@ local function FrameHandler(frame)
 end
 
 local function OffFrameHandler(self)
-	if not self.__faderParent then
-		return
-	end
-
+	if not self.__faderParent then return end
 	FrameHandler(self.__faderParent)
 end
 
 local function CreateFrameFader(frame, faderConfig)
-	if frame.faderConfig then
-		return
-	end
+	if frame.faderConfig then return end
 
 	frame.faderConfig = faderConfig
 	frame:EnableMouse(true)

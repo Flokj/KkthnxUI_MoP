@@ -224,9 +224,7 @@ local function GetILvlTextColor(level)
 end
 
 function M:UpdateUnitILvl(unit, text)
-	if not text then
-		return
-	end
+	if not text then return end
 
 	local total = 0
 	local level
@@ -333,9 +331,7 @@ local function ToggleMagicRes()
 end
 
 local function UpdateStats()
-	if not (M.StatPanel2 and M.StatPanel2:IsShown()) then
-		return
-	end
+	if not (M.StatPanel2 and M.StatPanel2:IsShown()) then return end
 
 	for _, frame in pairs(categoryFrames) do
 		SetCharacterStats(frame.statsTable, frame.category)
@@ -393,35 +389,11 @@ function M:SortAddOnPanels()
 end
 
 function M:CharacterStatePanel()
-	-- if not C.db["Skins"]["BlizzardSkins"] then
-	-- 	return
-	-- end -- disable if skins off, needs review
-
 	hasOtherAddon = IsAddOnLoaded("CharacterStatsTBC")
 
 	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "BasicFrameTemplateWithInset")
 	statPanel:SetSize(200, 422)
 	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -13 - K.Mult)
-
-	--[[statPanel.InsetBg:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.TopBorder:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.TopTileStreaks:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.TopLeftCorner:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.LeftBorder:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.BotLeftCorner:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.RightBorder:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.BotRightCorner:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderTopRight:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderTop:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderTopLeft:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderBottomRight:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderBottomLeft:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderRight:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderLeft:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.BottomBorder:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.InsetBorderBottom:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.TopRightCorner:SetVertexColor(unpack(C["General"].TexturesColor))
-	statPanel.TitleBg:SetVertexColor(unpack(C["General"].TexturesColor))]]
 
 	M.StatPanel2 = statPanel
 
@@ -477,11 +449,6 @@ function M:CharacterStatePanel()
 	local bu = CreateFrame("Button", nil, PaperDollFrame)
 	bu:SetPoint("RIGHT", CharacterFrameCloseButton, "LEFT", -3, 0)
 	K.ReskinArrow(bu, "right")
-
-	--[[statPanel.CloseButton:SetScript("OnClick", function() --- exyth
-		C["Misc"].ImprovedStats = not C["Misc"].ImprovedStats
-		ToggleStatPanel(bu.__texture)
-	end)]]
 
 	bu:SetScript("OnClick", function(self)
 		C["Misc"].ImprovedStats = not C["Misc"].ImprovedStats

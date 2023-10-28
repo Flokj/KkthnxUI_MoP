@@ -54,16 +54,12 @@ local function optOnClick(self)
 end
 
 local function optOnEnter(self)
-	if self.selected then
-		return
-	end
+	if self.selected then return end
 	self.KKUI_Background:SetVertexColor(1, 1, 1, 0.3)
 end
 
 local function optOnLeave(self)
-	if self.selected then
-		return
-	end
+	if self.selected then return end
 	self.KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
 end
 
@@ -87,9 +83,7 @@ end
 
 local function createLabel(parent, text, tip)
 	local label = K.CreateFontString(parent, 14, text, "", "system", "CENTER", 0, 25)
-	if not tip then
-		return
-	end
+	if not tip then return end
 
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetAllPoints(label)
@@ -295,10 +289,7 @@ local function auraWatchHide()
 end
 
 local function CreatePanel()
-	if f then
-		f:Show()
-		return
-	end
+	if f then f:Show() return end
 
 	-- Structure
 	f = CreateFrame("Frame", "KKUI_AuraWatchGUI", UIParent)
@@ -532,16 +523,16 @@ local function CreatePanel()
 
 	-- Main
 	local groups = {
-		L["Player Aura"], -- 1 PlayerBuff
-		L["Special Aura"], -- 2 SPECIAL
-		L["Target Aura"], -- 3 TargetDebuff
-		L["Warning"], -- 4 Warning
-		L["Focus Aura"], -- 5 FOCUS
-		L["Spell Cooldown"], -- 6 CD
-		L["Enchant Aura"], -- 7 Enchant
-		L["Raid Buff"], -- 8 RaidBuff
-		L["Raid Debuff"], -- 9 RaidDebuff
-		L["InternalCD"], -- 10 InternalCD
+		L["Player Aura"], 		-- 1 PlayerBuff
+		L["Special Aura"], 		-- 2 SPECIAL
+		L["Target Aura"], 		-- 3 TargetDebuff
+		L["Warning"], 			-- 4 Warning
+		L["Focus Aura"], 		-- 5 FOCUS
+		L["Spell Cooldown"], 	-- 6 CD
+		L["Enchant Aura"], 		-- 7 Enchant
+		L["Raid Buff"], 		-- 8 RaidBuff
+		L["Raid Debuff"], 		-- 9 RaidDebuff
+		L["InternalCD"], 		-- 10 InternalCD
 	}
 
 	local preSet = {
@@ -572,16 +563,12 @@ local function CreatePanel()
 	end
 
 	local function tabOnEnter(self)
-		if self.selected then
-			return
-		end
+		if self.selected then return end
 		self.KKUI_Background:SetVertexColor(r, g, b, 0.3)
 	end
 
 	local function tabOnLeave(self)
-		if self.selected then
-			return
-		end
+		if self.selected then return end
 		self.KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
 	end
 
@@ -633,9 +620,7 @@ local function CreatePanel()
 
 					local optionText = Option[1].Text:GetText()
 					if optionText == "AuraID" then
-						for k = 2, 10 do
-							Option[k]:Show()
-						end
+						for k = 2, 10 do Option[k]:Show() end
 						Option[3].options[preSet[i][1]]:Click()
 						if preSet[i][2] then
 							Option[4].options[1]:Click()

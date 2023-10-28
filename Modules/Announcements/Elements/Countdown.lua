@@ -1,7 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-if C["Announcements"].PullCountdown ~= true then
-	return
-end
+if C["Announcements"].PullCountdown ~= true then return end
 
 local _G = _G
 

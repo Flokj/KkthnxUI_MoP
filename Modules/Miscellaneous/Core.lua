@@ -6,7 +6,6 @@ local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 
-local BNToastFrame = _G.BNToastFrame
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
@@ -45,15 +44,14 @@ function Module:OnEnable()
 		end
 	end
 
+	Module:NakedIcon()
 	Module:CreateBlockStrangerInvites()
 	Module:CreateBossEmote()
 	Module:CreateDurabilityFrameMove()
 	Module:CreateErrorFrameToggle()
 	Module:CreateGUIGameMenuButton()
 	Module:CreateMinimapButtonToggle()
-	Module:CreateObjectiveSizeUpdate()
 	Module:CreatePetHappiness()
-	--Module:CreateQuestSizeUpdate()
 	Module:CreateTaxiDismount()
 	Module:CreateTicketStatusFrameMove()
 	Module:CreateTradeTargetInfo()
@@ -61,23 +59,6 @@ function Module:OnEnable()
 	Module:UIWidgetFrameMover()
 	Module:VehicleSeatMover()
 	C_Timer_After(0, Module.UpdateMaxCameraZoom)
-
-	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
-	if not BNToastFrame.mover then -- text, value, anchor, width, height, isAuraWatch, postDrag
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 }, BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
-	else
-		BNToastFrame.mover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight()) -- 49 -- Rounded default size?
-	end
-	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
-
-	-- Unregister talent event
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
-	end
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then
@@ -92,6 +73,11 @@ function Module:OnEnable()
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
 
+	-- Readycheck sound on master channel
+	K:RegisterEvent("READY_CHECK", function()
+		PlaySound(SOUNDKIT.READY_CHECK, "master")
+	end)
+
 	-- Instant delete
 	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
 	if deleteDialog.OnShow then
@@ -100,17 +86,28 @@ function Module:OnEnable()
 		end)
 	end
 
+	-- Fix blizz error
+	MAIN_MENU_MICRO_ALERT_PRIORITY = MAIN_MENU_MICRO_ALERT_PRIORITY or {}
+
 	-- Fix blizz bug in addon list
 	local _AddonTooltip_Update = AddonTooltip_Update
 	function AddonTooltip_Update(owner)
-		if not owner then
-			return
-		end
-
-		if owner:GetID() < 1 then
-			return
-		end
+		if not owner then return end
+		if owner:GetID() < 1 then return end
 		_AddonTooltip_Update(owner)
+	end
+
+	-- Fix MasterLooterFrame anchor issue
+	hooksecurefunc(MasterLooterFrame, "Show", function(self)
+		self:ClearAllPoints()
+	end)
+
+	-- Fix inspect error in wrath beta
+	if not InspectTalentFrameSpentPoints then
+		InspectTalentFrameSpentPoints = CreateFrame("Frame")
+	end
+	if not BrowseBidText then
+		BrowseBidText = CreateFrame("Frame")
 	end
 end
 
@@ -123,9 +120,7 @@ local petHappinessStr = {
 }
 
 local function CheckPetHappiness(_, unit)
-	if unit ~= "pet" then
-		return
-	end
+	if unit ~= "pet" then return end
 
 	local happiness = GetPetHappiness()
 	if not lastHappiness or lastHappiness ~= happiness then
@@ -141,9 +136,7 @@ local function CheckPetHappiness(_, unit)
 end
 
 function Module:CreatePetHappiness()
-	if K.Class ~= "HUNTER" then
-		return
-	end
+	if K.Class ~= "HUNTER" then return end
 
 	if C["Misc"].PetHappiness then
 		K:RegisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
@@ -156,10 +149,7 @@ end
 function Module:CreateTaxiDismount()
 	local lastTaxiIndex
 	local function retryTaxi()
-		if InCombatLockdown() then
-			return
-		end
-
+		if InCombatLockdown() then return end
 		if lastTaxiIndex then
 			TakeTaxiNode(lastTaxiIndex)
 			lastTaxiIndex = nil
@@ -167,13 +157,8 @@ function Module:CreateTaxiDismount()
 	end
 
 	hooksecurefunc("TakeTaxiNode", function(index)
-		if not C["Misc"].AutoDismount then
-			return
-		end
-
-		if not IsMounted() then
-			return
-		end
+		if not C["Misc"].AutoDismount then return end
+		if not IsMounted() then return end
 
 		Dismount()
 		lastTaxiIndex = index
@@ -277,11 +262,7 @@ function Module:CreateMinimapButtonToggle()
 
 	-- Function to toggle LibDBIcon
 	function Module:ToggleMinimapIcon()
-		if C["General"].MinimapIcon then
-			mmb:Show()
-		else
-			mmb:Hide()
-		end
+		if C["General"].MinimapIcon then mmb:Show() else mmb:Hide() end
 	end
 
 	Module:ToggleMinimapIcon()
@@ -377,17 +358,6 @@ function Module:CreateErrorFrameToggle()
 	end
 end
 
-function Module:CreateQuestSizeUpdate()
-	--QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
-	--QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
-	--QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
-end
-
-function Module:CreateObjectiveSizeUpdate()
-	ObjectiveFont:SetFontObject(K.UIFont)
-	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
-end
-
 -- TradeFrame hook
 function Module:CreateTradeTargetInfo()
 	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
@@ -424,9 +394,7 @@ do
 		button1 = YES,
 		button2 = NO,
 		OnAccept = function()
-			if not itemLink then
-				return
-			end
+			if not itemLink then return end
 			BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 			cache[itemLink] = true
 			itemLink = nil
@@ -440,22 +408,13 @@ do
 		if IsAltKeyDown() then
 			id = self:GetID()
 			itemLink = GetMerchantItemLink(id)
-			if not itemLink then
-				return
-			end
+			if not itemLink then return end
 
 			local name, _, quality, _, _, _, _, maxStack, _, texture = GetItemInfo(itemLink)
 			if maxStack and maxStack > 1 then
 				if not cache[itemLink] then
 					local r, g, b = GetItemQualityColor(quality or 1)
-					StaticPopup_Show("BUY_STACK", " ", " ", {
-						["texture"] = texture,
-						["name"] = name,
-						["color"] = { r, g, b, 1 },
-						["link"] = itemLink,
-						["index"] = id,
-						["count"] = maxStack,
-					})
+					StaticPopup_Show("BUY_STACK", " ", " ", {["texture"] = texture, ["name"] = name, ["color"] = { r, g, b, 1 }, ["link"] = itemLink, ["index"] = id, ["count"] = maxStack})
 				else
 					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 				end
@@ -466,7 +425,7 @@ do
 	end
 end
 
---[[ Fix Drag Collections taint
+-- Fix Drag Collections taint
 do
 	local done
 	local function setupMisc(event, addon)
@@ -489,9 +448,7 @@ do
 	end
 
 	K:RegisterEvent("ADDON_LOADED", setupMisc)
-
-	end
-end]]
+end
 
 -- Select target when click on raid units
 do
@@ -526,32 +483,9 @@ do
 	K:RegisterEvent("ADDON_LOADED", setupMisc)
 end
 
--- make it only split stacks with shift-rightclick if the TradeSkillFrame is open
--- shift-leftclick should be reserved for the search box
-do
-	local function hideSplitFrame(_, button)
-		if TradeSkillFrame and TradeSkillFrame:IsShown() then
-			if button == "LeftButton" then
-				StackSplitFrame:Hide()
-			end
-		end
-	end
-	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
-	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
-end
-
-do
-	local function soundOnResurrect()
-		if C["Unitframe"].ResurrectSound then
-			PlaySound("72978", "Master")
-		end
-	end
-	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)
-end
-
 function Module:CreateBlockStrangerInvites()
 	K:RegisterEvent("PARTY_INVITE_REQUEST", function(a, b, c, d, e, f, g, guid)
-		if C["Automation"].AutoBlockStrangerInvites and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
+		if C["Automation"].AutoBlockStrangerInvites and not (BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
 			_G.DeclineGroup()
 			_G.StaticPopup_Hide("PARTY_INVITE")
 			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
@@ -559,12 +493,40 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
--- Make it so we can move this
-function Module:PostBNToastMove(_, anchor)
-	if anchor ~= BNToastFrame.mover then
-		self:ClearAllPoints()
-		self:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
+-- Get Naked
+function Module:NakedIcon()
+	GearManagerToggleButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(EQUIPMENT_MANAGER, 1,1,1)
+		GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER, 1,.8,0, 1)
+		GameTooltip:AddLine("Get Naked", .6,.8,1, 1)
+		GameTooltip:Show()
+	end)
+
+	local function UnequipItemInSlot(i)
+		local action = EquipmentManager_UnequipItemInSlot(i)
+		EquipmentManager_RunAction(action)
 	end
+
+	GearManagerToggleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	GearManagerToggleButton:SetScript("OnDoubleClick", function(_, btn)
+		if btn ~= "RightButton" then return end
+		for i = 1, 18 do
+			local link = GetInventoryItemLink("player", i)
+			if link then
+				UnequipItemInSlot(i)
+			end
+		end
+	end)
+	GearManagerToggleButton:SetScript("OnClick", function(_, btn)
+		if btn ~= "LeftButton" then return end
+		if GearManagerDialog:IsShown() then
+			GearManagerDialog:Hide()
+		else
+			GearManagerDialog:Show()
+		end
+	end)
 end
 
 -- Reanchor Vehicle
@@ -600,38 +562,3 @@ end
 function Module:UpdateMaxCameraZoom()
 	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end
-
---[[ Range frame 
-local ADDON_MESSAGE_PREFIX = "RangeAddon"
-local PLAYER_NAME = UnitName("player")  -- Получаем имя вашего персонажа
-local lastRangeValue
-
--- Функция для отправки события дальности
-local function sendRangeEvent(rangeValue)
-    local message = rangeValue and "_RANGE_SET:" .. rangeValue or "_RANGE_CLEAR"
-    C_ChatInfo.SendAddonMessage(ADDON_MESSAGE_PREFIX, message, "WHISPER", PLAYER_NAME)
-end
-
--- Функция для обработки команды /range
-SLASH_RANGE1 = "/range"
-SlashCmdList["RANGE"] = function(msg)
-    local input = strtrim(msg)
-
-    if input:match("^%d+$") then
-        local rangeValue = tonumber(input)
-        lastRangeValue = rangeValue
-    elseif input == "" and lastRangeValue then
-        lastRangeValue = nil
-    elseif input == "cancel" then
-        lastRangeValue = nil
-    else
-        print("Invalid command. Use '/range X' where X is a number, or '/range cancel'.")
-        return
-    end
-    sendRangeEvent(lastRangeValue)
-end
-
--- Проверка, что DBM-Core и BigWigs не загружены
-if not IsAddOnLoaded("DBM-Core") and not IsAddOnLoaded("BigWigs") then
-    C_ChatInfo.RegisterAddonMessagePrefix(ADDON_MESSAGE_PREFIX)
-end]]

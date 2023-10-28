@@ -28,9 +28,7 @@ local inspectSlots = {
 }
 
 function M:GetSlotAnchor(index)
-	if not index then
-		return
-	end
+	if not index then return end
 
 	if index <= 5 or index == 9 or index == 15 then
 		return "BOTTOMLEFT", 40, 20
@@ -58,10 +56,6 @@ function M:CreateItemTexture(slot, relF, x, y)
 end
 
 function M:CreateColorBorder()
-	-- if C.db["Skins"]["BlizzardSkins"] then
-	-- 	return
-	-- end
-
 	local frame = CreateFrame("Frame", nil, self)
 	frame:SetAllPoints()
 
@@ -72,9 +66,7 @@ function M:CreateColorBorder()
 end
 
 function M:CreateItemString(frame, strType)
-	if frame.fontCreated then
-		return
-	end
+	if frame.fontCreated then return end
 
 	for index, slot in pairs(inspectSlots) do
 		--if index ~= 4 then	-- need color border for some shirts
@@ -104,7 +96,6 @@ function M:ItemBorderSetColor(slotFrame, r, g, b)
 	if slotFrame.colorBG then
 		slotFrame.colorBG.KKUI_Border:SetVertexColor(r, g, b)
 	end
-
 	if slotFrame.bg then
 		slotFrame.bg.KKUI_Border:SetVertexColor(r, g, b)
 	end
@@ -178,9 +169,7 @@ function M:RefreshButtonInfo()
 end
 
 function M:ItemLevel_SetupLevel(frame, strType, unit)
-	if not UnitExists(unit) then
-		return
-	end
+	if not UnitExists(unit) then return end
 
 	M:CreateItemString(frame, strType)
 
@@ -228,9 +217,7 @@ function M:ItemLevel_UpdatePlayer()
 end
 
 function M:UpdateInspectILvl()
-	if not M.InspectILvl then
-		return
-	end
+	if not M.InspectILvl then return end
 
 	M:UpdateUnitILvl(InspectFrame.unit, M.InspectILvl)
 	M.InspectILvl:SetFormattedText("iLvl %s", M.InspectILvl:GetText())
@@ -238,9 +225,7 @@ end
 
 local anchored
 local function AnchorInspectRotate()
-	if anchored then
-		return
-	end
+	if anchored then return end
 	InspectModelFrameRotateRightButton:ClearAllPoints()
 	InspectModelFrameRotateRightButton:SetPoint("BOTTOMLEFT", InspectFrameTab1, "TOPLEFT", 0, 2)
 
@@ -296,11 +281,10 @@ end
 
 function M:ItemLevel_FlyoutUpdate(id)
 	if not self.iLvl then
-		 self.iLvl = K.CreateFontString(_G[self:GetName() .. "ItemButton"], 12 + 1, "", "", false, "BOTTOMLEFT", 1, 1)
+		self.iLvl = K.CreateFontString(self, 12 + 1, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 	end
 
 	local quality, level = select(3, GetItemInfo(id))
-	if quality and quality <= 1 then return end
 	local color = K.QualityColors[quality or 0]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
@@ -308,14 +292,10 @@ function M:ItemLevel_FlyoutUpdate(id)
 end
 
 function M:ItemLevel_FlyoutSetup()
-	if self.iLvl then
-		self.iLvl:SetText("")
-	end
+	if self.iLvl then self.iLvl:SetText("") end
 
 	local location = self.location
-	if not location then
-		return
-	end
+	if not location then return end
 
 	if tonumber(location) then
 		if location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION then
@@ -329,27 +309,23 @@ function M:ItemLevel_FlyoutSetup()
 end
 
 function M:CreateSlotItemLevel()
-	if not C["Misc"].ItemLevel then
-		return
-	end
+	if not C["Misc"].ItemLevel then return end
 
 	-- iLvl on CharacterFrame
 	CharacterFrame:HookScript("OnShow", M.ItemLevel_UpdatePlayer)
 	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", M.ItemLevel_UpdatePlayer)
-	CharacterModelFrameRotateRightButton:ClearAllPoints()
-	CharacterModelFrameRotateRightButton:SetPoint("BOTTOMLEFT", CharacterFrameTab1, "TOPLEFT", 0, 2)
 
 	-- iLvl on InspectFrame
 	K:RegisterEvent("INSPECT_READY", M.ItemLevel_UpdateInspect)
 
 	-- iLvl on FlyoutButtons
---	hooksecurefunc("PaperDollFrameItemFlyout_Show", function()
-	--	for _, button in pairs(PaperDollFrameItemFlyout.buttons) do
-		--	if button:IsShown() then
-			--	M.ItemLevel_FlyoutSetup(button)
-		--	end
-	--	end
-	--end)
+	hooksecurefunc("PaperDollFrameItemFlyout_Show", function()
+		for _, button in pairs(PaperDollFrameItemFlyout.buttons) do
+			if button:IsShown() then
+				M.ItemLevel_FlyoutSetup(button)
+			end
+		end
+	end)
 
 	-- Update item quality
 	M.QualityUpdater = CreateFrame("Frame")

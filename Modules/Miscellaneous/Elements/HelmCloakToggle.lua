@@ -5,58 +5,59 @@ local Module = K:GetModule("Miscellaneous")
 function Module:CreateHelmCloakToggle()
 	if not C["Misc"].HelmCloakToggle then return end
 
-	local HelmButton
-	local CloakButton
-
-	function HelmToggle()
-		ShowHelm(not ShowingHelm())
+	local function CreateCheckbox(parent, text, showFunc, toggleFunc, pointY)
+	    local checkbox = CreateFrame("CheckButton", nil, parent, "ChatConfigCheckButtonTemplate")
+	    checkbox:SetPoint("BOTTOMLEFT", 70, 160 - pointY)
+	    checkbox:SetSize(16, 16)
+	    checkbox:SetFrameStrata("HIGH")
+	    checkbox:SkinCheckBox()
+	    checkbox:SetAlpha(0.25)
+	
+	    local checkboxText = checkbox:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+	    checkboxText:SetText(text)
+	    checkboxText:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
+	    checkbox:SetHitRectInsets(3, -checkboxText:GetStringWidth(), 0, 0)
+	
+	    checkbox:HookScript("OnEnter", function(self)
+	        UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+	    end)
+	
+	    checkbox:HookScript("OnLeave", function(self)
+	        UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+	    end)
+	
+	    checkbox:HookScript("OnClick", function(self)
+	        self:Disable()
+	        self:SetAlpha(1.0)
+	        C_Timer.After(0.5, function()
+	            toggleFunc()
+	            self:Enable()
+	            if not self:IsMouseOver() then
+	                self:SetAlpha(0.25)
+	            end
+	        end)
+	    end)
+	
+	    checkbox:HookScript("OnShow", function()
+	        checkbox:SetChecked(showFunc())
+	    end)
+	
+	    return checkbox
 	end
-
-	function CloakToggle()
-		ShowCloak(not ShowingCloak())
+	
+	local function UpdateHelm()
+	    ShowHelm(not ShowingHelm())
 	end
-
-	function CreateButton(icon_on, help, toggle, ...)
-		local button = CreateFrame("BUTTON", nil, CharacterModelFrame)
-		local hilite = button:CreateTexture(nil, "HIGHLIGHT")
-		hilite:SetAllPoints()
-		hilite:SetTexture("Interface\\Common\\UI-ModelControlPanel")
-		hilite:SetTexCoord(0.57812500, 0.82812500, 0.00781250, 0.13281250)
-		button:SetWidth(28)
-		button:SetHeight(28)
-		button:SetPoint(...)
-		button:Hide()
-		button:SetNormalTexture(icon_on)
-		button:RegisterEvent("PLAYER_FLAGS_CHANGED")
-		button:RegisterEvent("PLAYER_ENTERING_WORLD")
-		button:SetScript("OnEvent", update)
-		button:SetScript("OnClick", function()
-			toggle()
-		end)
-		button:SetScript("OnEnter", function()
-			button:SetAlpha(1)
-			GameTooltip:SetOwner(button, "ANCHOR_TOPRIGHT")
-			GameTooltip:SetText(help, nil, nil, nil, nil, 1)
-		end)
-		button:SetScript("OnLeave", function()
-			button:SetAlpha(0.5)
-			GameTooltip_Hide()
-			HelmButton:Hide()
-			CloakButton:Hide()
-		end)
-		button:SetAlpha(0.5)
-		CharacterModelFrame:HookScript("OnEnter", function()
-			button:Show()
-		end)
-		CharacterModelFrame:HookScript("OnLeave", function(self)
-			if not self:IsMouseOver() then
-				button:Hide()
-			end
-		end)
-		return button
+	
+	local function UpdateCloak()
+	    ShowCloak(not ShowingCloak())
 	end
-
-	HelmButton = CreateButton("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\HelmShow", SHOW_HELM, HelmToggle, "BOTTOMLEFT", 5, 35)
-	CloakButton = CreateButton("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloakShow", SHOW_CLOAK, CloakToggle, "BOTTOMRIGHT", -5, 35)
+	
+	local PaperDollFrame = _G["PaperDollFrame"]
+	
+	local checkboxes = {}
+	checkboxes[1] = CreateCheckbox(PaperDollFrame, "Helm", ShowingHelm, UpdateHelm, 0)
+	checkboxes[2] = CreateCheckbox(PaperDollFrame, "Cloak", ShowingCloak, UpdateCloak, 20)
 end
+
 Module:RegisterMisc("HelmCloakToggle", Module.CreateHelmCloakToggle)

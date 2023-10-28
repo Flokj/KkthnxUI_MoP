@@ -43,9 +43,7 @@ function Module:VersionCheck_Compare(new, old, author)
 end
 
 function Module:VersionCheck_Create(text)
-	if not C["General"].VersionCheck then
-		return
-	end
+	if not C["General"].VersionCheck then return end
 
 	local UIUpdateNotice = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
 	UIUpdateNotice:SetSize(420, 150)
@@ -83,11 +81,7 @@ function Module:VersionCheck_Create(text)
 	UIUpdateNotice.OkayButton:RegisterForClicks("AnyUp")
 	UIUpdateNotice.OkayButton:SetSize(420, 24)
 	UIUpdateNotice.OkayButton:SkinButton()
-	UIUpdateNotice.OkayButton:SetScript("OnClick", function()
-		if UIUpdateNotice:IsShown() then
-			UIUpdateNotice:Hide()
-		end
-	end)
+	UIUpdateNotice.OkayButton:SetScript("OnClick", function() if UIUpdateNotice:IsShown() then UIUpdateNotice:Hide() end end)
 
 	UIUpdateNotice.OkayButton.Text = UIUpdateNotice.OkayButton:CreateFontString(nil, "ARTWORK")
 	UIUpdateNotice.OkayButton.Text:SetFontObject(K.UIFont)
@@ -121,13 +115,8 @@ end
 
 function Module:VersionCheck_Update(...)
 	local prefix, msg, distType, author = ...
-	if prefix ~= "KKUIVersionCheck" then
-		return
-	end
-
-	if Ambiguate(author, "none") == K.Name then
-		return
-	end
+	if prefix ~= "KKUIVersionCheck" then return end
+	if Ambiguate(author, "none") == K.Name then return end
 
 	local status = Module:VersionCheck_Compare(msg, KkthnxUIDB.DetectVersion, author)
 	if status == "IsNew" then
@@ -140,9 +129,7 @@ function Module:VersionCheck_Update(...)
 end
 
 function Module:VersionCheck_UpdateGroup()
-	if not IsInGroup() then
-		return
-	end
+	if not IsInGroup() then return end
 
 	Module:VersionCheck_Send(K.CheckChat())
 end

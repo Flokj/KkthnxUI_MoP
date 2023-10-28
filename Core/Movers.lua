@@ -32,9 +32,7 @@ local updater
 
 function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	local key = "Mover"
-	if isAuraWatch then
-		key = "AuraWatchMover"
-	end
+	if isAuraWatch then key = "AuraWatchMover" end
 
 	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetWidth(width or self:GetWidth())
@@ -117,9 +115,7 @@ function Module:CalculateMoverPoints(mover, trimX, trimY)
 end
 
 function Module:UpdateTrimFrame()
-	if not f then
-		return
-	end
+	if not f then return end
 
 	local x, y = Module:CalculateMoverPoints(self)
 	f.__x:SetText(x)
@@ -225,9 +221,7 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 
 -- Mover Console
 local function CreateConsole()
-	if f then
-		return
-	end
+	if f then return end
 
 	f = CreateFrame("Frame", nil, UIParent)
 	f:SetPoint("CENTER", 0, 150)
@@ -400,10 +394,7 @@ local function CreateConsole()
 end
 
 _G.SlashCmdList["KKUI_MOVEUI"] = function()
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
-		return
-	end
+	if InCombatLockdown() then UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT) return end
 	CreateConsole()
 	Module:UnlockElements()
 end

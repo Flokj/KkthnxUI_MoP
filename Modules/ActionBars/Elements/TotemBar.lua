@@ -15,13 +15,8 @@ local function reskinTotemButton(button, nobg, uncut)
 	button:StyleButton()
 
 	local icon = button:GetRegions()
-	if not button.icon then
-		button.icon = icon
-	end
-
-	if not uncut then
-		icon:SetTexCoord(unpack(K.TexCoords))
-	end
+	if not button.icon then button.icon = icon end
+	if not uncut then icon:SetTexCoord(unpack(K.TexCoords)) end
 
 	if not nobg then
 		button.bg = CreateFrame("Frame", nil, button)
@@ -44,13 +39,8 @@ local function reskinTotemArrow(button, direction)
 end
 -- TODO: Add custom options
 function Bar:CreateTotemBar()
-	if K.Class ~= "SHAMAN" then
-		return
-	end
-
-	if not C["ActionBar"].TotemBar then
-		return
-	end
+	if K.Class ~= "SHAMAN" then return end
+	if not C["ActionBar"].TotemBar then return end
 
 	local margin = 6
 	local frame = CreateFrame("Frame", nil, UIParent)

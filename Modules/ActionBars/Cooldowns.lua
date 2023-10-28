@@ -115,7 +115,6 @@ end
 
 function Module:StartTimer(start, duration, modRate)
 	if self:IsForbidden() then return end
-
 	if self.noCooldownCount or hideNumbers[self] then return end
 
 	local frameName = self.GetName and self:GetName()
@@ -178,9 +177,7 @@ end
 
 local function shouldUpdateTimer(self, start)
 	local timer = self.timer
-	if not timer then
-		return true
-	end
+	if not timer then return true end
 	return timer.start ~= start
 end
 
@@ -210,13 +207,8 @@ function Module:RegisterActionButton()
 end
 
 function Module:OnEnable()
-	if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") then
-		return
-	end
-
-	if not C["ActionBar"].Cooldowns then
-		return
-	end
+	if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") then return end
+	if not C["ActionBar"].Cooldowns then return end
 
 	local cooldownIndex = getmetatable(_G.ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)

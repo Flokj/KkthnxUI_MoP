@@ -18,13 +18,9 @@ local tempVec2D = CreateVector2D(0, 0)
 local currentMapID, playerCoords, cursorCoords
 
 function Module:GetPlayerMapPos(mapID)
-	if not mapID then
-		return
-	end
+	if not mapID then return end
 	tempVec2D.x, tempVec2D.y = UnitPosition("player")
-	if not tempVec2D.x then
-		return
-	end
+	if not tempVec2D.x then return end
 
 	local mapRect = mapRects[mapID]
 	if not mapRect then
@@ -41,14 +37,10 @@ function Module:GetPlayerMapPos(mapID)
 end
 
 function Module:GetCursorCoords()
-	if not WorldMapFrame.ScrollContainer:IsMouseOver() then
-		return
-	end
+	if not WorldMapFrame.ScrollContainer:IsMouseOver() then return end
 
 	local cursorX, cursorY = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
-	if cursorX < 0 or cursorX > 1 or cursorY < 0 or cursorY > 1 then
-		return
-	end
+	if cursorX < 0 or cursorX > 1 or cursorY < 0 or cursorY > 1 then return end
 	return cursorX, cursorY
 end
 
@@ -189,15 +181,11 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 	wipe(exploredCache)
 
 	local mapID = WorldMapFrame.mapID
-	if not mapID then
-		return
-	end
+	if not mapID then return end
 
 	local mapArtID = C_Map_GetMapArtID(mapID)
 	local mapData = mapArtID and C.WorldMapPlusData[mapArtID]
-	if not mapData then
-		return
-	end
+	if not mapData then return end
 
 	local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(mapID)
 	if exploredMapTextures then
@@ -206,14 +194,10 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 		end
 	end
 
-	if not self.layerIndex then
-		self.layerIndex = WorldMapFrame.ScrollContainer:GetCurrentLayerIndex()
-	end
+	if not self.layerIndex then self.layerIndex = WorldMapFrame.ScrollContainer:GetCurrentLayerIndex() end
 	local layers = C_Map_GetMapArtLayers(mapID)
 	local layerInfo = layers and layers[self.layerIndex]
-	if not layerInfo then
-		return
-	end
+	if not layerInfo then return end
 
 	local TILE_SIZE_WIDTH = layerInfo.tileWidth
 	local TILE_SIZE_HEIGHT = layerInfo.tileHeight

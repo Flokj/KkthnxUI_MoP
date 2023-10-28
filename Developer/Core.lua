@@ -1,14 +1,10 @@
 local K = unpack(KkthnxUI)
 
 K.Devs = {
-	["Неотжал-Пламегор"] = true,
+	["Енот-Пламегор"] = true,
 }
 
-local function isDeveloper()
-	return K.Devs[K.Name .. "-" .. K.Realm]
-end
+local function isDeveloper() return K.Devs[K.Name .. "-" .. K.Realm] end
 K.isDeveloper = isDeveloper()
 
-if not K.isDeveloper then
-	return
-end
+if not K.isDeveloper then return end

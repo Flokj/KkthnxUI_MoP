@@ -68,9 +68,6 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local CI = LibStub("LibClassicInspector")
 
-local tipTable = {}
-local GameTooltip_Mover
-
 local classification = {
 	worldboss = string_format("|cffAF5050 %s|r", BOSS),
 	rareelite = string_format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
@@ -78,7 +75,6 @@ local classification = {
 	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
-local blanchyFix = "|n%s*|n" -- thanks blizz -x- lol
 
 function Module:GetUnit()
 	local _, unit = self:GetUnit()
@@ -91,10 +87,6 @@ function Module:GetUnit()
 end
 
 function Module:HideLines()
-	if self:IsForbidden() then
-		return
-	end
-
 	for i = 3, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
@@ -122,10 +114,6 @@ function Module:HideLines()
 end
 
 function Module:GetLevelLine()
-	if self:IsForbidden() then
-		return
-	end
-
 	for i = 2, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
@@ -145,42 +133,22 @@ end
 
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
-		self.factionFrame = self:CreateTexture(nil, "OVERLAY")
-		self.factionFrame:SetPoint("TOPRIGHT", 0, -4)
-		self.factionFrame:SetBlendMode("ADD")
-		self.factionFrame:SetSize(38, 38)
+		local f = self:CreateTexture(nil, "OVERLAY")
+		f:SetPoint("TOPRIGHT", 0, -4)
+		f:SetBlendMode("ADD")
+		f:SetScale(.3)
+		self.factionFrame = f
 	end
 
 	self.factionFrame:SetTexture("Interface\\Timer\\" .. faction .. "-Logo")
-	self.factionFrame:SetAlpha(0.3)
-end
-
-function Module:InsertRoleFrame(unit)
-	local role = UnitGroupRolesAssigned(unit)
-	if role ~= "NONE" then
-		if role == "HEALER" then
-			role = "|CFF00FF96" .. HEALER .. "|r"
-		elseif role == "TANK" then
-			role = "|CFF294F9C" .. TANK .. "|r"
-		elseif role == "DAMAGER" then
-			role = "|CFFC41F3D" .. DAMAGE .. "|r"
-		end
-
-		self:AddLine(string_format("%s: %s", _G.ROLE, role))
-	end
+	self.factionFrame:SetAlpha(.5)
 end
 
 function Module:OnTooltipCleared()
-	if self:IsForbidden() then
-		return
-	end
+	if self:IsForbidden() then return end
 
 	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
 		self.factionFrame:SetAlpha(0)
-	end
-
-	if self.ItemTooltip then
-		self.ItemTooltip:Hide()
 	end
 
 	GameTooltip_ClearMoney(self)
@@ -190,21 +158,14 @@ function Module:OnTooltipCleared()
 end
 
 function Module:OnTooltipSetUnit()
-	if self:IsForbidden() then
-		return
-	end
+	if self:IsForbidden() then return end
 
-	if C["Tooltip"].CombatHide and InCombatLockdown() then
-		self:Hide()
-		return
-	end
+	if C["Tooltip"].CombatHide and InCombatLockdown() then self:Hide() return end
 
 	Module.HideLines(self)
 
 	local unit = Module.GetUnit(self)
-	if not unit or not UnitExists(unit) then
-		return
-	end
+	if not unit or not UnitExists(unit) then return end
 
 	local isShiftKeyDown = IsShiftKeyDown()
 	local isPlayer = UnitIsPlayer(unit)
@@ -319,13 +280,6 @@ function Module:OnTooltipSetUnit()
     		end
     	end
 
-		if C["Tooltip"].LFDRole then
-			local role = UnitGroupRolesAssigned(unit)
-			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
-				Module.InsertRoleFrame(self, role)
-			end
-		end
-
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()
 		if guildName and hasText then
@@ -409,14 +363,10 @@ function Module:OnTooltipSetUnit()
 end
 
 function Module:StatusBar_OnValueChanged(value)
-	if self:IsForbidden() or not value then
-		return
-	end
+	if self:IsForbidden() or not value then return end
 
 	local min, max = self:GetMinMaxValues()
-	if (value < min) or (value > max) then
-		return
-	end
+	if (value < min) or (value > max) then return end
 
 	if not self.text then
 		self.text = K.CreateFontString(self, 11, nil, "")
@@ -431,10 +381,6 @@ function Module:StatusBar_OnValueChanged(value)
 end
 
 function Module:ReskinStatusBar()
-	if not self or self:IsForbidden() or not self.StatusBar then
-		return
-	end
-
 	self.StatusBar:ClearAllPoints()
 	self.StatusBar:SetPoint("BOTTOMLEFT", self.tooltipStyle, "TOPLEFT", 0, 6)
 	self.StatusBar:SetPoint("BOTTOMRIGHT", self.tooltipStyle, "TOPRIGHT", -0, 6)
@@ -444,59 +390,49 @@ function Module:ReskinStatusBar()
 end
 
 function Module:GameTooltip_ShowStatusBar()
-	if not self or self:IsForbidden() or not self.statusBarPool then
-		return
-	end
+	if not self or self:IsForbidden() then return end
+	if not self.statusBarPool then return end
 
 	local bar = self.statusBarPool:GetNextActive()
-	if (not bar or not bar.text) or bar.isStyled then
-		return
+	if bar and not bar.styled then
+		bar:StripTextures()
+		bar:CreateBorder()
+		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	
+		bar.isStyled = true
 	end
-
-	bar:StripTextures()
-	bar:CreateBorder()
-	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-
-	bar.isStyled = true
 end
 
 function Module:GameTooltip_ShowProgressBar()
-	if not self or self:IsForbidden() or not self.progressBarPool then
-		return
-	end
+	if not self or self:IsForbidden() then return end
+	if not self.progressBarPool then return end
 
 	local bar = self.progressBarPool:GetNextActive()
-	if (not bar or not bar.Bar) or bar.isStyled then
-		return
+	if bar and not bar.styled then
+		bar.Bar:StripTextures()
+		bar.Bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		bar.Bar:CreateBorder()
+
+		bar.isStyled = true
 	end
-
-	bar.Bar:StripTextures()
-	bar.Bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	bar.Bar:CreateBorder()
-
-	bar.isStyled = true
 end
 
 -- Anchor and mover
+local mover
 function Module:GameTooltip_SetDefaultAnchor(parent)
-	if self:IsForbidden() then
-		return
-	end
-
-	if not parent then
-		return
-	end
+	if self:IsForbidden() then return end
+	if not parent then return end
 
 	if C["Tooltip"].Cursor then
 		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
 	else
-		if not GameTooltip_Mover then
-			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36 }, 240, 120)
+		if not mover then
+			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36 }, 240, 120)
 		end
 
 		self:SetOwner(parent, "ANCHOR_NONE")
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMRIGHT", GameTooltip_Mover)
+		self:SetPoint("BOTTOMRIGHT", mover)
 	end
 end
 
@@ -528,15 +464,11 @@ end
 
 function Module:ReskinTooltip()
 	if not self then
-		if K.isDeveloper then
-			K.Print("Unknown tooltip spotted!")
-		end
+		if K.isDeveloper then K.Print("Unknown tooltip spotted!") end
 		return
 	end
 
-	if self:IsForbidden() then
-		return
-	end
+	if self:IsForbidden() then return end
 
 	if not self.isTipStyled then
 		self:HideBackdrop()
@@ -589,21 +521,8 @@ function Module:ResetUnit(btn)
 	end
 end
 
-function Module:FixStoneSoupError()
-	local blockTooltips = {
-		[556] = true, -- Stone Soup
-	}
-	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
-		if self:IsForbidden() and blockTooltips[self.widgetSetID] and self.Bar then
-			self.Bar.tooltip = nil
-		end
-	end)
-end
-
 function Module:OnEnable()
-	if not C["Tooltip"].Enable then
-		return
-	end
+	if not C["Tooltip"].Enable then return end
 
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
@@ -616,7 +535,6 @@ function Module:OnEnable()
 	GameTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	EmbeddedItemTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
-	Module:FixStoneSoupError()
 
 	-- Elements
 	self:CreateTargetedInfo()
@@ -626,18 +544,15 @@ function Module:OnEnable()
 end
 
 -- Tooltip Skin Registration
+local tipTable = {}
 function Module:RegisterTooltips(addon, func)
-	if not C["Tooltip"].Enable then
-		return
-	end
+	if not C["Tooltip"].Enable then return end
 
 	tipTable[addon] = func
 end
 
 local function addonStyled(_, addon)
-	if not C["Tooltip"].Enable then
-		return
-	end
+	if not C["Tooltip"].Enable then return end
 
 	if tipTable[addon] then
 		tipTable[addon]()
@@ -647,46 +562,27 @@ end
 K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
-	if not C["Tooltip"].Enable then
-		return
-	end
+	if not C["Tooltip"].Enable then return end
 
 	local tooltips = {
-		_G.AutoCompleteBox,
-		_G.BattlePetTooltip,
 		_G.ChatMenu,
-		_G.EmbeddedItemTooltip,
 		_G.EmoteMenu,
-		_G.FloatingBattlePetTooltip,
-		_G.FloatingGarrisonFollowerAbilityTooltip,
-		_G.FloatingGarrisonFollowerTooltip,
-		_G.FloatingGarrisonMissionTooltip,
-		_G.FloatingGarrisonShipyardFollowerTooltip,
-		_G.FloatingPetBattleAbilityTooltip,
-		_G.FriendsTooltip,
-		_G.GameSmallHeaderTooltip,
+		_G.LanguageMenu,
+		_G.VoiceMacroMenu,
 		_G.GameTooltip,
-		_G.GarrisonFollowerAbilityTooltip,
-		_G.GarrisonFollowerTooltip,
-		_G.GarrisonShipyardFollowerTooltip,
-		_G.GeneralDockManagerOverflowButtonList,
-		_G.IMECandidatesFrame,
+		_G.EmbeddedItemTooltip,
+		_G.ItemRefTooltip,
 		_G.ItemRefShoppingTooltip1,
 		_G.ItemRefShoppingTooltip2,
-		_G.ItemRefTooltip,
-		_G.LanguageMenu,
-		_G.NamePlateTooltip,
-		_G.PetBattlePrimaryAbilityTooltip,
-		_G.PetBattlePrimaryUnitTooltip,
-		-- _G.QuestScrollFrame.CampaignTooltip,
-		-- _G.QuestScrollFrame.StoryTooltip,
-		_G.QueueStatusFrame,
-		_G.QuickKeybindTooltip,
-		_G.ReputationParagonTooltip,
 		_G.ShoppingTooltip1,
 		_G.ShoppingTooltip2,
-		_G.VoiceMacroMenu,
-		_G.WarCampaignTooltip,
+		_G.AutoCompleteBox,
+		_G.FriendsTooltip,
+		_G.GeneralDockManagerOverflowButtonList,
+		_G.NamePlateTooltip,
+		_G.WorldMapTooltip,
+		_G.IMECandidatesFrame,
+		_G.QueueStatusFrame,
 	}
 
 	for _, f in pairs(tooltips) do
@@ -715,69 +611,26 @@ Module:RegisterTooltips("KkthnxUI", function()
 
 	-- Others
 	C_Timer_After(6, function()
-		-- BagSync
-		if BSYC_EventAlertTooltip then
-			Module.ReskinTooltip(BSYC_EventAlertTooltip)
-		end
-
 		-- Lib minimap icon
 		if LibDBIconTooltip then
 			Module.ReskinTooltip(LibDBIconTooltip)
 		end
-
 		-- TomTom
 		if TomTomTooltip then
 			Module.ReskinTooltip(TomTomTooltip)
 		end
-
 		-- RareScanner
 		if RSMapItemToolTip then
 			Module.ReskinTooltip(RSMapItemToolTip)
 		end
-
 		if LootBarToolTip then
 			Module.ReskinTooltip(LootBarToolTip)
 		end
-
-		-- Narcissus
-		if NarciGameTooltip then
-			Module.ReskinTooltip(NarciGameTooltip)
-		end
-
-		if AceGUITooltip then
-			Module.ReskinTooltip(AceGUITooltip)
-		end
-
-		if AceConfigDialogTooltip then
-			Module.ReskinTooltip(AceConfigDialogTooltip)
-		end
-
-		if TomCatsVignetteTooltip then
-			Module.ReskinTooltip(TomCatsVignetteTooltip)
+		-- Altoholic
+		if AltoTooltip then
+			Module.ReskinTooltip(AltoTooltip)
 		end
 	end)
-
-	if IsAddOnLoaded("BattlePetBreedID") then
-		hooksecurefunc("BPBID_SetBreedTooltip", function(parent)
-			if parent == FloatingBattlePetTooltip then
-				Module.ReskinTooltip(BPBID_BreedTooltip2)
-			else
-				Module.ReskinTooltip(BPBID_BreedTooltip)
-			end
-		end)
-	end
-
-	-- MDT and DT
-	if MDT and MDT.ShowInterface then
-		local isMDTStyled
-		hooksecurefunc(MDT, "ShowInterface", function()
-			if not isMDTStyled then
-				Module.ReskinTooltip(MDT.tooltip)
-				Module.ReskinTooltip(MDT.pullTooltip)
-				isMDTStyled = true
-			end
-		end)
-	end
 end)
 
 Module:RegisterTooltips("Blizzard_DebugTools", function()
@@ -789,47 +642,8 @@ Module:RegisterTooltips("Blizzard_EventTrace", function()
 	Module.ReskinTooltip(EventTraceTooltip)
 end)
 
-Module:RegisterTooltips("Blizzard_Collections", function()
-	PetJournalPrimaryAbilityTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	PetJournalSecondaryAbilityTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	PetJournalPrimaryAbilityTooltip.Delimiter1:SetHeight(1)
-	PetJournalPrimaryAbilityTooltip.Delimiter1:SetColorTexture(0, 0, 0)
-	PetJournalPrimaryAbilityTooltip.Delimiter2:SetHeight(1)
-	PetJournalPrimaryAbilityTooltip.Delimiter2:SetColorTexture(0, 0, 0)
-end)
-
-Module:RegisterTooltips("Blizzard_GarrisonUI", function()
-	local Garrison_Tooltips = {
-		GarrisonMissionMechanicTooltip,
-		GarrisonMissionMechanicFollowerCounterTooltip,
-		GarrisonShipyardMapMissionTooltip,
-		GarrisonBonusAreaTooltip,
-		GarrisonBuildingFrame.BuildingLevelTooltip,
-		GarrisonFollowerAbilityWithoutCountersTooltip,
-		GarrisonFollowerMissionAbilityWithoutCountersTooltip,
-	}
-
-	for _, f in pairs(Garrison_Tooltips) do
-		f:HookScript("OnShow", Module.ReskinTooltip)
-	end
-end)
-
-Module:RegisterTooltips("Blizzard_PVPUI", function()
-	ConquestTooltip:HookScript("OnShow", Module.ReskinTooltip)
-end)
-
-Module:RegisterTooltips("Blizzard_Contribution", function()
-	ContributionBuffTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	ContributionBuffTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	ContributionBuffTooltip.Border:SetAlpha(0)
-end)
-
-Module:RegisterTooltips("Blizzard_EncounterJournal", function()
-	EncounterJournalTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	EncounterJournalTooltip.Item1.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	EncounterJournalTooltip.Item1.IconBorder:SetAlpha(0)
-	EncounterJournalTooltip.Item2.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
+Module:RegisterTooltips("Blizzard_LookingForGroupUI", function()
+	Module.ReskinTooltip(LFGBrowseSearchEntryTooltip)
 end)
 
 Module:RegisterTooltips("Blizzard_Calendar", function()

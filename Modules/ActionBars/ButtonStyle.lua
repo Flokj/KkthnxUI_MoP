@@ -252,21 +252,10 @@ function Module:StyleActionButton(button, cfg)
 	-- Hide stuff
 	local floatingBG = _G[buttonName .. "FloatingBG"]
 	if floatingBG then floatingBG:Hide() end
-
 	if NewActionTexture then NewActionTexture:SetTexture(nil) end
-
 	if flyoutArrow then flyoutArrow:SetDrawLayer("OVERLAY", 5) end
-	if normal then
-		normal:SetTexture()
-		normal:Hide()
-		normal:SetAlpha(0)
-	end
-
-	if normal2 then
-		normal2:SetTexture()
-		normal2:Hide()
-		normal2:SetAlpha(0)
-	end
+	if normal then normal:SetTexture() normal:Hide() normal:SetAlpha(0) end
+	if normal2 then normal2:SetTexture() normal2:Hide() normal2:SetAlpha(0) end
 	-- Backdrop
 	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	button:StyleButton()
@@ -419,75 +408,15 @@ end
 function Module:CreateBarSkin()
 	local cfgFont = K.UIFontOutline
 	local cfg = {
-		icon = {
-			texCoord = K.TexCoords,
-		},
-
-		flyoutBorder = {
-			file = "",
-		},
-
-		flyoutBorderShadow = {
-			file = "",
-		},
-
-		border = {
-			file = "",
-		},
-
-		normalTexture = {
-			file = "",
-		},
-
-		-- flash = {
-		-- 	file = "",
-		-- },
-
-		-- pushedTexture = {
-		-- 	file = "",
-		-- },
-
-		-- checkedTexture = {
-		-- 	file = "",
-		-- },
-
-		-- highlightTexture = {
-		-- 	file = "",
-		-- },
-
-		-- cooldown = {
-		-- 	points = {
-		-- 		{ "TOPLEFT", 1, -1 },
-		-- 		{ "BOTTOMRIGHT", -1, 1 },
-		-- 	},
-		-- },
-
-		name = {
-			font = cfgFont,
-			points = {
-				{ "BOTTOMLEFT", 0, 0 },
-				{ "BOTTOMRIGHT", 0, 0 },
-			},
-		},
-
-		hotkey = {
-			font = cfgFont,
-			points = {
-				{ "TOPRIGHT", 0, -3 },
-				{ "TOPLEFT", 0, -3 },
-			},
-		},
-
-		count = {
-			font = cfgFont,
-			points = {
-				{ "BOTTOMRIGHT", 2, 0 },
-			},
-		},
-
-		buttonstyle = {
-			file = "",
-		},
+		icon = { texCoord = K.TexCoords, },
+		flyoutBorder = { file = "", },
+		flyoutBorderShadow = { file = "", },
+		border = { file = "", },
+		normalTexture = { file = "", },
+		name = { font = cfgFont, points = { { "BOTTOMLEFT", 0, 0 }, { "BOTTOMRIGHT", 0, 0 }, }, },
+		hotkey = { font = cfgFont, points = { { "TOPRIGHT", 0, -3 }, { "TOPLEFT", 0, -3 }, }, },
+		count = { font = cfgFont, points = { { "BOTTOMRIGHT", 2, 0 }, }, },
+		buttonstyle = { file = "", },
 	}
 
 	Module:StyleAllActionButtons(cfg)

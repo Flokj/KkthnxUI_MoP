@@ -173,9 +173,7 @@ function Module:SetupExpRepScript(bar)
 end
 
 function Module:CreateExpbar()
-	if not C["Misc"].ExpRep then
-		return
-	end
+	if not C["Misc"].ExpRep then return end
 
 	local bar = CreateFrame("StatusBar", "KKUI_ExpRepBar", MinimapCluster)
 	bar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)

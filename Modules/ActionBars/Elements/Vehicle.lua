@@ -18,9 +18,7 @@ local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 function Module:UpdateVehicleButton()
 	local frame = _G["KKUI_ActionBarExit"]
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local size = C["ActionBar"].VehButtonSize
 	local framSize = size + 2 * padding
