@@ -48,7 +48,7 @@ end
 -- Tuitorial
 function Module:ForceDefaultCVars()
 	SetCVar("autoLootDefault", 1)
-	SetCVar("alwaysCompareItems", 1)
+--	SetCVar("alwaysCompareItems", 1)
 	SetCVar("autoSelfCast", 1)
 	SetCVar("lootUnderMouse", 1)
 	SetCVar("screenshotQuality", 10)

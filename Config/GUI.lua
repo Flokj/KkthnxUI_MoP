@@ -786,7 +786,7 @@ local Skins = function(self)
 
 	Window:CreateSection("AddOn Skins")
 	Window:CreateSwitch("Skins", "AtlasLoot", "AtlasLoot Skin")
-	Window:CreateSwitch("Skins", "LortiTextures", "LortiUI Textures")
+	--Window:CreateSwitch("Skins", "LortiTextures", "LortiUI Textures")
 	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	Window:CreateSwitch("Skins", "ButtonForge", L["ButtonForge Skin"])

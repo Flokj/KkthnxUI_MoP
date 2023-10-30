@@ -42,8 +42,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local customUnits = {}
 local showPowerList = {}
 
-local isInInstance
-
 -- Unit classification
 local NPClassifies = {
 	elite = { 1, 1, 1 },
@@ -53,8 +51,17 @@ local NPClassifies = {
 }
 
 -- Init
-function Module:UpdatePlateRange()
+function Module:UpdatePlateCVars()
+	SetCVar("ClampTargetNameplateToScreen", 1)
 	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
+	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
+	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
+	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateNotSelectedAlpha", 1)
+	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	SetCVar("nameplateShowOnlyNames", 0)
+	SetCVar("nameplateShowFriendlyNPCs", 0)
 end
 
 function Module:PlateInsideView()
@@ -67,25 +74,8 @@ function Module:PlateInsideView()
 	end
 end
 
-function Module:UpdatePlateScale()
-	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
-end
-
-function Module:UpdatePlateAlpha()
-	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
-	--SetCVar("nameplateOccludedAlphaMult", C["Nameplate"].MinAlpha) -- unselected color
-end
-
-function Module:UpdatePlateSpacing()
-	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
-end
-
 function Module:UpdateClickableSize()
-	if InCombatLockdown() then
-		return
-	end
+	if InCombatLockdown() then return end
 
 	local uiScale = C["General"].UIScale
 	local PlateWidth, PlateHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
@@ -95,45 +85,28 @@ function Module:UpdateClickableSize()
 end
 
 function Module:SetupCVars()
-	Module:UpdatePlateRange()
+	Module:UpdatePlateCVars()
 	Module:PlateInsideView()
 	SetCVar("nameplateOverlapH", 0.8)
-	Module:UpdatePlateSpacing()
-	Module:UpdatePlateAlpha()
 	SetCVar("nameplateSelectedAlpha", 1)
-	SetCVar("nameplateNotSelectedAlpha", 1)
-	SetCVar("showQuestTrackingTooltips", 1)
-	SetCVar("predictedHealth", 1)
+	Module:UpdateClickableSize()
 
-	SetCVar("nameplateShowFriendlyNPCs", 0) --hide npc nameplate
-
-	Module:UpdatePlateScale()
 	SetCVar("nameplateSelectedScale", C["Nameplate"].SelectedScale)
 	SetCVar("nameplateLargerScale", 1)
 	SetCVar("nameplateGlobalScale", 1)
 
-	--SetCVar("nameplateShowSelf", 0)
-	--SetCVar("nameplateResourceOnTarget", 0)
-	--K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
-	--K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
-
-	Module:UpdateClickableSize()
-	hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
+	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesNameplateMaxDistanceSlider)
 end
 
 function Module:BlockAddons()
-	if not _G.DBM or not _G.DBM.Nameplate then
-		return
-	end
+	if not _G.DBM or not _G.DBM.Nameplate then return end
 
 	function _G.DBM.Nameplate:SupportedNPMod()
 		return true
 	end
 
 	local function showAurasForDBM(_, _, _, spellID)
-		if not tonumber(spellID) then
-			return
-		end
+		if not tonumber(spellID) then return end
 
 		if not C.NameplateWhiteList[spellID] then
 			C.NameplateWhiteList[spellID] = true
@@ -144,9 +117,7 @@ end
 
 function Module:CreateUnitTable()
 	table_wipe(customUnits)
-	if not C["Nameplate"].CustomUnitColor then
-		return
-	end
+	if not C["Nameplate"].CustomUnitColor then return end
 
 	K.CopyTable(C.NameplateCustomUnits, customUnits)
 	K.SplitList(customUnits, C["Nameplate"].CustomUnitList)
@@ -162,11 +133,7 @@ function Module:UpdateUnitPower()
 	local unitName = self.unitName
 	local npcID = self.npcID
 	local shouldShowPower = showPowerList[unitName] or showPowerList[npcID]
-	if shouldShowPower then
-		self.powerText:Show()
-	else
-		self.powerText:Hide()
-	end
+	self.powerText:SetShown(shouldShowPower)
 end
 
 -- Off-tank threat color
@@ -201,9 +168,7 @@ function Module:UpdateGroupRoles()
 end
 
 function Module:CheckThreatStatus(unit)
-	if not UnitExists(unit) then
-		return
-	end
+	if not UnitExists(unit) then return end
 
 	local unitTarget = unit .. "target"
 	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
@@ -307,9 +272,7 @@ function Module:UpdateColor(_, unit)
 end
 
 function Module:UpdateThreatColor(_, unit)
-	if unit ~= self.unit then
-		return
-	end
+	if unit ~= self.unit then return end
 
 	Module.UpdateColor(self, _, unit)
 end
@@ -450,14 +413,13 @@ function Module:AddTargetIndicator(self)
 	Module.UpdateTargetIndicator(self)
 end
 
+local isInInstance
 local function CheckInstanceStatus()
 	isInInstance = IsInInstance()
 end
 
 function Module:QuestIconCheck()
-	if not C["Nameplate"].QuestIndicator then
-		return
-	end
+	if not C["Nameplate"].QuestIndicator then return end
 
 	CheckInstanceStatus()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
@@ -471,9 +433,7 @@ local function isQuestTitle(textLine)
 end
 
 function Module:UpdateQuestUnit(_, unit)
-	if not C["Nameplate"].QuestIndicator then
-		return
-	end
+	if not C["Nameplate"].QuestIndicator then return end
 
 	if isInInstance then
 		self.questIcon:Hide()
@@ -593,13 +553,8 @@ function Module:AddCreatureIcon(self)
 end
 
 function Module:UpdateUnitClassify(unit)
-	if not self.ClassifyIndicator then
-		return
-	end
-
-	if not unit then
-		unit = self.unit
-	end
+	if not self.ClassifyIndicator then return end
+	if not unit then unit = self.unit end
 
 	self.ClassifyIndicator:Hide()
 
@@ -615,9 +570,7 @@ end
 
 -- Mouseover indicator
 function Module:IsMouseoverUnit()
-	if not self or not self.unit then
-		return
-	end
+	if not self or not self.unit then return end
 
 	if self:IsVisible() and UnitExists("mouseover") then
 		return UnitIsUnit("mouseover", self.unit)
@@ -627,9 +580,7 @@ function Module:IsMouseoverUnit()
 end
 
 function Module:UpdateMouseoverShown()
-	if not self or not self.unit then
-		return
-	end
+	if not self or not self.unit then return end
 
 	if self:IsShown() and UnitIsUnit("mouseover", self.unit) then
 		self.HighlightIndicator:Show()
@@ -687,10 +638,7 @@ function Module:UpdateSpellInterruptor(...)
 end
 
 function Module:SpellInterruptor(self)
-	if not self.Castbar then
-		return
-	end
-
+	if not self.Castbar then return end
 	self:RegisterCombatEvent("SPELL_INTERRUPT", Module.UpdateSpellInterruptor)
 end
 
@@ -769,28 +717,6 @@ function Module:CreatePlates()
 	self.RaidTargetIndicator:SetParent(self.Health)
 	self.RaidTargetIndicator:SetSize(40, 40)
 
-	--[[do
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
-
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
-
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
-
-		self.HealPredictionAndAbsorb = {
-			myBar = mhpb,
-			otherBar = ohpb,
-			maxOverflow = 1,
-		}
-		self.predicFrame = frame
-	end]]
-
 	self.Auras = CreateFrame("Frame", nil, self)
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Auras.spacing = 8
@@ -858,9 +784,7 @@ end
 function Module:UpdateNameplateAuras()
 	Module.ToggleNameplateAuras(self)
 
-	if not C["Nameplate"].PlateAuras then
-		return
-	end
+	if not C["Nameplate"].PlateAuras then return end
 
 	local element = self.Auras
 	if C["Nameplate"].NameplateClassPower then
@@ -1032,9 +956,7 @@ function Module:RefreshPlateOnFactionChanged()
 end
 
 function Module:PostUpdatePlates(event, unit)
-	if not self then
-		return
-	end
+	if not self then return end
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		self.unitName = UnitName(unit)
@@ -1116,9 +1038,7 @@ end
 
 function Module:TogglePlayerPlate()
 	local plate = _G.oUF_PlayerPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	if C["Nameplate"].ShowPlayerPlate then
 		plate:Enable()
@@ -1129,18 +1049,14 @@ end
 
 function Module:TogglePlatePower()
 	local plate = _G.oUF_PlayerPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	plate.powerText:SetShown(C["Nameplate"].PPPowerText)
 end
 
 function Module:TogglePlateVisibility()
 	local plate = _G.oUF_PlayerPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	if C["Nameplate"].PPHideOOC then
 		plate:RegisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
@@ -1170,9 +1086,7 @@ end
 
 function Module:UpdateTargetClassPower()
 	local plate = _G.oUF_TargetPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	local bar = plate.ClassPowerBar
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
@@ -1188,9 +1102,7 @@ end
 
 function Module:ToggleTargetClassPower()
 	local plate = _G.oUF_TargetPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	local playerPlate = _G.oUF_PlayerPlate
 	if C["Nameplate"].NameplateClassPower then
@@ -1247,9 +1159,7 @@ end
 
 function Module:ResizeTargetPower()
 	local plate = _G.oUF_TargetPlate
-	if not plate then
-		return
-	end
+	if not plate then return end
 
 	local barWidth = C["Nameplate"].PlateWidth
 	local barHeight = C["Nameplate"].PlateHeight
@@ -1265,9 +1175,7 @@ function Module:ResizeTargetPower()
 end
 
 function Module:CreateGCDTicker(self)
-	if not C["Nameplate"].PPGCDTicker then
-		return
-	end
+	if not C["Nameplate"].PPGCDTicker then return end
 
 	local GCD = CreateFrame("Frame", "oUF_PlateGCD", self.Power)
 	GCD:SetWidth(self:GetWidth())
