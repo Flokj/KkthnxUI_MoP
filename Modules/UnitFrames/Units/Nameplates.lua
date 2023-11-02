@@ -820,8 +820,10 @@ function Module:UpdateNameplateSize()
 
 	self.Castbar.Icon:SetSize(iconSize, iconSize)
 	self.Castbar:SetHeight(plateHeight)
-	self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
-	self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	--self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	--self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "RIGHT", 0, 5)
+	self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "LEFT", 0, 5)
 	self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
 
 	self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")

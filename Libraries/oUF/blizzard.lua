@@ -30,22 +30,34 @@ local function handleFrame(baseName, doNotReparent)
 		frame:UnregisterAllEvents()
 		frame:Hide()
 
-		if(not doNotReparent) then frame:SetParent(hiddenParent) end
+		if(not doNotReparent) then
+			frame:SetParent(hiddenParent)
+		end
 
 		local health = frame.healthBar or frame.healthbar
-		if(health) then health:UnregisterAllEvents() end
+		if(health) then
+			health:UnregisterAllEvents()
+		end
 
 		local power = frame.manabar
-		if(power) then power:UnregisterAllEvents() end
+		if(power) then
+			power:UnregisterAllEvents()
+		end
 
 		local spell = frame.castBar or frame.spellbar
-		if(spell) then spell:UnregisterAllEvents() end
+		if(spell) then
+			spell:UnregisterAllEvents()
+		end
 
 		local altpowerbar = frame.powerBarAlt
-		if(altpowerbar) then altpowerbar:UnregisterAllEvents() end
+		if(altpowerbar) then
+			altpowerbar:UnregisterAllEvents()
+		end
 
 		local buffFrame = frame.BuffFrame
-		if(buffFrame) then buffFrame:UnregisterAllEvents() end
+		if(buffFrame) then
+			buffFrame:UnregisterAllEvents()
+		end
 	end
 end
 
@@ -106,15 +118,17 @@ function oUF:DisableBlizzard(unit)
 		-- Blizzard_ArenaUI should not be loaded
 		_G.Arena_LoadUI = function() end
 		SetCVar('showArenaEnemyFrames', '0', 'SHOW_ARENA_ENEMY_FRAMES_TEXT')
-	elseif(unit:match('nameplate%d+$')) then
-		local frame = C_NamePlate.GetNamePlateForUnit(unit)
-		if(frame and frame.UnitFrame) then
-			if(not frame.UnitFrame.isHooked) then
-				frame.UnitFrame:HookScript('OnShow', insecureOnShow)
-				frame.UnitFrame.isHooked = true
-			end
-
-			handleFrame(frame.UnitFrame, true)
-		end
 	end
+end
+
+function oUF:DisableNamePlate(frame)
+	if(not(frame and frame.UnitFrame)) then return end
+	if(frame.UnitFrame:IsForbidden()) then return end
+
+	if(not frame.UnitFrame.isHooked) then
+		frame.UnitFrame:HookScript('OnShow', insecureOnShow)
+		frame.UnitFrame.isHooked = true
+	end
+
+	handleFrame(frame.UnitFrame, true)
 end
