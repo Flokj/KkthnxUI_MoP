@@ -31,7 +31,6 @@ local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local ResetCursor = _G.ResetCursor
 local RollOnLoot = _G.RollOnLoot
-local ShowInspectCursor = _G.ShowInspectCursor
 
 local pos = "TOP"
 local cancelled_rolls = {}
@@ -66,44 +65,21 @@ local function SetTip(frame)
 end
 
 local function SetItemTip(frame, event)
-	if not frame.link or (event == "MODIFIER_STATE_CHANGED" and not frame:IsMouseOver()) then	return end
-
+	if not frame.link or (event == "MODIFIER_STATE_CHANGED" and not frame:IsMouseOver()) then return end
 	GameTooltip:SetOwner(frame, "ANCHOR_TOPRIGHT")
 	GameTooltip:SetHyperlink(frame.link)
-
-	if IsShiftKeyDown() then
-		GameTooltip_ShowCompareItem()
-	end
-
-	if IsModifiedClick("DRESSUP") then
-		ShowInspectCursor()
-	else
-		ResetCursor()
-	end
-end
-
-local function ItemOnUpdate(self)
-	if IsShiftKeyDown() then
-		GameTooltip_ShowCompareItem()
-	end
-
-	CursorOnUpdate(self)
+	if IsShiftKeyDown() then GameTooltip_ShowCompareItem() end
 end
 
 local function LootClick(frame)
-	if IsControlKeyDown() then
-		DressUpItemLink(frame.link)
-	elseif IsShiftKeyDown() then
-		ChatEdit_InsertLink(frame.link)
+	if IsModifiedClick() then
+		_G.HandleModifiedItemClick(frame.link)
 	end
 end
 
 local function OnEvent(frame, _, rollID)
 	cancelled_rolls[rollID] = true
-
-	if frame.rollID ~= rollID then
-		return
-	end
+	if frame.rollID ~= rollID then return end
 
 	frame.rollID = nil
 	frame.time = nil
@@ -111,9 +87,7 @@ local function OnEvent(frame, _, rollID)
 end
 
 local function StatusUpdate(frame, elapsed)
-	if not frame.parent.rollID then
-		return
-	end
+	if not frame.parent.rollID then return end
 
 	if frame.elapsed and frame.elapsed > 0.1 then
 		frame:SetValue(GetLootRollTimeLeft(frame.parent.rollID))
@@ -129,9 +103,7 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	f:SetSize(FRAME_HEIGHT - 4, FRAME_HEIGHT - 4)
 	f:SetNormalTexture(ntex)
 
-	if ptex then
-		f:SetPushedTexture(ptex)
-	end
+	if ptex then f:SetPushedTexture(ptex) end
 
 	f:SetHighlightTexture(htex)
 	f.rolltype = rolltype
@@ -164,9 +136,9 @@ function Module:CreateRollFrame()
 	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 3), 0)
 	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
 	button:CreateBorder()
+	button:SetScript('OnEvent', SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnLeave", GameTooltip_Hide)
-	button:SetScript("OnUpdate", ItemOnUpdate)
 	button:SetScript("OnClick", LootClick)
 	frame.button = button
 
@@ -246,17 +218,13 @@ local function GetFrame()
 end
 
 function Module.START_LOOT_ROLL(_, rollID, time)
-	if cancelled_rolls[rollID] then
-		return
-	end
+	if cancelled_rolls[rollID] then return end
 
 	local f = GetFrame()
 	f.rollID = rollID
 	f.time = time
 
-	for i in pairs(f.rolls) do
-		f.rolls[i] = nil
-	end
+	for i in pairs(f.rolls) do f.rolls[i] = nil end
 
 	f.need:SetText(0)
 	f.greed:SetText(0)
@@ -268,45 +236,17 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	f.button.icon:SetTexture(texture)
 	f.button.link = GetLootRollItemLink(rollID)
 
-	if canNeed then
-		f.needbutt:Enable()
-	else
-		f.needbutt:Disable()
-	end
-
-	if canGreed then
-		f.greedbutt:Enable()
-	else
-		f.greedbutt:Disable()
-	end
-
-	if canDisenchant then
-		f.disenchantbutt:Enable()
-	else
-		f.disenchantbutt:Disable()
-	end
+	if canNeed then f.needbutt:Enable() else f.needbutt:Disable() end
+	if canGreed then f.greedbutt:Enable() else f.greedbutt:Disable() end
+	if canDisenchant then f.disenchantbutt:Enable() else f.disenchantbutt:Disable() end
 
 	local needTexture = f.needbutt:GetNormalTexture()
 	local greenTexture = f.greedbutt:GetNormalTexture()
 	local disenchantTexture = f.disenchantbutt:GetNormalTexture()
 
-	if canNeed then
-		f.needbutt:SetAlpha(1)
-	else
-		f.needbutt:SetAlpha(0.2)
-	end
-
-	if canGreed then
-		f.greedbutt:SetAlpha(1)
-	else
-		f.greedbutt:SetAlpha(0.2)
-	end
-
-	if canDisenchant then
-		f.disenchantbutt:SetAlpha(1)
-	else
-		f.disenchantbutt:SetAlpha(0.2)
-	end
+	if canNeed then f.needbutt:SetAlpha(1) else f.needbutt:SetAlpha(0.2) end
+	if canGreed then f.greedbutt:SetAlpha(1) else f.greedbutt:SetAlpha(0.2) end
+	if canDisenchant then f.disenchantbutt:SetAlpha(1) else f.disenchantbutt:SetAlpha(0.2) end
 
 	f.fsbind:SetText(bop and L["BoP"] or L["BoE"])
 	f.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
@@ -320,7 +260,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 
 	f:Show()
 
-	AlertFrame:UpdateAnchors()
+	_G.AlertFrame:UpdateAnchors()
 
 	-- Add cached roll info, if any
 	for rollid, rollTable in pairs(cachedRolls) do
@@ -372,9 +312,7 @@ end
 Module.LOOT_ROLLS_COMPLETE = Module.LOOT_HISTORY_ROLL_COMPLETE
 
 function Module:CreateGroupLoot()
-	if not C["Loot"].GroupLoot then
-		return
-	end
+	if not C["Loot"].GroupLoot then return end
 
 	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
 	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)
