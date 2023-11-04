@@ -146,6 +146,14 @@ function Module:CreateRollFrame()
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
+	button.stack = button:CreateFontString(nil, 'OVERLAY')
+	button.stack:SetPoint('BOTTOMRIGHT', -1, 1)
+	button.stack:SetFontObject(K.UIFontOutline)
+
+	button.ilvl = button:CreateFontString(nil, 'OVERLAY')
+	button.ilvl:SetPoint('BOTTOM', button, 'BOTTOM', 0, 0)
+	button.ilvl:SetFontObject(K.UIFontOutline)
+
 	local tfade = frame:CreateTexture(nil, "BORDER")
 	tfade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, 0)
 	tfade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 0)
@@ -219,30 +227,36 @@ end
 
 function Module.START_LOOT_ROLL(_, rollID, time)
 	if cancelled_rolls[rollID] then return end
+	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 
 	local f = GetFrame()
+
+	for i in pairs(f.rolls) do f.rolls[i] = nil end
+
+	local itemLink = GetLootRollItemLink(rollID)
+		local _, _, _, itemLevel, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, bindType = GetItemInfo(itemLink)
+
+
+	if not bop then bop = bindType == 1 end -- recheck sometimes, we need this from bindType
+
 	f.rollID = rollID
 	f.time = time
 
-	for i in pairs(f.rolls) do f.rolls[i] = nil end
+	f.button.link = itemLink
+	f.button.rollID = rollID
+	f.button.icon:SetTexture(texture)
+	f.button.stack:SetShown(count > 1)
+	f.button.stack:SetText(count)
+	f.button.ilvl:SetText(itemLevel)
 
 	f.need:SetText(0)
 	f.greed:SetText(0)
 	f.pass:SetText(0)
 	f.disenchant:SetText(0)
 
-	local texture, name, _, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
-
-	f.button.icon:SetTexture(texture)
-	f.button.link = GetLootRollItemLink(rollID)
-
 	if canNeed then f.needbutt:Enable() else f.needbutt:Disable() end
 	if canGreed then f.greedbutt:Enable() else f.greedbutt:Disable() end
 	if canDisenchant then f.disenchantbutt:Enable() else f.disenchantbutt:Disable() end
-
-	local needTexture = f.needbutt:GetNormalTexture()
-	local greenTexture = f.greedbutt:GetNormalTexture()
-	local disenchantTexture = f.disenchantbutt:GetNormalTexture()
 
 	if canNeed then f.needbutt:SetAlpha(1) else f.needbutt:SetAlpha(0.2) end
 	if canGreed then f.greedbutt:SetAlpha(1) else f.greedbutt:SetAlpha(0.2) end
@@ -254,6 +268,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	local color = ITEM_QUALITY_COLORS[quality]
 	f.fsloot:SetText(name)
 	f.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
+	f.button.ilvl:SetTextColor(color.r, color.g, color.b)
 
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
@@ -322,36 +337,3 @@ function Module:CreateGroupLoot()
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
-
-SlashCmdList.TESTROLL = function()
-	local f = GetFrame()
-	local items = { 32837, 34196, 33820 }
-	if f:IsShown() then
-		f:Hide()
-	else
-		local item = items[math.random(1, #items)]
-		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
-		local r, g, b = GetItemQualityColor(quality or 1)
-
-		f.button.icon:SetTexture(texture)
-		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-		f.fsloot:SetText(GetItemInfo(item))
-		f.fsloot:SetVertexColor(1, 1, 1)
-
-		f.status:SetMinMaxValues(0, 100)
-		f.status:SetValue(math.random(50, 90))
-		f.status:SetStatusBarColor(r, g, b, 0.7)
-
-		f.KKUI_Border:SetVertexColor(r, g, b)
-		f.button.KKUI_Border:SetVertexColor(r, g, b)
-
-		f.need:SetText(0)
-		f.greed:SetText(0)
-		f.pass:SetText(0)
-
-		f.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
-		f:Show()
-	end
-end
-SLASH_TESTROLL1 = "/kkroll"
