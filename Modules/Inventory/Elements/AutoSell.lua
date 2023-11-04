@@ -6,7 +6,8 @@ local table_wipe = _G.table.wipe
 
 local C_Timer_After = _G.C_Timer.After
 local GetContainerItemInfo = C_Container.GetContainerItemInfo
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
+local UseContainerItem = C_Container and C_Container.UseContainerItem or UseContainerItem
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
 local autoSellStop = true
@@ -14,15 +15,11 @@ local autoSellCache = {}
 local autoSellErrorText = _G.ERR_VENDOR_DOESNT_BUY
 
 local function startSelling()
-	if autoSellStop then
-		return
-	end
+	if autoSellStop then return end
 
 	for bag = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bag) do
-			if autoSellStop then
-				return
-			end
+			if autoSellStop then return end
 
 			local info = C_Container.GetContainerItemInfo(bag, slot)
 			if info then
@@ -39,15 +36,11 @@ local function startSelling()
 end
 
 local function updateSelling(event, ...)
-	if not C["Inventory"].AutoSell then
-		return
-	end
+	if not C["Inventory"].AutoSell then return end
 
 	local _, arg = ...
 	if event == "MERCHANT_SHOW" then
-		if IsShiftKeyDown() then
-			return
-		end
+		if IsShiftKeyDown() then return end
 
 		autoSellStop = false
 		table_wipe(autoSellCache)

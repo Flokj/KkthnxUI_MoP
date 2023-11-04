@@ -103,7 +103,7 @@ function Module:SetupCoords()
 	CoordsUpdater:SetScript("OnUpdate", Module.UpdateCoords)
 end
 
-local setMapScale = 1
+local setMapScale = 0.8
 local MaxMapScale = 0.8
 function Module:UpdateMapScale()
 	if self.isMaximized and self:GetScale() ~= MaxMapScale then

@@ -17,19 +17,19 @@ local C_Timer_After = _G.C_Timer.After
 local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
 local DeleteCursorItem = _G.DeleteCursorItem
-local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetInventoryItemID = _G.GetInventoryItemID
 local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
+local GetContainerItemID = C_Container.GetContainerItemID
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local PickupContainerItem = C_Container.PickupContainerItem
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local deleteEnable
@@ -1140,7 +1140,7 @@ function Module:OnEnable()
 		end
 	end
 
-	function MyButton:OnUpdate(item)
+	function MyButton:OnUpdateButton(item)
 		if self.JunkIcon then
 			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
@@ -1453,7 +1453,9 @@ function Module:OnEnable()
 	Module.initComplete = true
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
-	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
+	--K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
+	K:RegisterEvent("AUCTION_HOUSE_SHOW", Module.OpenBags)
+	K:RegisterEvent("AUCTION_HOUSE_CLOSED", Module.CloseBags)
 
 	-- Update infobar slots
 	--local INFO = K:GetModule("Infobar")
@@ -1467,8 +1469,6 @@ function Module:OnEnable()
 	end
 
 	-- Fixes
-	BankFrame.GetRight = function()
-		return f.bank:GetRight()
-	end
+	BankFrame.GetRight = function() return f.bank:GetRight() end
 	BankFrameItemButton_Update = K.Noop
 end

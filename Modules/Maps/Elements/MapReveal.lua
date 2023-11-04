@@ -38,9 +38,7 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 	table_wipe(exploredCache)
 
 	local mapID = WorldMapFrame.mapID
-	if not mapID then
-		return
-	end
+	if not mapID then return end
 
 	local mapArtID = C_Map_GetMapArtID(mapID)
 	local mapData = mapArtID and C.WorldMapPlusData[mapArtID]
@@ -142,16 +140,13 @@ function Module:MapData_ResetTexturePool(texture)
 end
 
 function Module:CreateWorldMapReveal()
-	if IsAddOnLoaded("Leatrix_Maps") then
-		return
-	end
+	if IsAddOnLoaded("Leatrix_Maps") then return end
 
 	local bu = CreateFrame("CheckButton", nil, _G.WorldMapFrame, "OptionsCheckButtonTemplate")
 	bu:SetHitRectInsets(-5, -5, -5, -5)
-	bu:SetPoint("BOTTOMLEFT", 25, 60)
-	bu:SetSize(16, 16)
+	bu:SetPoint("TOPRIGHT", -235, -40)
+	bu:SetSize(15, 15)
 	bu:SkinCheckBox()
-	bu:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel() + 2)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")

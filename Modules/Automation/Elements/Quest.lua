@@ -1,88 +1,31 @@
 local K, C, L = unpack(KkthnxUI)
 
 local _G = _G
-local table_wipe = _G.table.wipe
-local string_match = _G.string.match
 
-local AcceptQuest = _G.AcceptQuest
-local CloseQuest = _G.CloseQuest
-local CompleteQuest = _G.CompleteQuest
-local GameTooltip = _G.GameTooltip
-local GetActiveTitle = _G.GetActiveTitle
-local GetGossipActiveQuests = _G.GetGossipActiveQuests
-local GetGossipAvailableQuests = _G.GetGossipAvailableQuests
-local GetGossipOptions = _G.GetGossipOptions
-local GetInstanceInfo = _G.GetInstanceInfo
-local GetItemInfo = _G.GetItemInfo
-local GetNumActiveQuests = _G.GetNumActiveQuests
-local GetNumAvailableQuests = _G.GetNumAvailableQuests
-local GetNumGossipActiveQuests = _G.GetNumGossipActiveQuests
-local GetNumGossipAvailableQuests = _G.GetNumGossipAvailableQuests
-local GetNumGossipOptions = _G.GetNumGossipOptions
-local GetNumQuestChoices = _G.GetNumQuestChoices
-local GetNumQuestItems = _G.GetNumQuestItems
-local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
-local GetQuestID = _G.GetQuestID
-local GetQuestItemInfo = _G.GetQuestItemInfo
-local GetQuestItemLink = _G.GetQuestItemLink
-local GetQuestLogTitle = _G.GetQuestLogTitle
-local GetQuestReward = _G.GetQuestReward
-local GetQuestTagInfo = _G.GetQuestTagInfo
-local IsQuestCompletable = _G.IsQuestCompletable
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local SelectActiveQuest = _G.SelectActiveQuest
-local SelectAvailableQuest = _G.SelectAvailableQuest
-local SelectGossipActiveQuest = _G.SelectGossipActiveQuest
-local SelectGossipAvailableQuest = _G.SelectGossipAvailableQuest
-local SelectGossipOption = _G.SelectGossipOption
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local UnitGUID = _G.UnitGUID
-
-local quests, choiceQueue = {}
-local QuickQuest = CreateFrame("Frame")
-QuickQuest:SetScript("OnEvent", function(self, event, ...)
-	self[event](...)
-end)
-
-function QuickQuest:Register(event, func)
-	self:RegisterEvent(event)
-	self[event] = function(...)
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest == true and not IsShiftKeyDown() then
-			func(...)
-		end
-	end
-end
+local GetTrackingInfo = C_Minimap.GetTrackingInfo
+local GetNumTrackingTypes = C_Minimap.GetNumTrackingTypes
 
 local isCheckButtonCreated
 local function SetupAutoQuestCheckButton()
-	if isCheckButtonCreated then
-		return
-	end
+	if isCheckButtonCreated then return end
 
 	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
-	AutoQuestCheckButton:SetPoint("BOTTOMLEFT", 25, 90)
-	AutoQuestCheckButton:SetSize(16, 16)
+	AutoQuestCheckButton:SetHitRectInsets(-5, -5, -5, -5)
+	AutoQuestCheckButton:SetPoint("TOPRIGHT", -125, -40)
+	AutoQuestCheckButton:SetSize(15, 15)
+	AutoQuestCheckButton:SkinCheckBox()
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
 	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
 
-	AutoQuestCheckButton:SetHitRectInsets(0, 0 - AutoQuestCheckButton.text:GetWidth(), 0, 0)
 	AutoQuestCheckButton:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
 	AutoQuestCheckButton:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
 
-	AutoQuestCheckButton:SkinCheckBox()
-	AutoQuestCheckButton:SetFrameLevel(WorldMapFrameCloseButton:GetFrameLevel())
-
-	isCheckButtonCreated = true
-
 	function AutoQuestCheckButton.UpdateTooltip(self)
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
 
 		local r, g, b = 0.2, 1.0, 0.2
@@ -96,63 +39,63 @@ local function SetupAutoQuestCheckButton()
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(L["Auto Quest Disabled Desc"], r, g, b)
 		end
-
 		GameTooltip:Show()
 	end
-
 	AutoQuestCheckButton:HookScript("OnEnter", function(self)
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
+		if GameTooltip:IsForbidden() then return end
 		self:UpdateTooltip()
 	end)
-
 	AutoQuestCheckButton:HookScript("OnLeave", function()
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:Hide()
 	end)
-
 	AutoQuestCheckButton:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
+
+	if Questie_Toggle then
+		Questie_Toggle:ClearAllPoints()
+		Questie_Toggle:SetHeight(22)
+		Questie_Toggle:SetPoint("LEFT", WorldMapZoomOutButton, "RIGHT", 5, 0)
+		Questie_Toggle.SetPoint = K.Noop
+	end
+
+	isCheckButtonCreated = true
 end
 WorldMapFrame:HookScript("OnShow", SetupAutoQuestCheckButton)
+
+-- Function
+local strmatch = string.match
+local tonumber, next = tonumber, next
+local IsAltKeyDown = IsAltKeyDown
+
+local quests, choiceQueue = {}
+local QuickQuest = CreateFrame("Frame")
+QuickQuest:SetScript("OnEvent", function(self, event, ...) self[event](...) end)
+
+function QuickQuest:Register(event, func)
+	self:RegisterEvent(event)
+	self[event] = function(...)
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest == true and not IsShiftKeyDown() then
+			func(...)
+		end
+	end
+end
 
 local function GetNPCID()
 	return K.GetNPCID(UnitGUID("npc"))
 end
 
-local ignoreQuestNPC = {
-	[88570] = true,		-- Fate-Twister Tiklal
-	[87391] = true,		-- Fate-Twister Seress
-	[111243] = true,	-- Archmage Lan'dalock
-	[108868] = true,	-- Hunter's order hall
-	[101462] = true,	-- Reaves
-	[43929] = true,		-- 4000
-	[14847] = true,		-- DarkMoon
-	[119388] = true,	-- 酋长哈顿
-	[114719] = true,	-- 商人塞林
-	[121263] = true,	-- 大技师罗姆尔
-	[126954] = true,	-- 图拉扬
-	[124312] = true,	-- 图拉扬
-	[103792] = true,	-- 格里伏塔
-	[101880] = true,	-- 泰克泰克
-	[141584] = true,	-- 祖尔温
-	[142063] = true,	-- 特兹兰
-	[143388] = true,	-- 德鲁扎
-	[98489] = true,		-- 海难俘虏
-	[135690] = true,	-- 亡灵舰长
-	[105387] = true,	-- 安杜斯
-	[93538] = true,		-- 达瑞妮斯
-	[154534] = true,	-- 大杂院阿畅
-	[150987] = true,	-- 肖恩·维克斯，斯坦索姆
-	[150563] = true,	-- 斯卡基特，麦卡贡订单日常
-	[143555] = true,	-- 山德·希尔伯曼，祖达萨PVP军需官
-}
+local function IsTrackingHidden()
+	for index = 1, GetNumTrackingTypes() do
+		local name, _, active = GetTrackingInfo(index)
+		if name == MINIMAP_TRACKING_TRIVIAL_QUESTS then
+			return active
+		end
+	end
+end
+
+local ignoreQuestNPC = {}
 
 local function GetQuestLogQuests(onlyComplete)
 	table_wipe(quests)
@@ -248,6 +191,17 @@ local ignoreGossipNPC = {
 	[150131] = true, -- 萨尔玛法师
 }
 
+local autoSelectFirstOptionList = {
+	[97004] = true, -- "Red" Jack Findle
+	[96782] = true, -- Lucian Trias
+	[93188] = true, -- Mongar
+}
+
+local followerAssignees = {
+	[138708] = true, -- 半兽人迦罗娜
+	[135614] = true, -- 马迪亚斯·肖尔大师
+}
+
 local autoGossipTypes = {
 	["taxi"] = true,
 	["gossip"] = true,
@@ -256,65 +210,59 @@ local autoGossipTypes = {
 	["trainer"] = true,
 }
 
+local ignoreInstances = {
+	[1571] = true, -- 枯法者
+	[1626] = true, -- 群星庭院
+}
+
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = GetNPCID()
 	if ignoreQuestNPC[npcID] then return end
 
-	local active = GetNumGossipActiveQuests()
+	local active = C_GossipInfo.GetNumActiveQuests()
 	if active > 0 then
-		local logQuests = GetQuestLogQuests(true)
-		for index = 1, active do
-			local name, _, _, _, complete = GetActiveGossipQuestInfo(index)
-			if complete then
-				local questID = logQuests[name]
-				if not questID then
-					SelectGossipActiveQuest(index)
-				else
-					local _, _, worldQuest = GetQuestTagInfo(questID)
-					if not worldQuest then
-						SelectGossipActiveQuest(index)
-					end
-				end
+		for index, questInfo in ipairs(C_GossipInfo.GetActiveQuests()) do
+			local questID = questInfo.questID
+			if questInfo.isComplete and questID then
+				C_GossipInfo.SelectActiveQuest(questID)
 			end
 		end
 	end
 
-	local available = GetNumGossipAvailableQuests()
+	local available = C_GossipInfo.GetNumAvailableQuests()
 	if available > 0 then
-		for index = 1, available do
-			local _, _, trivial, ignored = GetAvailableGossipQuestInfo(index)
-			if not trivial and not ignored then
-				SelectGossipAvailableQuest(index)
+		for index, questInfo in ipairs(C_GossipInfo.GetAvailableQuests()) do
+			local trivial = questInfo.isTrivial
+			if not trivial or IsTrackingHidden() or (trivial and npcID == 64337) then
+				C_GossipInfo.SelectAvailableQuest(questInfo.questID)
 			end
 		end
 	end
 
-	if available == 0 and active == 0 then
-		if GetNumGossipOptions() == 1 then
-			local _, instance = GetInstanceInfo()
-			if instance ~= "raid" and not ignoreGossipNPC[npcID] then
-				local _, type = GetGossipOptions()
-				if autoGossipTypes[type] then
-					SelectGossipOption(1)
-					return
-				end
+	local gossipInfoTable = C_GossipInfo.GetOptions()
+	if not gossipInfoTable then return end
+
+	local numOptions = #gossipInfoTable
+	local firstOptionID = gossipInfoTable[1] and gossipInfoTable[1].gossipOptionID
+
+	if firstOptionID then
+		if autoSelectFirstOptionList[npcID] then
+			return C_GossipInfo.SelectOption(firstOptionID)
+		end
+
+		if available == 0 and active == 0 and numOptions == 1 then
+			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
+			if instance ~= "raid" and not ignoreGossipNPC[npcID] and not ignoreInstances[mapID] then
+				return C_GossipInfo.SelectOption(firstOptionID)
 			end
 		end
-	end
-end)
-
-local darkmoonNPC = {}
-
-QuickQuest:Register("GOSSIP_CONFIRM", function(index)
-	local npcID = GetNPCID()
-	if npcID and darkmoonNPC[npcID] then
-		SelectGossipOption(index, "", true)
-		StaticPopup_Hide("GOSSIP_CONFIRM")
 	end
 end)
 
 QuickQuest:Register("QUEST_DETAIL", function()
-	AcceptQuest()
+	if not ignoreQuestNPC[npcID] then
+		AcceptQuest()
+	end
 end)
 
 QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
@@ -331,21 +279,68 @@ QuickQuest:Register("QUEST_ITEM_UPDATE", function()
 	end
 end)
 
-local itemBlacklist = {}
+local itemBlacklist = {
+	-- Inscription weapons
+	[31690] = 79343, -- Inscribed Tiger Staff
+	[31691] = 79340, -- Inscribed Crane Staff
+	[31692] = 79341, -- Inscribed Serpent Staff
 
-local ignoreProgressNPC = {}
+	-- Darkmoon Faire artifacts
+	[29443] = 71635, -- Imbued Crystal
+	[29444] = 71636, -- Monstrous Egg
+	[29445] = 71637, -- Mysterious Grimoire
+	[29446] = 71638, -- Ornate Weapon
+	[29451] = 71715, -- A Treatise on Strategy
+	[29456] = 71951, -- Banner of the Fallen
+	[29457] = 71952, -- Captured Insignia
+	[29458] = 71953, -- Fallen Adventurer's Journal
+	[29464] = 71716, -- Soothsayer's Runes
+
+	-- Tiller Gifts
+	["progress_79264"] = 79264, -- Ruby Shard
+	["progress_79265"] = 79265, -- Blue Feather
+	["progress_79266"] = 79266, -- Jade Cat
+	["progress_79267"] = 79267, -- Lovely Apple
+	["progress_79268"] = 79268, -- Marsh Lily
+
+	-- Garrison scouting missives
+	["38180"] = 122424, -- Scouting Missive: Broken Precipice
+	["38193"] = 122423, -- Scouting Missive: Broken Precipice
+	["38182"] = 122418, -- Scouting Missive: Darktide Roost
+	["38196"] = 122417, -- Scouting Missive: Darktide Roost
+	["38179"] = 122400, -- Scouting Missive: Everbloom Wilds
+	["38192"] = 122404, -- Scouting Missive: Everbloom Wilds
+	["38194"] = 122420, -- Scouting Missive: Gorian Proving Grounds
+	["38202"] = 122419, -- Scouting Missive: Gorian Proving Grounds
+	["38178"] = 122402, -- Scouting Missive: Iron Siegeworks
+	["38191"] = 122406, -- Scouting Missive: Iron Siegeworks
+	["38184"] = 122413, -- Scouting Missive: Lost Veil Anzu
+	["38198"] = 122414, -- Scouting Missive: Lost Veil Anzu
+	["38177"] = 122403, -- Scouting Missive: Magnarok
+	["38190"] = 122399, -- Scouting Missive: Magnarok
+	["38181"] = 122421, -- Scouting Missive: Mok'gol Watchpost
+	["38195"] = 122422, -- Scouting Missive: Mok'gol Watchpost
+	["38185"] = 122411, -- Scouting Missive: Pillars of Fate
+	["38199"] = 122409, -- Scouting Missive: Pillars of Fate
+	["38187"] = 122412, -- Scouting Missive: Shattrath Harbor
+	["38201"] = 122410, -- Scouting Missive: Shattrath Harbor
+	["38186"] = 122408, -- Scouting Missive: Skettis
+	["38200"] = 122407, -- Scouting Missive: Skettis
+	["38183"] = 122416, -- Scouting Missive: Socrethar's Rise
+	["38197"] = 122415, -- Scouting Missive: Socrethar's Rise
+	["38176"] = 122405, -- Scouting Missive: Stonefury Cliffs
+	["38189"] = 122401, -- Scouting Missive: Stonefury Cliffs
+
+	-- Misc
+	[31664] = 88604, -- Nat's Fishing Journal
+}
 
 QuickQuest:Register("QUEST_PROGRESS", function()
 	if IsQuestCompletable() then
 		local id, _, worldQuest = GetQuestTagInfo(GetQuestID())
-		if id == 153 or worldQuest then
-			return
-		end
-
+		if id == 153 or worldQuest then	return end
 		local npcID = GetNPCID()
-		if ignoreProgressNPC[npcID] then
-			return
-		end
+		if ignoreQuestNPC[npcID] then return	end
 
 		local requiredItems = GetNumQuestItems()
 		if requiredItems > 0 then
@@ -368,9 +363,24 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 	end
 end)
 
-local cashRewards = {}
+local cashRewards = {
+	[45724] = 1e5, -- Champion's Purse
+	[64491] = 2e6, -- Royal Reward
+
+	-- Items from the Sixtrigger brothers quest chain in Stormheim
+	[138127] = 15, -- Mysterious Coin, 15 copper
+	[138129] = 11, -- Swatch of Priceless Silk, 11 copper
+	[138131] = 24, -- Magical Sprouting Beans, 24 copper
+	[138123] = 15, -- Shiny Gold Nugget, 15 copper
+	[138125] = 16, -- Crystal Clear Gemstone, 16 copper
+	[138133] = 27, -- Elixir of Endless Wonder, 27 copper
+}
 
 QuickQuest:Register("QUEST_COMPLETE", function()
+	-- Blingtron 6000 only!
+	local npcID = GetNPCID()
+	if npcID == 43929 or npcID == 77789 then return end
+
 	local choices = GetNumQuestChoices()
 	if choices <= 1 then
 		GetQuestReward(1)
@@ -379,10 +389,11 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)
 			if link then
-				local _, _, _, _, _, _, _, _, _, _, value = GetItemInfo(link)
-				value = cashRewards[tonumber(string_match(link, "item:(%d+):"))] or value
+				local value = select(11, GetItemInfo(link))
+				local itemID = GetItemInfoFromHyperlink(link)
+				value = cashRewards[itemID] or value
 
-				if value > bestValue then
+				if(value > bestValue) then
 					bestValue, bestIndex = value, index
 				end
 			else
