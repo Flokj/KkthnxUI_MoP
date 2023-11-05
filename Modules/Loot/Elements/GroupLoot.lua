@@ -234,8 +234,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	for i in pairs(f.rolls) do f.rolls[i] = nil end
 
 	local itemLink = GetLootRollItemLink(rollID)
-		local _, _, _, itemLevel, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, bindType = GetItemInfo(itemLink)
-
+	local _, _, _, itemLevel, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(itemLink)
 
 	if not bop then bop = bindType == 1 end -- recheck sometimes, we need this from bindType
 

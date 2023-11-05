@@ -445,9 +445,7 @@ function Module:ToggleLanguageFilter()
 end
 
 function Module:OnEnable()
-	if not C["Chat"].Enable then
-		return
-	end
+	if not C["Chat"].Enable then return end
 
 	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
@@ -472,7 +470,7 @@ function Module:OnEnable()
 
 	-- Font size
 	for i = 1, 15 do
-		CHAT_FONT_HEIGHTS[i] = i + 9
+		CHAT_FONT_HEIGHTS[i] = i + 8
 	end
 
 	-- Default
