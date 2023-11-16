@@ -298,12 +298,6 @@ function Module:OnTooltipSetUnit()
 			if guildRealm and isShiftKeyDown then
 				guildName = guildName .. "-" .. guildRealm
 			end
-
-			if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
-				if string_len(guildName) > 31 then
-					guildName = "..."
-				end
-			end
 			GameTooltipTextLeft2:SetText("<" .. guildName .. "> " .. rank .. "(" .. rankIndex .. ")")
 		end
 	end

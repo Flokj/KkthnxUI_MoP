@@ -493,7 +493,6 @@ C["Tooltip"] = {
 	["Cursor"] = false,
 	["Enable"] = true,
 	["FactionIcon"] = true,
-	["HideJunkGuild"] = false,
 	["HideRank"] = true,
 	["HideRealm"] = true,
 	["HideTitle"] = true,

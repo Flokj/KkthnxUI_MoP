@@ -99,20 +99,19 @@ function Module:SetupCVars()
 end
 
 function Module:BlockAddons()
-	if not _G.DBM or not _G.DBM.Nameplate then return end
+	if not DBM or not DBM.Nameplate then return end
 
-	function _G.DBM.Nameplate:SupportedNPMod()
-		return true
+	if DBM.Options then
+		DBM.Options.DontShowNameplateIconsCD = true
 	end
 
 	local function showAurasForDBM(_, _, _, spellID)
 		if not tonumber(spellID) then return end
-
 		if not C.NameplateWhiteList[spellID] then
 			C.NameplateWhiteList[spellID] = true
 		end
 	end
-	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
+	hooksecurefunc(DBM.Nameplate, "Show", showAurasForDBM)
 end
 
 function Module:CreateUnitTable()

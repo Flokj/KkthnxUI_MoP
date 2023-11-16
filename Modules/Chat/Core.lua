@@ -162,9 +162,7 @@ local function CreateBackground(self)
 end
 
 function Module:SkinChat()
-	if not self or self.styled then
-		return
-	end
+	if not self or self.styled then return end
 
 	local name = self:GetName()
 	local font, fontSize, fontStyle = self:GetFont()
@@ -264,9 +262,7 @@ local cycles = {
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
-	if not C["Chat"].Enable then
-		return
-	end
+	if not C["Chat"].Enable then return end
 
 	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
