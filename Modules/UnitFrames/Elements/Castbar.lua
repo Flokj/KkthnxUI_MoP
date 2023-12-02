@@ -219,9 +219,7 @@ end
 
 function Module:OnCastSent()
 	local element = self.Castbar
-	if not element.SafeZone then
-		return
-	end
+	if not element.SafeZone then return end
 	element.__sendTime = GetTime()
 end
 

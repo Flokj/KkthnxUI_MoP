@@ -43,13 +43,8 @@ local filteredStyle = {
 }
 
 function Module:UpdateClassPortraits(unit)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		return
-	end
-
-	if not unit then
-		return
-	end
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then return end
+	if not unit then return end
 
 	local _, unitClass = UnitClass(unit)
 	if unitClass then
@@ -95,9 +90,7 @@ function Module:PostUpdatePvPIndicator(unit, status)
 end
 
 function Module:UpdateThreat(_, unit)
-	if unit ~= self.unit then
-		return
-	end
+	if unit ~= self.unit then return end
 
 	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local status = UnitThreatSituation(unit)
@@ -161,18 +154,14 @@ function Module:CreateHeader()
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
-		if not self.Highlight then
-			return
-		end
+		if not self.Highlight then return end
 
 		self.Highlight:Show()
 	end)
 
 	self:HookScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
-		if not self.Highlight then
-			return
-		end
+		if not self.Highlight then return end
 
 		self.Highlight:Hide()
 	end)
@@ -191,21 +180,17 @@ end
 
 function Module:ToggleCastBarLatency(frame)
 	frame = frame or _G.oUF_Player
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	if C["Unitframe"].CastbarLatency then
-		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
-		frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
+		--frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
+		--frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
 		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
 	else
-		frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
-		frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
+		--frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
+		--frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
 		frame:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
-		if frame.Castbar then
-			frame.Castbar.__sendTime = nil
-		end
+		if frame.Castbar then frame.Castbar.__sendTime = nil end
 	end
 end
 
@@ -242,20 +227,6 @@ function Module:CreateCastBar(self)
 		createBarMover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 })
 
 		Castbar.Spark:SetSize(64, Castbar:GetHeight())
-
-		--[[local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
-		shield:SetAtlas("nameplates-InterruptShield")
-		shield:SetSize(18, 18)
-		shield:SetPoint("BOTTOMLEFT", Castbar, "TOPLEFT", -28, 5)
-		Castbar.Shield = shield]]
-		-- elseif mystyle == "focus" then
-		-- 	Castbar:SetFrameLevel(10)
-		-- 	Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
-		-- 	createBarMover(Castbar, "Focus Castbar", "FocusCB", C.UFs.Focuscb)
-		-- elseif mystyle == "boss" or mystyle == "arena" then
-		-- 	Castbar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -8)
-		-- 	Castbar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -8)
-		-- 	Castbar:SetHeight(10)
 	elseif mystyle == "nameplate" then
 		Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
 		Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
@@ -304,12 +275,6 @@ function Module:CreateCastBar(self)
 		name:SetPoint("TOPLEFT", Castbar, "LEFT", 0, -1)
 		timer:SetPoint("TOPRIGHT", Castbar, "RIGHT", 0, -1)
 
-		--[[local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
-		shield:SetAtlas("nameplates-InterruptShield")
-		shield:SetSize(self:GetHeight() + 4, self:GetHeight() + 4)
-		shield:SetPoint("TOP", Castbar, "CENTER", -10, 6)
-		Castbar.Shield = shield]]
-
 		local iconSize = self:GetHeight() * 2 + 5
 		Castbar.Icon:SetSize(iconSize, iconSize)
 		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -3, 0)
@@ -346,11 +311,7 @@ function Module:CreateCastBar(self)
 	self.Castbar = Castbar
 end
 
-function Module:CreateSparkleCastBar(self)
-	-- if not C["Unitframe"].PetCastbar then
-	-- 	return
-	-- end
-
+function Module:CreateSparkleCastBar(self)	
 	local bar = CreateFrame("StatusBar", "oUF_SparkleCastbar" .. self.mystyle, self)
 	bar:SetAllPoints(self.Power)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -410,14 +371,6 @@ function Module.PostCreateAura(element, button)
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
 
-Module.ReplacedSpellIcons = {
-	[368078] = 348567, -- 移速
-	[368079] = 348567, -- 移速
-	[368103] = 648208, -- 急速
-	[368243] = 237538, -- CD
-	[373785] = 236293, -- S4，大魔王伪装
-}
-
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
@@ -460,11 +413,6 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 	else
 		button:SetScript("OnUpdate", nil)
 		button.timer:Hide()
-	end
-
-	local newTexture = Module.ReplacedSpellIcons[button.spellID]
-	if newTexture then
-		button.icon:SetTexture(newTexture)
 	end
 end
 
@@ -789,12 +737,6 @@ function Module:CreateUnits()
 			FocusTarget:SetSize(FoucsTargetFrameWidth, FocusTargetFrameHeight)
 			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FoucsTargetFrameWidth, FocusTargetFrameHeight)
 		end
-
-		--K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget) -- Breaks the interface layout
-		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
-		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
-		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
-
 		Module:UpdateTextScale()
 	end
 
@@ -1050,41 +992,6 @@ function Module:UpdateRaidDebuffIndicator()
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
 		end
 	end
-end
-
-local function CreateTargetSound(_, unit)
-	if UnitExists(unit) then
-		if UnitIsEnemy("player", unit) then
-			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
-		elseif UnitIsFriend("player", unit) then
-			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
-		else
-			PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
-		end
-	else
-		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
-	end
-end
-
-function Module:PLAYER_FOCUS_CHANGED()
-	CreateTargetSound(_, "focus")
-end
-
-function Module:PLAYER_TARGET_CHANGED()
-	CreateTargetSound(_, "target")
-end
-
-function Module:UNIT_FACTION(unit)
-	if unit ~= "player" then
-		return
-	end
-
-	local isPvP = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
-	if isPvP and not lastPvPSound then
-		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
-	end
-
-	lastPvPSound = isPvP
 end
 
 function Module:OnEnable()

@@ -275,12 +275,6 @@ C.NameplateShowPowerList = {
 	--[155432] = true, -- 魔力使者
 }
 
--- Display the target of the name board unit
-C.NameplateTargetNPCs = {}
-
--- invalid target
-C.NameplateTrashUnits = {}
-
 -- Important readings highlighted
 C.MajorSpells = {
 	--[27072] = true,	-- 寒冰箭

@@ -57,9 +57,7 @@ end
 
 local function UpdatePlayerBuffs()
 	local frame = _G.oUF_Player
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local element = frame.Buffs
 	element.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
@@ -74,9 +72,7 @@ end
 
 local function UpdatePlayerDebuffs()
 	local frame = _G.oUF_Player
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local element = frame.Debuffs
 	element.iconsPerRow = C["Unitframe"].PlayerDebuffsPerRow
@@ -91,9 +87,7 @@ end
 
 local function UpdateTargetBuffs()
 	local frame = _G.oUF_Target
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local element = frame.Buffs
 	element.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
@@ -108,9 +102,7 @@ end
 
 local function UpdateTargetDebuffs()
 	local frame = _G.oUF_Target
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local element = frame.Debuffs
 	element.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
@@ -232,14 +224,6 @@ local function UIScaleNotice()
 	end
 end
 
-local function UpdateQuestFontSize()
-	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
-end
-
-local function UpdateObjectiveFontSize()
-	K:GetModule("Miscellaneous"):CreateObjectiveSizeUpdate()
-end
-
 local function UpdateCustomUnitList()
 	K:GetModule("Unitframes"):CreateUnitTable()
 end
@@ -250,6 +234,10 @@ end
 
 local function UpdateInterruptAlert()
 	K:GetModule("Announcements"):CreateInterruptAnnounce()
+end
+
+local function UpdateMaxZoomLevel()
+	K:GetModule("Miscellaneous"):UpdateMaxCameraZoom()
 end
 
 local function UpdateUnitPlayerSize()
@@ -343,9 +331,7 @@ local function UpdateUnitRaidSize()
 	local height = healthHeight
 
 	for i = 1, _G.MAX_RAID_MEMBERS do
-		if InCombatLockdown() then
-			return
-		end
+		if InCombatLockdown() then return end
 
 		local bu = _G["oUF_Raid" .. i .. "UnitButton" .. i]
 		if bu then
@@ -353,10 +339,6 @@ local function UpdateUnitRaidSize()
 			bu.Health:SetHeight(healthHeight)
 		end
 	end
-end
-
-local function UpdateMaxZoomLevel()
-	K:GetModule("Miscellaneous"):UpdateMaxCameraZoom()
 end
 
 -- Sliders > minvalue, maxvalue, stepvalue
@@ -800,8 +782,8 @@ local Skins = function(self)
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
 	Window:CreateSection("Font Tweaks")
-	Window:CreateSlider("Skins", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
-	Window:CreateSlider("Skins", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
+	Window:CreateSlider("Skins", "FontScale", "Global Font Scale", .5, 1.5, .05)
+	--Window:CreateSlider("Skins", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
 
 	-- Disabled / Broken Skins
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])

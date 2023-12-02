@@ -555,7 +555,7 @@ function Module:RaidTool_CreateMenu(parent)
 				SendChatMessage(L["Raid Disbanding"], "RAID")
 				for i = 1, GetNumGroupMembers() do
 					local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
-					if online and name ~= K.MyName then
+					if online and name ~= K.Name then
 						_G.UninviteUnit(name)
 					end
 				end

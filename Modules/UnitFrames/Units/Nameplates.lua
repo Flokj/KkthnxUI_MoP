@@ -60,7 +60,7 @@ function Module:UpdatePlateCVars()
 	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 	SetCVar("nameplateNotSelectedAlpha", 1)
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
-	SetCVar("nameplateShowOnlyNames", 0)
+	SetCVar("nameplateShowOnlyNames", 1)
 	SetCVar("nameplateShowFriendlyNPCs", 0)
 end
 
@@ -181,9 +181,7 @@ end
 
 -- Update unit color
 function Module:UpdateColor(_, unit)
-	if not unit or self.unit ~= unit then
-		return
-	end
+	if not unit or self.unit ~= unit then return end
 
 	local element = self.Health
 	local name = self.unitName
@@ -220,7 +218,7 @@ function Module:UpdateColor(_, unit)
 			end
 		elseif isPlayer and not isFriendly and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
-		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) or C.NameplateTrashUnits[npcID] then
+		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
 			r, g, b = K.UnitColor(unit)
@@ -492,9 +490,7 @@ function Module:UpdateQuestUnit(_, unit)
 end
 
 function Module:AddQuestIcon(self)
-	if not C["Nameplate"].QuestIndicator then
-		return
-	end
+	if not C["Nameplate"].QuestIndicator then return end
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
@@ -670,14 +666,6 @@ function Module:CreatePlates()
 		K:SmoothBar(self.Health)
 	end
 
-	self.levelText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
-	self.levelText:SetJustifyH("RIGHT")
-	self.levelText:ClearAllPoints()
-	--self.levelText:SetPoint("RIGHT", self, "RIGHT", 25, 0)
-	self.levelText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 6, 4)
-	self.levelText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 6, 4)
-	self:Tag(self.levelText, "[nplevel]")
-
 	self.nameText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.nameText:SetJustifyH("CENTER")
 	self.nameText:ClearAllPoints()
@@ -811,7 +799,7 @@ function Module:UpdateNameplateSize()
 	self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
 	if self.plateType ~= "NameOnly" then
 		self:Tag(self.nameText, "[name]") --npname+level
-		self.nameText:UpdateTag()
+		self.npcTitle:UpdateTag()
 	end
 
 	self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
@@ -853,7 +841,6 @@ local DisabledElements = {
 }
 function Module:UpdatePlateByType()
 	local name = self.nameText
-	local level = self.levelText
 	local hpval = self.healthValue
 	local title = self.npcTitle
 	local guild = self.guildName
@@ -877,7 +864,6 @@ function Module:UpdatePlateByType()
 		--name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -15)
 		--name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 
-		level:Hide()
 		hpval:Hide()
 		title:Hide()
 		guild:Hide()
@@ -885,10 +871,7 @@ function Module:UpdatePlateByType()
 		raidtarget:SetPoint("BOTTOM", name, "TOP", 0, 5)
 		raidtarget:SetParent(self)
 
-		if questIcon then
-			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
-		end
-
+		if questIcon then questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0) end
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
 			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -5)
@@ -904,16 +887,12 @@ function Module:UpdatePlateByType()
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, 4)
 
-		level:Hide()
 		hpval:Show()
 		title:Hide()
 		guild:Hide()
 
 		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
-
-		if questIcon then
-			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-		end
+		if questIcon then questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0) end
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()

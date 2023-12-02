@@ -384,8 +384,12 @@ do
 		return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 	end
 
+	-- Fontstring
+	function K:SetFontSize(size)
+		self:SetFont(K.Font[1], size, K.Font[3])
+	end
+
 	function K.HideTooltip()
-		if GameTooltip:IsForbidden() then return end
 		GameTooltip:Hide()
 	end
 

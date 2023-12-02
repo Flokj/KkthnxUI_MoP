@@ -481,8 +481,8 @@ C["Skins"] = {
 	["TitanPanel"] = false,
 	["WeakAuras"] = false,
 
-	["ObjectiveFontSize"] = 14,
-	["QuestFontSize"] = 12,
+	["FontScale"] = 1,
+	["FontOutline"] = false,
 }
 
 -- Tooltip
