@@ -849,7 +849,6 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "PlayerCastbar", L["Enable Player CastBar"])
 	Window:CreateSwitch("Unitframe", "PlayerCastbarIcon", L["Enable Player CastBar"] .. " Icon")
 	Window:CreateSwitch("Unitframe", "PlayerDebuffs", L["Show Player Frame Debuffs"])
-	Window:CreateSwitch("Unitframe", "PlayerPowerPrediction", L["Show Player Power Prediction"])
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
 	end
@@ -1028,14 +1027,13 @@ local WorldMap = function(self)
 
 	Window:CreateSection(L["Toggles"])
 	Window:CreateSwitch("WorldMap", "Coordinates", L["Show Player/Mouse Coordinates"])
-	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
-	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])
 
 	Window:CreateSection("WorldMap Reveal")
 	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])
 	Window:CreateColorSelection("WorldMap", "MapRevealGlowColor", L["Map Reveal Shadow Color"])
 
 	Window:CreateSection(L["Sizes"])
+	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.1)
 end
 

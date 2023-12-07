@@ -532,7 +532,6 @@ C["Unitframe"] = {
 	["PlayerHealthHeight"] = 36,
 	["PlayerHealthWidth"] = 190,
 	["PlayerPowerHeight"] = 16,
-	["PlayerPowerPrediction"] = true,
 
 	["PvPIndicator"] = true,
 	["ShowHealPrediction"] = true,
@@ -740,5 +739,4 @@ C["WorldMap"] = {
 	["FadeWhenMoving"] = true,
 	["MapRevealGlow"] = true,
 	["MapRevealGlowColor"] = { 0.7, 0.7, 0.7 },
-	["SmallWorldMap"] = true,
 }

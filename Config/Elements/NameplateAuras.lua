@@ -3,7 +3,7 @@ local _, C = unpack(KkthnxUI)
 local _G = _G
 
 C.NameplateWhiteList = {
-	-- Boss/Other
+	--[[ Boss/Other
     [24364] = true, -- Free Action 5s
     [6615]  = true, -- Free Action 30s
     [39965] = true, -- Frost Grenade
@@ -19,7 +19,7 @@ C.NameplateWhiteList = {
     [301089] = true, -- Horde flag(warsong)
     [34976] = true, -- Eyes flag
     [70338] = true, -- Necrotic Plague
-    [72148] = true, -- Enrage (dublicate warrior enrage by spell name)
+    [72148] = true, -- Enrage (dublicate warrior enrage by spell name)]]
 
     --[29703] = true, -- Dazed(-50% move.speed/%.s)
 

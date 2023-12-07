@@ -115,9 +115,6 @@ K.SystemColor = "|CFFFFCC66"
 
 -- Fonts
 K.Font = {STANDARD_TEXT_FONT, 12, "OUTLINE"}
-K.LineString = K.GreyColor.."---------------"
-K.KkthnxUIString = "|cff0080ffKkthnxUI:|r"
-
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"
 K.UIFontOutline = "KkthnxUIFontOutline"

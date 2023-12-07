@@ -2,7 +2,7 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local select = _G.select
+local select = select
 local string_format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
@@ -21,20 +21,7 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 	end
 end
 
-local function updatePartySync(self)
-	local hasJoined = C_QuestSession.HasJoined()
-	if hasJoined then
-		self.QuestSyncIndicator:Show()
-	else
-		self.QuestSyncIndicator:Hide()
-	end
-end
-
 function Module:CreatePlayer()
-	-- local timeStart, memStart = 0, 0
-	-- if K.isProfiling then
-	-- 	timeStart, memStart = debugprofilestop(), collectgarbage("count")
-	-- end
 	self.mystyle = "player"
 
 	local playerWidth = C["Unitframe"].PlayerHealthWidth
@@ -92,9 +79,7 @@ function Module:CreatePlayer()
 	Power.colorPower = true
 	Power.frequentUpdates = true
 
-	if C["Unitframe"].Smooth then
-		K:SmoothBar(Power)
-	end
+	if C["Unitframe"].Smooth then K:SmoothBar(Power) end
 
 	Power.Value = Power:CreateFontString(nil, "OVERLAY")
 	Power.Value:SetPoint("CENTER", Power, "CENTER", 0, 0)
@@ -206,21 +191,6 @@ function Module:CreatePlayer()
 		self.predicFrame = frame
 	end
 
-	if C["Unitframe"].PlayerPowerPrediction then
-		-- local mainBar = CreateFrame("StatusBar", self:GetName() .. "PowerPrediction", Power)
-		-- mainBar:SetReverseFill(true)
-		-- mainBar:SetPoint("TOP", 0, -1)
-		-- mainBar:SetPoint("BOTTOM", 0, 1)
-		-- mainBar:SetPoint("RIGHT", Power:GetStatusBarTexture(), "RIGHT", -1, 0)
-		-- mainBar:SetStatusBarTexture(HealPredictionTexture)
-		-- mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
-		-- mainBar:SetWidth(playerWidth)
-
-		-- self.PowerPrediction = {
-		-- 	mainBar = mainBar,
-		-- }
-	end
-
 	-- Level
 	if C["Unitframe"].ShowPlayerLevel then
 		local Level = self:CreateFontString(nil, "OVERLAY")
@@ -237,9 +207,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		if K.Class ~= "DRUID" then
-			return
-		end
+		if K.Class ~= "DRUID" then return end
 
 		local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", Health)
 		AdditionalPower.frequentUpdates = true
@@ -430,24 +398,6 @@ function Module:CreatePlayer()
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
 
-	--[[local RestingIndicator = Health:CreateTexture(nil, "OVERLAY")
-	RestingIndicator:SetPoint("RIGHT", -2, 2)
-	RestingIndicator:SetSize(22, 22)]]
-
-	local QuestSyncIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
-		QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)
-	else
-		QuestSyncIndicator:SetPoint("BOTTOM", Health, "BOTTOM", 0, -13)
-	end
-	QuestSyncIndicator:SetSize(26, 26)
-	QuestSyncIndicator:SetAtlas("QuestSharing-DialogIcon")
-	QuestSyncIndicator:Hide()
-
-	self:RegisterEvent("QUEST_SESSION_LEFT", updatePartySync, true)
-	self:RegisterEvent("QUEST_SESSION_JOINED", updatePartySync, true)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePartySync, true)
-
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
 		DebuffHighlight:SetAllPoints(Health)
@@ -494,8 +444,6 @@ function Module:CreatePlayer()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.ResurrectIndicator = ResurrectIndicator
-	self.RestingIndicator = RestingIndicator
-	self.QuestSyncIndicator = QuestSyncIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
 

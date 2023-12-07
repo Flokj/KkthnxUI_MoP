@@ -11,7 +11,6 @@ function Module:CreateFocus()
 
 	local focusWidth = C["Unitframe"].FocusHealthWidth
 	local focusPortraitStyle = C["Unitframe"].PortraitStyle.Value
-
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -175,15 +174,6 @@ function Module:CreateFocus()
 		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
-
-		--[[self.ShieldOverlay = CreateFrame("Frame", nil, self.Castbar) -- We will use this to overlay onto our special borders.
-		self.ShieldOverlay:SetAllPoints()
-		self.ShieldOverlay:SetFrameLevel(5)
-
-		self.Castbar.Shield = self.ShieldOverlay:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Shield:SetAtlas("nameplates-InterruptShield")
-		self.Castbar.Shield:SetSize(C["Unitframe"].FocusCastbarHeight + 10, C["Unitframe"].FocusCastbarHeight + 10)
-		self.Castbar.Shield:SetPoint("CENTER", 0, -14)]]
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Time:SetFontObject(K.UIFont)

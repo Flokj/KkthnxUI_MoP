@@ -280,10 +280,6 @@ function Module:CreateTarget()
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
 
-	local QuestIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	QuestIndicator:SetSize(20, 20)
-	QuestIndicator:SetPoint("TOPLEFT", Health, "TOPRIGHT", -6, 6)
-
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
 		DebuffHighlight:SetAllPoints(Health)
@@ -321,6 +317,5 @@ function Module:CreateTarget()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.ResurrectIndicator = ResurrectIndicator
-	self.QuestIndicator = QuestIndicator
 	self.Highlight = Highlight
 end

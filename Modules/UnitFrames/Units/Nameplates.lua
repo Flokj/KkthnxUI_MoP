@@ -61,7 +61,7 @@ function Module:UpdatePlateCVars()
 	SetCVar("nameplateNotSelectedAlpha", 1)
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 	SetCVar("nameplateShowOnlyNames", 1)
-	SetCVar("nameplateShowFriendlyNPCs", 0)
+	SetCVar("nameplateShowFriendlyNPCs", 1)
 end
 
 function Module:PlateInsideView()
@@ -95,7 +95,7 @@ function Module:SetupCVars()
 	SetCVar("nameplateLargerScale", 1)
 	SetCVar("nameplateGlobalScale", 1)
 
-	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesNameplateMaxDistanceSlider)
+	--K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesNameplateMaxDistanceSlider)
 end
 
 function Module:BlockAddons()

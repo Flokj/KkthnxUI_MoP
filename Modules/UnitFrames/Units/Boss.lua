@@ -12,9 +12,7 @@ function Module:CreateBoss()
 	local bossWidth = C["Boss"].HealthWidth
 	local bossHeight = C["Boss"].HealthHeight
 	local bossPortraitStyle = C["Unitframe"].PortraitStyle.Value
-
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()

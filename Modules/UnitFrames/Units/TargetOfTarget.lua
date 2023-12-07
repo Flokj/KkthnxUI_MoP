@@ -48,15 +48,15 @@ function Module:CreateTargetOfTarget()
 	--Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
 	--self:Tag(Health.Value, "[hp]")
 
-	--[[local Power = CreateFrame("StatusBar", nil, self)
-	Power:SetHeight(C["Unitframe"].TargetTargetPowerHeight)
-	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -6)
-	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -6)
-	Power:SetStatusBarTexture(UnitframeTexture)
-	Power:CreateBorder()
+	--local Power = CreateFrame("StatusBar", nil, self)
+	--Power:SetHeight(C["Unitframe"].TargetTargetPowerHeight)
+	--Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -6)
+	--Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -6)
+	--Power:SetStatusBarTexture(UnitframeTexture)
+	--Power:CreateBorder()
 
-	Power.colorPower = true
-	Power.frequentUpdates = false]]
+	--Power.colorPower = true
+	--Power.frequentUpdates = false
 
 	local Name = Health:CreateFontString(nil, "OVERLAY")
 	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, -18)
