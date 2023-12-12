@@ -81,7 +81,6 @@ do
 	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
 	K.Serialize = LibStub("LibSerialize-KkthnxUI")
 	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
-	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
 end
@@ -257,9 +256,7 @@ function K.SetupUIScale(init)
 end
 
 local function UpdatePixelScale(event)
-	if isScaling then
-		return
-	end
+	if isScaling then return end
 	isScaling = true
 
 	if event == "UI_SCALE_CHANGED" then
@@ -289,17 +286,12 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 
 	K.Modules = modules
 
-	if K.InitCallback then
-		K:InitCallback()
-	end
+	if K.InitCallback then K:InitCallback() end
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP
 K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
-	if not K.Level then
-		return
-	end
-
+	if not K.Level then return end
 	K.Level = level
 end)
 

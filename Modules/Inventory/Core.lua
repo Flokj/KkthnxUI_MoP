@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Bags")
 
-local Unfit = K.Unfit
 local cargBags = K.cargBags
 
 local _G = _G
@@ -1125,17 +1124,9 @@ function Module:OnEnable()
 	end
 
 	local function UpdatePawnArrow(self, item)
-		if not hasPawn then
-			return
-		end
-
-		if not PawnIsContainerItemAnUpgrade then
-			return
-		end
-
+		if not hasPawn then return end
+		if not PawnIsContainerItemAnUpgrade then return end
 		if self.UpgradeIcon then
-			self.UpgradeIcon:ClearAllPoints()
-			self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
 			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
 		end
 	end
@@ -1148,16 +1139,6 @@ function Module:OnEnable()
 				self.JunkIcon:Hide()
 			end
 		end
-
-		-- Determine if we can use that item or not?
-		if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
-			self.Icon:SetVertexColor(1, 0.1, 0.1)
-		else
-			self.Icon:SetVertexColor(1, 1, 1)
-		end
-
-		self.IconOverlay:SetVertexColor(1, 1, 1)
-		self.IconOverlay:Hide()
 
 		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
 			self.Favourite:Show()
@@ -1198,13 +1179,13 @@ function Module:OnEnable()
 			end
 		end
 
-		--if C["Inventory"].SpecialBagsColor then
-		--	local bagType = Module.BagGroups[item.bagID]
-		--	local color = bagTypeColor[bagType] or bagTypeColor[0]
-		--	self:SetBackdropColor(unpack(color))
-		--else
-		--	self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
-		--end
+		if C["Inventory"].SpecialBagsColor then
+			local bagType = cargBags.BagGroups[item.bagID]
+			local color = bagTypeColor[bagType] or bagTypeColor[0]
+			self:SetBackdropColor(unpack(color))
+		else
+			self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
+		end
 
 		-- Hide empty tooltip
 		if not item.texture and GameTooltip:GetOwner() == self then

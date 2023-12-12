@@ -5,14 +5,13 @@
    <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" />
    <Script file="LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
    <Script file="LibDeflate\LibDeflate.lua"/>
+   <Script file="LibSerialize\LibSerialize.lua"/>
 
    <Script file="LibDetours-1.0\LibDetours-1.0.lua"/>
-   <Script file="LibClassicInspector\LibClassicInspector.lua"/>
-   
-	<Script file="LibSerialize\LibSerialize.lua"/>
+   <Script file="LibClassicInspector\LibClassicInspector.lua"/>   
+	
    <Script file="LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>
    <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/>
-   <Script file="Unfit-1.0\Unfit-1.0.lua"/>
    <Script file="LibBase64-1.0\LibBase64-1.0.lua" />
    <Script file="LibShowUIPanel-1.0\LibShowUIPanel-1.0.lua"/>
    <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua" />
