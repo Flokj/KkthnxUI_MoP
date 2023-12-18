@@ -161,7 +161,7 @@ function Module:CreateTargetOfTarget()
 		Override = Module.UpdateThreat,
 	}
 
-	local Range = Module.CreateRangeIndicator(self)
+	--local Range = Module.CreateRangeIndicator(self)
 
 	self.Overlay = Overlay
 	self.Health = Health
@@ -172,5 +172,5 @@ function Module:CreateTargetOfTarget()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	self.Range = Range
+	--self.Range = Range
 end

@@ -94,3 +94,12 @@ function Module:OnEnable()
 	Module:VersionCheck_UpdateGroup()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
 end
+
+-- Register a slash command
+SLASH_KKUIVERSIONCHECK1 = "/kkvc"
+
+-- Slash command handler
+SlashCmdList["KKUIVERSIONCHECK"] = function(msg)
+	print("Version check command triggered")
+	Module:VersionCheck_Init()
+end

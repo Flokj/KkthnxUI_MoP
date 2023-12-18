@@ -52,41 +52,36 @@ local NPClassifies = {
 
 -- Init
 function Module:UpdatePlateCVars()
-	SetCVar("ClampTargetNameplateToScreen", 1)
-	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
+	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)		
 	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
 	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateNotSelectedAlpha", 1)
+	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	SetCVar("nameplateNotSelectedAlpha", 1)
 	SetCVar("nameplateShowOnlyNames", 1)
 	SetCVar("nameplateShowFriendlyNPCs", 1)
-end
+	SetCVar("ClampTargetNameplateToScreen", 1)
 
-function Module:PlateInsideView()
+	local topInset, bottomInset = -1, -1
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.10)
-		SetCVar("nameplateOtherBottomInset", 0.12)
-	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
+		topInset, bottomInset = 0.10, 0.12
 	end
+
+	SetCVar("nameplateOtherTopInset", topInset)
+	SetCVar("nameplateOtherBottomInset", bottomInset)
 end
 
 function Module:UpdateClickableSize()
 	if InCombatLockdown() then return end
 
 	local uiScale = C["General"].UIScale
-	local PlateWidth, PlateHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
-
-	C_NamePlate_SetNamePlateEnemySize(PlateWidth * uiScale, PlateHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(PlateWidth * uiScale, PlateHeight * uiScale)
+	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
 end
 
 function Module:SetupCVars()
 	Module:UpdatePlateCVars()
-	Module:PlateInsideView()
 	SetCVar("nameplateOverlapH", 0.8)
 	SetCVar("nameplateSelectedAlpha", 1)
 	Module:UpdateClickableSize()
@@ -95,7 +90,7 @@ function Module:SetupCVars()
 	SetCVar("nameplateLargerScale", 1)
 	SetCVar("nameplateGlobalScale", 1)
 
-	--K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesNameplateMaxDistanceSlider)
+	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
 function Module:BlockAddons()
@@ -291,16 +286,16 @@ function Module:UpdateTargetChange()
 	local unit = self.unit
 
 	if C["Nameplate"].TargetIndicator.Value ~= 1 then
-		if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
-			element:Show()
-			if element.TopArrow:IsShown() and not element.TopArrowAnim:IsPlaying() then
-				element.TopArrowAnim:Play()
-			end
-		else
-			element:Hide()
-			if element.TopArrowAnim:IsPlaying() then
-				element.TopArrowAnim:Stop()
-			end
+		local isTarget = UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player")
+		element:SetShown(isTarget)
+
+		local shouldPlayAnim = isTarget and not element.TopArrowAnim:IsPlaying()
+		local shouldStopAnim = not isTarget and element.TopArrowAnim:IsPlaying()
+
+		if shouldPlayAnim then
+			element.TopArrowAnim:Play()
+		elseif shouldStopAnim then
+			element.TopArrowAnim:Stop()
 		end
 	end
 
@@ -316,88 +311,68 @@ function Module:UpdateTargetIndicator()
 
 	if style == 1 then
 		element:Hide()
-	else
-		if style == 2 then
-			element.TopArrow:Show()
-			element.RightArrow:Hide()
-			element.Glow:Hide()
-			element.nameGlow:Hide()
-		elseif style == 3 then
-			element.TopArrow:Hide()
-			element.RightArrow:Show()
-			element.Glow:Hide()
-			element.nameGlow:Hide()
-		elseif style == 4 then
-			element.TopArrow:Hide()
-			element.RightArrow:Hide()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		elseif style == 5 then
-			element.TopArrow:Show()
-			element.RightArrow:Hide()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		elseif style == 6 then
-			element.TopArrow:Hide()
-			element.RightArrow:Show()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		end
-		element:Show()
+		return
 	end
+
+	local showTopArrow = style == 2 or style == 5
+	local showRightArrow = style == 3 or style == 6
+	local showGlow = (style == 4 or style == 5 or style == 6) and not isNameOnly
+	local showNameGlow = (style == 4 or style == 5 or style == 6) and isNameOnly
+
+	element.TopArrow:SetShown(showTopArrow)
+	element.RightArrow:SetShown(showRightArrow)
+	element.Glow:SetShown(showGlow)
+	element.nameGlow:SetShown(showNameGlow)
+	element:Show()
 end
 
 local points = { -15, -5, 0, 5, 0 }
+
 function Module:AddTargetIndicator(self)
-	TargetIndicator = CreateFrame("Frame", nil, self)
+	local TargetIndicator = CreateFrame("Frame", nil, self)
 	TargetIndicator:SetAllPoints()
 	TargetIndicator:SetFrameLevel(0)
 	TargetIndicator:Hide()
 
-	TargetIndicator.TopArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	TargetIndicator.TopArrow:SetSize(128 / 2, 128 / 2)
-	TargetIndicator.TopArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
-	TargetIndicator.TopArrow:SetPoint("BOTTOM", TargetIndicator, "TOP", 0, 40)
+	-- Function to create and configure arrows
+	local function CreateArrow(parent, point, x, y, rotation)
+		local arrow = parent:CreateTexture(nil, "BACKGROUND", nil, -5)
+		arrow:SetSize(64, 64) -- 128 / 2 simplified
+		arrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
+		arrow:SetPoint(point, parent, point, x, y)
+		if rotation then
+			arrow:SetRotation(rotation)
+		end
+		return arrow
+	end
 
+	-- Top arrow
+	TargetIndicator.TopArrow = CreateArrow(TargetIndicator, "BOTTOM", 0, 40)
 	local animGroup = TargetIndicator.TopArrow:CreateAnimationGroup()
 	animGroup:SetLooping("REPEAT")
 	local anim = animGroup:CreateAnimation("Path")
 	anim:SetDuration(1)
-	for i = 1, #points do
+
+	for i, offset in ipairs(points) do
 		local point = anim:CreateControlPoint()
 		point:SetOrder(i)
-		point:SetOffset(0, points[i])
+		point:SetOffset(0, offset)
 	end
+
 	TargetIndicator.TopArrowAnim = animGroup
 
-	TargetIndicator.RightArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	TargetIndicator.RightArrow:SetSize(128 / 2, 128 / 2)
-	TargetIndicator.RightArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
-	TargetIndicator.RightArrow:SetPoint("LEFT", TargetIndicator, "RIGHT", 3, 0)
-	TargetIndicator.RightArrow:SetRotation(math_rad(-90))
+	-- Right arrow
+	TargetIndicator.RightArrow = CreateArrow(TargetIndicator, "LEFT", 3, 0, math_rad(-90))
 
+	-- Glow
 	TargetIndicator.Glow = CreateFrame("Frame", nil, TargetIndicator, "BackdropTemplate")
 	TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
 	TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
 	TargetIndicator.Glow:SetBackdrop({ edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4 })
-	TargetIndicator.Glow:SetBackdropBorderColor(C["Nameplate"].TargetIndicatorColor[1], C["Nameplate"].TargetIndicatorColor[2], C["Nameplate"].TargetIndicatorColor[3])
+	TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	TargetIndicator.Glow:SetFrameLevel(0)
 
+	-- Name glow
 	TargetIndicator.nameGlow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	TargetIndicator.nameGlow:SetSize(120, 80)
 	TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
@@ -476,7 +451,7 @@ function Module:UpdateQuestUnit(_, unit)
 
 	if questProgress then
 		self.questCount:SetText(questProgress)
-		self.questIcon:SetAtlas("tormentors-event")
+		self.questIcon:SetAtlas("pvptalents-warmode-swords")
 		self.questIcon:Show()
 	else
 		self.questCount:SetText("")
@@ -494,7 +469,7 @@ function Module:AddQuestIcon(self)
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-	self.questIcon:SetSize(26, 26)
+	self.questIcon:SetSize(28, 25)
 	self.questIcon:SetAtlas("QuestNormal")
 	self.questIcon:Hide()
 
@@ -790,36 +765,38 @@ function Module:UpdateNameplateAuras()
 end
 
 function Module:UpdateNameplateSize()
-	local plateHeight = C["Nameplate"].PlateHeight
-	local nameTextSize = C["Nameplate"].NameTextSize
-	local iconSize = plateHeight * 2 + 3
+	-- local plateHeight = C["Nameplate"].PlateHeight
+	-- local nameTextSize = C["Nameplate"].NameTextSize
+	-- local iconSize = plateHeight * 2 + 3
 
-	self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
+	-- self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
 
-	self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	if self.plateType ~= "NameOnly" then
-		self:Tag(self.nameText, "[name]") --npname+level
+	-- self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	if self.plateType == "NameOnly" then
+		self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
 		self.npcTitle:UpdateTag()
+	else
+		self:Tag(self.nameText, "[name]")
 	end
 
-	self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
-	self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
+	-- self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
+	-- self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
 
-	self.Castbar.Icon:SetSize(iconSize, iconSize)
-	self.Castbar:SetHeight(plateHeight)
-	--self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
-	--self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
-	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "RIGHT", 0, 5)
-	self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "LEFT", 0, 5)
-	self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
-
-	self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
-	self.healthValue:UpdateTag()
+	-- self.Castbar.Icon:SetSize(iconSize, iconSize)
+	-- self.Castbar:SetHeight(plateHeight)
+	-- self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	-- self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
+	-- self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "RIGHT", 0, 5)
+	-- self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "LEFT", 0, 5)
+	-- self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
+ 
+	-- self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
+	-- self.healthValue:UpdateTag()
 end
 
 function Module:RefreshNameplats()
 	for nameplate in pairs(platesList) do
-		Module.UpdateNameplateSize(nameplate)
+		--Module.UpdateNameplateSize(nameplate)
 		Module.UpdateUnitClassify(nameplate)
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
@@ -861,8 +838,6 @@ function Module:UpdatePlateByType()
 		self:Tag(name, "[nprare] [color][name] [nplevel]")
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
-		--name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -15)
-		--name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 
 		hpval:Hide()
 		title:Hide()
@@ -899,7 +874,7 @@ function Module:UpdatePlateByType()
 			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
 		end
 
-		Module.UpdateNameplateSize(self)
+		--Module.UpdateNameplateSize(self)
 	end
 
 	Module.UpdateTargetIndicator(self)

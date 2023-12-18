@@ -1052,10 +1052,6 @@ function Module:OnEnable()
 		self.iLvl:SetFontObject(K.UIFontOutline)
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
-		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPLEFT", 1, -2)
-		self.bindType:SetFontObject(K.UIFontOutline)
-		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
-
 		if showNewItem then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 			self.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 18 })
@@ -1073,12 +1069,6 @@ function Module:OnEnable()
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
-
-		if hasCanIMogIt then
-			self.canIMogIt = parentFrame:CreateTexture(nil, "OVERLAY")
-			self.canIMogIt:SetSize(C["Inventory"].IconSize / 2.6, C["Inventory"].IconSize / 2.6)
-			self.canIMogIt:SetPoint(unpack(CanIMogIt.ICON_LOCATIONS[CanIMogItOptions["iconLocation"]]))
-		end
 	end
 
 	function MyButton:ItemOnEnter()

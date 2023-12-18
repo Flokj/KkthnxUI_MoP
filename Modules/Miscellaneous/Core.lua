@@ -10,8 +10,6 @@ local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoBy
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local FRIEND = _G.FRIEND
-local GUILD = _G.GUILD
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
@@ -20,14 +18,18 @@ local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsGuildMember = _G.IsGuildMember
-local NO = _G.NO
 local PlaySound = _G.PlaySound
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UnitGUID = _G.UnitGUID
-local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
+
+-- Localizing WoW UI constants
+local FRIEND = FRIEND
+local GUILD = GUILD
+local NO = NO
+local YES = YES
 
 local KKUI_MISC_LIST = {}
 

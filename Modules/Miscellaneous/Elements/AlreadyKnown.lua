@@ -4,7 +4,51 @@ local Module = K:GetModule("Tooltip")
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
 
-local strmatch, strfind, strsplit, mod = string.match, string.find, string.split, mod
+-- Cache global functions
+local strmatch = strmatch
+local tonumber = tonumber
+local ceil = math.ceil
+local format = string.format
+
+-- Cache WoW API functions
+local GetItemInfo = GetItemInfo
+local GetInboxItem = GetInboxItem
+local GetInboxItemLink = GetInboxItemLink
+local GetLootSlotInfo = GetLootSlotInfo
+local GetLootSlotLink = GetLootSlotLink
+local GetMerchantNumItems = GetMerchantNumItems
+local GetMerchantItemInfo = GetMerchantItemInfo
+local GetMerchantItemLink = GetMerchantItemLink
+local GetNumQuestRewards = GetNumQuestRewards
+local GetNumQuestChoices = GetNumQuestChoices
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestLogItemLink = GetQuestLogItemLink
+local GetQuestItemLink = GetQuestItemLink
+local GetNumBuybackItems = GetNumBuybackItems
+local GetBuybackItemInfo = GetBuybackItemInfo
+local GetBuybackItemLink = GetBuybackItemLink
+local GetCurrentGuildBankTab = GetCurrentGuildBankTab
+local GetGuildBankItemInfo = GetGuildBankItemInfo
+local GetGuildBankItemLink = GetGuildBankItemLink
+local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
+
+-- Cache WoW API objects and constants
+local C_TooltipInfo = C_TooltipInfo
+local C_AddOns = C_AddOns
+local LootFrameElementMixin = LootFrameElementMixin
+local COLLECTED = COLLECTED
+local ITEM_SPELL_KNOWN = ITEM_SPELL_KNOWN
+local ATTACHMENTS_MAX_RECEIVE = ATTACHMENTS_MAX_RECEIVE
+local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE
+local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
+local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
+
+-- Cache UI functions
+local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
+local CreateFrame = CreateFrame
+
+-- Cache global variables
+local _G = _G
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables, knowns = {
@@ -14,36 +58,26 @@ local knowables, knowns = {
 }, {}
 
 local function isPetCollected(speciesID)
-	if not speciesID or speciesID == 0 then
-		return
-	end
+	if not speciesID or speciesID == 0 then return end
 	local numOwned = C_PetJournal.GetNumCollectedInfo(speciesID)
-	if numOwned > 0 then
-		return true
-	end
+	if numOwned > 0 then return true end
 end
 
 local function IsAlreadyKnown(link, index)
-	if not link then
-		return
-	end
+	if not link then return end
 
 	if strmatch(link, "battlepet:") then
 		local speciesID = select(2, strsplit(":", link))
 		return isPetCollected(speciesID)
 	elseif strmatch(link, "item:") then
 		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
-		if not name then
-			return
-		end
+		if not name then return end
 
 		if itemClassID == LE_ITEM_CLASS_BATTLEPET and index then
 			local speciesID = K.ScanTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
 			return isPetCollected(speciesID)
 		else
-			if knowns[link] then
-				return true
-			end
+			if knowns[link] then return true end
 			if not knowables[itemClassID] then
 				return
 			end
@@ -66,9 +100,7 @@ local function MerchantFrame_UpdateMerchantInfo()
 	local numItems = GetMerchantNumItems()
 	for i = 1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE + i
-		if index > numItems then
-			return
-		end
+		if index > numItems then return end
 
 		local button = _G["MerchantItem" .. i .. "ItemButton"]
 		if button and button:IsShown() then
@@ -88,9 +120,7 @@ hooksecurefunc("MerchantFrame_UpdateMerchantInfo", MerchantFrame_UpdateMerchantI
 local function MerchantFrame_UpdateBuybackInfo()
 	local numItems = GetNumBuybackItems()
 	for index = 1, BUYBACK_ITEMS_PER_PAGE do
-		if index > numItems then
-			return
-		end
+		if index > numItems then return end
 
 		local button = _G["MerchantItem" .. index .. "ItemButton"]
 		if button and button:IsShown() then
@@ -109,9 +139,7 @@ local function AuctionFrameBrowse_Update()
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame)
 	for i = 1, NUM_BROWSE_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then
-			return
-		end
+		if index > numItems then return end
 
 		local texture = _G["BrowseButton" .. i .. "ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -128,9 +156,7 @@ local function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame)
 	for i = 1, NUM_BIDS_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then
-			return
-		end
+		if index > numItems then return end
 
 		local texture = _G["BidButton" .. i .. "ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -147,9 +173,7 @@ local function AuctionFrameAuctions_Update()
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame)
 	for i = 1, NUM_AUCTIONS_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then
-			return
-		end
+		if index > numItems then return end
 
 		local texture = _G["AuctionsButton" .. i .. "ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -165,14 +189,8 @@ local function AuctionFrameAuctions_Update()
 	end
 end
 
--- guild bank frame
-local MAX_GUILDBANK_SLOTS_PER_TAB = 98
-local NUM_SLOTS_PER_GUILDBANK_GROUP = 14
-
 local function GuildBankFrame_Update(self)
-	if self.mode ~= "bank" then
-		return
-	end
+	if self.mode ~= "bank" then return end
 
 	local button, index, column, texture, locked, quality
 	local tab = GetCurrentGuildBankTab()
@@ -212,8 +230,10 @@ f:SetScript("OnEvent", function(_, event, addon)
 		hooksecurefunc("AuctionFrameAuctions_Update", AuctionFrameAuctions_Update)
 		hookCount = hookCount + 1
 	elseif addon == "Blizzard_GuildBankUI" then
-		hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
-		hookCount = hookCount + 1
+		if GuildBankFrame then
+			hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
+			hookCount = hookCount + 1
+		end
 	end
 
 	if hookCount >= 2 then

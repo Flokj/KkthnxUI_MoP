@@ -109,7 +109,7 @@ K.WowBuild = tonumber(K.WowBuild)
 
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
-K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
+K.InfoColorTint = "|CFF93BAFF" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 
 -- Fonts

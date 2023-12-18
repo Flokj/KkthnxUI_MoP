@@ -368,7 +368,7 @@ function Module:CreateParty()
 		Override = Module.UpdateThreat,
 	}
 
-	local Range = Module.CreateRangeIndicator(self)
+	--local Range = Module.CreateRangeIndicator(self)
 
 	self.Overlay = Overlay
 	self.Health = Health
@@ -384,5 +384,5 @@ function Module:CreateParty()
 	self.ResurrectIndicator = ResurrectIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	self.Range = Range
+	--self.Range = Range
 end

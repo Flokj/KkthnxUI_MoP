@@ -25,13 +25,9 @@ function Module:CreateRangeIndicator()
 end
 
 local function GetGroupUnit(unit)
-	if UnitIsUnit(unit, "player") then
-		return
-	end
+	if UnitIsUnit(unit, "player") then return end
 
-	if string_find(unit, "party") or string_find(unit, "raid") then
-		return unit
-	end
+	if string_find(unit, "party") or string_find(unit, "raid") then return unit end
 
 	-- returns the unit as raid# or party# when grouped
 	if UnitInParty(unit) or UnitInRaid(unit) then
@@ -52,23 +48,14 @@ end
 
 local function friendlyIsInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
-
-	if UnitIsPlayer(unit) and not UnitInPhase(unit) then
-		return false -- is not in same phase
-	end
-
+	if UnitIsPlayer(unit) and not UnitInPhase(unit) then return false end -- is not in same phase
 	local inRange, checkedRange = UnitInRange(unit)
-	if checkedRange and not inRange then
-		return false -- blizz checked and said the unit is out of range
-	end
-
+	if checkedRange and not inRange then return false end -- blizz checked and said the unit is out of range
 	return getMaxRange(unit)
 end
 
 function Module:UpdateRange()
-	if not self.Range then
-		return
-	end
+	if not self.Range then return end
 
 	local alpha
 	local unit = self.unit

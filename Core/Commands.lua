@@ -1,44 +1,33 @@
 local K, _, L = unpack(KkthnxUI)
 
-local _G = _G
-local print = _G.print
-local string_format = _G.string.format
-local string_lower = _G.string.lower
-local string_trim = _G.string.trim
-local tonumber = _G.tonumber
+-- Utility Functions
+local print = print
+local string_format = string.format
+local string_lower = string.lower
+local string_trim = string.trim
+local tonumber = tonumber
 
-local C_QuestLog_AbandonQuest = _G.C_QuestLog.AbandonQuest
-local C_QuestLog_GetInfo = _G.C_QuestLog.GetInfo
-local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
-local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
-local C_QuestLog_SetAbandonQuest = _G.C_QuestLog.SetAbandonQuest
-local C_QuestLog_SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest
-local CombatLogClearEntries = _G.CombatLogClearEntries
-local ConvertToParty = _G.ConvertToParty
-local ConvertToRaid = _G.ConvertToRaid
-local DoReadyCheck = _G.DoReadyCheck
-local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
-local GetContainerItemLink = _G.GetContainerItemLink
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetItemInfo = _G.GetItemInfo
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local PlaySound = _G.PlaySound
-local SlashCmdList = _G.SlashCmdList
-local UIErrorsFrame = _G.UIErrorsFrame
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
+-- WoW API Functions
+local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
+local CombatLogClearEntries = CombatLogClearEntries
+local DoReadyCheck = DoReadyCheck
+local GetContainerItemLink = GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
+local GetItemInfo = GetItemInfo
+local PlaySound = PlaySound
+local UIErrorsFrame = UIErrorsFrame
 
+-- Event Trace
 local EventTraceEnabled = true
 local EventTrace = CreateFrame("Frame")
-EventTrace:SetScript("OnEvent", function(self, event)
+EventTrace:SetScript("OnEvent", function(_, event)
 	if event ~= "GET_ITEM_INFO_RECEIVED" and event ~= "COMBAT_LOG_EVENT_UNFILTERED" then
 		K.Print(event)
 	end
 end)
 
-SlashCmdList["KKUI_EVENTTRACE"] = function()
+-- Command Functions
+local function ToggleEventTrace()
 	if EventTraceEnabled then
 		EventTrace:UnregisterAllEvents()
 		EventTraceEnabled = false
@@ -47,23 +36,19 @@ SlashCmdList["KKUI_EVENTTRACE"] = function()
 		EventTraceEnabled = true
 	end
 end
-_G.SLASH_KKUI_EVENTTRACE1 = "/kkevent"
-_G.SLASH_KKUI_EVENTTRACE2 = "/kkevents"
 
-SlashCmdList["KKUI_GUI"] = function()
+local function ToggleGUI()
 	K.GUI:Toggle()
 end
-_G.SLASH_KKUI_GUI1 = "/kkgui"
-_G.SLASH_KKUI_GUI2 = "/kkconfig"
 
-SlashCmdList["KKUI_VOLUME"] = function(val)
+local function SetVolume(val)
 	local new = tonumber(val)
 	local old = tonumber(GetCVar("Sound_MasterVolume"))
 	if new == old then
 		K.Print(string_format("Volume is already set to |cffa0f6aa%s|r.", old))
 	elseif new and 0 <= new and new <= 1 then
 		if InCombatLockdown() then
-			_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+			UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 			return
 		end
 		SetCVar("Sound_MasterVolume", new)
@@ -72,17 +57,12 @@ SlashCmdList["KKUI_VOLUME"] = function(val)
 		K.Print(string_format("Volume is currently set to |cffa0f6aa%.2f|r.", old))
 	end
 end
-_G.SLASH_KKUI_VOLUME1 = "/kkvol"
-_G.SLASH_KKUI_VOLUME2 = "/kkvolume"
-_G.SLASH_KKUI_VOLUME3 = "/vol"
-_G.SLASH_KKUI_VOLUME4 = "/volume"
 
--- Ready check
-SlashCmdList["KKUI_READYCHECK"] = function()
+local function DoReadyCheckCommand()
 	DoReadyCheck()
 end
-_G.SLASH_KKUI_READYCHECK1 = "/kkrc"
 
+-- Quest Check
 local QuestCheckSubDomain = (setmetatable({
 	ruRU = "ru",
 	frFR = "fr",
@@ -102,18 +82,14 @@ local QuestCheckSubDomain = (setmetatable({
 }))[K.Client]
 
 local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/quest="
-local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|t]]
-local QuestCheckIncomplete = [[|TInterface\RaidFrame\ReadyCheck-NotReady:14:14:-1:-1|t]]
-SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
+local QuestCheckComplete = "|TInterfaceRaidFrameReadyCheck-Ready:14:14:-1:-1|t"
+local QuestCheckIncomplete = "|TInterfaceRaidFrameReadyCheck-NotReady:14:14:-1:-1|t"
+local function CheckQuestStatus(questid)
 	questid = tonumber(questid)
 
 	if not questid then
 		print(L["CheckQuestInfo"])
-		-- print("Enter questID found in Wowhead URL")
-		-- print("http://wowhead.com/quest=ID")
-		-- print("Example: /checkquest 12045")
-
-		_G.StaticPopup_Show("QUEST_CHECK_ID")
+		_G.StaticPopup_Show("KKUI_QUEST_CHECK_ID")
 		return
 	end
 
@@ -127,106 +103,52 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 		K.Print(WoWHeadLoc .. questid)
 	end
 end
-_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkqc"
-_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/kkcq"
-_G.SLASH_KKUI_CHECKQUESTSTATUS3 = "/kkcheckquest"
-_G.SLASH_KKUI_CHECKQUESTSTATUS4 = "/kkquestcheck"
 
--- Help frame.
-SlashCmdList["KKUI_GMTICKET"] = function()
+local function ToggleHelpFrame()
 	_G.ToggleHelpFrame()
 end
-_G.SLASH_KKUI_GMTICKET1 = "/gm"
-_G.SLASH_KKUI_GMTICKET2 = "/ticket"
 
-SlashCmdList["KKUI_DELETEQUESTITEMS"] = function() -- FIX ME DeleteCursorItem() is protected!!!!!
+local function DeleteQuestItems()
 	for bag = 0, 4 do
-		for slot = 1, _G.GetContainerNumSlots(bag) do
+		for slot = 1, C_Container.GetContainerNumSlots(bag) do
 			local itemLink = GetContainerItemLink(bag, slot)
 			if itemLink and select(12, GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
-				_G.print(itemLink)
-				_G.PickupContainerItem(bag, slot)
-				_G.DeleteCursorItem()
+				_G.print("Quest Item to Delete: " .. itemLink .. " in Bag: " .. bag .. " Slot: " .. slot)
 			end
 		end
 	end
+	_G.print("Please manually delete the listed quest items.")
 end
-_G.SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
-_G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 
-SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function(self, event, arg) -- FIX ME DeleteCursorItem() is protected!!!!!
+local function DeleteHeirlooms()
 	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
+		for slot = 1, C_Container.GetContainerNumSlots(bag) do
 			local item = { GetContainerItemInfo(bag, slot) }
-			if item[4] == 7 then
-				_G.PickupContainerItem(bag, slot)
-				_G.DeleteCursorItem() -- Protected, FIX ME
+			if item[4] == 7 then -- Heirloom items
+				_G.print("Heirloom Item to Delete: " .. item[1] .. " in Bag: " .. bag .. " Slot: " .. slot)
 			end
 		end
 	end
+	_G.print("Please manually delete the listed heirloom items.")
 end
-_G.SLASH_KKUI_DELETEHEIRLOOMS1 = "/deleteheirlooms"
-_G.SLASH_KKUI_DELETEHEIRLOOMS2 = "/deletelooms"
 
-SlashCmdList["KKUI_RESETINSTANCE"] = function()
+local function ResetInstance()
 	_G.ResetInstances()
 end
-_G.SLASH_KKUI_RESETINSTANCE1 = "/ri"
-_G.SLASH_KKUI_RESETINSTANCE2 = "/instancereset"
-_G.SLASH_KKUI_RESETINSTANCE3 = "/resetinstance"
 
--- Fix The CombatLog.
-SlashCmdList["KKUI_CLEARCOMBATLOG"] = function()
+local function KeybindFrame()
+	if not _G.KeyBindingFrame then
+		_G.KeyBindingFrame_LoadUI()
+	end
+
+	_G.ShowUIPanel(_G.KeyBindingFrame)
+end
+
+local function ClearCombatLog()
 	CombatLogClearEntries()
 end
-_G.SLASH_KKUI_CLEARCOMBATLOG1 = "/clearcombat"
-_G.SLASH_KKUI_CLEARCOMBATLOG2 = "/clfix"
 
--- Clear all quests in questlog
-SlashCmdList["KKUI_ABANDONQUESTS"] = function()
-	local numShownEntries = C_QuestLog_GetNumQuestLogEntries()
-	for questLogIndex = 1, numShownEntries do
-		local info = C_QuestLog_GetInfo(questLogIndex)
-		local questID = info.questID
-		local isHeader = info.isHeader
-
-		if not isHeader then
-			C_QuestLog_SetSelectedQuest(questID)
-			C_QuestLog_SetAbandonQuest()
-			C_QuestLog_AbandonQuest()
-			PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST)
-		end
-	end
-end
-_G.SLASH_KKUI_ABANDONQUESTS1 = "/killquests"
-_G.SLASH_KKUI_ABANDONQUESTS2 = "/clearquests"
-
--- Convert party to raid
-SlashCmdList["PARTYTORAID"] = function()
-	if GetNumGroupMembers() > 0 then
-		if UnitInRaid("player") and (UnitIsGroupLeader("player")) then
-			ConvertToParty()
-		elseif UnitInParty("player") and (UnitIsGroupLeader("player")) then
-			ConvertToRaid()
-		end
-	else
-		print("|cffff0000" .. ERR_NOT_IN_GROUP .. "|r")
-	end
-end
-_G.SLASH_PARTYTORAID1 = "/toraid"
-_G.SLASH_PARTYTORAID2 = "/toparty"
-_G.SLASH_PARTYTORAID3 = "/convert"
-
--- Deadly boss mods testing.
-SlashCmdList["DBMTEST"] = function()
-	if K.CheckAddOnState("DBM-Core") then
-		_G.DBM:DemoMode()
-	end
-end
-_G.SLASH_DBMTEST1 = "/dbmtest"
-
--- Clear chat
-SlashCmdList["CLEARCHAT"] = function(cmd)
+local function ClearChat(cmd)
 	cmd = cmd and string_trim(string_lower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
 		local f = _G["ChatFrame" .. i]
@@ -235,5 +157,131 @@ SlashCmdList["CLEARCHAT"] = function(cmd)
 		end
 	end
 end
-_G.SLASH_CLEARCHAT1 = "/clearchat"
-_G.SLASH_CLEARCHAT2 = "/chatclear"
+
+local function AbandonAllQuests()
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		C_QuestLog.SetSelectedQuest(C_QuestLog.GetInfo(i).questID)
+		C_QuestLog.SetAbandonQuest()
+		C_QuestLog.AbandonQuest()
+	end
+	print("All quests have been abandoned.")
+end
+
+local function AbandonZoneQuests()
+	local zoneName = GetZoneText()
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = C_QuestLog.GetInfo(i)
+		if info and not info.isHeader and info.zoneOrSort == zoneName then
+			C_QuestLog.SetSelectedQuest(C_QuestLog.GetInfo(i).questID)
+			C_QuestLog.SetAbandonQuest()
+			C_QuestLog.AbandonQuest()
+		end
+	end
+	print("All quests in " .. zoneName .. " have been abandoned.")
+end
+
+local function StoreAndDisableAddons()
+	if next(KkthnxUIDB.DisabledAddOns) then
+		print("Debug mode is already active. Use '/kkdebug off' to restore addons.")
+		return
+	end
+
+	local addonCount = C_AddOns.GetNumAddOns()
+	local addonsToDisable = 0
+
+	for i = 1, addonCount do
+		local name = C_AddOns.GetAddOnInfo(i)
+		if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+			addonsToDisable = addonsToDisable + 1
+		end
+	end
+
+	if addonsToDisable == 0 then
+		print("All addons except KkthnxUI are already disabled.")
+		return
+	end
+
+	StaticPopupDialogs["CONFIRM_DISABLE_ADDONS"] = {
+		text = string.format("Are you sure you want to disable |cff669DFF%d|r addon(s) except |cff669DFFKkthnxUI|r for debugging?|n|nYou can use '|cff669DFFkkdebug off|r' to restore them.", addonsToDisable),
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			for i = 1, addonCount do
+				local name = C_AddOns.GetAddOnInfo(i)
+				if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+					KkthnxUIDB.DisabledAddOns[name] = true
+					C_AddOns.DisableAddOn(name)
+				end
+			end
+			-- print(string.format("Disabled %d addon(s) for debugging. Reloading UI...", addonsToDisable)) -- Pointless
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3, -- Avoids taint
+	}
+	StaticPopup_Show("CONFIRM_DISABLE_ADDONS")
+end
+
+local function RestoreAddons()
+	StaticPopupDialogs["CONFIRM_RESTORE_ADDONS"] = {
+		text = "You are about to re-enable all previously disabled addons.|n|nThanks for using |cff669DFFKkthnxUI|r |cffff0000<3|r",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			for name in pairs(KkthnxUIDB.DisabledAddOns) do
+				C_AddOns.EnableAddOn(name)
+			end
+
+			wipe(KkthnxUIDB.DisabledAddOns)
+			-- print("Addons have been restored to their previous states. Reloading UI...") -- Pointless
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3, -- Avoids taint
+	}
+	StaticPopup_Show("CONFIRM_RESTORE_ADDONS")
+end
+local function DebugMode(msg)
+	if msg == "on" then
+		StoreAndDisableAddons()
+	elseif msg == "off" then
+		RestoreAddons()
+	end
+end
+
+-- Command Mapping Table
+local commandMap = {
+	eventtrace = ToggleEventTrace,
+	gui = ToggleGUI,
+	volume = SetVolume,
+	readycheck = DoReadyCheckCommand,
+	checkqueststatus = CheckQuestStatus,
+	gmticket = ToggleHelpFrame,
+	deletequestitems = DeleteQuestItems,
+	deleteheirlooms = DeleteHeirlooms,
+	resetinstance = ResetInstance,
+	keybindframe = KeybindFrame,
+	clearcombatlog = ClearCombatLog,
+	clearchat = ClearChat,
+	debug = DebugMode,
+	allquests = AbandonAllQuests,
+	zonequests = AbandonZoneQuests,
+	-- Add more commands as needed...
+}
+
+-- Slash Command Handler
+SlashCmdList["KKUI"] = function(input)
+	local command, args = strsplit(" ", input, 2)
+	command = string.lower(command)
+
+	if commandMap[command] then
+		commandMap[command](args)
+	else
+		K.Print("Unknown command: " .. command)
+	end
+end
+_G.SLASH_KKUI1 = "/kk"

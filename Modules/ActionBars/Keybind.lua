@@ -1,41 +1,16 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
--- Sourced: siweia (NDui)
+-- WoW API bindings for easy reference
+local GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings = GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings
+local GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot = GetSpellBookItemName, GetMacroInfo, SpellBook_GetSpellBookSlot
+local InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = InCombatLockdown, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
+local tonumber, strfind, strupper = tonumber, strfind, strupper
 
-local _G = _G
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_upper = _G.string.upper
-local tonumber = _G.tonumber
-
-local APPLY = _G.APPLY
-local CANCEL = _G.CANCEL
-local CHARACTER_SPECIFIC_KEYBINDINGS = _G.CHARACTER_SPECIFIC_KEYBINDINGS
-local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GameTooltip = _G.GameTooltip
-local GetBindingKey = _G.GetBindingKey
-local GetBindingName = _G.GetBindingName
-local GetMacroInfo = _G.GetMacroInfo
-local GetSpellBookItemName = _G.GetSpellBookItemName
-local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local KEY_BINDING = _G.KEY_BINDING
-local LoadBindings = _G.LoadBindings
-local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
-local MacroFrameTab1Text = _G.MacroFrameTab1Text
-local NOT_BOUND = _G.NOT_BOUND
-local PRESS_KEY_TO_BIND = _G.PRESS_KEY_TO_BIND
-local SaveBindings = _G.SaveBindings
-local SetBinding = _G.SetBinding
-local SlashCmdList = _G.SlashCmdList
-local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
-local UIErrorsFrame = _G.UIErrorsFrame
-local hooksecurefunc = _G.hooksecurefunc
+-- Constants and Global Variables
+local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
+local NOT_BOUND, PRESS_KEY_TO_BIND = NOT_BOUND, PRESS_KEY_TO_BIND
+local UIErrorsFrame = UIErrorsFrame
 
 -- Button types
 local function hookActionButton(self)
@@ -107,15 +82,10 @@ function Module:Bind_Create()
 	end)
 
 	frame:SetScript("OnLeave", Module.Bind_HideFrame)
-
-	frame:SetScript("OnKeyUp", function(_, key)
-		Module:Bind_Listener(key)
-	end)
-
-	frame:SetScript("OnMouseUp", function(_, key)
-		Module:Bind_Listener(key)
-	end)
-
+	frame:SetScript("OnKeyUp", function(_, key) 
+		Module:Bind_Listener(key) end)
+	frame:SetScript("OnMouseUp", function(_, key) 
+		Module:Bind_Listener(key) end)
 	frame:SetScript("OnMouseWheel", function(_, delta)
 		if delta > 0 then
 			Module:Bind_Listener("MOUSEWHEELUP")
@@ -219,6 +189,12 @@ local ignoreKeys = {
 	["LeftButton"] = true,
 }
 
+-- Key mapping table
+local mappingKeys = {
+	MiddleButton = "BUTTON3",
+	-- Add other mappings as necessary
+}
+
 function Module:Bind_Listener(key)
 	local frame = Module.keybindFrame
 	if key == "ESCAPE" or key == "RightButton" then
@@ -236,9 +212,8 @@ function Module:Bind_Listener(key)
 	local isKeyIgnore = ignoreKeys[key]
 	if isKeyIgnore then return end
 
-	if key == "MiddleButton" then
-		key = "BUTTON3"
-	end
+	-- Use the mapping table to replace specific key values
+	key = mappingKeys[key] or key
 
 	if string_find(key, "Button%d") then
 		key = string_upper(key)
@@ -374,15 +349,7 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 	Module:Bind_CreateDialog()
 end
 
-_G.SLASH_KKUI_KEYBINDS1 = "/bindkey"
-_G.SLASH_KKUI_KEYBINDS2 = "/hoverbind"
-_G.SLASH_KKUI_KEYBINDS3 = "/bk"
-_G.SLASH_KKUI_KEYBINDS4 = "/bb"
-
-if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
-	_G.SLASH_KKUI_KEYBINDS5 = "/kb"
-end
-
-if not K.CheckAddOnState("HealBot") then
-	_G.SLASH_KKUI_KEYBINDS6 = "/hb"
-end
+_G.SLASH_KKUI_KEYBINDS1 = "/kb"
+_G.SLASH_KKUI_KEYBINDS2 = "/bb"
+_G.SLASH_KKUI_KEYBINDS3 = "/bind"
+_G.SLASH_KKUI_KEYBINDS4 = "/kkb"

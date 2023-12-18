@@ -1,40 +1,47 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Chat")
 
-local _G = _G
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_len = _G.string.len
-local string_sub = _G.string.sub
+-- Lua Standard Functions
+local ipairs = ipairs
+local select = select
+local string_find = string.find
+local string_gmatch = string.gmatch
+local string_gsub = string.gsub
+local string_len = string.len
+local string_sub = string.sub
+local type = type
 
-local CHAT_FRAMES = _G.CHAT_FRAMES
-local CHAT_OPTIONS = _G.CHAT_OPTIONS
-local C_GuildInfo_IsGuildOfficer = _G.C_GuildInfo.IsGuildOfficer
-local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
-local ChatEdit_UpdateHeader = _G.ChatEdit_UpdateHeader
-local ChatFrame1 = _G.ChatFrame1
-local ChatTypeInfo = _G.ChatTypeInfo
-local ConsoleExec = _G.ConsoleExec
-local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
-local GeneralDockManager = _G.GeneralDockManager
-local GetCVar = _G.GetCVar
-local GetChannelName = _G.GetChannelName
-local GetInstanceInfo = _G.GetInstanceInfo
-local InCombatLockdown = _G.InCombatLockdown
-local InterfaceOptionsSocialPanelChatStyle = _G.InterfaceOptionsSocialPanelChatStyle
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsInGroup = _G.IsInGroup
-local IsInGuild = _G.IsInGuild
-local IsInRaid = _G.IsInRaid
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local SetCVar = _G.SetCVar
-local UnitName = _G.UnitName
-local hooksecurefunc = _G.hooksecurefunc
+-- WoW API Functions
+local Ambiguate = Ambiguate
+local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
+local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
+local ChatFrame_SendTell = ChatFrame_SendTell
+local ConsoleExec = ConsoleExec
+local CreateFrame = CreateFrame
+local GetCVar = GetCVar
+local GetChannelName = GetChannelName
+local GetInstanceInfo = GetInstanceInfo
+local GetTime = GetTime
+local IsControlKeyDown = IsControlKeyDown
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local IsShiftKeyDown = IsShiftKeyDown
+local PlaySound = PlaySound
+local SetCVar = SetCVar
+local UnitName = UnitName
+local hooksecurefunc = hooksecurefunc
+
+-- WoW Global Variables
+local CHAT_FRAMES = CHAT_FRAMES
+local CHAT_OPTIONS = CHAT_OPTIONS
+local FCF_SavePositionAndDimensions = FCF_SavePositionAndDimensions
+local GeneralDockManager = GeneralDockManager
+local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
+local QuickJoinToastButton = QuickJoinToastButton
+local SOUNDKIT = SOUNDKIT
+local UIParent = UIParent
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
 local maxLines = 2048
@@ -53,69 +60,80 @@ local function GetGroupDistribution()
 	return "/s "
 end
 
-do
-	local charCount
-	local function CountLinkCharacters(self)
-		charCount = charCount + (string_len(self) + 4) -- 4 is ending "|h|r"
+local MIN_REPEAT_CHARACTERS = 5
+local charCount = 0
+local repeatedText
+
+local function countLinkCharacters(text)
+	charCount = charCount + (string_len(text) + 4)
+end
+
+local function editBoxOnTextChanged(self)
+	local text = self:GetText()
+	local len = string_len(text)
+
+	if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
+		if len > MIN_REPEAT_CHARACTERS then
+			local repeatChar = true
+			for i = 1, MIN_REPEAT_CHARACTERS do
+				local first = -1 - i
+				if string.sub(text, -i, -i) ~= string.sub(text, first, first) then
+					repeatChar = false
+					break
+				end
+			end
+
+			if repeatChar then
+				repeatedText = text
+				self:Hide()
+				return
+			end
+		end
 	end
 
-	local repeatedText
-	function Module:EditBoxOnTextChanged()
-		local text = self:GetText()
-		local len = string_len(text)
-		if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
-			local MIN_REPEAT_CHARACTERS = 5
-			if len > MIN_REPEAT_CHARACTERS then
-				local repeatChar = true
-				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					local first = -1 - i
-					if string_sub(text, -i, -i) ~= string_sub(text, first, first) then
-						repeatChar = false
-						break
-					end
-				end
-
-				if repeatChar then
-					repeatedText = text
-					self:Hide()
-					return
+	if len == 4 then
+		if text == "/tt " then
+			local name, realm = UnitName("target")
+			if name then
+				name = string_gsub(name, "%s", "")
+				if realm and realm ~= "" then
+					name = name .. "-" .. string_gsub(realm, "[%s%-]", "")
 				end
 			end
-		end
 
-		if len == 4 then
-			if text == "/tt " then
-				local Name, Realm = UnitName("target")
-				if Name then
-					Name = string_gsub(Name, "%s", "")
-					if Realm and Realm ~= "" then
-						Name = string_format("%s-%s", Name, string_gsub(Realm, "[%s%-]", ""))
-					end
-				end
-
-				if Name then
-					_G.ChatFrame_SendTell(Name, self.chatFrame)
-				else
-					_G.UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
-				end
-			elseif text == "/gr " then
-				self:SetText(GetGroupDistribution() .. string_sub(text, 5))
-				_G.ChatEdit_ParseText(self, 0)
+			if name then
+				ChatFrame_SendTell(name, self.chatFrame)
+			else
+				UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
 			end
+		elseif text == "/gr " then
+			self:SetText(getGroupDistribution() .. string.sub(text, 5))
+			ChatEdit_ParseText(self, 0)
 		end
+	end
 
-		-- recalculate the character count correctly with hyperlinks in it, using gsub so it matches multiple without gmatch
-		charCount = 0
-		string_gsub(text, "(|c%x-|H.-|h).-|h|r", CountLinkCharacters)
-		if charCount ~= 0 then
-			len = len - charCount
-		end
+	-- recalculate the character count correctly with hyperlinks in it, using gmatch so it matches multiple without gmatch
+	charCount = 0
+	for link in string_gmatch(text, "(|c%x-|H.-|h).-|h|r") do
+		countLinkCharacters(link)
+	end
+	if charCount ~= 0 then
+		len = len - charCount
+	end
 
-		self.characterCount:SetText(len > 0 and (255 - len) or "")
+	local remainingCount = 255 - len
+	if remainingCount >= 50 then
+		self.characterCount:SetTextColor(0.74, 0.74, 0.74, 0.5) -- grey color
+	elseif remainingCount >= 20 then
+		self.characterCount:SetTextColor(1, 0.6, 0, 0.5) -- orange color
+	else
+		self.characterCount:SetTextColor(1, 0, 0, 0.5) -- red color
+	end
 
-		if repeatedText then
-			repeatedText = nil
-		end
+	self.characterCount:SetText(len > 0 and (255 - len) or "")
+
+	if repeatedText then
+		repeatedText = nil
 	end
 end
 
@@ -167,8 +185,6 @@ function Module:SkinChat()
 	local name = self:GetName()
 	local font, fontSize, fontStyle = self:GetFont()
 
-	--self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
-	--self:SetMinResize(100, 50)
 	self:SetFont(font, fontSize, fontStyle)
 	self:SetClampRectInsets(0, 0, 0, 0)
 	self:SetClampedToScreen(false)
@@ -189,7 +205,7 @@ function Module:SkinChat()
 	eb:StripTextures(2)
 	eb:CreateBorder()
 	eb:Hide()
-	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
+	eb:HookScript("OnTextChanged", editBoxOnTextChanged)
 
 	local lang = _G[name .. "EditBoxLanguage"]
 	lang:GetRegions():SetAlpha(0)

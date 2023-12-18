@@ -4,34 +4,38 @@ local Module = K:NewModule("Installer")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
+-- Frame and UI Elements
+local CreateFrame = CreateFrame
+local UIParent = UIParent
+local UIErrorsFrame = UIErrorsFrame
 
-local APPLY = _G.APPLY
-local CHAT = _G.CHAT
-local ChangeChatColor = _G.ChangeChatColor
-local ChatConfig_UpdateChatSettings = _G.ChatConfig_UpdateChatSettings
-local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
-local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
-local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
-local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
-local CreateFrame = _G.CreateFrame
-local DEFAULT = _G.DEFAULT
-local FCF_DockFrame = _G.FCF_DockFrame
-local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
-local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
-local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
-local FCF_SetLocked = _G.FCF_SetLocked
-local FCF_SetWindowName = _G.FCF_SetWindowName
-local GENERAL = _G.GENERAL
-local InCombatLockdown = _G.InCombatLockdown
-local PlaySound = _G.PlaySound
-local SETTINGS = _G.SETTINGS
-local SetCVar = _G.SetCVar
-local TRADE = _G.TRADE
-local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
-local UIErrorsFrame = _G.UIErrorsFrame
-local UIParent = _G.UIParent
-local UI_SCALE = _G.UI_SCALE
+-- Chat Functions and Variables
+local ChangeChatColor = ChangeChatColor
+local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
+local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
+local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
+local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
+local FCF_DockFrame = FCF_DockFrame
+local FCF_OpenNewWindow = FCF_OpenNewWindow
+local FCF_ResetChatWindows = FCF_ResetChatWindows
+local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
+local FCF_SetLocked = FCF_SetLocked
+local FCF_SetWindowName = FCF_SetWindowName
+local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
+
+-- Game and System Settings
+local InCombatLockdown = InCombatLockdown
+local PlaySound = PlaySound
+local SetCVar = SetCVar
+
+-- Constants and Miscellaneous
+local APPLY = APPLY
+local CHAT = CHAT
+local DEFAULT = DEFAULT
+local GENERAL = GENERAL
+local SETTINGS = SETTINGS
+local TRADE = TRADE
+local UI_SCALE = UI_SCALE
 
 function Module:ResetSettings()
 	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
@@ -47,23 +51,60 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	SetCVar("autoLootDefault", 1)
---	SetCVar("alwaysCompareItems", 1)
-	SetCVar("autoSelfCast", 1)
-	SetCVar("lootUnderMouse", 1)
-	SetCVar("screenshotQuality", 10)
-	SetCVar("showTutorials", 0)
-	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("lockActionBars", 1)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("overrideArchive", 0)
-	SetActionBarToggles(1, 1, 1, 1)
+	local defaultCVars = {
+		{ "autoLootDefault", 1 },
+--		{"alwaysCompareItems", 1 },
+		{ "autoSelfCast", 1 },
+		{ "lootUnderMouse", 1 },
+		{ "screenshotQuality", 10 },
+		{ "showTutorials", 0 },
+		{ "ActionButtonUseKeyDown", 1 },
+		{ "lockActionBars", 1 },
+		{ "autoQuestWatch", 1 },
+		{ "overrideArchive", 0 },
+	}
 
+	local combatCVars = {
+		{ "nameplateShowEnemyMinions", 1 },
+		{ "nameplateShowEnemyMinus", 1 },
+		{ "nameplateShowFriendlyMinions", 0 },
+		{ "nameplateShowFriends", 0 },
+		{ "nameplateMotion", 1 },
+		{ "nameplateShowAll", 1 },
+		{ "nameplateShowEnemies", 1 },
+		{ "alwaysShowActionBars", 1 },
+	}
+
+	local developerCVars = {
+		{ "ffxGlow", 0 },
+		{ "WorldTextScale", 1 },
+		{ "SpellQueueWindow", 25 },
+	}
+
+	-- Apply default CVars
+	for _, cvar in pairs(defaultCVars) do
+		SetCVar(cvar[1], cvar[2])
+		-- print("SetCVar - Default: " .. cvar[1] .. " to " .. tostring(cvar[2]))
+	end
+
+	-- Apply combat-related CVars if not in combat
 	if not InCombatLockdown() then
-		SetCVar("nameplateMotion", 1)
-		SetCVar("nameplateShowAll", 1)
-		SetCVar("nameplateShowEnemies", 1)
-		SetCVar("alwaysShowActionBars", 1)
+		for _, cvar in pairs(combatCVars) do
+			SetCVar(cvar[1], cvar[2])
+			-- print("SetCVar - Combat: " .. cvar[1] .. " to " .. tostring(cvar[2]))
+		end
+	else
+		print("Skipped setting combat CVars due to combat lockdown.")
+	end
+
+	-- Apply developer-specific CVars if K.isDeveloper is true
+	if K.isDeveloper then
+		for _, cvar in pairs(developerCVars) do
+			SetCVar(cvar[1], cvar[2])
+			-- print("SetCVar - Developer: " .. cvar[1] .. " to " .. tostring(cvar[2]))
+		end
+	else
+		print("Skipped setting developer CVars as K.isDeveloper is not true.")
 	end
 end
 
@@ -79,104 +120,84 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
-	FCF_ResetChatWindows()
+	local function resetAndConfigureChatFrames()
+		FCF_ResetChatWindows()
 
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[name]
-		local id = frame:GetID()
+		for _, name in ipairs(_G.CHAT_FRAMES) do
+			local frame = _G[name]
+			local id = frame:GetID()
 
-		if id == 1 then
-			frame:ClearAllPoints()
-			frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
-			frame:SetWidth(C["Chat"].Width)
-			frame:SetHeight(C["Chat"].Height)
-		elseif id == 3 then
-			VoiceTranscriptionFrame_UpdateVisibility(frame)
-			VoiceTranscriptionFrame_UpdateVoiceTab(frame)
-			VoiceTranscriptionFrame_UpdateEditBox(frame)
+			-- Configure specific frames based on their IDs
+			if id == 1 then
+				frame:ClearAllPoints()
+				frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
+			elseif id == 2 then
+				FCF_SetWindowName(frame, L["CombatLog"])
+			elseif id == 3 then
+				-- Voice transcription specific settings
+				VoiceTranscriptionFrame_UpdateVisibility(frame)
+				VoiceTranscriptionFrame_UpdateVoiceTab(frame)
+				VoiceTranscriptionFrame_UpdateEditBox(frame)
+			end
+
+			-- Common configuration for all frames
+			FCF_SetChatWindowFontSize(nil, frame, 12)
+			FCF_SavePositionAndDimensions(frame)
+			FCF_StopDragging(frame)
+		end
+	end
+
+	local function configureChatFrame(chatFrame, windowName, removeChannels, messageGroups, isDocked)
+		-- Configuration for individual chat frames
+		if isDocked then FCF_DockFrame(chatFrame) else FCF_OpenNewWindow(windowName) end
+
+		FCF_SetLocked(chatFrame, 1)
+		FCF_SetWindowName(chatFrame, windowName)
+		chatFrame:Show()
+
+		-- Remove specified channels and add message groups
+		for _, channel in ipairs(removeChannels or {}) do
+			ChatFrame_RemoveChannel(chatFrame, channel)
 		end
 
-		FCF_SetChatWindowFontSize(nil, frame, 12)
-		FCF_SavePositionAndDimensions(frame)
-		FCF_StopDragging(frame)
+		ChatFrame_RemoveAllMessageGroups(chatFrame)
+		for _, group in ipairs(messageGroups) do
+			ChatFrame_AddMessageGroup(chatFrame, group)
+		end
 	end
 
-	-- General
-	FCF_SetLocked(ChatFrame1, 1)
-	FCF_SetWindowName(ChatFrame1, L["General"])
-	ChatFrame1:Show()
-
-	-- Combat Log
-	FCF_DockFrame(ChatFrame2)
-	FCF_SetLocked(ChatFrame2, 1)
-	FCF_SetWindowName(ChatFrame2, L["CombatLog"])
-	ChatFrame2:Show()
-
-	-- Whispers
-	FCF_OpenNewWindow(L["Whisper"])
-	FCF_SetLocked(ChatFrame4, 1)
-	FCF_DockFrame(ChatFrame4)
-	ChatFrame4:Show()
-
-	-- Trade
-	FCF_OpenNewWindow(L["Trade"])
-	FCF_SetLocked(ChatFrame5, 1)
-	FCF_DockFrame(ChatFrame5)
-	ChatFrame5:Show()
-
-	-- Loot
-	FCF_OpenNewWindow(L["Loot"])
-	FCF_SetLocked(ChatFrame6, 1)
-	FCF_DockFrame(ChatFrame6)
-	ChatFrame6:Show()
-
-	-- ChatFrame 1
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_RemoveChannel(ChatFrame1, L["Services"]) -- New channel 9.2.7
-	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
-	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
-
-	-- We do not add -> MONSTER_SAY, MONSTER_YELL, MONSTER_EMOTE, MONSTER_WHISPER, MONSTER_BOSS_EMOTE, MONSTER_BOSS_WHISPER
-	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
+	local function configureChatColors()
+		-- Set specific colors for chat channels
+		ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255) -- General
+		ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255) -- Trade
+		ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255) -- Local Defense
 	end
 
-	-- ChatFrame 4
-	chatGroup = { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
-	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
+	local function enableClassColors(chatGroups)
+		-- Enable class colors for specified chat groups
+		for _, group in ipairs(chatGroups) do
+			ToggleChatColorNamesByClassGroup(true, group)
+		end
 	end
 
-	-- ChatFrame 5
-	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
-	ChatFrame_AddChannel(ChatFrame5, TRADE)
-	ChatFrame_AddChannel(ChatFrame5, GENERAL)
-	ChatFrame_AddChannel(ChatFrame5, "LookingForGroup")
+	-- Apply configurations
+	resetAndConfigureChatFrames()
 
-	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame6)
-	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame6, v)
+	-- Configure specific chat frames
+	configureChatFrame(ChatFrame1, L["General"], { TRADE, L["Services"], GENERAL, "GuildRecruitment", "LookingForGroup" }, { "ACHIEVEMENT", "AFK", "BG_ALLIANCE", "BG_HORDE", "BG_NEUTRAL", "BN_INLINE_TOAST_ALERT", "CHANNEL", "DND", "EMOTE", "ERRORS", "GUILD", "GUILD_ACHIEVEMENT", "IGNORED", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "MONSTER_EMOTE", "MONSTER_SAY", "MONSTER_WHISPER", "MONSTER_YELL", "OFFICER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "SAY", "SYSTEM", "YELL" })
+	configureChatFrame(ChatFrame2, L["CombatLog"], nil, {}, true)
+	configureChatFrame(ChatFrame4, L["Whisper"], nil, { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }, true)
+	configureChatFrame(ChatFrame5, L["Trade"], nil, {}, true)
+	configureChatFrame(ChatFrame6, L["Loot"], nil, { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }, true)
+
+	configureChatColors()
+
+	local classColorGroups = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
+	local maxChatChannels = _G.MAX_WOW_CHAT_CHANNELS or 10 -- Fallback in case the global isn't set
+	for i = 1, maxChatChannels do
+		table.insert(classColorGroups, "CHANNEL" .. i)
 	end
-
-	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
-	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
-		table.insert(chatGroup, "CHANNEL" .. i)
-	end
-
-	for _, v in ipairs(chatGroup) do
-		ToggleChatColorNamesByClassGroup(true, v)
-	end
-
-	-- Adjust Chat Colors
-	ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255) -- General
-	ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255) -- Trade
-	ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255) -- Local Defense
+	enableClassColors(classColorGroups)
 end
 
 -- Tutorial
@@ -357,10 +378,10 @@ local function HelloWorld()
 	welcomeLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	welcomeLogo:SetPoint("CENTER", welcome, "CENTER", 0, 0)
 
-	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
-	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-The Lich King")
-	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
+	-- local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
+	-- welcomeBoss:SetSize(128, 64)
+	-- welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-The Lich King")
+	-- welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
@@ -371,16 +392,15 @@ local function HelloWorld()
 	lr:SetPoint("TOP", 50, -35)
 	K.CreateGF(lr, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
-	-- stylua: ignore start
+
 	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v" .. K.SystemColor .. K.Version .. "|r!", "", false, "TOP", 0, -50)
 	K.CreateFontString(welcome, 13, "|cff669dffKkthnxUI|r is a simplistic user interface that holds", "", false, "TOP", 0, -86)
 	K.CreateFontString(welcome, 13, "onto the information and functionality, while still keeping", "", false, "TOP", 0, -106)
 	K.CreateFontString(welcome, 13, "most of the good looks. It can be used for any class or role.", "", false, "TOP", 0, -126)
-	-- stylua: ignore end
 
 	K.CreateFontString(welcome, 16, "|cff669dffJoin The Community!|r", "", false, "TOP", 0, -160)
 	K.CreateFontString(welcome, 13, "There are thousands of users, but most are content", "", false, "TOP", 0, -180)
-	-- stylua: ignore
+
 	K.CreateFontString(welcome, 13, "to simply download and use the interface without further", "", false, "TOP", 0, -200)
 	K.CreateFontString(welcome, 13, "ado. If you wish to get more involved though,", "", false, "TOP", 0, -220)
 	K.CreateFontString(welcome, 13, "have some questions you can't find answers to", "", false, "TOP", 0, -240)
@@ -396,7 +416,6 @@ local function HelloWorld()
 	K.CreateGF(lr, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
-	-- stylua: ignore
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
 	K.CreateFontString(welcome, 13, "please take a minute to go through the turtoral!", "", false, "BOTTOM", 0, 110)
 	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)

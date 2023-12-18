@@ -1,10 +1,7 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-local pairs = _G.pairs
-
-local parentFrame = {}
-local hooked = {}
+-- Caching global functions and variables for performance
+local pairs, type, string_gmatch, print = pairs, type, string.gmatch, print
 
 local frames = {
 	-- ["FrameName"] = true (the parent frame should be moved) or false (the frame itself should be moved)
@@ -61,8 +58,7 @@ end
 -- Frame Existing Check
 local function IsFrameExists()
 	for k in pairs(frames) do
-		local name = _G[k]
-		if not name and K.isDeveloper then
+		if not _G[k] and K.isDeveloper then
 			K.Print("Frame not found:", k)
 		end
 	end
@@ -111,6 +107,9 @@ local lodFrames = {
 	Blizzard_VoidStorageUI = { ["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame" },
 }
 
+local parentFrame = {}
+local hooked = {}
+
 local function MouseDownHandler(frame, button)
 	frame = parentFrame[frame] or frame
 	if frame and button == "LeftButton" then
@@ -141,16 +140,11 @@ local function HookScript(frame, script, handler)
 end
 
 local function HookFrame(name, moveParent)
-	-- find frame
-	-- name may contain dots for children, e.g. ReforgingFrame.InvisibleButton
 	local frame = _G
-	for s in string.gmatch(name, "%w+") do
-		if frame then
-			frame = frame[s]
-		end
+	for s in string_gmatch(name, "%w+") do
+		frame = frame and frame[s]
 	end
 
-	-- check if frame was found
 	if frame == _G then
 		frame = nil
 	end
@@ -158,17 +152,11 @@ local function HookFrame(name, moveParent)
 	local parent
 	if frame and not hooked[name] then
 		if moveParent then
-			if type(moveParent) == "string" then
-				parent = _G[moveParent]
-			else
-				parent = frame:GetParent()
-			end
-
+			parent = type(moveParent) == "string" and _G[moveParent] or frame:GetParent()
 			if not parent then
-				K.Print("Parent frame not found: " .. name)
+				print("Parent frame not found: " .. name)
 				return
 			end
-
 			parentFrame[frame] = parent
 		end
 

@@ -1,48 +1,64 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
-local string_format = _G.string.format
+-- UI and String Functions
+local string_format = string.format
+local UIErrorsFrame = UIErrorsFrame
 
-local UIErrorsFrame = _G.UIErrorsFrame
+-- Unit and Combat Functions
+local UnitHealth, UnitHealthMax = UnitHealth, UnitHealthMax
+local UnitIsPlayer, UnitIsDead, UnitExists, UnitName = UnitIsPlayer, UnitIsDead, UnitExists, UnitName
+local DoEmote, PlaySound = DoEmote, PlaySound
+
+-- Timer Function
+local C_Timer_NewTicker = C_Timer.NewTicker
 
 local playerNearDeath = false
 local petNearDeath = false
+local validPetClasses = { ["HUNTER"] = true, ["WARLOCK"] = true }
+
+local function shouldCheckHealth()
+	return UnitAffectingCombat("player") and IsInGroup()
+end
+
+local function checkPlayerHealth()
+	if not shouldCheckHealth() then return end
+	if not UnitIsPlayer("player") or UnitIsDead("player") then return end
+
+	local playerHealthPercent = K.Round(UnitHealth("player") / UnitHealthMax("player") * 100, 1)
+
+	if playerHealthPercent <= 30 and not playerNearDeath then
+		playerNearDeath = true
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
+		DoEmote("healme")
+	elseif playerHealthPercent > 50 and playerNearDeath then
+		playerNearDeath = false
+	end
+end
+
+local function checkPetHealth()
+	if not shouldCheckHealth() then return end
+	if not validPetClasses[K.Class] or not UnitExists("pet") or UnitIsDead("pet") then return end
+
+	local petHealthPercent = K.Round(UnitHealth("pet") / UnitHealthMax("pet") * 100, 1)
+
+	if petHealthPercent <= 30 and not petNearDeath then
+		petNearDeath = true
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+		PlaySound(211593) -- Spell_PetBattle_Health_Buff
+	elseif petHealthPercent > 50 and petNearDeath then
+		petNearDeath = false
+	end
+end
 
 function Module:SetupHealthAnnounce()
-	local playerHealth = UnitHealth("player")
-	local playerHealthMax = UnitHealthMax("player")
-	local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
-
-	if not UnitIsDead("player") then
-		if playerHealthPercent <= 30 and not playerNearDeath then
-			playerNearDeath = true
-			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
-		elseif playerHealthPercent > 30 + 20 and playerNearDeath then
-			playerNearDeath = false
-		end
-	end
-
-	local petHealth = UnitHealth("pet")
-	local petHealthMax = UnitHealthMax("pet")
-	local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1)
-
-	if not UnitIsDead("pet") then
-		if K.Class ~= "HUNTER" or K.Class ~= "WARLOCK" then
-			return
-		end
-
-		if petHealthPercent <= 30 and not petNearDeath then
-			petNearDeath = true
-			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
-		elseif petHealthPercent > 30 + 20 and petNearDeath then
-			petNearDeath = false
-		end
-	end
+	checkPlayerHealth()
+	checkPetHealth()
 end
 
 function Module:CreateHealthAnnounce()
 	if not C["Announcements"].HealthAlert then return end
 
-	C_Timer.NewTicker(1, Module.SetupHealthAnnounce)
+	C_Timer_NewTicker(1, Module.SetupHealthAnnounce)
 end
+

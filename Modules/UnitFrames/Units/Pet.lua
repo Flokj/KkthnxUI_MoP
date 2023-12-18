@@ -188,6 +188,6 @@ function Module:CreatePet()
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
 
-	Module.CreateRangeIndicator(self)
+	--Module.CreateRangeIndicator(self)
 	Module:CreateSparkleCastBar(self)
 end

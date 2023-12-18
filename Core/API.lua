@@ -16,6 +16,11 @@ local UIParent = _G.UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
+-- Utility Functions
+local function rad(degrees)
+	return degrees * math.pi / 180
+end
+
 do
 	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
@@ -31,19 +36,16 @@ do
 	RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 end
 
--- This is a lot...
-local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
-	-- Border
+-- Create Border
+local function CreateBorder(bFrame, ...)
+	if not bFrame or type(bFrame) ~= "table" then
+		return nil, "Invalid frame provided"
+	end
+
 	local BorderSubLevel = bSubLevel or "OVERLAY"
 	local BorderLayer = bLayer or 2
 	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
-	local BorderSize
-
-	if BorderValue == "KkthnxUI" then
-		BorderSize = bSize or 12
-	else
-		BorderSize = bSize or 10
-	end
+	local BorderSize = bSize or (BorderValue == "KkthnxUI" and 12 or 10)
 
 	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
 	local BorderOffset = bOffset or -4
@@ -95,9 +97,7 @@ end
 
 -- Simple Create Backdrop.
 local function CreateBackdrop(f)
-	if f.Backdrop then
-		return
-	end
+	if f.Backdrop then return end
 
 	local b = CreateFrame("Frame", nil, f)
 	b:SetPoint("TOPLEFT", f, "TOPLEFT")
@@ -507,5 +507,5 @@ while object do
 	object = EnumerateFrames(object)
 end
 
-addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame("ScrollFrame")) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
+--addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
+--addapi(CreateFrame("ScrollFrame")) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

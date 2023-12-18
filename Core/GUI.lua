@@ -549,25 +549,34 @@ end
 GUI.Widgets.CreateEditBox = CreateEditBox
 
 -- Sliders
+local SliderHighlight = function(self, highlight)
+	self.Highlight:SetAlpha(highlight and WidgetHighlightAlpha or 0)
+end
+
 local SliderEditBoxOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
+	SliderHighlight(self, true)
 end
 
 local SliderEditBoxOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
+	SliderHighlight(self, false)
 end
 
-local SliderOnEnter = function(self)
-	self.Highlight:SetAlpha(WidgetHighlightAlpha)
-end
+local SliderOnEnter = SliderEditBoxOnEnter
+local SliderOnLeave = SliderEditBoxOnLeave
 
-local SliderOnLeave = function(self)
-	self.Highlight:SetAlpha(0)
+local function AdjustValue(value, step)
+	if step >= 1 then
+		return floor(value)
+	elseif step <= 0.01 then
+		return K.Round(value, 2)
+	else
+		return K.Round(value, 1)
+	end
 end
 
 local SliderOnValueChanged = function(self)
-	local Value = self:GetValue()
 	local Step = self.EditBox.StepValue
+	local Value = AdjustValue(self:GetValue(), self.EditBox.StepValue)
 
 	if Step >= 1 then
 		Value = floor(Value)
@@ -590,8 +599,8 @@ local SliderOnValueChanged = function(self)
 end
 
 local SliderOnMouseWheel = function(self, delta)
-	local Value = self.EditBox.Value
 	local Step = self.EditBox.StepValue
+	local Value = AdjustValue(self.EditBox.Value + (delta < 0 and -Step or Step), Step)
 
 	if delta < 0 then
 		Value = Value - Step
@@ -622,66 +631,41 @@ local SliderOnMouseWheel = function(self, delta)
 end
 
 local SliderEditBoxOnEnterPressed = function(self)
-	local Value = tonumber(self:GetText())
-
-	if type(Value) ~= "number" then
-		return
-	end
-
-	if Value ~= self.Value then
-		self.Slider:SetValue(Value)
+	local value = tonumber(self:GetText())
+	if type(value) == "number" and value ~= self.Value then
+		self.Slider:SetValue(value)
 		SliderOnValueChanged(self.Slider)
 	end
-
-	self:SetAutoFocus(false)
 	self:ClearFocus()
 end
 
 local SliderEditBoxOnChar = function(self)
-	local Value = tonumber(self:GetText())
-
-	if type(Value) ~= "number" then
+	local value = tonumber(self:GetText())
+	if type(value) ~= "number" then
 		self:SetText(self.Value)
 	end
 end
 
-local SliderEditBoxOnMouseDown = function(self)
-	self:SetAutoFocus(true)
-	self:SetText(self.Value)
+local SliderEditBoxOnMouseDown = function(self, button)
+	self:SetAutoFocus(button == "LeftButton")
+	if button == "RightButton" then
+		local defaultValue = K.Defaults[self.Group][self.Option]
+		self:SetText(defaultValue)
+		self.Slider:SetValue(defaultValue)
+		SliderOnValueChanged(self.Slider)
+	end
 end
 
 local SliderEditBoxOnEditFocusLost = function(self)
-	if self.Value > self.MaxValue then
-		self.Value = self.MaxValue
-	elseif self.Value < self.MinValue then
-		self.Value = self.MinValue
-	end
-
 	self:SetText(self.Value)
 end
 
 local SliderEditBoxOnMouseWheel = function(self, delta)
-	if self:HasFocus() then
-		self:SetAutoFocus(false)
-		self:ClearFocus()
-	end
-
-	if delta > 0 then
-		self.Value = self.Value + self.StepValue
-
-		if self.Value > self.MaxValue then
-			self.Value = self.MaxValue
-		end
-	else
-		self.Value = self.Value - self.StepValue
-
-		if self.Value < self.MinValue then
-			self.Value = self.MinValue
-		end
-	end
-
-	self:SetText(self.Value)
-	self.Slider:SetValue(self.Value)
+	self:ClearFocus()
+	local change = (delta > 0 and 1 or -1) * self.StepValue
+	local newValue = math.max(self.MinValue, math.min(self.Value + change, self.MaxValue))
+	self:SetText(newValue)
+	self.Slider:SetValue(newValue)
 end
 
 local CreateSlider = function(self, group, option, text, minvalue, maxvalue, stepvalue, tooltip, hook)
@@ -1395,20 +1379,15 @@ GUI.Widgets.CreateColorSelection = CreateColorSelection
 
 -- GUI functions
 GUI.AddWidgets = function(self, func)
-	if type(func) ~= "function" then
-		return
+	if type(func) == "function" then
+		tinsert(self.Queue, func)
 	end
-
-	tinsert(self.Queue, func)
 end
 
 GUI.UnpackQueue = function(self)
-	local Function
-
-	for i = 1, #self.Queue do
-		Function = tremove(self.Queue, 1)
-
-		Function(self)
+	while #self.Queue > 0 do
+		local functionToExecute = tremove(self.Queue, 1)
+		functionToExecute(self)
 	end
 end
 
@@ -1417,23 +1396,25 @@ GUI.SortMenuButtons = function(self)
 		return a.Name < b.Name
 	end)
 
-	for i = 1, #self.Buttons do
-		self.Buttons[i]:ClearAllPoints()
+	for i, button in ipairs(self.Buttons) do
+		button:ClearAllPoints()
 
 		if i == 1 then
-			self.Buttons[i]:SetPoint("TOPLEFT", self.ButtonList, Spacing, -Spacing)
+			button:SetPoint("TOPLEFT", self.ButtonList, Spacing, -Spacing)
 		else
-			self.Buttons[i]:SetPoint("TOP", self.Buttons[i - 1], "BOTTOM", 0, -(Spacing - 1))
+			button:SetPoint("TOP", self.Buttons[i - 1], "BOTTOM", 0, -(Spacing - 1))
 		end
 	end
 end
 
 local SortWidgets = function(self)
-	for i = 1, #self.Widgets do
+	for i, widget in ipairs(self.Widgets) do
+		widget:ClearAllPoints()
+
 		if i == 1 then
-			self.Widgets[i]:SetPoint("TOPLEFT", self, Spacing, -Spacing)
+			widget:SetPoint("TOPLEFT", self, Spacing, -Spacing)
 		else
-			self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
+			widget:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
 		end
 	end
 
@@ -1441,37 +1422,34 @@ local SortWidgets = function(self)
 end
 
 local Scroll = function(self)
-	local First = false
+	local firstWidgetSet = false
+	local parentWindowCount = self:GetParent().WindowCount - 1
 
 	for i = 1, #self.Widgets do
-		if (i >= self.Offset) and (i <= self.Offset + self:GetParent().WindowCount - 1) then
-			if not First then
-				self.Widgets[i]:SetPoint("TOPLEFT", self, Spacing, -Spacing)
-				First = true
-			else
-				self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
-			end
+		local widget = self.Widgets[i]
+		local inRange = (i >= self.Offset) and (i <= self.Offset + parentWindowCount)
 
-			self.Widgets[i]:Show()
+		if inRange then
+			if not firstWidgetSet then
+				widget:SetPoint("TOPLEFT", self, Spacing, -Spacing)
+				firstWidgetSet = true
+			else
+				widget:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
+			end
+			widget:Show()
 		else
-			self.Widgets[i]:Hide()
+			widget:Hide()
 		end
 	end
 end
 
 local SetOffsetByDelta = function(self, delta)
+	local maxOffset = #self.Widgets - (self:GetParent().WindowCount - 1)
+
 	if delta == 1 then -- up
-		self.Offset = self.Offset - 1
-
-		if self.Offset <= 1 then
-			self.Offset = 1
-		end
+		self.Offset = math.max(self.Offset - 1, 1)
 	else -- down
-		self.Offset = self.Offset + 1
-
-		if self.Offset > (#self.Widgets - (self:GetParent().WindowCount - 1)) then
-			self.Offset = self.Offset - 1
-		end
+		self.Offset = math.min(self.Offset + 1, maxOffset)
 	end
 end
 
@@ -1482,23 +1460,18 @@ local WindowOnMouseWheel = function(self, delta)
 end
 
 local SetOffset = function(self, offset)
-	self.Offset = offset
-
-	if self.Offset <= 1 then
-		self.Offset = 1
-	elseif self.Offset > (#self.Widgets - self:GetParent().WindowCount - 1) then
-		self.Offset = self.Offset - 1
-	end
+	local maxOffset = #self.Widgets - self:GetParent().WindowCount - 1
+	self.Offset = math.max(1, math.min(offset, maxOffset))
 
 	self:Scroll()
 end
 
 local WindowScrollBarOnValueChanged = function(self)
-	local Value = K.Round(self:GetValue())
-	local Parent = self:GetParent()
-	Parent.Offset = Value
+	local value = K.Round(self:GetValue())
+	local parent = self:GetParent()
+	parent.Offset = value
 
-	Parent:Scroll()
+	parent:Scroll()
 end
 
 local WindowScrollBarOnMouseWheel = function(self, delta)
@@ -1508,11 +1481,14 @@ end
 local AddScrollBar = function(self)
 	local MaxValue = (#self.Widgets - (self:GetParent().WindowCount - 1))
 
+	-- Store texture in a local variable to avoid redundant calls
+	local texture = K.GetTexture(C["General"].Texture)
+
 	local ScrollBar = CreateFrame("Slider", nil, self)
 	ScrollBar:SetPoint("TOPRIGHT", self, -Spacing, -Spacing)
 	ScrollBar:SetPoint("BOTTOMRIGHT", self, -Spacing, Spacing)
 	ScrollBar:SetWidth(WidgetHeight)
-	ScrollBar:SetThumbTexture(K.GetTexture(C["General"].Texture))
+	ScrollBar:SetThumbTexture(texture)
 	ScrollBar:SetOrientation("VERTICAL")
 	ScrollBar:SetValueStep(1)
 	ScrollBar:CreateBorder()
@@ -1526,7 +1502,7 @@ local AddScrollBar = function(self)
 
 	local Thumb = ScrollBar:GetThumbTexture()
 	Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
+	Thumb:SetTexture(texture)
 	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 
 	self:EnableMouseWheel(true)
@@ -1541,9 +1517,12 @@ local AddScrollBar = function(self)
 
 	ScrollBar:Show()
 
+	-- Optimize the loop by pre-calculating the width
+	local sectionWidth = (WidgetListWidth - WidgetHeight) - (Spacing * 3)
 	for i = 1, #self.Widgets do
-		if self.Widgets[i].IsSection then
-			self.Widgets[i]:SetWidth((WidgetListWidth - WidgetHeight) - (Spacing * 3))
+		local widget = self.Widgets[i]
+		if widget.IsSection then
+			widget:SetWidth(sectionWidth)
 		end
 	end
 end
