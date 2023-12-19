@@ -420,7 +420,7 @@ function Module:UpdateQuestUnit(_, unit)
 	K.ScanTooltip:SetUnit(unit)
 
 	for i = 2, B.ScanTip:NumLines() do
-		local textLine = _G["NDui_ScanTooltipTextLeft"..i]
+		local textLine = _G["KKUI_ScanTooltipTextLeft" .. i]
 		local text = textLine:GetText()
 		if textLine and text then
 			local r, g, b = textLine:GetTextColor()
