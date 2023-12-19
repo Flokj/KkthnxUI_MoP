@@ -62,12 +62,10 @@ local function SetTip(frame)
 		GameTooltip:AddLine("|cffff3333" .. "Can't Roll")
 	end
 
-	local rollID, rolls = frame.parent.rollID, cachedRolls[rollID]
-	if rolls and rolls[frame.rolltype] then
-		for _, rollerInfo in pairs(rolls[frame.rolltype]) do
-			local playerName, className = unpack(rollerInfo)
-			local classColor = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
-			GameTooltip:AddLine(playerName, classColor)
+	for name, tbl in pairs(frame.parent.rolls) do
+		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
+			local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[tbl[2]] or RAID_CLASS_COLORS[tbl[2]]
+			GameTooltip:AddLine(name, classColor.r, classColor.g, classColor.b)
 		end
 	end
 
