@@ -37,7 +37,7 @@ do
 end
 
 -- Create Border
-local function CreateBorder(bFrame, ...)
+local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	if not bFrame or type(bFrame) ~= "table" then
 		return nil, "Invalid frame provided"
 	end

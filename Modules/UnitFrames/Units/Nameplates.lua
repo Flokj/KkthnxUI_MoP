@@ -415,35 +415,38 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local startLooking, isLootQuest, questProgress
+	local isLootQuest, questProgress
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
-	for i = 2, K.ScanTooltip:NumLines() do
-		local textLine = _G["KKUI_ScanTooltipTextLeft" .. i]
-		local text = textLine and textLine:GetText()
-		if not text then
-			break
-		end
-
-		if text ~= " " then
-			if isInGroup and text == K.Name or (not isInGroup and isQuestTitle(textLine)) then
-				startLooking = true
-			elseif startLooking then
-				local current, goal = string_match(text, "(%d+)/(%d+)")
-				local progress = string_match(text, "(%d+)%%")
-				if current and goal then
-					local diff = math_floor(goal - current)
-					if diff > 0 then
-						questProgress = diff
+	for i = 2, B.ScanTip:NumLines() do
+		local textLine = _G["NDui_ScanTooltipTextLeft"..i]
+		local text = textLine:GetText()
+		if textLine and text then
+			local r, g, b = textLine:GetTextColor()
+			local unitName, progressText = strmatch(text, "^ ([^ ]-) ?%- (.+)$")
+			if r > .99 and g > .82 and b == 0 then
+				isLootQuest = true
+			elseif unitName and progressText then
+				isLootQuest = false
+				if unitName == "" or unitName == K.Name then
+					local current, goal = strmatch(progressText, "(%d+)/(%d+)")
+					local progress = strmatch(progressText, "([%d%.]+)%%")
+					if current and goal then
+						if tonumber(current) < tonumber(goal) then
+							questProgress = goal - current
+							break
+						end
+					elseif progress then
+						progress = tonumber(progress)
+						if progress and progress < 100 then
+							questProgress = progress.."%"
+							break
+						end
+					else
+						isLootQuest = true
 						break
 					end
-				elseif progress and not string_match(text, THREAT_TOOLTIP) then
-					if math_floor(100 - progress) > 0 then
-						questProgress = progress .. "%" -- lower priority on progress, keep looking
-					end
-				else
-					break
 				end
 			end
 		end
@@ -476,7 +479,7 @@ function Module:AddQuestIcon(self)
 	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
 	-- Fired whenever the quest log changes. (Frequently, but not as frequently as QUEST_LOG_UPDATE)
-	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", Module.UpdateQuestUnit, true)
+	--self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)

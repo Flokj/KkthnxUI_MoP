@@ -10,13 +10,8 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitThreatSituation = _G.UnitThreatSituation
 
 local function UpdateRaidThreat(self, _, unit)
-	if unit ~= self.unit then
-		return
-	end
-
-	if not self.KKUI_Border then
-		return
-	end
+	if unit ~= self.unit then return end
+	if not self.KKUI_Border then return end
 
 	local situation = UnitThreatSituation(unit)
 	if situation and situation > 0 then
@@ -32,9 +27,7 @@ local function UpdateRaidThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
-	if self.unit ~= unit then
-		return
-	end
+	if self.unit ~= unit then return end
 
 	if UnitGroupRolesAssigned(unit) == "HEALER" and UnitGroupRolesAssigned(unit) ~= "NONE" then
 		if not self.Power:IsVisible() then
@@ -153,7 +146,7 @@ function Module:CreateRaid()
 	Overlay:SetAllPoints(Health)
 	Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
 
-	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY", 2)
+	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY", nil, 2)
 	ReadyCheckIndicator:SetSize(22, 22)
 	ReadyCheckIndicator:SetPoint("CENTER")
 
