@@ -1,56 +1,45 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-local math_random = _G.math.random
-
-local C_Timer_After = _G.C_Timer.After
-local SendChatMessage = _G.SendChatMessage
+local C_Timer_After = C_Timer.After
 
 -- This list is completely random. There is no certin way we have made this list.
 -- The idea is to keep things random so we do not repeat the same type of goodbye.
 local AutoThanksList = {
-	"Bye <3",
-	"Bye",
-	"Catch you on the flip side!",
-	"Fare Thee Well",
-	"Farewell.",
-	"GG!",
-	"GG",
-	"Goodbye",
-	"Have a good one!",
-	"Have a nice day!",
-	"See ya later, alligator!",
-	"Take care.",
-	"Take it easy",
-	"Thanks :D",
-	"Thanks ;)",
-	"Thanks <3",
-	"Thanks all",
-	"Thanks & warm regards",
-	"Thanks everyone.",
-	"Thanks for the group.",
-	"Thanks for the run.",
-	"Thanks, goodbye.",
-	"Thanks, take care everyone.",
-	"Until next time!",
-	"farewell.",
-	"gg!",
-	"gg",
-	"goodbye",
-	"thanks",
+	"Goodbye and safe travels.",
+	"It was a pleasure playing with you all, farewell.",
+	"I had a great time, thanks and take care.",
+	"Farewell friends, until we meet again.",
+	"Thanks for the adventure, farewell.",
+	"It's been real, goodbye and have a great day.",
+	"Thanks for the memories, farewell.",
+	"Goodbye and may your journey be filled with success.",
+	"Thanks for the good times, farewell and good luck.",
+	"It's been an honor, goodbye and happy questing.",
 }
 
-function Module:SetupAutoGoodbye()
-	C_Timer_After(math.random(2, 6), function() -- Random the amount of time to wait to say thanks
-		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID")
+function Module.SetupAutoGoodbye()
+	local waitTime = math.random() * (5 - 2) + 2 -- generates a float between 2 and 5
+	C_Timer_After(waitTime, function()
+		if #AutoThanksList > 0 then
+			local messageIndex = math.random(#AutoThanksList)
+			local message = AutoThanksList[messageIndex]
+
+			if message then
+				C_ChatInfo.SendAddonMessage("KkthnxUI", message, "INSTANCE_CHAT")
+			end
+		end
 	end)
 end
 
 function Module:CreateAutoGoodbye()
-	if not C["Automation"].AutoGoodbye then
-		return
+	if C["Automation"].AutoGoodbye then
+		-- Register the events when the feature is enabled
+		K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
+		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
+	else
+		-- Unregister the events when the feature is disabled
+		K:UnregisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
 	end
-
-	K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
 end

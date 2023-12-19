@@ -72,24 +72,24 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per, cur = GetUnitHealthPerc(unit)
-		if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" or string.find(unit, "party") then
+		if unit == "player" or unit == "target" or unit == "focus" or unit == "party" then
 			return ValueAndPercent(cur, per)
 		else
 			return ColorPercent(per)
 		end
 	end
 end
-oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED PARTY_MEMBER_ENABLE PARTY_MEMBER_DISABLE"
 
 oUF.Tags.Methods["power"] = function(unit)
 	local cur, maxPower = UnitPower(unit), UnitPowerMax(unit)
 	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
 
-	if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" then
+	if unit == "player" or unit == "target" or unit == "focus" then
 		if per < 100 and UnitPowerType(unit) == 0 and maxPower ~= 0 then
 			return K.ShortValue(cur) .. " - " .. per
 		else
@@ -230,7 +230,7 @@ oUF.Tags.Methods["nplevel"] = function(unit)
 
 	return level
 end
-oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
+oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 
 local NPClassifies = {
 	rare = "  ",
@@ -256,9 +256,7 @@ end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
 oUF.Tags.Methods["npctitle"] = function(unit)
-	if UnitIsPlayer(unit) then
-		return
-	end
+	if UnitIsPlayer(unit) then return end
 
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
@@ -271,9 +269,7 @@ end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
 
 oUF.Tags.Methods["guildname"] = function(unit)
-	if not UnitIsPlayer(unit) then
-		return
-	end
+	if not UnitIsPlayer(unit) then return end
 
 	local guildName = GetGuildInfo(unit)
 	if guildName then
@@ -296,15 +292,3 @@ oUF.Tags.Methods["altpower"] = function(unit)
 	return cur > 0 and cur
 end
 oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
-
-oUF.Tags.Methods["lfdrole"] = function(unit)
-	local role = UnitGroupRolesAssigned(unit)
-	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" or role ~= "DAMAGER") then
-		if role == "HEALER" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:1:64:16:48:64:0:16|t"
-		elseif role == "TANK" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0.5:64:16:32:48:0:16|t"
-		end
-	end
-end
-oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

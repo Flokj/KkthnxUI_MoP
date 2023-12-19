@@ -1,39 +1,15 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local _G = _G
-local ipairs = _G.ipairs
-local math_max = _G.math.max
-local math_min = _G.math.min
-local pairs = _G.pairs
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
-local table_remove = _G.table.remove
-local tonumber = _G.tonumber
+local strfind, strmatch, gsub, strrep = string.find, string.match, string.gsub, string.rep
+local pairs, ipairs, tonumber = pairs, ipairs, tonumber
+local min, max, tremove = math.min, math.max, table.remove
+local IsGuildMember, C_FriendList_IsFriend, IsGUIDInGroup, C_Timer_After = IsGuildMember, C_FriendList.IsFriend, IsGUIDInGroup, C_Timer.After
+local Ambiguate, UnitIsUnit, BNGetGameAccountInfoByGUID, GetTime, SetCVar = Ambiguate, UnitIsUnit, BNGetGameAccountInfoByGUID, GetTime, SetCVar
 
-local Ambiguate = _G.Ambiguate
-local BNToastFrame = _G.BNToastFrame
-local BN_TOAST_TYPE_CLUB_INVITATION = _G.BN_TOAST_TYPE_CLUB_INVITATION or 6
-local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_Timer_After = _G.C_Timer.After
-local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local ERR_LEARN_ABILITY_S = _G.ERR_LEARN_ABILITY_S
-local ERR_LEARN_PASSIVE_S = _G.ERR_LEARN_PASSIVE_S
-local ERR_LEARN_SPELL_S = _G.ERR_LEARN_SPELL_S
-local ERR_PET_LEARN_ABILITY_S = _G.ERR_PET_LEARN_ABILITY_S
-local ERR_PET_LEARN_SPELL_S = _G.ERR_PET_LEARN_SPELL_S
-local ERR_PET_SPELL_UNLEARNED_S = _G.ERR_PET_SPELL_UNLEARNED_S
-local ERR_SPELL_UNLEARNED_S = _G.ERR_SPELL_UNLEARNED_S
-local GetCVarBool = _G.GetCVarBool
-local GetTime = _G.GetTime
-local IsGUIDInGroup = _G.IsGUIDInGroup
-local IsGuildMember = _G.IsGuildMember
-local SetCVar = _G.SetCVar
-local UnitIsUnit = _G.UnitIsUnit
-local hooksecurefunc = _G.hooksecurefunc
+-- Filter Chat symbols
+local msgSymbols = { "`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~" }
 
-local msgSymbols = { " ", ",", "/", "^", "_", "`", "|", "~", "—", "——", "‘", "’", "“", "”", "、", "。", "〈", "〉", "《", "》", "『", "』", "【", "】", "〔", "〕", "！", "＃", "（", "）", "＊", "，", "：", "？", "＠", "～", "￥" }
 local addonBlockList = {
 	"%(Task completed%)",
 	"%*%*.+%*%*",
@@ -58,78 +34,51 @@ local addonBlockList = {
 	("%-"):rep(20),
 }
 
-local trashClubs = {
-	"Let's Play Games Together",
-	"Salute Us",
-	"Small Uplift",
-	"Stand up",
-	"Tribe Chowder",
-}
-
-local autoBroadcasts = {
-	"%-(.*)%|T(.*)|t(.*)|c(.*)%|r",
-	"%[(.*)ARENA ANNOUNCER(.*)%]",
-	"%[(.*)Announce by(.*)%]",
-	"%[(.*)Autobroadcast(.*)%]",
-	"%[(.*)BG Queue Announcer(.*)%]",
-	"^You are not mounted so you can't dismount(.*)",
-}
-
-local spamAbilitySpellList = {
-	-- Player
-	"^" .. ERR_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_LEARN_PASSIVE_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_LEARN_SPELL_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
-	-- Pet
-	"^" .. ERR_PET_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_PET_LEARN_SPELL_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_PET_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
-}
-
-C.BadBoys = {} -- debug
 local FilterList = {}
-local WhiteFilterList = {}
-local chatLines = {}
-local cvar
-local filterResult = false
-local last = {}
-local prevLineID = 0
-local this = {}
-
 function Module:UpdateFilterList()
 	K.SplitList(FilterList, C["Chat"].ChatFilterList, true)
 end
 
+local WhiteFilterList = {}
 function Module:UpdateFilterWhiteList()
 	K.SplitList(WhiteFilterList, C["Chat"].ChatFilterWhiteList, true)
 end
 
 -- ECF strings compare
-function Module:CompareStrDiff(sA, sB) -- arrays of bytes
-	local len_a, len_b = #sA, #sB
-	for j = 0, len_b do
-		last[j + 1] = j
+-- Define two empty tables to store the results of the string comparison
+local last_table, this_table = {}, {}
+
+-- Define a function to compare two strings and return their difference as a fraction
+function Module:CompareStrDiff(string_A, string_B)
+	local length_A, length_B = #string_A, #string_B
+
+	for j = 0, length_B do
+		last_table[j + 1] = j
 	end
 
-	for i = 1, len_a do
-		this[1] = i
-		for j = 1, len_b do
-			this[j + 1] = (sA[i] == sB[j]) and last[j] or (math_min(last[j + 1], this[j], last[j]) + 1)
+	for i = 1, length_A do
+		this_table[1] = i
+		for j = 1, length_B do
+			local cost = (string_A[i] == string_B[j]) and last_table[j] or (min(last_table[j + 1], this_table[j], last_table[j]) + 1)
+			this_table[j + 1] = cost
 		end
 
-		for j = 0, len_b do
-			last[j + 1] = this[j + 1]
+		-- Copying table elements
+		for j = 0, length_B do
+			last_table[j + 1] = this_table[j + 1]
 		end
 	end
 
-	return this[len_b + 1] / math_max(len_a, len_b)
+	return this_table[length_B + 1] / math.max(length_A, length_B)
 end
+
+C.BadBoys = {} -- debug
+local chatLines, prevLineID, filterResult = {}, 0, false
 
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
 		return
-	elseif guid and (IsGuildMember(guid) or C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
+	elseif guid and (IsGuildMember(guid) or BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
 		return
 	end
 
@@ -143,13 +92,18 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		return true
 	end
 
-	local filterMsg = string_gsub(msg, "|H.-|h(.-)|h", "%1")
-	filterMsg = string_gsub(filterMsg, "|c%x%x%x%x%x%x%x%x", "")
-	filterMsg = string_gsub(filterMsg, "|r", "")
+	local filterMsg = gsub(msg, "|H.-|h(.-)|h", "%1")
+	filterMsg = gsub(filterMsg, "|c%x%x%x%x%x%x%x%x", "")
+	filterMsg = gsub(filterMsg, "|r", "")
+
+	if filterMsg == "" then
+		-- Ignore empty messages
+		return
+	end
 
 	-- Trash Filter
 	for _, symbol in ipairs(msgSymbols) do
-		filterMsg = string_gsub(filterMsg, symbol, "")
+		filterMsg = gsub(filterMsg, symbol, "")
 	end
 
 	if event == "CHAT_MSG_CHANNEL" then
@@ -158,7 +112,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		for keyword in pairs(WhiteFilterList) do
 			if keyword ~= "" then
 				found = true
-				local _, count = string_gsub(filterMsg, keyword, "")
+				local _, count = gsub(filterMsg, keyword, "")
 				if count > 0 then
 					matches = matches + 1
 				end
@@ -173,7 +127,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	local matches = 0
 	for keyword in pairs(FilterList) do
 		if keyword ~= "" then
-			local _, count = string_gsub(filterMsg, keyword, "")
+			local _, count = gsub(filterMsg, keyword, "")
 			if count > 0 then
 				matches = matches + 1
 			end
@@ -199,13 +153,13 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
 		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_MONSTER_SAY" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
-			table_remove(chatLines, i)
+			tremove(chatLines, i)
 			return true
 		end
 	end
 
 	if chatLinesSize >= 30 then
-		table_remove(chatLines, 1)
+		tremove(chatLines, 1)
 	end
 end
 
@@ -235,22 +189,17 @@ end
 
 function Module:ToggleChatBubble(party)
 	cvar = "chatBubbles" .. (party and "Party" or "")
-	if not GetCVarBool(cvar) then
-		return
-	end
-
+	if not GetCVarBool(cvar) then return end
 	toggleCVar(0)
 	C_Timer_After(0.01, toggleCVar)
 end
 
 function Module:UpdateAddOnBlocker(event, msg, author)
 	local name = Ambiguate(author, "none")
-	if UnitIsUnit(name, "player") then
-		return
-	end
+	if UnitIsUnit(name, "player") then return end
 
 	for _, word in ipairs(addonBlockList) do
-		if string_find(msg, word) then
+		if strfind(msg, word) then
 			if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
 				Module:ToggleChatBubble()
 			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
@@ -264,29 +213,12 @@ function Module:UpdateAddOnBlocker(event, msg, author)
 	end
 end
 
-function Module:BlockTrashClub()
-	if self.toastType == BN_TOAST_TYPE_CLUB_INVITATION then
-		local text = self.DoubleLine:GetText() or ""
-		for _, name in pairs(trashClubs) do
-			if string_find(text, name) then
-				self:Hide()
-				return
-			end
-		end
-	end
-end
-
 function Module:CreateChatFilter()
-	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
-
-	if IsAddOnLoaded("EnhancedChatFilter") then
-		return
-	end
+	if IsAddOnLoaded("EnhancedChatFilter") then return end
 
 	if C["Chat"].EnableFilter then
 		self:UpdateFilterList()
 		self:UpdateFilterWhiteList()
-
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)

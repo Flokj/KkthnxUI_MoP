@@ -32,20 +32,28 @@ local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local ResetCursor = _G.ResetCursor
 local RollOnLoot = _G.RollOnLoot
 
-local pos = "TOP"
 local cancelled_rolls = {}
-local cachedRolls = {}
 local completedRolls = {}
-local FRAME_WIDTH, FRAME_HEIGHT = 328, 26
-local GroupLootTexture = K.GetTexture(C["General"].Texture)
 
+-- Constants for roll dimensions and direction
+local FRAME_WIDTH, FRAME_HEIGHT, RollDirection = 328, 26, 2
+
+-- Cache for roll data to improve performance
+local cachedRolls, cachedIndex = {}, {}
 Module.RollBars = {}
 
+-- Parent frame for rolls
+local parentFrame
+
+-- Roll type definitions for clarity
+local rolltypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass" }
+
+-- Function to handle click on roll button
 local function ClickRoll(frame)
 	RollOnLoot(frame.parent.rollID, frame.rolltype)
 end
 
-local rolltypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass" }
+-- Function to set tooltip for a button
 local function SetTip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 	GameTooltip:SetText(frame.tiptext)
@@ -54,10 +62,12 @@ local function SetTip(frame)
 		GameTooltip:AddLine("|cffff3333" .. "Can't Roll")
 	end
 
-	for name, tbl in pairs(frame.parent.rolls) do
-		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
-			local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[tbl[2]] or RAID_CLASS_COLORS[tbl[2]]
-			GameTooltip:AddLine(name, classColor.r, classColor.g, classColor.b)
+	local rollID, rolls = frame.parent.rollID, cachedRolls[rollID]
+	if rolls and rolls[frame.rolltype] then
+		for _, rollerInfo in pairs(rolls[frame.rolltype]) do
+			local playerName, className = unpack(rollerInfo)
+			local classColor = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
+			GameTooltip:AddLine(playerName, classColor)
 		end
 	end
 
@@ -77,23 +87,22 @@ local function LootClick(frame)
 	end
 end
 
-local function OnEvent(frame, _, rollID)
-	cancelled_rolls[rollID] = true
-	if frame.rollID ~= rollID then return end
-
-	frame.rollID = nil
-	frame.time = nil
-	frame:Hide()
-end
-
 local function StatusUpdate(frame, elapsed)
-	if not frame.parent.rollID then return end
+	local bar = frame.parent
+	if not bar.rollID then
+		if not bar.isTest then bar:Hide() end
+		return
+	end
 
-	if frame.elapsed and frame.elapsed > 0.1 then
-		frame:SetValue(GetLootRollTimeLeft(frame.parent.rollID))
-		frame.elapsed = 0
-	else
-		frame.elapsed = (frame.elapsed or 0) + elapsed
+	frame.elapsed = (frame.elapsed or 0) + elapsed
+	if frame.elapsed > 0.1 then
+		local timeLeft = GetLootRollTimeLeft(bar.rollID)
+		if timeLeft <= 0 then
+			Module.LootRoll_Cancel(bar, nil, bar.rollID)
+		else
+			frame:SetValue(timeLeft)
+			frame.elapsed = 0
+		end
 	end
 end
 
@@ -126,7 +135,7 @@ function Module:CreateRollFrame()
 	local frame = CreateFrame("Frame", "KKUI_LootRollFrame", UIParent)
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	frame:CreateBorder()
-	frame:SetScript("OnEvent", OnEvent)
+	frame:SetScript("OnEvent", Module.LootRoll_Cancel)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetFrameLevel(10)
 	frame:RegisterEvent("CANCEL_LOOT_ROLL")
@@ -165,7 +174,7 @@ function Module:CreateRollFrame()
 	status:SetAllPoints()
 	status:SetScript("OnUpdate", StatusUpdate)
 	status:SetFrameLevel(status:GetFrameLevel() - 1)
-	status:SetStatusBarTexture(GroupLootTexture)
+	status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	status:SetStatusBarColor(0.8, 0.8, 0.8, 0.9)
 	status.parent = frame
 	frame.status = status
@@ -207,16 +216,18 @@ end
 
 local function GetFrame()
 	for _, f in ipairs(Module.RollBars) do
-		if not f.rollID then
-			return f
-		end
+		if not f.rollID then return f end
 	end
 
 	local f = Module:CreateRollFrame()
-	if pos == "TOP" then
-		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "BOTTOM", 0, -6)
+	if next(Module.RollBars) then
+		if RollDirection == 2 then
+			f:SetPoint("TOP", Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "BOTTOM", 0, -6)
+		else
+			f:SetPoint("BOTTOM", Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "TOP", 0, 6)
+		end
 	else
-		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "TOP", 0, 6)
+		f:SetPoint("TOP", parentFrame, "TOP")
 	end
 
 	table.insert(Module.RollBars, f)
@@ -225,8 +236,15 @@ local function GetFrame()
 end
 
 function Module.START_LOOT_ROLL(_, rollID, time)
-	if cancelled_rolls[rollID] then return end
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
+	if not name then
+		for _, rollBar in next, Module.RollBars do
+			if rollBar.rollID == rollID then
+				Module.LootRoll_Cancel(rollBar, nil, rollID)
+			end
+		end
+		return
+	end
 
 	local f = GetFrame()
 
@@ -245,7 +263,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	f.button.icon:SetTexture(texture)
 	f.button.stack:SetShown(count > 1)
 	f.button.stack:SetText(count)
-	f.button.ilvl:SetText(itemLevel)
+	f.button.ilvl:SetText(itemLevel or "")
 
 	f.need:SetText(0)
 	f.greed:SetText(0)
@@ -315,6 +333,16 @@ function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	end
 end
 
+-- Function to cancel a loot roll
+function Module:LootRoll_Cancel(_, rollID)
+	if self.rollID == rollID then
+		self.rollID, self.time = nil, nil
+		if cachedRolls[rollID] then
+			wipe(cachedRolls[rollID])
+		end
+	end
+end
+
 function Module.LOOT_HISTORY_ROLL_COMPLETE()
 	-- Remove completed rolls from cache
 	for rollID in pairs(completedRolls) do
@@ -332,6 +360,6 @@ function Module:CreateGroupLoot()
 	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.LOOT_ROLLS_COMPLETE)
 
-	UIParent:UnregisterEvent("START_LOOT_ROLL")
-	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
+	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
+	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
