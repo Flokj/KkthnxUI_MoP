@@ -547,20 +547,6 @@ function Module:VehicleSeatMover()
 	end)
 end
 
--- Reanchor UIWidgetBelowMinimapContainerFrame
-function Module:UIWidgetFrameMover()
-	local frame = CreateFrame("Frame", "KKUI_UIWidgetMover", UIParent)
-	frame:SetSize(200, 50)
-	K.Mover(frame, "UIWidgetFrame", "UIWidgetFrame", {"TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -20})
-
-	hooksecurefunc(UIWidgetBelowMinimapContainerFrame, "SetPoint", function(self, _, parent)
-		if parent == "MinimapCluster" or parent == MinimapCluster then
-			self:ClearAllPoints()
-			self:SetPoint("TOPRIGHT", frame)
-		end
-	end)
-end
-
 function Module:UpdateMaxCameraZoom()
 	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end

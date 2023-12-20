@@ -32,7 +32,6 @@ local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local ResetCursor = _G.ResetCursor
 local RollOnLoot = _G.RollOnLoot
 
-local cancelled_rolls = {}
 local completedRolls = {}
 
 -- Constants for roll dimensions and direction
@@ -220,12 +219,12 @@ local function GetFrame()
 	local f = Module:CreateRollFrame()
 	if next(Module.RollBars) then
 		if RollDirection == 2 then
-			f:SetPoint("TOP", Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "BOTTOM", 0, -6)
+			f:SetPoint("TOP", Module.RollBars[#Module.RollBars], "BOTTOM", 0, -6)
 		else
-			f:SetPoint("BOTTOM", Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "TOP", 0, 6)
+			f:SetPoint("BOTTOM", Module.RollBars[#Module.RollBars], "TOP", 0, 6)
 		end
 	else
-		f:SetPoint("TOP", parentFrame, "TOP")
+		f:SetPoint("TOP", parentFrame, "TOP", 0, -20)
 	end
 
 	table.insert(Module.RollBars, f)
@@ -354,9 +353,9 @@ function Module:CreateGroupLoot()
 	if not C["Loot"].GroupLoot then return end
 
 	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
-	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)
-	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
+	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)	
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.LOOT_ROLLS_COMPLETE)
+	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
 
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")

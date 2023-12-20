@@ -17,7 +17,6 @@
    <Script file="Blizzard\Elements\ColorPicker.lua" />
    <Script file="Blizzard\Elements\MirrorBars.lua" />
    <Script file="Blizzard\Elements\RaidUtility.lua" />
-   <!--Script file="Blizzard\Elements\UIWidgets.lua" /-->
    <!-- Chat -->
    <Script file="Chat\Core.lua" />
    <Script file="Chat\Elements\Copy.lua" />
@@ -28,7 +27,6 @@
    <Script file="Chat\Elements\Rename.lua" />
    <Script file="Chat\Elements\URL.lua" />
    <Script file="Chat\Elements\ChatBars.lua" />
-   <!--Script file="Chat\Elements\Voice.lua" /-->
    <!-- Inventory -->
    <Script file="Inventory\Elements\SortBags.lua" />
    <Script file="Inventory\Core.lua" />
