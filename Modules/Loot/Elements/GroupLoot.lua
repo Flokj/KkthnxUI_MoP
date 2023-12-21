@@ -1,20 +1,12 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Loot")
 
-local _G = _G
-local ipairs = _G.ipairs
-local next = _G.next
-local pairs = _G.pairs
-local tonumber = _G.tonumber
+-- Lua functions
+local pairs, unpack, tonumber = pairs, unpack, tonumber
 
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
-local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
-local ChatEdit_InsertLink = _G.ChatEdit_InsertLink
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local CreateFrame = _G.CreateFrame
-local CursorOnUpdate = _G.CursorOnUpdate
-local DressUpItemLink = _G.DressUpItemLink
-local GREED = _G.GREED
 local GameTooltip = _G.GameTooltip
 local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
 local GameTooltip_Hide = GameTooltip_Hide
@@ -22,17 +14,13 @@ local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
-local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifiedClick = _G.IsModifiedClick
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local NEED = _G.NEED
-local PASS = _G.PASS
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local GREED, NEED, PASS = GREED, NEED, PASS
 local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
-local ResetCursor = _G.ResetCursor
 local RollOnLoot = _G.RollOnLoot
-
-local completedRolls = {}
+local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
+local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
 
 -- Constants for roll dimensions and direction
 local FRAME_WIDTH, FRAME_HEIGHT, RollDirection = 328, 26, 2
@@ -56,10 +44,6 @@ end
 local function SetTip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 	GameTooltip:SetText(frame.tiptext)
-
-	if frame:IsEnabled() == 0 then
-		GameTooltip:AddLine("|cffff3333" .. "Can't Roll")
-	end
 
 	for name, tbl in pairs(frame.parent.rolls) do
 		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
@@ -112,18 +96,21 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	if ptex then f:SetPushedTexture(ptex) end
 
 	f:SetHighlightTexture(htex)
-	f.rolltype = rolltype
-	f.parent = parent
-	f.tiptext = tiptext
 	f:SetScript("OnEnter", SetTip)
 	f:SetScript("OnLeave", GameTooltip_Hide)
 	f:SetScript("OnClick", ClickRoll)
 	f:SetMotionScriptsWhileDisabled(true)
 	f:SetHitRectInsets(3, 3, 3, 3)
 
+	f.rolltype = rolltype
+	f.parent = parent
+	f.tiptext = tiptext
+
+	-- Centering text depending on roll type
+	local yOffset = rolltype == 2 and 1 or rolltype == 0 and -1.2 or 0
 	local txt = f:CreateFontString(nil, nil)
 	txt:SetFontObject(K.UIFontOutline)
-	txt:SetPoint("CENTER", 0, rolltype == 2 and 1 or rolltype == 0 and -1.2 or 0)
+	txt:SetPoint("CENTER", 0, yOffset)
 
 	return f, txt
 end
@@ -191,12 +178,12 @@ function Module:CreateRollFrame()
 	frame.needbutt, frame.greedbutt, frame.disenchantbutt = need, greed, de
 	frame.need, frame.greed, frame.pass, frame.disenchant = needtext, greedtext, passtext, detext
 
-	local bind = frame:CreateFontString()
-	bind:SetPoint("LEFT", pass, "RIGHT", 3, 1)
+	-- Binding and loot text
+	local bind, loot = frame:CreateFontString(), frame:CreateFontString(nil, "ARTWORK")
+	bind:SetPoint("LEFT", pass, "RIGHT", 3, 0)
 	bind:SetFontObject(K.UIFontOutline)
 	frame.fsbind = bind
 
-	local loot = frame:CreateFontString(nil, "ARTWORK")
 	loot:SetFontObject(K.UIFontOutline)
 	loot:SetPoint("LEFT", bind, "RIGHT", 0, 0)
 	loot:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
@@ -206,13 +193,11 @@ function Module:CreateRollFrame()
 
 	frame.rolls = {}
 
-	--tinsert(Module.RollBars, frame)
-
 	return frame
 end
 
 local function GetFrame()
-	for _, f in ipairs(Module.RollBars) do
+	for _, f in next, Module.RollBars do
 		if not f.rollID then return f end
 	end
 
@@ -244,8 +229,11 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	end
 
 	local f = GetFrame()
+	if not f then return end
 
-	for i in pairs(f.rolls) do f.rolls[i] = nil end
+	for i in pairs(f.rolls) do 
+		f.rolls[i] = nil 
+	end
 
 	local itemLink = GetLootRollItemLink(rollID)
 	local _, _, _, itemLevel, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(itemLink)
@@ -288,14 +276,12 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 
 	f:Show()
 
-	_G.AlertFrame:UpdateAnchors()
-
 	-- Add cached roll info, if any
 	for rollid, rollTable in pairs(cachedRolls) do
 		if f.rollID == rollid then -- rollid matches cached rollid
 			for rollerName, rollerInfo in pairs(rollTable) do
 				local rollType, class = rollerInfo[1], rollerInfo[2]
-				f.rolls[rollerName] = { rollType, class }
+				f.rolls[rollerName] = {rollType, class}
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
 			end
 
@@ -311,7 +297,7 @@ function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 
 	local rollIsHidden = true
 	if name and rollType then
-		for _, f in ipairs(Module.RollBars) do
+		for _, f in next, Module.RollBars do
 			if f.rollID == rollID then
 				f.rolls[name] = { rollType, class }
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
@@ -340,6 +326,7 @@ function Module:LootRoll_Cancel(_, rollID)
 	end
 end
 
+local completedRolls = {}
 function Module.LOOT_HISTORY_ROLL_COMPLETE()
 	-- Remove completed rolls from cache
 	for rollID in pairs(completedRolls) do

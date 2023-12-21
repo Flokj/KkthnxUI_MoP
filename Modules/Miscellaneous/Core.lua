@@ -58,7 +58,6 @@ function Module:OnEnable()
 	Module:CreateTicketStatusFrameMove()
 	Module:CreateTradeTargetInfo()
 	Module:UpdateMaxCameraZoom()
-	Module:UIWidgetFrameMover()
 	Module:VehicleSeatMover()
 	C_Timer_After(0, Module.UpdateMaxCameraZoom)
 
