@@ -1,71 +1,32 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Infobar")
 
-local _G = _G
-local ipairs = _G.ipairs
-local math_floor = _G.math.floor
-local math_max = _G.math.max
-local math_min = _G.math.min
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
+local string_format, table_insert, table_sort, table_wipe = string.format, table.insert, table.sort, table.wipe
+local GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown
+local ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage = ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage
+local collectgarbage, gcinfo = collectgarbage, gcinfo
 
-local GameTooltip = _G.GameTooltip
-local GetAddOnCPUUsage = _G.GetAddOnCPUUsage
-local GetAddOnInfo = _G.GetAddOnInfo
-local GetAddOnMemoryUsage = _G.GetAddOnMemoryUsage
-local GetCVarBool = _G.GetCVarBool
-local GetFramerate = _G.GetFramerate
-local GetNumAddOns = _G.GetNumAddOns
-local GetTime = _G.GetTime
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local ResetCPUUsage = _G.ResetCPUUsage
-local SetCVar = _G.SetCVar
-local UpdateAddOnCPUUsage = _G.UpdateAddOnCPUUsage
-local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
-local VIDEO_OPTIONS_DISABLED = _G.VIDEO_OPTIONS_DISABLED
-local VIDEO_OPTIONS_ENABLED = _G.VIDEO_OPTIONS_ENABLED
-local collectgarbage = _G.collectgarbage
-local gcinfo = _G.gcinfo
-
-local disableString = "|cffff5555" .. VIDEO_OPTIONS_DISABLED
-local enableString = "|cff55ff55" .. VIDEO_OPTIONS_ENABLED
+local disableString, enableString = "|cffff5555" .. VIDEO_OPTIONS_DISABLED, "|cff55ff55" .. VIDEO_OPTIONS_ENABLED
 local scriptProfileStatus = GetCVarBool("scriptProfile")
-local showMoreString = "%d %s (%s)"
-local usageColor = { 0, 1, 0, 1, 1, 0, 1, 0, 0 }
-local usageString = "%.3f ms"
+local showMoreString, usageColor, usageString = "%d %s (%s)", { 0, 1, 0, 1, 1, 0, 1, 0, 0 }, "%.3f ms"
+local maxAddOns, infoTable = 12, {}
 
-local maxAddOns = 12
-local infoTable = {}
-
-local SystemDataText
-local SystemDataTextEntered
+local SystemDataText, SystemDataTextEntered
 
 local function formatMemory(value)
-	if value > 1024 then
-		return string_format("%.1f mb", value / 1024)
-	else
-		return string_format("%.0f kb", value)
-	end
+	return value > 1024 and string_format("%.1f mb", value / 1024) or string_format("%.0f kb", value)
 end
 
 local function sortByMemory(a, b)
-	if a and b then
-		return (a[3] == b[3] and a[2] < b[2]) or a[3] > b[3]
-	end
+	return (a and b and ((a[3] == b[3] and a[2] < b[2]) or a[3] > b[3])) or false
 end
 
 local function sortByCPU(a, b)
-	if a and b then
-		return (a[4] == b[4] and a[2] < b[2]) or a[4] > b[4]
-	end
+	return (a and b and ((a[4] == b[4] and a[2] < b[2]) or a[4] > b[4])) or false
 end
 
 local function smoothColor(cur, max)
-	local r, g, b = K.oUF:RGBColorGradient(cur, max, unpack(usageColor))
-	return r, g, b
+	return K.oUF:RGBColorGradient(cur, max, unpack(usageColor))
 end
 
 local function BuildAddonList()
@@ -116,18 +77,14 @@ local function UpdateCPU()
 end
 
 local function colorFPS(fps)
-	if fps < 15 then
-		return "|cffD80909" .. fps
-	elseif fps < 30 then
-		return "|cffE8DA0F" .. fps
-	else
-		return "|cff0CD809" .. fps
-	end
+	fps = fps and floor(fps) or 0
+	local color = fps < 15 and "|cffD80909" or (fps < 30 and "|cffE8DA0F" or "|cff0CD809")
+	return color .. fps
 end
 
 local function setFrameRate()
-	local fps = math_floor(GetFramerate())
-	SystemDataText.Text:SetText(L["FPS"] .. ": " .. colorFPS(fps))
+	local fps = floor(GetFramerate())
+	SystemDataText.Text:SetText(format("%s: %s", L["FPS"], colorFPS(fps)))
 end
 
 local function OnEnter()
@@ -137,7 +94,7 @@ local function OnEnter()
 		BuildAddonList()
 	end
 	local isShiftKeyDown = IsShiftKeyDown()
-	local maxShown = isShiftKeyDown and #infoTable or math_min(maxAddOns, #infoTable)
+	local maxShown = isShiftKeyDown and #infoTable or math.min(maxAddOns, #infoTable)
 
 	GameTooltip:SetOwner(SystemDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(SystemDataText))
@@ -168,7 +125,7 @@ local function OnEnter()
 		end
 	else
 		local totalCPU = UpdateCPU()
-		local passedTime = math_max(1, GetTime() - Module.CheckLoginTime)
+		local passedTime = math.max(1, GetTime() - Module.CheckLoginTime)
 		GameTooltip:AddDoubleLine(L["System"], string_format(usageString, totalCPU / passedTime, 0.4, 0.6, 1, 0.5, 0.7, 1))
 		GameTooltip:AddLine(" ")
 

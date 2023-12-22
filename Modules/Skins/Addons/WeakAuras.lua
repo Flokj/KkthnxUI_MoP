@@ -1,15 +1,9 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-local pairs = _G.pairs
-local unpack = _G.unpack
+local unpack = unpack
 
-local x1, x2, y1, y2 = unpack(K.TexCoords)
-
-local function IconBgOnUpdate(self)
-	self:SetAlpha(self.__icon:GetAlpha())
-end
+local hooksecurefunc = hooksecurefunc
 
 local function UpdateIconTexCoord(icon)
 	if icon.isCutting then return end
@@ -17,7 +11,7 @@ local function UpdateIconTexCoord(icon)
 
 	local width, height = icon:GetSize()
 	if width ~= 0 and height ~= 0 then
-		local left, right, top, bottom = x1, x2, y1, y2 -- normal icon
+		local left, right, top, bottom = unpack(K.TexCoords) -- normal icon
 		local ratio = width / height
 		if ratio > 1 then -- fat icon
 			local offset = (1 - 1 / ratio) / 2
@@ -34,40 +28,39 @@ local function UpdateIconTexCoord(icon)
 	icon.isCutting = nil
 end
 
+local function CreateIconBackground(parent)
+	local bg = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+	bg:SetAllPoints(parent)
+	bg:SetFrameLevel(parent:GetFrameLevel())
+	bg:CreateBorder()
+	return bg
+end
+
+local function ReskinWAIcon(icon)
+	UpdateIconTexCoord(icon)
+	hooksecurefunc(icon, "SetTexCoord", UpdateIconTexCoord)
+	icon.bg = CreateIconBackground(icon)
+end
+
 local function ResetBGLevel(frame)
-	frame.bg:SetFrameLevel(frame.bar:GetFrameLevel())
+	frame.bg:SetFrameLevel(0)
 end
 
 local function Skin_WeakAuras(f, fType)
-	if fType == "icon" then
-		if not f.styled then
-			UpdateIconTexCoord(f.icon)
-			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
-			f.bg = CreateFrame("Frame", nil, f, "BackdropTemplate")
-			f.bg:SetAllPoints(f)
-			f.bg:SetFrameLevel(f:GetFrameLevel())
-			f.bg:CreateBorder()
-			f.bg.__icon = f.icon
-			f.bg:HookScript("OnUpdate", IconBgOnUpdate)
-
-			f.styled = true
-		end
-	elseif fType == "aurabar" then
-		if not f.styled then
-			f.bg = CreateFrame("Frame", nil, f.bar, "BackdropTemplate")
-			f.bg:SetAllPoints(f.bar)
-			f.bg:SetFrameLevel(f.bar:GetFrameLevel())
-			f.bg:CreateBorder()
-			f.iconFrame:SetAllPoints(f.icon)
-			f.iconFrame:CreateBorder()
-			UpdateIconTexCoord(f.icon)
-			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
+	if not f.styled then
+		if fType == "icon" then
+			ReskinWAIcon(f.icon)
+		elseif fType == "aurabar" then
+			f.bg = CreateIconBackground(f.bar)
+			ReskinWAIcon(f.icon)
 			hooksecurefunc(f, "SetFrameStrata", ResetBGLevel)
-
-			f.styled = true
 		end
 
-		f.iconFrame:SetShown(not not f.iconVisible)
+		f.styled = true
+	end
+
+	if fType == "aurabar" then
+		f.icon.bg:SetShown(not not f.iconVisible)
 	end
 end
 

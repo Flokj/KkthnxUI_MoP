@@ -1,25 +1,16 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Infobar")
 
-local _G = _G
-local math_max = _G.math.max
-local string_format = _G.string.format
+local max = math.max
+local format = string.format
+local GetNetStats, GetNetIpTypes, GetFileStreamingStatus, GetBackgroundLoadingStatus, GetAvailableBandwidth, GetDownloadedPercentage = GetNetStats, GetNetIpTypes, GetFileStreamingStatus, GetBackgroundLoadingStatus, GetAvailableBandwidth, GetDownloadedPercentage
 
-local GameTooltip = _G.GameTooltip
-local GetAvailableBandwidth = _G.GetAvailableBandwidth
-local GetBackgroundLoadingStatus = _G.GetBackgroundLoadingStatus
-local GetCVarBool = _G.GetCVarBool
-local GetDownloadedPercentage = _G.GetDownloadedPercentage
-local GetFileStreamingStatus = _G.GetFileStreamingStatus
-local GetNetIpTypes = _G.GetNetIpTypes
-local GetNetStats = _G.GetNetStats
-local UNKNOWN = _G.UNKNOWN
-
+local UNKNOWN = UNKNOWN
 local ipTypes = { "IPv4", "IPv6" }
 local LatencyDataText
 local LatencyDataTextEntered
 
-local function colorLatency(latency)
+local function ColorLatency(latency)
 	if latency < 250 then
 		return "|cff0CD809" .. latency
 	elseif latency < 500 then
@@ -29,10 +20,10 @@ local function colorLatency(latency)
 	end
 end
 
-local function setLatency()
+local function SetLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
-	local latency = math_max(latencyHome, latencyWorld)
-	LatencyDataText.Text:SetText(L["MS"] .. ": " .. colorLatency(latency))
+	local latency = max(latencyHome, latencyWorld)
+	LatencyDataText.Text:SetText(L["MS"] .. ": " .. ColorLatency(latency))
 end
 
 local function OnEnter()
@@ -46,8 +37,8 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 
 	local _, _, latencyHome, latencyWorld = GetNetStats()
-	GameTooltip:AddDoubleLine(L["Home Latency"], colorLatency(latencyHome) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["World Latency"], colorLatency(latencyWorld) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Home Latency"], ColorLatency(latencyHome) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["World Latency"], ColorLatency(latencyWorld) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
 
 	if GetCVarBool("useIPv6") then
 		local ipTypeHome, ipTypeWorld = GetNetIpTypes()
@@ -59,8 +50,8 @@ local function OnEnter()
 	local downloading = GetFileStreamingStatus() ~= 0 or GetBackgroundLoadingStatus() ~= 0
 	if downloading then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(L["Bandwidth"], string_format("%.2f Mbps", GetAvailableBandwidth()), 0.5, 0.7, 1, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Download"], string_format("%.2f%%", GetDownloadedPercentage() * 100), 0.5, 0.7, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Bandwidth"], format("%.2f Mbps", GetAvailableBandwidth()), 0.5, 0.7, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Download"], format("%.2f%%", GetDownloadedPercentage() * 100), 0.5, 0.7, 1, 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -69,7 +60,7 @@ end
 local function OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 	if self.timer > 1 then
-		setLatency()
+		SetLatency()
 		if LatencyDataTextEntered then
 			OnEnter()
 		end

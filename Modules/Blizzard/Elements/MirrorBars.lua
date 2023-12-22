@@ -4,20 +4,24 @@ local Module = K:GetModule("Blizzard")
 -- Sourced: NDui
 
 local function SetupMirrorBars(bar)
-	local statusbar = _G[bar:GetName() .. "StatusBar"]
+	local statusbar = bar.StatusBar or _G[bar:GetName() .. "StatusBar"]
+	if statusbar then
+		statusbar:SetAllPoints()
+	elseif bar.SetStatusBarTexture then
+		bar:SetStatusBarTexture()
+	end
 	local text = _G[bar:GetName() .. "Text"]
-	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
-	bar:StripTextures()
+	bar:StripTextures(true)
 
-	statusbar:SetAllPoints()
-	statusbar:SetStatusBarTexture(texture)
-	text:SetAllPoints()
+	text:ClearAllPoints()
+	text:SetFontObject(K.UIFont)
+	text:SetFont(text:GetFont(), 12, nil)
+	text:SetPoint("BOTTOM", bar, "TOP", 0, 4)
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetWidth(64)
-	bar.spark:SetHeight(bar:GetHeight())
+	bar.spark:SetSize(64, bar:GetHeight())
 	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
