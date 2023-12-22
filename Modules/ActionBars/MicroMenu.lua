@@ -1,54 +1,48 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
--- TODO: Add mouseover back
+-- Import Lua functions
+local table_insert = table.insert
+local pairs = pairs
+local type = type
 
-local _G = _G
-local table_insert = _G.table.insert
-local pairs = _G.pairs
-local type = _G.type
-
-local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
-local MicroButtonTooltipText = _G.MicroButtonTooltipText
-local RegisterStateDriver = _G.RegisterStateDriver
-
+-- Global variables
 local buttonList = {}
+local watcher = 0
 
-local function onLeaveBar()
-	local KKUI_MB = _G.KKUI_MenuBar
-	return C["ActionBar"].FadeMicroBar and UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
+-- Callback for fading out the micro menu
+local function LeaveBarFadeOut()
+	local KKUI_MB = KKUI_MenuBar
+	if C["ActionBar"].FadeMicroMenu then
+		UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
+	end
 end
 
-local watcher = 0
-local function onUpdate(_, elapsed)
-	local KKUI_MB = _G.KKUI_MenuBar
+-- Callback for updating when the mouse is over the micro menu
+local function UpdateOnMouseOver(_, elapsed)
+	local KKUI_MB = KKUI_MenuBar
+	watcher = watcher + elapsed
 	if watcher > 0.1 then
 		if not KKUI_MB:IsMouseOver() then
 			KKUI_MB.IsMouseOvered = nil
 			KKUI_MB:SetScript("OnUpdate", nil)
-			onLeaveBar()
+			LeaveBarFadeOut()
 		end
 		watcher = 0
-	else
-		watcher = watcher + elapsed
 	end
 end
 
-local function onEnter()
-	local KKUI_MB = _G.KKUI_MenuBar
+-- Callback for handling micro button hover
+local function OnMicroButtonEnter()
+	local KKUI_MB = KKUI_MenuBar
 	if not KKUI_MB.IsMouseOvered then
 		KKUI_MB.IsMouseOvered = true
-		KKUI_MB:SetScript("OnUpdate", onUpdate)
+		KKUI_MB:SetScript("OnUpdate", UpdateOnMouseOver)
 		UIFrameFadeIn(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 1)
 	end
 end
 
-function Module:MicroButton_SetupTexture(icon, texture)
-	icon:SetPoint("TOPLEFT", -9, 5)
-	icon:SetPoint("BOTTOMRIGHT", 10, -6)
-	icon:SetTexture(K.MediaFolder .. "Skins\\" .. texture)
-end
-
+-- Callbacks for resetting button parent and anchor
 local function ResetButtonParent(button, parent)
 	if parent ~= button.__owner then
 		button:SetParent(button.__owner)
@@ -60,22 +54,58 @@ local function ResetButtonAnchor(button)
 	button:SetAllPoints()
 end
 
-function Module:MicroButton_Create(parent, data)
+-- Function for setting up button textures
+local function SetupButtonTextures(button)
+	local pushed = button:GetPushedTexture()
+	local disabled = button:GetDisabledTexture()
+	local highlight = button:GetHighlightTexture()
+	local flash = button.Flash
+
+	if pushed then
+		pushed:SetColorTexture(1, 0.84, 0, 0.2)
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+	end
+	if disabled then
+		disabled:SetColorTexture(1, 0, 0, 0.4)
+		disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+	end
+
+	highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
+	highlight:SetVertexColor(K.r, K.g, K.b)
+	highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+	highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+	
+	if flash then
+		flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
+		flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+		flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+	end
+end
+
+function MicroButtonCreate(parent, data)
+	local function SetTextureProperties(icon, texture)
+		icon:SetPoint("TOPLEFT", -9, 5)
+		icon:SetPoint("BOTTOMRIGHT", 10, -6)
+		icon:SetTexture(K.MediaFolder .. "Skins\\" .. texture)
+	end
+
 	local texture, method, tooltip = unpack(data)
 
-	local bu = CreateFrame("Frame", "KKUI_MicroButtons", parent)
-	table_insert(buttonList, bu)
-	bu:SetSize(20, 20 * 1.4)
-	bu:CreateBorder()
+	local buttonFrame = CreateFrame("Frame", "KKUI_MicroButtons", parent)
+	table_insert(buttonList, buttonFrame)
+	buttonFrame:SetSize(22, 30)
+	buttonFrame:CreateBorder()
 
-	local icon = bu:CreateTexture(nil, "ARTWORK")
-	Module:MicroButton_SetupTexture(icon, texture)
+	local icon = buttonFrame:CreateTexture(nil, "ARTWORK")
+	SetTextureProperties(icon, texture)
 
 	if type(method) == "string" then
 		local button = _G[method]
 		button:SetHitRectInsets(0, 0, 0, 0)
-		button:SetParent(bu)
-		button.__owner = bu
+		button:SetParent(buttonFrame)
+		button.__owner = buttonFrame
 		hooksecurefunc(button, "SetParent", ResetButtonParent)
 		ResetButtonAnchor(button)
 		hooksecurefunc(button, "SetPoint", ResetButtonAnchor)
@@ -87,53 +117,27 @@ function Module:MicroButton_Create(parent, data)
 		end
 
 		if C["ActionBar"].FadeMicroBar then
-			button:HookScript("OnEnter", onEnter)
+			button:HookScript("OnEnter", OnMicroButtonEnter)
 		end
 
-		local pushed = button:GetPushedTexture()
-		local disabled = button:GetDisabledTexture()
-		local highlight = button:GetHighlightTexture()
-		local flash = button.Flash
-
-		if pushed then
-			pushed:SetColorTexture(1, 0.84, 0, 0.2)
-			pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
-			pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-		end
-
-		if disabled then
-			disabled:SetColorTexture(1, 0, 0, 0.4)
-			disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
-			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-		end
-
-		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
-		highlight:SetVertexColor(K.r, K.g, K.b)
-		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
-
-		if flash then
-			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
-			flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-			flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
-		end
+		SetupButtonTextures(button)	
 	else
-		bu:SetScript("OnMouseUp", method)
-		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
+		buttonFrame:SetScript("OnMouseUp", method)
+		K.AddTooltip(buttonFrame, "ANCHOR_RIGHT", tooltip)
 
-		local highlight = bu:CreateTexture(nil, "HIGHLIGHT")
+		local highlight = buttonFrame:CreateTexture(nil, "HIGHLIGHT")
 		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
 		highlight:SetVertexColor(K.r, K.g, K.b)
-		highlight:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
-		highlight:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)
+		highlight:SetPoint("TOPLEFT", buttonFrame, "TOPLEFT", -22, 18)
+		highlight:SetPoint("BOTTOMRIGHT", buttonFrame, "BOTTOMRIGHT", 24, -18)
 	end
 end
 
-function Module:CreateMicroMenu()
+function Module:MicroMenu()
 	if not C["ActionBar"].MicroBar then return end
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
-	menubar:SetSize(280, 20 * 1.4)
+	menubar:SetSize(302, 30)
 	menubar:SetAlpha((C["ActionBar"].FadeMicroBar and not menubar.IsMouseOvered and 0) or 1)
 	menubar:EnableMouse(false)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
@@ -154,15 +158,15 @@ function Module:CreateMicroMenu()
 	}
 
 	for _, info in pairs(buttonInfo) do
-		Module:MicroButton_Create(menubar, info)
+		MicroButtonCreate(menubar, info)
 	end
 
 	-- Order Positions
-	for i = 1, #buttonList do
+	for i, buttonFrame in ipairs(buttonList) do
 		if i == 1 then
-			buttonList[i]:SetPoint("LEFT")
+			buttonFrame:SetPoint("LEFT")
 		else
-			buttonList[i]:SetPoint("LEFT", buttonList[i - 1], "RIGHT", 6, 0)
+			buttonFrame:SetPoint("LEFT", buttonList[i - 1], "RIGHT", 6, 0)
 		end
 	end
 

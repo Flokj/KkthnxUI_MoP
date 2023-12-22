@@ -153,7 +153,7 @@ end
 
 function Module:OnEnable()
 	Module.buttons = {}
-	Module:CreateMicroMenu()
+	Module:MicroMenu()
 
 	if not C["ActionBar"].Enable then
 		return
