@@ -78,7 +78,7 @@ do
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
 	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow
 	K.SharedMedia = LibStub("LibSharedMedia-3.0", true)
-	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
+	K.RangeCheck = LibStub("LibRangeCheck-3.0")
 	K.Serialize = LibStub("LibSerialize-KkthnxUI")
 	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
 	K.cargBags = Engine.cargBags
