@@ -1,9 +1,6 @@
 local K, C = unpack(KkthnxUI)
-
-local _G = _G
-local table_insert = _G.table.insert
-
-local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
+local table_insert = table.insert
+local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
 	if chatbubble.styled then return end
@@ -15,7 +12,9 @@ local function reskinChatBubble(chatbubble)
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
-		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
+		
+		local backdropColor = C["Media"].Backdrops.ColorBackdrop
+		bg.KKUI_Background:SetVertexColor(backdropColor[1], backdropColor[2], backdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)
@@ -27,6 +26,7 @@ end
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].ChatBubbles then return end
 
+	local bubbleHook = CreateFrame("Frame")
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
 		CHAT_MSG_YELL = "chatBubbles",
@@ -37,8 +37,7 @@ table_insert(C.defaultThemes, function()
 		CHAT_MSG_MONSTER_PARTY = "chatBubblesParty",
 	}
 
-	local bubbleHook = CreateFrame("Frame")
-	for event in next, events do
+	for event in pairs(events) do
 		bubbleHook:RegisterEvent(event)
 	end
 
@@ -50,10 +49,13 @@ table_insert(C.defaultThemes, function()
 	end)
 
 	bubbleHook:SetScript("OnUpdate", function(self, elapsed)
-		self.elapsed = self.elapsed + elapsed
+		self.elapsed = (self.elapsed or 0) + elapsed
 		if self.elapsed > 0.1 then
-			for _, chatbubble in pairs(C_ChatBubbles_GetAllChatBubbles()) do
-				reskinChatBubble(chatbubble)
+			local chatBubbles = C_ChatBubbles_GetAllChatBubbles()
+			if chatBubbles then
+				for _, chatbubble in pairs(chatBubbles) do
+					reskinChatBubble(chatbubble)
+				end
 			end
 			self:Hide()
 		end
