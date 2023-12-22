@@ -51,11 +51,12 @@ local CreateFrame = CreateFrame
 local _G = _G
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
-local knowables, knowns = {
+local knowables = {
 	[LE_ITEM_CLASS_CONSUMABLE] = true,
 	[LE_ITEM_CLASS_RECIPE] = true,
 	[LE_ITEM_CLASS_MISCELLANEOUS] = true,
-}, {}
+}
+local knowns = {}
 
 local function isPetCollected(speciesID)
 	if not speciesID or speciesID == 0 then return end
@@ -91,6 +92,8 @@ local function IsAlreadyKnown(link, index)
 					return true
 				end
 			end
+			-- Clear the 'knowns' table here, as it's not needed beyond this point.
+			knowns = {}
 		end
 	end
 end
@@ -103,7 +106,8 @@ local function MerchantFrame_UpdateMerchantInfo()
 		if index > numItems then return end
 
 		local button = _G["MerchantItem" .. i .. "ItemButton"]
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			local _, _, _, _, numAvailable, isUsable = GetMerchantItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetMerchantItemLink(index)) then
 				local r, g, b = COLOR.r, COLOR.g, COLOR.b
@@ -123,7 +127,8 @@ local function MerchantFrame_UpdateBuybackInfo()
 		if index > numItems then return end
 
 		local button = _G["MerchantItem" .. index .. "ItemButton"]
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			local _, _, _, _, _, isUsable = GetBuybackItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetBuybackItemLink(index)) then
 				SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
@@ -202,7 +207,8 @@ local function GuildBankFrame_Update(self)
 
 		column = ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			texture, _, locked, _, quality = GetGuildBankItemInfo(tab, i)
 			if texture and not locked then
 				if IsAlreadyKnown(GetGuildBankItemLink(tab, i), i) then
