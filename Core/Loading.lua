@@ -1,5 +1,4 @@
 local K, C = unpack(KkthnxUI)
-local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local function createProfileName(server, nickname)
 	return table.concat({ server, nickname }, "-")
