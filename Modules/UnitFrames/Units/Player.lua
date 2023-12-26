@@ -425,15 +425,15 @@ function Module:CreatePlayer()
 	}
 
 	-- Fader
-	if C["Unitframe"].CombatFade then
-		self.Fader = {
-			[1] = { Combat = 1, Arena = 1, Instance = 1 },
-			[2] = { PlayerTarget = 1, PlayerNotMaxHealth = 1, PlayerNotMaxMana = 1, Casting = 1 },
-			[3] = { Stealth = 0.5 },
-			[4] = { notCombat = 0, PlayerTaxi = 0 },
-		}
-		self.NormalAlpha = 1
-	end
+	--if C["Unitframe"].CombatFade then
+	--	self.Fader = {
+	--		[1] = { Combat = 1, Arena = 1, Instance = 1 },
+	--		[2] = { PlayerTarget = 1, PlayerNotMaxHealth = 1, PlayerNotMaxMana = 1, Casting = 1 },
+	--		[3] = { Stealth = 0.5 },
+	--		[4] = { notCombat = 0, PlayerTaxi = 0 },
+	--	}
+	--	self.NormalAlpha = 1
+	--end
 
 	self.Overlay = Overlay
 	self.Health = Health
@@ -447,7 +447,4 @@ function Module:CreatePlayer()
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
 
-	-- if K.isProfiling then
-	-- 	K:LogDebugInfo(self:GetDebugName() .. ":CreatePlayer", debugprofilestop() - timeStart, collectgarbage("count") - memStart)
-	-- end
 end

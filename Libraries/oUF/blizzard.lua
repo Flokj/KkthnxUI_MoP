@@ -14,7 +14,7 @@ local hiddenParent = CreateFrame('Frame', nil, UIParent)
 hiddenParent:SetAllPoints()
 hiddenParent:Hide()
 
-local function insecureOnShow(self)
+local function insecureHide(self)
 	self:Hide()
 end
 
@@ -122,11 +122,11 @@ function oUF:DisableBlizzard(unit)
 end
 
 function oUF:DisableNamePlate(frame)
-	if(not(frame and frame.UnitFrame)) then return end
-	if(frame.UnitFrame:IsForbidden()) then return end
+	if not (frame and frame.UnitFrame) then return end
+	if frame.UnitFrame:IsForbidden() then return end
 
-	if(not frame.UnitFrame.isHooked) then
-		frame.UnitFrame:HookScript('OnShow', insecureOnShow)
+	if not frame.UnitFrame.isHooked then
+		frame.UnitFrame:HookScript("OnShow", insecureHide)
 		frame.UnitFrame.isHooked = true
 	end
 

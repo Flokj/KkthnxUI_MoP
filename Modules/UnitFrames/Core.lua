@@ -504,36 +504,40 @@ function Module.PostUpdateRunes(element, runemap)
 end
 
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
+	local prevColor = element.prevColor
+	local thisColor
+
 	if not cur or cur == 0 then
-		element.prevColor = nil
+		thisColor = nil
 	else
-		element.thisColor = cur == max and 1 or 2
-		if not element.prevColor or element.prevColor ~= element.thisColor then
+		thisColor = cur == max and 1 or 2
+		if not prevColor or prevColor ~= thisColor then
 			local r, g, b = 1, 0, 0
-			if element.thisColor == 2 then
+			if thisColor == 2 then
 				local color = element.__owner.colors.power[powerType]
 				r, g, b = color[1], color[2], color[3]
 			end
-			for i = 1, #element do
-				element[i]:SetStatusBarColor(r, g, b)
-			end
-			element.prevColor = element.thisColor
+			SetStatusBarColor(element, r, g, b)
+			element.prevColor = thisColor
 		end
 	end
 
 	if diff then
+		local barWidth = (element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max
 		for i = 1, max do
-			element[i]:SetWidth((element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max)
+			local bar = element[i]
+			bar:SetWidth(barWidth)
 		end
 	end
 
-	for i = 1, 6 do
+	for i = 1, 7 do
 		local bar = element[i]
 		if not bar.chargeStar then
 			break
 		end
 
-		bar.chargeStar:SetShown(chargedPowerPoints and tContains(chargedPowerPoints, i))
+		local showChargeStar = chargedPowerPoints and chargedPowerPoints[i]
+		bar.chargeStar:SetShown(showChargeStar)
 	end
 end
 
@@ -550,49 +554,53 @@ function Module:CreateClassPower(self)
 		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	end
 
+	local isDK = K.Class == "DEATHKNIGHT"
+	local maxBar = isDK and 6 or 7
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
+
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(barPoint))
 
-	for i = 1, 6 do
-		bars[i] = CreateFrame("StatusBar", nil, bar)
-		bars[i]:SetHeight(barHeight)
-		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
-		bars[i]:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+	if not bar.chargeParent then
+		bar.chargeParent = CreateFrame("Frame", nil, bar)
+		bar.chargeParent:SetAllPoints()
+		bar.chargeParent:SetFrameLevel(8)
+	end
+
+	for i = 1, maxBar do
+		local statusbar = CreateFrame("StatusBar", nil, bar)
+		statusbar:SetHeight(barHeight)
+		statusbar:SetWidth((barWidth - (maxBar - 1) * 6) / maxBar)
+		statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		statusbar:SetFrameLevel(self:GetFrameLevel() + 5)
 		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
-			bars[i]:CreateShadow(true)
+			statusbar:CreateShadow(true)
 		else
-			bars[i]:CreateBorder()
+			statusbar:CreateBorder()
 		end
 
 		if i == 1 then
-			bars[i]:SetPoint("BOTTOMLEFT")
+			statusbar:SetPoint("BOTTOMLEFT")
 		else
-			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+			statusbar:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
 
-		if K.Class == "DEATHKNIGHT" then
-			bars[i].timer = K.CreateFontString(bars[i], 10, "")
-		elseif K.Class == "ROGUE" then
-			if not bar.chargeParent then
-				bar.chargeParent = CreateFrame("Frame", nil, bar)
-				bar.chargeParent:SetAllPoints()
-				bar.chargeParent:SetFrameLevel(8)
-			end
-
+		if isDK then
+			statusbar.timer = K.CreateFontString(statusbar, 10, "")
+		else
 			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
-			chargeStar:SetPoint("CENTER", bars[i])
+			chargeStar:SetPoint("CENTER", statusbar)
 			chargeStar:Hide()
-
-			bars[i].chargeStar = chargeStar
+			statusbar.chargeStar = chargeStar
 		end
+
+		bars[i] = statusbar
 	end
 
-	if K.Class == "DEATHKNIGHT" then
+	if isDK then
 		bars.colorSpec, bars.sortOrder, bars.__max = true, "asc", 6
 		bars.PostUpdate = Module.PostUpdateRunes
 		self.Runes = bars
@@ -688,51 +696,36 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		local PlayerFrameHeight = C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6
-		local PlayerFrameWidth = C["Unitframe"].PlayerHealthWidth
-		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
-		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -250, 320 }, PlayerFrameWidth, PlayerFrameHeight)
+		Player:SetSize(C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6)
+		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -260, 320 }, Player:GetWidth(), Player:GetHeight())
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		local TargetFrameHeight = C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6
-		local TargetFrameWidth = C["Unitframe"].TargetHealthWidth
-		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
-		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", 250, 320 }, TargetFrameWidth, TargetFrameHeight)
+		Target:SetSize(C["Unitframe"].TargetHealthWidth, C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6)
+		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", 260, 320 }, Target:GetWidth(), Target:GetHeight())
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6
-			local TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetHealthWidth
-			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 }, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
+			TargetOfTarget:SetSize(C["Unitframe"].TargetTargetHealthWidth, C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6)
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 }, TargetOfTarget:GetWidth(), TargetOfTarget:GetHeight())
 		end
 
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
-		local PetFrameHeight = C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6
-		local PetFrameWidth = C["Unitframe"].PetHealthWidth
-		Pet:SetSize(PetFrameWidth, PetFrameHeight)
-		K.Mover(Pet, "Pet", "Pet", { "TOPRIGHT", Player, "BOTTOMLEFT", -6, -6 }, PetFrameWidth, PetFrameHeight)
-		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-			Pet:SetParent(Player)
-		end
+		Pet:SetSize(C["Unitframe"].PetHealthWidth, C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6)
+		K.Mover(Pet, "Pet", "Pet", { "TOPRIGHT", Player, "BOTTOMLEFT", -6, -6 }, Pet:GetWidth(), Pet:GetHeight())
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
-		local FocusFrameHeight = C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6
-		local FocusFrameWidth = C["Unitframe"].FocusHealthWidth
-		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
-		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 200 }, FocusFrameWidth, FocusFrameHeight)
+		Focus:SetSize(C["Unitframe"].FocusHealthWidth, C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6)
+		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 200 }, Focus:GetWidth(), Focus:GetHeight())
 
 		if not C["Unitframe"].HideFocusTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6
-			local FoucsTargetFrameWidth = C["Unitframe"].FocusTargetHealthWidth
-			FocusTarget:SetSize(FoucsTargetFrameWidth, FocusTargetFrameHeight)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FoucsTargetFrameWidth, FocusTargetFrameHeight)
+			FocusTarget:SetSize(C["Unitframe"].FocusTargetHealthWidth, C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FocusTarget:GetWidth(), FocusTarget:GetHeight())
 		end
 		Module:UpdateTextScale()
 	end
@@ -865,7 +858,7 @@ function Module:CreateUnits()
 				"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
 				"showParty", not showPartyFrame,
 				"showRaid", true,
-				"xoffset", 6,
+				"xOffset", 6,
 				"yOffset", -6,
 				"groupFilter", tostring(i),
 				"groupingOrder", "1,2,3,4,5,6,7,8",
@@ -875,7 +868,7 @@ function Module:CreateUnits()
 				"unitsPerColumn", 5,
 				"columnSpacing", 5,
 				"point", horizonRaid and "LEFT" or "TOP",
-				"columnAnchworPoint", "LEFT",
+				"columnAnchorPoint", "LEFT",
 				"oUF-initialConfigFunction", ([[
 					self:SetWidth(%d)
 					self:SetHeight(%d)

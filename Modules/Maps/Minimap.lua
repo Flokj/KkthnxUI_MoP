@@ -267,7 +267,10 @@ end
 
 function Module:ShowCalendar()
 	if C["Minimap"].Calendar then
-		if not GameTimeFrame.styled then
+		if not GameTimeFrameStyled then
+			local GameTimeFrame = GameTimeFrame
+			local calendarText = GameTimeFrame:CreateFontString(nil, "OVERLAY")
+			
 			GameTimeFrame:SetParent(Minimap)
 			GameTimeFrame:SetFrameLevel(16)
 			GameTimeFrame:ClearAllPoints()
@@ -275,14 +278,13 @@ function Module:ShowCalendar()
 			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
 			GameTimeFrame:SetSize(22, 22)
 
-			local fs = GameTimeFrame:CreateFontString(nil, "OVERLAY")
-			fs:ClearAllPoints()
-			fs:SetPoint("CENTER", 0, -5)
-			fs:SetFontObject(K.UIFont)
-			fs:SetFont(select(1, fs:GetFont()), 12, select(3, fs:GetFont()))
-			fs:SetTextColor(0, 0, 0)
-			fs:SetShadowOffset(0, 0)
-			fs:SetAlpha(0.9)
+			calendarText:ClearAllPoints()
+			calendarText:SetPoint("CENTER", 0, -5)
+			calendarText:SetFontObject(K.UIFont)
+			calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
+			calendarText:SetTextColor(0, 0, 0)
+			calendarText:SetShadowOffset(0, 0)
+			calendarText:SetAlpha(0.9)
 
 			hooksecurefunc("GameTimeFrame_SetDate", function()
 				GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
@@ -291,10 +293,10 @@ function Module:ShowCalendar()
 				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
 
-				fs:SetText(C_DateAndTime.GetCurrentCalendarTime().monthDay)
+				calendarText:SetText(C_DateAndTime.GetCurrentCalendarTime().monthDay)
 			end)
 
-			GameTimeFrame.styled = true
+			GameTimeFrameStyled = true
 		end
 		GameTimeFrame:Show()
 	else
