@@ -316,7 +316,7 @@ function Module:ChatCopy_Create()
 	local scrollArea = CreateFrame("ScrollFrame", "KKUI_CopyChatScrollFrame", frame, "UIPanelScrollFrameTemplate")
 	scrollArea:SetPoint("TOPLEFT", 12, -40)
 	scrollArea:SetPoint("BOTTOMRIGHT", -30, 20)
-	_G.KKUI_CopyChatScrollFrameScrollBar:SkinScrollBar()
+	scrollArea.ScrollBar:SkinScrollBar()
 
 	editBox = CreateFrame("EditBox", nil, frame)
 	editBox:SetMultiLine(true)
@@ -327,9 +327,9 @@ function Module:ChatCopy_Create()
 	editBox:SetWidth(scrollArea:GetWidth())
 	editBox:SetHeight(scrollArea:GetHeight())
 	editBox:SetScript("OnEscapePressed", function() frame:Hide() end)
+	
 	editBox:SetScript("OnTextChanged", function(_, userInput) 
 		if userInput then return end
-
 		local _, max = scrollArea.ScrollBar:GetMinMaxValues()
 		for _ = 1, max do
 			ScrollFrameTemplate_OnMouseWheel(scrollArea, -1)

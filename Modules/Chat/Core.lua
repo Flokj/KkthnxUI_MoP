@@ -179,6 +179,11 @@ local function CreateBackground(self)
 	return frame
 end
 
+local function UpdateEditboxFont(editbox)
+	editbox:SetFontObject(K.UIFont)
+	editbox.header:SetFontObject(K.UIFont)
+end
+
 function Module:SkinChat()
 	if not self or self.styled then return end
 
@@ -204,6 +209,7 @@ function Module:SkinChat()
 	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", 25, 50)
 	eb:StripTextures(2)
 	eb:CreateBorder()
+	UpdateEditboxFont(eb)
 	eb:Hide()
 	eb:HookScript("OnTextChanged", editBoxOnTextChanged)
 
@@ -350,7 +356,7 @@ function Module:UpdateTabChannelSwitch()
 
 			for j = from, to, step do
 				local nextCycle = cycles[j]
-				if nextCycle:IsActive(self) then
+				if nextCycle:IsActive() then
 					Module.SwitchToChannel(self, nextCycle.chatType)
 					return
 				end

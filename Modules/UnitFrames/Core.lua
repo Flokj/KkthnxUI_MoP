@@ -154,16 +154,16 @@ function Module:CreateHeader()
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
-		if not self.Highlight then return end
-
-		self.Highlight:Show()
+		if self.Highlight then
+			self.Highlight:Show()
+		end
 	end)
 
 	self:HookScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
-		if not self.Highlight then return end
-
-		self.Highlight:Hide()
+		if self.Highlight then
+			self.Highlight:Hide()
+		end
 	end)
 end
 
@@ -334,25 +334,26 @@ end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
 	local iconsPerRow = element.iconsPerRow
+	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
-	element.size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
+
+	element.size = size
 	element:SetWidth(width)
-	element:SetHeight((element.size + element.spacing) * maxLines)
+	element:SetHeight((size + element.spacing) * maxLines)
 end
 
 function Module.PostCreateAura(element, button)
 	local fontSize = element.fontSize or element.size * 0.45
 	local parentFrame = CreateFrame("Frame", nil, button)
-	parentFrame:SetAllPoints()
+	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
-	button.count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+	button.count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
 	button.cd:SetReverse(true)
 	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	button.cd:ClearAllPoints()
 
 	if element.__owner.mystyle == "nameplate" then
 		button.cd:SetAllPoints()
@@ -368,13 +369,15 @@ function Module.PostCreateAura(element, button)
 	button.stealable:SetAtlas("bags-newitem")
 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
-	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+	if not button.timer then
+		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+	end
 end
 
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
-		button:SetSize(element.size, element.size - 4)
+		button:SetSize(element.size, element.size * 1)
 	else
 		button:SetSize(element.size, element.size)
 	end
@@ -422,9 +425,7 @@ function Module.bolsterPreUpdate(element)
 end
 
 function Module.bolsterPostUpdate(element)
-	if not element.bolsterIndex then
-		return
-	end
+	if not element.bolsterIndex then return end
 
 	for _, button in pairs(element) do
 		if button == element.bolsterIndex then
@@ -537,24 +538,22 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 end
 
 function Module:CreateClassPower(self)
-	local barWidth = C["Unitframe"].PlayerHealthWidth
-	local barHeight = 14
-	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
+	local barWidth, barHeight, barPoint
 	if self.mystyle == "PlayerPlate" then
-		barWidth = C["Nameplate"].PlateWidth
-		barHeight = C["Nameplate"].PlateHeight
+		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
 		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	elseif self.mystyle == "targetplate" then
-		barWidth = C["Nameplate"].PlateWidth
-		barHeight = C["Nameplate"].PlateHeight - 2
+		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight - 2
 		barPoint = { "CENTER", self }
+	else
+		barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, 14
+		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	end
 
-	local bar = CreateFrame("Frame", "$parentClassPowerBar", self)
+	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(barPoint))
 
-	local bars = {}
 	for i = 1, 6 do
 		bars[i] = CreateFrame("StatusBar", nil, bar)
 		bars[i]:SetHeight(barHeight)
@@ -594,10 +593,8 @@ function Module:CreateClassPower(self)
 	end
 
 	if K.Class == "DEATHKNIGHT" then
-		bars.colorSpec = true
-		bars.sortOrder = "asc"
+		bars.colorSpec, bars.sortOrder, bars.__max = true, "asc", 6
 		bars.PostUpdate = Module.PostUpdateRunes
-		bars.__max = 6
 		self.Runes = bars
 	else
 		bars.PostUpdate = Module.PostUpdateClassPower

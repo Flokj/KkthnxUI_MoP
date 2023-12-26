@@ -735,7 +735,7 @@ local Nameplate = function(self)
 
 	Window:CreateSection("Player Nameplate Toggles")
 	Window:CreateSwitch("Nameplate", "ShowPlayerPlate", enableTextColor .. L["Enable Personal Resource"], nil, togglePlayerPlate)
-	Window:CreateSwitch("Nameplate", "ClassAuras", L["Track Personal Class Auras"])
+	--Window:CreateSwitch("Nameplate", "ClassAuras", L["Track Personal Class Auras"])
 	Window:CreateSwitch("Nameplate", "PPGCDTicker", L["Enable GCD Ticker"])
 	Window:CreateSwitch("Nameplate", "PPHideOOC", L["Only Visible in Combat"])
 	Window:CreateSwitch("Nameplate", "PPOnFire", "Always Refresh PlayerPlate Auras")

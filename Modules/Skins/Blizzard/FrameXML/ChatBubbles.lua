@@ -13,11 +13,24 @@ local function reskinChatBubble(chatbubble)
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
 		
+		frame:DisableDrawLayer("BORDER")
+		frame.Tail:SetAlpha(0)
+
 		local backdropColor = C["Media"].Backdrops.ColorBackdrop
 		bg.KKUI_Background:SetVertexColor(backdropColor[1], backdropColor[2], backdropColor[3], C["Skins"].ChatBubbleAlpha)
 
-		frame:DisableDrawLayer("BORDER")
-		frame.Tail:SetAlpha(0)
+		local str = frame.String
+		if str and str.GetTextColor then
+			local function UpdateBorderColor()
+				local r, g, b = str:GetTextColor()
+				bg.KKUI_Border:SetVertexColor(r, g, b)
+			end
+
+			frame:SetScript("OnUpdate", UpdateBorderColor)
+			UpdateBorderColor()
+		else
+			K.SetBorderColor(bg.KKUI_Border)
+		end
 	end
 
 	chatbubble.styled = true

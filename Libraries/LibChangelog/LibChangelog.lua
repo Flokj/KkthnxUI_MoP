@@ -1,8 +1,5 @@
 --- LibChangelog
--- Provides an way to create a simple ingame frame to show a changelog
-
-local _, Data = ...
-local L = Data.L
+-- Provides a way to create a simple in-game frame to show a changelog
 
 local MAJOR, MINOR = "LibChangelog-KkthnxUI", 0
 local LibChangelog = LibStub:NewLibrary(MAJOR, MINOR)
@@ -13,6 +10,59 @@ end
 
 -- Lua APIs
 local error = error
+
+-- Local variables for GameFont constants
+local GameFontNormalHuge = GameFontNormalHuge
+local GameFontNormal = GameFontNormal
+local GameFontHighlight = GameFontHighlight
+
+-- Localization strings for different languages
+local L = {
+	["enUS"] = {
+		CHANGLOG_VIEWER = " Changelog Viewer",
+		HIDE_UNTIL_NEXT_UPDATE = "Hide until next update",
+	},
+	["esES"] = {
+		CHANGLOG_VIEWER = " Visor de cambios",
+		HIDE_UNTIL_NEXT_UPDATE = "Ocultar hasta la próxima actualización",
+	},
+	["deDE"] = {
+		CHANGLOG_VIEWER = " Änderungsprotokoll-Anzeige",
+		HIDE_UNTIL_NEXT_UPDATE = "Verstecken bis zum nächsten Update",
+	},
+	["frFR"] = {
+		CHANGLOG_VIEWER = " Visualiseur de journal des modifications",
+		HIDE_UNTIL_NEXT_UPDATE = "Cacher jusqu'à la prochaine mise à jour",
+	},
+	["itIT"] = {
+		CHANGLOG_VIEWER = " Visualizzatore del registro delle modifiche",
+		HIDE_UNTIL_NEXT_UPDATE = "Nascondi fino al prossimo aggiornamento",
+	},
+	["koKR"] = {
+		CHANGLOG_VIEWER = " 변경 로그 뷰어",
+		HIDE_UNTIL_NEXT_UPDATE = "다음 업데이트까지 숨기기",
+	},
+	["ptBR"] = {
+		CHANGLOG_VIEWER = " Visualizador de changelog",
+		HIDE_UNTIL_NEXT_UPDATE = "Ocultar até a próxima atualização",
+	},
+	["ruRU"] = {
+		CHANGLOG_VIEWER = " Просмотрщик журнала изменений",
+		HIDE_UNTIL_NEXT_UPDATE = "Скрыть до следующего обновления",
+	},
+	["zhCN"] = {
+		CHANGLOG_VIEWER = " 更新日志查看器",
+		HIDE_UNTIL_NEXT_UPDATE = "直到下次更新前隐藏",
+	},
+	["zhTW"] = {
+		CHANGLOG_VIEWER = " 更新日誌檢視器",
+		HIDE_UNTIL_NEXT_UPDATE = "直到下次更新前隱藏",
+	},
+}
+
+-- Retrieve the appropriate localization based on the player's language
+local lang = GetLocale()
+local localization = L[lang] or L["enUS"]
 
 local NEW_MESSAGE_FONTS = {
 	version = GameFontNormalHuge,
@@ -27,10 +77,12 @@ local VIEWED_MESSAGE_FONTS = {
 }
 
 function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey, texts)
-	if self[addonName] then
-		return error("LibChangelog: '" .. addonName .. "' already registered", 2)
+	if not addonName or not changelogTable or not savedVariablesTable or not lastReadVersionKey or not onlyShowWhenNewVersionKey then
+		return error("LibChangelog: Missing required parameters (addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey)", 2)
 	end
-
+	if self[addonName] then
+		return error("LibChangelog: Addon '" .. addonName .. "' is already registered", 2)
+	end
 	self[addonName] = {
 		changelogTable = changelogTable,
 		savedVariablesTable = savedVariablesTable,
@@ -41,13 +93,12 @@ function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, l
 end
 
 function LibChangelog:CreateString(frame, text, font, offset)
-	local entry = frame.scrollChild:CreateFontString(nil, "ARTWORK")
-
-	if offset == nil then
-		offset = -5
+	if not frame then
+		return error("LibChangelog:CreateString missing required parameter 'frame'", 2)
 	end
-
-	entry:SetFontObject(font or "GameFontNormal")
+	offset = offset or -5
+	local entry = frame.scrollChild:CreateFontString(nil, "ARTWORK")
+	entry:SetFontObject(font or GameFontNormal)
 	entry:SetText(text)
 	entry:SetJustifyH("LEFT")
 	entry:SetWidth(frame.scrollBar:GetWidth())
@@ -59,25 +110,29 @@ function LibChangelog:CreateString(frame, text, font, offset)
 	end
 
 	frame.previous = entry
-
 	return entry
 end
 
--- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
-	local bullet = self:CreateString(frame, " - ", font, offset)
-	local bulletWidth = 12
-
-	bullet:SetWidth(bulletWidth)
-	bullet:SetJustifyV("TOP")
+	offset = offset or 0
+	local BULLET_WIDTH = 12
+	local bullet = self:CreateString(frame, " • ", font, offset)
+	if bullet then
+		bullet:SetWidth(BULLET_WIDTH)
+		bullet:SetJustifyV("TOP")
+	end
 
 	local entry = self:CreateString(frame, text, font, offset)
-	entry:SetPoint("TOPLEFT", bullet, "TOPRIGHT")
-	entry:SetWidth(frame.scrollBar:GetWidth() - bulletWidth)
+	if entry then
+		entry:SetPoint("TOPLEFT", bullet, "TOPRIGHT")
+		entry:SetWidth(frame.scrollBar:GetWidth() - BULLET_WIDTH)
+	end
 
-	bullet:SetHeight(entry:GetStringHeight())
+	if bullet and entry then
+		bullet:SetHeight(entry:GetStringHeight())
+		frame.previous = bullet
+	end
 
-	frame.previous = bullet
 	return bullet
 end
 
@@ -89,7 +144,7 @@ function LibChangelog:ShowChangelog(addonName)
 		return error("LibChangelog: '" .. addonName .. "' was not registered. Please use :Register() first", 2)
 	end
 
-	local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
+	local firstEntry = addonData.changelogTable[1]
 	local addonSavedVariablesTable = addonData.savedVariablesTable
 
 	if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] then
@@ -97,33 +152,31 @@ function LibChangelog:ShowChangelog(addonName)
 	end
 
 	if not addonData.frame then
-		local frame = CreateFrame("Frame", nil, UIParent, "ButtonFrameTemplate")
+		local frame = CreateFrame("Frame", "LibChangelogFrame_" .. addonName, UIParent, "ButtonFrameTemplate")
 		ButtonFrameTemplate_HidePortrait(frame)
 		if frame.SetTitle then
-			frame:SetTitle(addonData.texts.title or addonName .. " ChangeLog")
+			frame:SetTitle(addonData.texts.title or addonName .. localization.CHANGLOG_VIEWER)
 		end
-		frame.Inset:SetPoint("TOPLEFT", 4, -25)
 
+		frame.Inset:SetPoint("TOPLEFT", 4, -25)
 		frame:SetSize(500, 500)
 		frame:SetPoint("CENTER")
 		frame:StripTextures()
 		frame:CreateBorder()
 
-		frame.scrollBar = CreateFrame("ScrollFrame", nil, frame.Inset, "UIPanelScrollFrameTemplate")
+		frame.scrollBar = CreateFrame("ScrollFrame", "LibChangelogScrollFrame_" .. addonName, frame.Inset, "UIPanelScrollFrameTemplate")
 		frame.scrollBar:SetPoint("TOPLEFT", 10, -6)
 		frame.scrollBar:SetPoint("BOTTOMRIGHT", -22, 6)
 
-		frame.scrollChild = CreateFrame("Frame")
-		frame.scrollChild:SetSize(1, 1) -- It doesnt seem to matter how big it is, the only thing that not works is setting the height to really high number, then you can scroll forever
+		frame.scrollChild = CreateFrame("Frame", "LibChangelogScrollChild_" .. addonName)
+		frame.scrollChild:SetSize(1, 1)
 
 		frame.scrollBar:SetScrollChild(frame.scrollChild)
-		UIParentInsetScrollBar:SkinScrollBar()
+		frame.scrollBar.ScrollBar:SkinScrollBar()
 
 		frame.CloseButton:SkinCloseButton()
-		frame.CloseButton:ClearAllPoints()
-		frame.CloseButton:SetPoint("RIGHT", frame, "TOPRIGHT", 3, -13)
 
-		frame.CheckButton = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
+		frame.CheckButton = CreateFrame("CheckButton", "LibChangelogCheckButton_" .. addonName, frame, "UICheckButtonTemplate")
 		frame.CheckButton:SetChecked(addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey])
 		frame.CheckButton:SetFrameStrata("HIGH")
 		frame.CheckButton:SetSize(14, 14)
@@ -135,9 +188,9 @@ function LibChangelog:ShowChangelog(addonName)
 		frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 10, 13)
 		frame.CheckButton:SkinCheckBox()
 
-		--frame.CheckButton.text:ClearAllPoints()
-		--frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
-		--frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or " Hide until next update")
+		frame.CheckButton.text:ClearAllPoints()
+		frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
+		frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE)
 
 		addonData.frame = frame
 	end
@@ -149,20 +202,19 @@ function LibChangelog:ShowChangelog(addonName)
 			fonts = VIEWED_MESSAGE_FONTS
 		end
 
-		-- Add version string
-		self:CreateString(addonData.frame, "## " .. versionEntry.Version, fonts.version, -30) -- Add a nice spacing between the version header and the previous text
+		self:CreateString(addonData.frame, "## " .. versionEntry.Version, fonts.version, -30)
 
 		if versionEntry.General then
 			self:CreateString(addonData.frame, versionEntry.General, fonts.text)
 		end
 
 		if versionEntry.Sections then
-			for i = 1, #versionEntry.Sections do
-				local section = versionEntry.Sections[i]
+			for j = 1, #versionEntry.Sections do
+				local section = versionEntry.Sections[j]
 				self:CreateString(addonData.frame, "### " .. section.Header, fonts.title, -8)
 				local entries = section.Entries
-				for j = 1, #entries do
-					self:CreateBulletedListEntry(addonData.frame, entries[j], fonts.text)
+				for k = 1, #entries do
+					self:CreateBulletedListEntry(addonData.frame, entries[k], fonts.text)
 				end
 			end
 		end

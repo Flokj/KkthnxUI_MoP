@@ -226,7 +226,7 @@ function Module:CreateLumos(self)
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
 		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		bu:CreateShadow()
+		bu:CreateShadow(true)
 
 		bu.glowFrame = CreateFrame("Frame", nil, bu)
 		bu.glowFrame:SetPoint("TOPLEFT", bu, -4, 4)

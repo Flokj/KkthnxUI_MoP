@@ -98,7 +98,7 @@ function Module:ExpBar_Update()
 		if capped then -- show only name and standing on exalted
 			self.text:SetText(string_format("%s: [%s]", name, label))
 		else
-			self.text:SetText(string_format("%s: %s - %d%% [%s]", name, K.ShortValue(current), percent, K.ShortenString(label, 1, false)))
+			self.text:SetText(string_format("%s: %s - %d%% [%s]", name, K.ShortValue(current), percent, label))
 		end
 		self.text:Show()
 	else

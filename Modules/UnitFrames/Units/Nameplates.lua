@@ -979,9 +979,9 @@ function Module:CreatePlayerPlate()
 
 	Module:CreateClassPower(self)
 
-	if C["Nameplate"].ClassAuras then
-		K:GetModule("Auras"):CreateLumos(self)
-	end
+	--if C["Nameplate"].ClassAuras then
+	--	K:GetModule("Auras"):CreateLumos(self)
+	--end
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()

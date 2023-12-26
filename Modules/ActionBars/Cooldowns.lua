@@ -1,26 +1,24 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Cooldowns")
 
-local _G = _G
-local pairs = _G.pairs
-local select = _G.select
-local string_find = _G.string.find
+-- Importing required functions
+local pairs, format, floor, strfind = pairs, format, floor, strfind
+local GetTime, GetActionCooldown, tonumber = GetTime, GetActionCooldown, tonumber
 
-local CreateFrame = _G.CreateFrame
-local GetActionCooldown = _G.GetActionCooldown
-local getmetatable = _G.getmetatable
-local GetTime = _G.GetTime
-local hooksecurefunc = _G.hooksecurefunc
-local SetCVar = _G.SetCVar
-
+-- Constants for cooldown display
 local FONT_SIZE = 19
-local MIN_DURATION = 2 -- the minimum duration to show cooldown text for
-local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
-local ICON_SIZE = 36
+local MIN_DURATION = 2.5 -- Minimum duration to show cooldown text
+local MIN_SCALE = 0.5 -- Minimum scale to show cooldown counts
+local ICON_SIZE = 36 -- Standard icon size
 
-local hideNumbers, active, hooked = {}, {}, {}
-
+-- Time constants for formatting
 local day, hour, minute = 86400, 3600, 60
+
+-- Tables for managing cooldowns
+local hideNumbers = {} -- Cooldowns to hide
+local active = {} -- Active cooldowns
+local hooked = {} -- Hooked cooldowns
+
 function Module.FormattedTimer(s, modRate)
 	if s >= day then
 		return format("%d" .. K.MyClassColor .. "d", s / day + 0.5), s % day
@@ -118,7 +116,7 @@ function Module:StartTimer(start, duration, modRate)
 	if self.noCooldownCount or hideNumbers[self] then return end
 
 	local frameName = self.GetName and self:GetName()
-	if C["ActionBar"].OverrideWA and frameName and string_find(frameName, "WeakAuras") then
+	if C["ActionBar"].OverrideWA and frameName and strfind(frameName, "WeakAuras") then
 		self.noCooldownCount = true
 		return
 	end
@@ -210,22 +208,24 @@ function Module:OnEnable()
 	if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") then return end
 	if not C["ActionBar"].Cooldowns then return end
 
-	local cooldownIndex = getmetatable(_G.ActionButton1Cooldown).__index
-	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
+	-- Hook the SetCooldown function to start the timer
+	hooksecurefunc(getmetatable(ActionButton1Cooldown).__index, "SetCooldown", Module.StartTimer)
+
+	-- Hide cooldown numbers
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
+
+	-- Register for action bar cooldown updates
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
+	-- Register action button frames
 	if _G["ActionBarButtonEventsFrame"].frames then
 		for _, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
 			Module.RegisterActionButton(frame)
 		end
 	end
-
 	hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide Default Cooldown
-	if not InCombatLockdown() then
-		SetCVar("countdownForCooldowns", 0)
-	end
-	K.HideInterfaceOption(_G.InterfaceOptionsActionBarsPanelCountdownCooldowns)
+	SetCVar("countdownForCooldowns", 0)
+	K.HideInterfaceOption(InterfaceOptionsActionBarsPanelCountdownCooldowns)
 end
