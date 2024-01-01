@@ -2,16 +2,28 @@ local K = unpack(KkthnxUI)
 local Module = K:NewModule("Automation")
 
 function Module:OnEnable()
-	self:CreateAutoAcceptSummon()
-	self:CreateAutoBadBuffs()
-	self:CreateAutoBestReward()
-	self:CreateAutoDeclineDuels()
-	self:CreateAutoGoodbye()
-	self:CreateAutoInvite()
-	self:CreateAutoOpenItems()
-	self:CreateAutoRelease()
-	self:CreateAutoResurrect()
-	self:CreateAutoScreenShot()
-	self:CreateAutoWhisperInvite()
-	self:CreateSkipCinematic()
+	local loadAutomationModules = {
+		"CreateAutoAcceptSummon",
+		"CreateAutoBadBuffs",
+		"CreateAutoBestReward",
+		"CreateAutoDeclineDuels",
+		"CreateAutoGoodbye",
+		"CreateAutoInvite",
+		"CreateAutoOpenItems",
+		"CreateAutoRelease",
+		"CreateAutoResurrect",
+		"CreateAutoScreenshot",
+		"CreateAutoWhisperInvite",
+		"CreateSkipCinematic",
+	}
+
+	for _, funcName in ipairs(loadAutomationModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 end

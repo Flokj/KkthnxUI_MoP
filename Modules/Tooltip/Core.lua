@@ -531,9 +531,21 @@ function Module:OnEnable()
 	EmbeddedItemTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 
 	-- Elements
-	self:CreateTargetedInfo()
-	self:CreateTooltipID()
-	self:CreateTooltipIcons()
+	local loadTooltipModules = {
+		"CreateTargetedInfo",
+		"CreateTooltipID",
+		"CreateTooltipIcons",
+	}
+
+	for _, funcName in ipairs(loadTooltipModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.ResetUnit)
 end
 

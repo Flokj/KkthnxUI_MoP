@@ -266,12 +266,7 @@ function Module:CreateParty()
 		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 		TargetHighlight:SetFrameLevel(6)
 
-		local relativeTo
-		if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
-			relativeTo = Health
-		else
-			relativeTo = self.Portrait
-		end
+		local relativeTo = (partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait") and Health or self.Portrait
 
 		TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
 		TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
@@ -368,7 +363,7 @@ function Module:CreateParty()
 		Override = Module.UpdateThreat,
 	}
 
-	--local Range = Module.CreateRangeIndicator(self)
+	local Range = Module.CreateRangeIndicator(self)
 
 	self.Overlay = Overlay
 	self.Health = Health

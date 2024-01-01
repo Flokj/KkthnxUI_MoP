@@ -513,16 +513,29 @@ function Module:OnEnable()
 	end
 
 	-- Add Elements
-	Module:ChatWhisperSticky()
-	Module:CreateChatFilter()
-	Module:CreateChatHistory()
-	Module:CreateChatItemLevels()
-	Module:CreateChatRename()
-	Module:CreateCopyChat()
-	Module:CreateCopyURL()
-	Module:CreateEmojis()
-	Module:CreateChatbar()
-	Module:ToggleLanguageFilter()
+	local loadChatModules = {
+		"ChatWhisperSticky",
+		"CreateChatFilter",
+		"CreateChatHistory",
+		"CreateChatItemLevels",
+		"CreateChatRename",
+		"CreateCopyChat",
+		"CreateCopyURL",
+		"CreateEmojis",
+		"CreateVoiceActivity",
+		"CreateChatbar",
+		"ToggleLanguageFilter",
+	}
+
+	for _, funcName in ipairs(loadChatModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 
 	-- Lock chatframe
 	if C["Chat"].Lock then

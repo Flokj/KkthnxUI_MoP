@@ -90,32 +90,36 @@ function Module:CreateBoss()
 	end
 
 	if bossPortraitStyle ~= "NoPortraits" then
-		if bossPortraitStyle == "OverlayPortrait" then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self)
-			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
-			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
-			self.Portrait:SetAlpha(0.6)
-		elseif bossPortraitStyle == "ThreeDPortraits" then
-			self.Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self.Health)
-			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-			self.Portrait:CreateBorder()
-		elseif bossPortraitStyle ~= "ThreeDPortraits" and bossPortraitStyle ~= "OverlayPortrait" then
-			self.Portrait = self.Health:CreateTexture("KKUI_BossPortrait", "BACKGROUND", nil, 1)
-			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+		local Portrait
 
-			self.Portrait.Border = CreateFrame("Frame", nil, self)
-			self.Portrait.Border:SetAllPoints(self.Portrait)
-			self.Portrait.Border:CreateBorder()
+		if bossPortraitStyle == "OverlayPortrait" then
+			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self)
+			Portrait:SetFrameStrata(self:GetFrameStrata())
+			Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			Portrait:SetAlpha(0.6)
+		elseif bossPortraitStyle == "ThreeDPortraits" then
+			Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self.Health)
+			Portrait:SetFrameStrata(self:GetFrameStrata())
+			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			Portrait:CreateBorder()
+		else
+			Portrait = self.Health:CreateTexture("KKUI_BossPortrait", "BACKGROUND", nil, 1)
+			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+
+			Portrait.Border = CreateFrame("Frame", nil, self)
+			Portrait.Border:SetAllPoints(Portrait)
+			Portrait.Border:CreateBorder()
 
 			if bossPortraitStyle == "ClassPortraits" or bossPortraitStyle == "NewClassPortraits" then
-				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		self.Portrait = Portrait
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
@@ -163,62 +167,58 @@ function Module:CreateBoss()
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
 	if C["Boss"].Castbars then
-		self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
+		local Castbar = CreateFrame("StatusBar", "oUF_CastbarBoss", self)
+		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		Castbar:SetFrameLevel(10)
+		Castbar:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
+		Castbar:SetSize(C["Boss"].HealthWidth, 18)
+		Castbar:CreateBorder()
+		Castbar.castTicks = {}
 
-		self.Castbar:ClearAllPoints()
-		if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Boss"].CastbarIcon and 24, 6)
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-		else
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 6)
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Boss"].CastbarIcon and 24, 6)
-		end
-		self.Castbar:SetHeight(18)
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
+		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark:SetAlpha(0.8)
 
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
+		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+		shield:SetAtlas("Soulbinds_Portrait_Lock")
+		shield:SetSize(28, 28)
+		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
+		Castbar.Shield = shield
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject(K.UIFont)
-		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
+		local timer = K.CreateFontString(Castbar, 11, "", "", false, "RIGHT", -3, 0)
+		local name = K.CreateFontString(Castbar, 11, "", "", false, "LEFT", 3, 0)
+		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+		name:SetJustifyH("LEFT")
 
-		self.Castbar.decimal = "%.2f"
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		Castbar.Button:CreateBorder()
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject(K.UIFont)
-		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
+		local stage = K.CreateFontString(Castbar, 16)
+		stage:ClearAllPoints()
+		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
+		Castbar.stageString = stage
 
-		if C["Boss"].CastbarIcon then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(16, 16)
-			self.Castbar.Button:CreateBorder()
+		Castbar.decimal = "%.1f"
 
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-			self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
+		Castbar.Time = timer
+		Castbar.Text = name
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
+		self.Castbar = Castbar
 	end
 
 	if C["Boss"].TargetHighlight then
@@ -282,5 +282,5 @@ function Module:CreateBoss()
 		Override = Module.UpdateThreat,
 	}
 
-	--self.Range = Module.CreateRangeIndicator(self)
+	self.Range = Module.CreateRangeIndicator(self)
 end

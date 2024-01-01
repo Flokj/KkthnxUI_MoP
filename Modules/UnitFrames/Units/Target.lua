@@ -98,39 +98,36 @@ function Module:CreateTarget()
 	end
 
 	if targetPortraitStyle ~= "NoPortraits" then
+		local Portrait
+
 		if targetPortraitStyle == "OverlayPortrait" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self)
+			Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-			--Portrait:SetParent()
-
-			self.Portrait = Portrait
 		elseif targetPortraitStyle == "ThreeDPortraits" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", Health)
+			Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
-
-			self.Portrait = Portrait
-		elseif targetPortraitStyle ~= "ThreeDPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
-			local Portrait = Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
+		else
+			Portrait = Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			Portrait.Border = CreateFrame("Frame", nil, self)
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			self.Portrait = Portrait
-
 			if targetPortraitStyle == "ClassPortraits" or targetPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		self.Portrait = Portrait
 	end
 
 	if C["Unitframe"].TargetDebuffs then -- and C["Unitframe"].TargetDebuffsTop
@@ -306,7 +303,7 @@ function Module:CreateTarget()
 		Override = Module.UpdateThreat,
 	}
 
-	--self.Range = Module.CreateRangeIndicator(self)
+	self.Range = Module.CreateRangeIndicator(self)
 
 	self.Overlay = Overlay
 	self.Health = Health

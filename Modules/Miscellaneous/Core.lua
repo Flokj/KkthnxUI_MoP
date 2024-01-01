@@ -46,20 +46,30 @@ function Module:OnEnable()
 		end
 	end
 
-	Module:NakedIcon()
-	Module:CreateBlockStrangerInvites()
-	Module:CreateBossEmote()
-	Module:CreateDurabilityFrameMove()
-	Module:CreateErrorFrameToggle()
-	Module:CreateGUIGameMenuButton()
-	Module:CreateMinimapButtonToggle()
-	Module:CreatePetHappiness()
-	Module:CreateTaxiDismount()
-	Module:CreateTicketStatusFrameMove()
-	Module:CreateTradeTargetInfo()
-	Module:UpdateMaxCameraZoom()
-	Module:VehicleSeatMover()
-	C_Timer_After(0, Module.UpdateMaxCameraZoom)
+	-- Second loop: Iterating over loadMiscModules
+	local loadMiscModules = {
+		"NakedIcon",
+		"CreateBlockStrangerInvites",
+		"CreateBossEmote",
+		"CreateDurabilityFrameMove",
+		"CreateErrorFrameToggle",
+		"CreateGUIGameMenuButton",
+		"CreateMinimapButtonToggle",
+		"CreatePetHappiness",
+		"CreateTicketStatusFrameMove",
+		"CreateTradeTargetInfo",
+		"UpdateMaxCameraZoom",
+	}
+
+	for _, funcName in ipairs(loadMiscModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then
@@ -144,27 +154,6 @@ function Module:CreatePetHappiness()
 	else
 		K:UnregisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
 	end
-end
-
--- Auto dismount on Taxi
-function Module:CreateTaxiDismount()
-	local lastTaxiIndex
-	local function retryTaxi()
-		if InCombatLockdown() then return end
-		if lastTaxiIndex then
-			TakeTaxiNode(lastTaxiIndex)
-			lastTaxiIndex = nil
-		end
-	end
-
-	hooksecurefunc("TakeTaxiNode", function(index)
-		if not C["Misc"].AutoDismount then return end
-		if not IsMounted() then return end
-
-		Dismount()
-		lastTaxiIndex = index
-		C_Timer_After(0.5, retryTaxi)
-	end)
 end
 
 local function KKUI_UpdateDragCursor(self)

@@ -114,38 +114,36 @@ local function CreateBackdrop(f)
 end
 
 -- The Famous Shadow?
-local function CreateShadow(f, bd)
-	if f.Shadow then return end
+local function CreateShadow(frame, useBackdrop)
+	if frame.Shadow then return frame.Shadow end
 
-	local frame = f
-	if f:GetObjectType() == "Texture" then
-		frame = f:GetParent()
-	end
-	local lvl = frame:GetFrameLevel()
+	local parentFrame = frame:IsObjectType("Texture") and frame:GetParent() or frame
 
-	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
-	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
-	if bd then
-		f.Shadow:SetBackdrop({
-			bgFile = C["Media"].Textures.BlankTexture,
-			edgeFile = C["Media"].Textures.GlowTexture,
-			edgeSize = 3,
-			insets = { left = 3, right = 3, top = 3, bottom = 3 },
-		})
-	else
-		f.Shadow:SetBackdrop({
-			edgeFile = C["Media"].Textures.GlowTexture,
-			edgeSize = 3,
-		})
-	end
-	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
-	if bd then
-		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
-	end
-	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	local shadow = CreateFrame("Frame", nil, parentFrame, "BackdropTemplate")
+	shadow:SetPoint("TOPLEFT", frame, -3, 3)
+	shadow:SetPoint("BOTTOMRIGHT", frame, 3, -3)
 
-	return f.Shadow
+	local backdrop = {
+		edgeFile = C["Media"].Textures.GlowTexture,
+		edgeSize = 3,
+	}
+
+	if useBackdrop then
+		backdrop.bgFile = C["Media"].Textures.BlankTexture
+		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
+	end
+
+	shadow:SetBackdrop(backdrop)
+	shadow:SetFrameLevel(max(parentFrame:GetFrameLevel() - 1, 0))
+
+	if useBackdrop then
+		shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))	
+	end	
+	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+
+	frame.Shadow = shadow
+
+	return shadow
 end
 
 -- Its A Killer.

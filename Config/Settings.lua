@@ -124,6 +124,7 @@ C["Automation"] = {
 	["AutoSummon"] = false,
 	["NoBadBuffs"] = false,
 	["AutoLoggingCombat"] = false,
+	["WhisperInviteGuildFriends"] = false,
 	["WhisperInvite"] = "inv+",
 }
 
@@ -339,7 +340,6 @@ C["Minimap"] = {
 C["Misc"] = {
 	["AFKCamera"] = true,
 	["AutoBubbles"] = false,
-	["AutoDismount"] = false,
 	["ColorPicker"] = false,
 	["EasyMarking"] = false,
 	["Focuser"] = true,
@@ -514,6 +514,7 @@ C["Unitframe"] = {
 	["CombatText"] = false,
 	["DebuffHighlight"] = true,
 	["Enable"] = true,
+	["Range"] = false,
 	["FCTOverHealing"] = false,
 	["GlobalCooldown"] = true,
 	["HotsDots"] = true,

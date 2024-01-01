@@ -26,10 +26,22 @@ local UnitAura = _G.UnitAura
 local day, hour, minute = 86400, 3600, 60
 
 function Module:OnEnable()
-	Module:HideBlizBuff()
-	Module:BuildBuffFrame()
-	Module:CreateTotems()
-	Module:CreateReminder()
+	local loadAuraModules = {
+		"HideBlizBuff",
+		"BuildBuffFrame",
+		"CreateTotems",
+		"CreateReminder",
+	}
+
+	for _, funcName in ipairs(loadAuraModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 end
 
 function Module:HideBlizBuff()

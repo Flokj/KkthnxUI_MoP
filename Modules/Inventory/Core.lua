@@ -900,9 +900,21 @@ function Module:CloseBags()
 end
 
 function Module:OnEnable()
-	self:CreateInventoryBar()
-	self:CreateAutoRepair()
-	self:CreateAutoSell()
+	local loadInventoryModules = {
+		"CreateInventoryBar",
+		"CreateAutoRepair",
+		"CreateAutoSell",
+	}
+
+	for _, funcName in ipairs(loadInventoryModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 
 	if not C["Inventory"].Enable then
 		return

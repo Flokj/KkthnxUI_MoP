@@ -44,30 +44,24 @@ local filteredStyle = {
 
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then return end
-	if not unit then return end
 
 	local _, unitClass = UnitClass(unit)
 	if unitClass then
 		local PortraitValue = C["Unitframe"].PortraitStyle.Value
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
-		local defaultCPs = "ClassPortraits"
-		local newCPs = "NewClassPortraits"
+		local texturePath
+		if PortraitValue == "ClassPortraits" and UnitIsPlayer(unit) then
+			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES"
+		elseif PortraitValue == "NewClassPortraits" and UnitIsPlayer(unit) then
+			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES"
+		end
 
-		for _, value in pairs({ PortraitValue }) do
-			if value and value == defaultCPs and UnitIsPlayer(unit) then
-				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES")
-				if ClassTCoords then
-					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-				end
-			elseif value and value == newCPs and UnitIsPlayer(unit) then
-				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
-				if ClassTCoords then
-					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-				end
-			else
-				self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			end
+		self:SetTexture(texturePath or "Interface\\TargetingFrame\\UI-Classes-Circles")
+		if ClassTCoords then
+			self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+		else
+			self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		end
 	end
 end

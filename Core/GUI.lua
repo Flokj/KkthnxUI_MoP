@@ -274,24 +274,38 @@ local Reverse = function(value)
 end
 
 -- Sections
-local CreateSection = function(self, text)
+-- CreateSection function to create a section of the user interface
+local function CreateSection(self, text, icon, fontObject)
+	-- Create the main frame
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
 	Anchor.IsSection = true
 
+	-- Create the child frame
 	local Section = CreateFrame("Frame", nil, Anchor)
 	Section:SetPoint("TOPLEFT", Anchor, 0, 0)
 	Section:SetPoint("BOTTOMRIGHT", Anchor, 0, 0)
 	Section:CreateBorder()
 
+	-- Create the label
 	Section.Label = Section:CreateFontString(nil, "OVERLAY")
 	Section.Label:SetPoint("CENTER", Section, LabelSpacing, 0)
 	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
-	Section.Label:SetFontObject(K.UIFont)
+	Section.Label:SetFontObject(fontObject or K.UIFont)
 	Section.Label:SetJustifyH("CENTER")
+	if icon then
+		Section.Icon = Section:CreateTexture(nil, "ARTWORK")
+		Section.Icon:SetSize(16, 16)
+		Section.Icon:SetPoint("RIGHT", Section.Label, "LEFT", -2, 0)
+		Section.Icon:SetTexture(icon)
+		Section.Label:SetPoint("LEFT", Section, "LEFT", 20, 0)
+	else
+		Section.Label:SetPoint("CENTER", Section, 0, 0)
+	end
 	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
 
-	tinsert(self.Widgets, Anchor)
+	-- Insert the created frame into the self.Widgets table
+	table.insert(self.Widgets, Anchor)
 
 	return Section
 end
@@ -384,6 +398,7 @@ local SwitchOnMouseUp = function(self, button)
 	end
 
 	self.Movement:Play()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
 	SetValue(self.Group, self.Option, self.Value)
 
@@ -592,6 +607,7 @@ local SliderOnValueChanged = function(self)
 	self.EditBox:SetText(Value)
 
 	SetValue(self.EditBox.Group, self.EditBox.Option, Value)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
 	if self.Hook then
 		self.Hook(self.Value, self.Group)
@@ -754,7 +770,6 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	-- stylua: ignore
 	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
