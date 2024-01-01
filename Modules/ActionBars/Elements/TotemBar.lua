@@ -21,7 +21,7 @@ local function reskinTotemButton(button, nobg, uncut)
 	if not nobg then
 		button.bg = CreateFrame("Frame", nil, button)
 		button.bg:SetAllPoints(button)
-		button.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, "")
+		button.bg:CreateBorder(nil, nil, nil, nil, nil, nil, "")
 	end
 end
 
