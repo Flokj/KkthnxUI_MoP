@@ -259,19 +259,12 @@ function Module:CreateMinimapButtonToggle()
 end
 
 local function MainMenu_OnShow(self)
-	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
 	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15)
 
-	_G.GameMenuButtonStore:ClearAllPoints()
+	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonMacros:ClearAllPoints()
 	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonAddons:ClearAllPoints()
 	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonQuit:ClearAllPoints()
 	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 end
 
@@ -351,7 +344,6 @@ end
 -- TradeFrame hook
 function Module:CreateTradeTargetInfo()
 	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
-	infoText:ClearAllPoints()
 	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
@@ -371,7 +363,12 @@ function Module:CreateTradeTargetInfo()
 		end
 		infoText:SetText(text)
 	end
-	hooksecurefunc("TradeFrame_Update", updateColor)
+
+	-- Call the update function once when the frame is shown
+	updateColor()
+
+	-- Only hook the update function once, to avoid excessive function calls
+	TradeFrame:HookScript("OnShow", updateColor)
 end
 
 -- ALT+RightClick to buy a stack

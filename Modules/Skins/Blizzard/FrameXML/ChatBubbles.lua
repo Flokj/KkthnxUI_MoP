@@ -11,7 +11,7 @@ local function reskinChatBubble(chatbubble)
 		bg:SetFrameLevel(frame:GetFrameLevel())
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
-		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
+		bg:CreateBorder(nil, nil, nil, nil, -18, nil, nil, nil, nil, 14)
 		
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)

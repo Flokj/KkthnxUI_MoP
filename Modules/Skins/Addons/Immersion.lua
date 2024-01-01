@@ -8,8 +8,6 @@ function Module:ReskinImmersion()
 
 	ImmersionFrame.TalkBox.BackgroundFrame:StripTextures()
 	ImmersionFrame.TalkBox.BackgroundFrame:CreateBackdrop()
-	ImmersionFrame.TalkBox.BackgroundFrame.Backdrop:SetPoint("TOPLEFT", ImmersionFrame.TalkBox.BackgroundFrame, "TOPLEFT", 12, -12)
-	ImmersionFrame.TalkBox.BackgroundFrame.Backdrop:SetPoint("BOTTOMRIGHT", ImmersionFrame.TalkBox.BackgroundFrame, "BOTTOMRIGHT", -12, 12)
 
 	ImmersionFrame.TalkBox.PortraitFrame:StripTextures()
 	ImmersionFrame.TalkBox.MainFrame.CloseButton:SkinCloseButton()
@@ -25,8 +23,6 @@ function Module:ReskinImmersion()
 
 	ImmersionFrame.TalkBox.Elements:StripTextures()
 	ImmersionFrame.TalkBox.Elements:CreateBackdrop()
-	ImmersionFrame.TalkBox.Elements.Backdrop:SetPoint("TOPLEFT", ImmersionFrame.TalkBox.Elements, "TOPLEFT", 12, -12)
-	ImmersionFrame.TalkBox.Elements.Backdrop:SetPoint("BOTTOMRIGHT", ImmersionFrame.TalkBox.Elements, "BOTTOMRIGHT", -12, 12)
 
 	ImmersionFrame.TalkBox.MainFrame.Overlay:Kill()
 

@@ -444,7 +444,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
+	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, { 123 / 255, 132 / 255, 137 / 255 })
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
 	Switch.Movement:SetDuration(0.1)
@@ -770,7 +770,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, { 123 / 255, 132 / 255, 137 / 255 })
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
@@ -1349,7 +1349,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
 	-- stylua: ignore
-	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, CurrentR, CurrentG, CurrentB)
+	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, {CurrentR, CurrentG, CurrentB})
 
 	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)

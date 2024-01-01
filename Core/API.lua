@@ -1,18 +1,18 @@
 local K, C = unpack(KkthnxUI)
 
--- Application Programming Interface for KkthnxUI (API)
+--[[
+    KkthnxUI API (Application Programming Interface)
+    is a set of functions and tools designed to help developers interact with and extend the KkthnxUI user interface.
+    The API provides developers with access to various features and functions of KkthnxUI,
+    allowing them to customize and extend the user interface in new and unique ways.
+    Whether you're building an addon, developing a plugin, or just looking to customize your KkthnxUI experience,
+    the API provides a powerful set of tools to help you achieve your goals.
+]]
 
-local _G = _G
-local assert = _G.assert
-local getmetatable = _G.getmetatable
-local select = _G.select
-
-local CreateFrame = _G.CreateFrame
-local EnumerateFrames = _G.EnumerateFrames
-local GetAddOnMetadata = _G.GetAddOnMetadata
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
+local getmetatable, select = getmetatable, select
+local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+local RegisterStateDriver, UIParent = RegisterStateDriver, UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
@@ -21,96 +21,123 @@ local function rad(degrees)
 	return degrees * math.pi / 180
 end
 
+-- Frame Hiders
 do
-	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
+	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
-	K.UIFrameHider = CreateFrame("Frame", "KKUI_UIFrameHider", UIParent, "SecureHandlerAttributeTemplate")
+	K.UIFrameHider = CreateFrame("Frame")
 	K.UIFrameHider:Hide()
-	K.UIFrameHider:SetPoint("TOPLEFT", 0, 0)
-	K.UIFrameHider:SetPoint("BOTTOMRIGHT", 0, 0)
-	RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 
-	K.PetBattleHider = CreateFrame("Frame", "KKUI_PetBattleHider", UIParent, "SecureHandlerStateTemplate")
-	K.PetBattleHider:SetAllPoints()
-	K.PetBattleHider:SetFrameStrata("LOW")
-	RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+	K.PetBattleFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	K.PetBattleFrameHider:SetAllPoints()
+	K.PetBattleFrameHider:SetFrameStrata("LOW")
+	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
+end
+
+-- Set Border Color
+do
+	function K.SetBorderColor(self)
+		-- Prevent issues related to invalid inputs or configurations
+		if not self or type(self) ~= "table" or not self.SetVertexColor then
+			return
+		end
+
+		local colorTextures = C["General"].ColorTextures
+		local texturesColor = C["General"].TexturesColor
+
+		if colorTextures and texturesColor and #texturesColor == 3 then
+			-- Ensure each color component is within the valid range
+			local r = math.min(math.max(texturesColor[1], 0), 1)
+			local g = math.min(math.max(texturesColor[2], 0), 1)
+			local b = math.min(math.max(texturesColor[3], 0), 1)
+
+			self:SetVertexColor(r, g, b)
+		else
+			self:SetVertexColor(1, 1, 1) -- Default color
+		end
+	end
 end
 
 -- Create Border
-local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+local function CreateBorder(bFrame, ...)
 	if not bFrame or type(bFrame) ~= "table" then
 		return nil, "Invalid frame provided"
 	end
 
-	local BorderSubLevel = bSubLevel or "OVERLAY"
-	local BorderLayer = bLayer or 2
-	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
+	local General = C.General
+	local Media = C.Media
+	local BorderValue = General.BorderStyle.Value or "KkthnxUI"
 	local BorderSize = bSize or (BorderValue == "KkthnxUI" and 12 or 10)
 
-	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
-	local BorderOffset = bOffset or -4
-	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
-	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
-	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
-	local BorderAlpha = bAlpha or 1
+	if not bFrame.KKUI_Border then
+		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
+		local BorderOffset = bOffset or -4
+		local BorderColor = bColor or Media.Borders.ColorBorder
 
-	if bFrame and not bFrame.KKUI_Border then -- Do not keep creating it!
-		if bFrame:IsObjectType("Texture") then
-			bFrame = bFrame:GetParent()
-		end
-
-		-- Create Our Border
-		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
+		local kkui_border = K.CreateBorder(bFrame, bSubLevel or "OVERLAY", bLayer or 1)
 		kkui_border:SetSize(BorderSize)
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
-		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
 
-		bFrame.KKUI_Border = true
+		local r, g, b = unpack(General.ColorTextures and General.TexturesColor or BorderColor)
+		kkui_border:SetVertexColor(r, g, b)
+
 		bFrame.KKUI_Border = kkui_border
 	end
 
-	-- Background
-	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
-	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
-	local BackgroundLayer = bgLayer or -2
-	local BackgroundPoint = bgPoint or 0
-	local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
-	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
-	local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
-	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
+	if not bFrame.KKUI_Background then
+		local BackgroundTexture = bgTexture or Media.Textures.BlankTexture
+		local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
+		local BackgroundLayer = bgLayer or -2
+		local BackgroundPoint = bgPoint or 0
+		local BackgroundColor = bgColor or Media.Backdrops.ColorBackdrop
 
-	if bFrame and not bFrame.KKUI_Background then -- Do not keep creating it!
-		-- Create Our Background
-		local kkui_background = bFrame:CreateTexture()
-		kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
-		kkui_background:SetTexture(BackgroundTexture)
+		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
+		kkui_background:SetTexture(BackgroundTexture, true, true)
 		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
 		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
-		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
+		kkui_background:SetVertexColor(unpack(BackgroundColor))
 
-		bFrame.KKUI_Background = true
 		bFrame.KKUI_Background = kkui_background
 	end
+
+	return bFrame
 end
 
--- Simple Create Backdrop.
-local function CreateBackdrop(f)
-	if f.Backdrop then return end
-
-	local b = CreateFrame("Frame", nil, f)
-	b:SetPoint("TOPLEFT", f, "TOPLEFT")
-	b:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT")
-	b:CreateBorder()
-
-	if f:GetFrameLevel() - 1 >= 0 then
-		b:SetFrameLevel(f:GetFrameLevel())
-	else
-		b:SetFrameLevel(0)
+-- Create Backdrop
+local function CreateBackdrop(bFrame, ...)
+	if not bFrame or type(bFrame) ~= "table" then
+		return nil, "Invalid frame provided"
 	end
 
-	f.Backdrop = b
+	local bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
+
+	if not bFrame.KKUI_Background then
+		-- Assign default values if not provided
+		local BorderPoints = {
+			bPointa or 0,
+			bPointb or 0,
+			bPointc or 0,
+			bPointd or 0,
+		}
+
+		local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame)
+		kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPoints[1], BorderPoints[2])
+		kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPoints[3], BorderPoints[4])
+
+		-- Ensure CreateBorder function exists and is callable
+		if type(kkui_backdrop.CreateBorder) == "function" then
+			kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)
+		end
+
+		kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
+
+		bFrame.KKUI_Backdrop = kkui_backdrop
+	end
+
+	return bFrame
 end
 
 -- The Famous Shadow?
@@ -146,14 +173,19 @@ local function CreateShadow(frame, useBackdrop)
 	return shadow
 end
 
--- Its A Killer.
+-- Kill Function
 local function Kill(object)
+	-- Check if the object has an "UnregisterAllEvents" method
 	if object.UnregisterAllEvents then
+		-- Unregister all events for the object
 		object:UnregisterAllEvents()
+		-- Set the object's parent to K.UIFrameHider (likely a hidden frame used for hiding objects)
 		object:SetParent(K.UIFrameHider)
 	else
+		-- If the object does not have an "UnregisterAllEvents" method, set its "Show" method to its "Hide" method
 		object.Show = object.Hide
 	end
+	-- Hide the object
 	object:Hide()
 end
 
@@ -185,26 +217,31 @@ local blizzTextures = {
 
 local function StripTextures(object, kill)
 	local frameName = object.GetName and object:GetName()
+
+	-- Strip textures from Blizzard frames
 	for _, texture in pairs(blizzTextures) do
 		local blizzFrame = object[texture] or (frameName and _G[frameName .. texture])
 		if blizzFrame then
-			StripTextures(blizzFrame, kill)
+			StripTextures(blizzFrame, kill) -- Recursively strip textures from Blizzard frames
 		end
 	end
 
-	if object.GetNumRegions then
-		for i = 1, object:GetNumRegions() do
-			local region = select(i, object:GetRegions())
+	-- Strip textures from the given object's regions
+	if object.GetNumRegions then -- Check if the given object has regions
+		for i = 1, object:GetNumRegions() do -- Iterate through all regions
+			local region = select(i, object:GetRegions()) -- Get region at index i
+
+			-- Check if region is a Texture type
 			if region and region.IsObjectType and region:IsObjectType("Texture") then
-				if kill and type(kill) == "boolean" then
+				if kill and type(kill) == "boolean" then -- Kill the texture if boolean true is passed as kill argument
 					region:Kill()
-				elseif tonumber(kill) then
+				elseif tonumber(kill) then -- Set alpha to 0 for specified texture index
 					if kill == 0 then
 						region:SetAlpha(0)
-					elseif i ~= kill then
+					elseif i ~= kill then -- Set texture to empty string for all other indices
 						region:SetTexture("")
 					end
-				else
+				else -- Set texture to empty string by default
 					region:SetTexture("")
 				end
 			end
@@ -212,43 +249,51 @@ local function StripTextures(object, kill)
 	end
 end
 
+-- Create Texture
+local function CreateTexture(button, noTexture, texturePath, desaturated, vertexColor, setPoints)
+	if not noTexture then
+		local texture = button:CreateTexture()
+		texture:SetTexture(texturePath)
+		texture:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
+		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
+		texture:SetBlendMode("ADD")
+
+		if desaturated then
+			texture:SetDesaturated(true)
+		end
+
+		if vertexColor then
+			texture:SetVertexColor(unpack(vertexColor))
+		end
+
+		return texture
+	end
+end
+
+-- Style Button
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
-	local pointsSet = setPoints or 0
+	-- setPoints default value is 0
+	setPoints = setPoints or 0
 
-	if button.SetHighlightTexture and not button.hover and not noHover then
-		local hover = button:CreateTexture()
-		hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		hover:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
-		hover:SetBlendMode("ADD")
-		button:SetHighlightTexture(hover)
-		button.hover = hover
+	-- Create highlight, pushed, and checked textures for the button if they do not exist
+	if button.SetHighlightTexture and not noHover then
+		button.hover = CreateTexture(button, noHover, "Interface\\Buttons\\ButtonHilight-Square", false, nil, setPoints)
+		button:SetHighlightTexture(button.hover)
 	end
 
-	if button.SetPushedTexture and not button.pushed and not noPushed then
-		local pushed = button:CreateTexture()
-		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		pushed:SetDesaturated(true)
-		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
-		pushed:SetBlendMode("ADD")
-		button:SetPushedTexture(pushed)
-		button.pushed = pushed
+	if button.SetPushedTexture and not noPushed then
+		button.pushed = CreateTexture(button, noPushed, "Interface\\Buttons\\ButtonHilight-Square", true, { 246 / 255, 196 / 255, 66 / 255 }, setPoints)
+		button:SetPushedTexture(button.pushed)
 	end
 
-	if button.SetCheckedTexture and not button.checked and not noChecked then
-		local checked = button:CreateTexture()
-		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		checked:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
-		checked:SetBlendMode("ADD")
-		button:SetCheckedTexture(checked)
-		button.checked = checked
+	if button.SetCheckedTexture and not noChecked then
+		button.checked = CreateTexture(button, noChecked, "Interface\\Buttons\\CheckButtonHilight", false, nil, setPoints)
+		button:SetCheckedTexture(button.checked)
 	end
 
 	local name = button.GetName and button:GetName()
 	local cooldown = name and _G[name .. "Cooldown"]
+
 	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
@@ -258,7 +303,7 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
-local function SetModifiedBackdrop(self)
+local function Button_OnEnter(self)
 	if not self:IsEnabled() then
 		return
 	end
@@ -266,126 +311,126 @@ local function SetModifiedBackdrop(self)
 	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 end
 
-local function SetOriginalBackdrop(self)
-	if C["General"].ColorTextures then
-		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		self.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
+local function Button_OnLeave(self)
+	K.SetBorderColor(self.KKUI_Border)
 end
 
-local blizzButtonRegions = {
+-- Skin Button
+local blizzRegions = {
 	"Left",
 	"Middle",
 	"Right",
-	"Mid",
-	"LeftDisabled",
-	"MiddleDisabled",
-	"RightDisabled",
 	"TopLeft",
 	"TopRight",
 	"BottomLeft",
 	"BottomRight",
-	"TopMiddle",
-	"MiddleLeft",
-	"MiddleRight",
-	"BottomMiddle",
-	"MiddleMiddle",
-	"TabSpacer",
-	"TabSpacer1",
-	"TabSpacer2",
-	"_RightSeparator",
-	"_LeftSeparator",
-	"Cover",
-	"Border",
 	"Background",
-	"TopTex",
-	"TopLeftTex",
-	"TopRightTex",
-	"LeftTex",
-	"BottomTex",
-	"BottomLeftTex",
-	"BottomRightTex",
-	"RightTex",
-	"MiddleTex",
+	"Border",
+	"Center",
 }
 
-local function SkinButton(f, forceStrip)
-	if f.SetNormalTexture then f:SetNormalTexture(0) end
-	if f.SetHighlightTexture then f:SetHighlightTexture(0) end
-	if f.SetPushedTexture then f:SetPushedTexture(0) end
-	if f.SetDisabledTexture then f:SetDisabledTexture(0) end
+local function SkinButton(self, override, ...)
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
+	-- Remove the normal, highlight, pushed and disabled textures
+	if self.SetNormalTexture and not override then
+		self:SetNormalTexture(0)
+	end
 
-	local buttonName = f.GetName and f:GetName()
-	for _, region in pairs(blizzButtonRegions) do
-		region = buttonName and _G[buttonName .. region] or f[region]
-		if region then
-			region:SetAlpha(0)
+	if self.SetHighlightTexture then
+		self:SetHighlightTexture(0)
+	end
+
+	if self.SetPushedTexture then
+		self:SetPushedTexture(0)
+	end
+
+	if self.SetDisabledTexture then
+		self:SetDisabledTexture(0)
+	end
+
+	-- Hide all regions defined in the blizzRegions table
+	for _, region in pairs(blizzRegions) do
+		if self[region] then
+			self[region]:SetAlpha(0)
+			self[region]:Hide()
 		end
 	end
 
-	if forceStrip then f:StripTextures() end
+	-- Do not apply custom border if the override argument is true
+	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)
 
-	f:CreateBorder()
-
-	f:HookScript("OnEnter", SetModifiedBackdrop)
-	f:HookScript("OnLeave", SetOriginalBackdrop)
+	-- Hook the OnEnter and OnLeave events
+	self:HookScript("OnEnter", Button_OnEnter)
+	self:HookScript("OnLeave", Button_OnLeave)
 end
 
-local function SkinCloseButton(f, point, texture)
-	assert(f, "doesnt exist!")
+-- Skin Close Button
+local function SkinCloseButton(self, parent, xOffset, yOffset)
+	-- Define the parent frame and x,y offset of the close button
+	parent = parent or self:GetParent()
+	xOffset = xOffset or -6
+	yOffset = yOffset or -6
 
-	f:StripTextures()
-	f:CreateBorder(nil, nil, nil, nil, -12, nil, nil, nil, nil, nil, nil, nil, 8)
+	-- Set the size of the close button and its position relative to the parent frame
+	self:SetSize(16, 16)
+	self:ClearAllPoints()
+	self:SetPoint("TOPRIGHT", parent, "TOPRIGHT", xOffset, yOffset)
 
-	f:HookScript("OnEnter", SetModifiedBackdrop)
-	f:HookScript("OnLeave", SetOriginalBackdrop)
-	f:SetHitRectInsets(6, 6, 7, 7)
-
-	local closeTexture = texture or CustomCloseButton
-	if not f.button then
-		f.button = f:CreateTexture(nil, "OVERLAY")
-		f.button:SetSize(16, 16)
-		f.button:SetTexture(closeTexture)
-		f.button:SetPoint("CENTER", f, "CENTER")
+	-- Remove any textures that may already be applied to the button
+	self:StripTextures()
+	-- Check if there is a Border attribute, if so set its alpha to 0
+	if self.Border then
+		self.Border:SetAlpha(1)
 	end
 
-	if point then
-		f:SetPoint("TOPRIGHT", point, "TOPRIGHT", 2, 2)
+	-- Create a border for the button with specific color and alpha values
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.85, 0.25, 0.25 })
+	-- Apply the 'StyleButton' function to the button
+	self:StyleButton()
+
+	-- Remove the default disabled texture
+	self:SetDisabledTexture("")
+	-- Get the disabled texture and set its color and draw layer
+	local dis = self:GetDisabledTexture()
+	dis:SetVertexColor(0, 0, 0, 0.4)
+	dis:SetDrawLayer("OVERLAY")
+	dis:SetAllPoints()
+
+	-- Create a texture for the button
+	local tex = self:CreateTexture()
+	-- Set the texture to CustomCloseButton
+	tex:SetTexture(CustomCloseButton)
+	-- Set the texture to cover the entire button
+	tex:SetAllPoints()
+	self.__texture = tex
+end
+
+-- Skin CheckBox
+local function SkinCheckBox(self, forceSaturation)
+	self:SetNormalTexture(0)
+	self:SetPushedTexture(0)
+
+	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
+	bg:SetAllPoints(self)
+	bg:SetFrameLevel(self:GetFrameLevel())
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
+	self.bg = bg
+
+	self.forceSaturation = forceSaturation
+end
+
+-- Hide Backdrop
+local function HideBackdrop(self)
+	if self.NineSlice then
+		self.NineSlice:SetAlpha(0)
+	end
+
+	if self.SetBackdrop then
+		self:SetBackdrop(nil)
 	end
 end
 
-local function SkinCheckBox(f, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
-	f:StripTextures()
-	f:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
-
-	if f.SetCheckedTexture then
-		f:SetCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
-	end
-
-	if f.SetDisabledCheckedTexture then
-		f:SetDisabledCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-	end
-
-	-- Why Is The Disabled Texture Always Displayed As Checked?
-	f:HookScript("OnDisable", function(self)
-		if not self.SetDisabledTexture then
-			return
-		end
-
-		if self:GetChecked() then
-			self:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-		else
-			self:SetDisabledTexture("")
-		end
-	end)
-
-	f.SetNormalTexture = K.Noop
-	f.SetPushedTexture = K.Noop
-	f.SetHighlightTexture = K.Noop
-end
-
--- Handle arrows
+-- Setup Arrow
 local arrowDegree = {
 	["up"] = 0,
 	["down"] = 180,
@@ -398,9 +443,12 @@ function K.SetupArrow(self, direction)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 
+-- Reskin Arrow
 function K.ReskinArrow(self, direction)
+	self:StripTextures()
 	self:SetSize(16, 16)
-	self:SkinButton()
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
+	self:StyleButton()
 
 	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
 	local dis = self:GetDisabledTexture()
@@ -412,28 +460,6 @@ function K.ReskinArrow(self, direction)
 	tex:SetAllPoints()
 	K.SetupArrow(tex, direction)
 	self.__texture = tex
-
-	self:HookScript("OnEnter", K.Texture_OnEnter)
-	self:HookScript("OnLeave", K.Texture_OnLeave)
-end
-
--- Handle close button
-function K:Texture_OnEnter()
-	if self:IsEnabled() then
-		if self.bg then
-			self.bg:SetBackdropColor(cr, cg, cb, .25)
-		else
-			self.__texture:SetVertexColor(0, .6, 1)
-		end
-	end
-end
-
-function K:Texture_OnLeave()
-	if self.bg then
-		self.bg:SetBackdropColor(0, 0, 0, .25)
-	else
-		self.__texture:SetVertexColor(1, 1, 1)
-	end
 end
 
 local function GrabScrollBarElement(frame, element)
@@ -441,10 +467,13 @@ local function GrabScrollBarElement(frame, element)
 	return frame[element] or frameName and (_G[frameName .. element] or string.find(frameName, element)) or nil
 end
 
+-- Skin ScrollBar (continued)
 local function SkinScrollBar(self)
+	-- Strip the textures from the parent and scrollbar frame
 	self:GetParent():StripTextures()
 	self:StripTextures()
 
+	-- Get the thumb texture and set its alpha to 0, width to 16, and create a frame for it
 	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
 	if thumb then
 		thumb:SetAlpha(0)
@@ -452,25 +481,21 @@ local function SkinScrollBar(self)
 		self.thumb = thumb
 
 		local bg = CreateFrame("Frame", nil, self)
-		bg:CreateBorder()
+		-- Create a border for the frame with a dark grey color
+		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
+
+		-- Set the position of the frame relative to the thumb texture
 		bg:SetPoint("TOPLEFT", thumb, 0, -6)
 		bg:SetPoint("BOTTOMRIGHT", thumb, 0, 6)
+
+		-- Assign the frame to the thumb texture's background property
 		thumb.bg = bg
 	end
 
+	-- Get the up and down arrows from the scrollbar frame and skin them with K.ReskinArrow() function
 	local up, down = self:GetChildren()
 	K.ReskinArrow(up, "up")
 	K.ReskinArrow(down, "down")
-end
-
-local function HideBackdrop(self)
-	if self.NineSlice then
-		self.NineSlice:SetAlpha(0)
-	end
-
-	if self.SetBackdrop then
-		self:SetBackdrop(nil)
-	end
 end
 
 local function addapi(object)

@@ -257,7 +257,7 @@ function Module:StyleActionButton(button, cfg)
 	if normal then normal:SetTexture() normal:Hide() normal:SetAlpha(0) end
 	if normal2 then normal2:SetTexture() normal2:Hide() normal2:SetAlpha(0) end
 	-- Backdrop
-	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 	button:StyleButton()
 
 	-- Textures
@@ -330,7 +330,7 @@ function Module:StyleExtraActionButton(cfg)
 	local checkedTexture = button:GetCheckedTexture()
 
 	-- Border
-	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 	button:StyleButton()
 
 	-- Textures

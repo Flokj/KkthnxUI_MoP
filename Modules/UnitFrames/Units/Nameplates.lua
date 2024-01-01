@@ -415,37 +415,27 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local isLootQuest, questProgress
-	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	K.ScanTooltip:SetUnit(unit)
+	local questProgress
+	local prevDiff = 0
+	local data = C_TooltipInfo.GetUnit(unit)
 
-	for i = 2, B.ScanTip:NumLines() do
-		local textLine = _G["KKUI_ScanTooltipTextLeft" .. i]
-		local text = textLine:GetText()
-		if textLine and text then
-			local r, g, b = textLine:GetTextColor()
-			local unitName, progressText = strmatch(text, "^ ([^ ]-) ?%- (.+)$")
-			if r > .99 and g > .82 and b == 0 then
-				isLootQuest = true
-			elseif unitName and progressText then
-				isLootQuest = false
-				if unitName == "" or unitName == K.Name then
-					local current, goal = strmatch(progressText, "(%d+)/(%d+)")
-					local progress = strmatch(progressText, "([%d%.]+)%%")
+	if data then
+		for i = 1, #data.lines do
+			local lineData = data.lines[i]
+			if lineData.type == 8 then
+				local text = lineData.leftText
+				if text then
+					local current, goal = strmatch(text, "(%d+)/(%d+)")
+					local progress = strmatch(text, "(%d+)%%")
 					if current and goal then
-						if tonumber(current) < tonumber(goal) then
-							questProgress = goal - current
-							break
+						local diff = floor(goal - current)
+						if diff > prevDiff then
+							questProgress = diff
+							prevDiff = diff
 						end
-					elseif progress then
-						progress = tonumber(progress)
-						if progress and progress < 100 then
-							questProgress = progress.."%"
-							break
-						end
-					else
-						isLootQuest = true
-						break
+					elseif progress and prevDiff == 0 then
+						questProgress = progress .. "%"
+						break -- Exit loop if progress is found
 					end
 				end
 			end

@@ -56,7 +56,7 @@ function Module:CreateRaid()
 
 	Module.CreateHeader(self)
 
-	self:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 5 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -2 or nil)
+	self:CreateBorder()
 
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetFrameLevel(self:GetFrameLevel())

@@ -30,132 +30,151 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitReaction = _G.UnitReaction
 
-local iLvlDB = {}
-local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceDescription = _G.GetSpellDescription(277253)
-local essenceTextureID = 2975691
-local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
-local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
-local mapRects = {}
-local tempVec2D = CreateVector2D(0, 0)
-
+-- General Utility Functions
 do
 	function K.Print(...)
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
-	-- Return short value of a number
 	function K.ShortValue(n)
-		if C["General"].NumberPrefixStyle.Value == 1 then
-			if n >= 1e12 then
-				return string_format("%.2ft", n / 1e12)
-			elseif n >= 1e9 then
-				return string_format("%.2fb", n / 1e9)
-			elseif n >= 1e6 then
-				return string_format("%.2fm", n / 1e6)
-			elseif n >= 1e3 then
-				return string_format("%.1fk", n / 1e3)
-			else
-				return string_format("%.0f", n)
-			end
-		elseif C["General"].NumberPrefixStyle.Value == 2 then
-			if n >= 1e12 then
-				return string_format("%.2f" .. "z", n / 1e12)
-			elseif n >= 1e8 then
-				return string_format("%.2f" .. "y", n / 1e8)
-			elseif n >= 1e4 then
-				return string_format("%.1f" .. "w", n / 1e4)
-			else
-				return string_format("%.0f", n)
-			end
+		local prefixStyle = C["General"].NumberPrefixStyle.Value
+		local abs_n = abs(n)
+		local suffix, div = "", 1
+
+		-- Calculate the appropriate suffix and division factor.
+		if abs_n >= 1e12 then
+			suffix, div = (prefixStyle == 1 and "t" or "z"), 1e12
+		elseif abs_n >= 1e9 then
+			suffix, div = (prefixStyle == 1 and "b" or "y"), 1e9
+		elseif abs_n >= 1e6 then
+			suffix, div = (prefixStyle == 1 and "m" or "w"), 1e6
+		elseif abs_n >= 1e3 then
+			suffix, div = (prefixStyle == 1 and "k" or "w"), 1e3
+		end
+
+		-- Format the shortened value.
+		local val = n / div
+		if div > 1 and val < 10 then
+			return string_format("%.1f%s", val, suffix)
 		else
-			return string_format("%.0f", n)
+			return string_format("%d%s", val, suffix)
 		end
 	end
 
-	-- Return rounded number
 	function K.Round(number, idp)
+		-- Set the default number of decimal places to 0 if none is specified
 		idp = idp or 0
 		local mult = 10 ^ idp
-		return math_floor(number * mult + 0.5) / mult
+		-- Round the number to the specified number of decimal places
+		-- by first multiplying it by 10 to the power of idp,
+		-- then rounding it to the nearest whole number using math.floor,
+		-- and finally dividing it by 10 to the power of idp
+		return math.floor(number * mult + 0.5) / mult
 	end
+end
 
-	-- RGBToHex
+-- Color-related Functions
+do
+	local factor = 255
 	function K.RGBToHex(r, g, b)
+		-- Check if r is a table, and extract r, g, b values from it if necessary
+		if type(r) == "table" then
+			r, g, b = r.r or r[1], r.g or r[2], r.b or r[3]
+		end
+		-- Check if r is not nil, and return the hex code if true
 		if r then
-			if type(r) == "table" then
-				if r.r then
-					r, g, b = r.r, r.g, r.b
-				else
-					r, g, b = unpack(r)
-				end
-			end
-
-			return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+			-- Convert RGB values to hexadecimal format
+			local hex = string.format("%02x%02x%02x", r * factor, g * factor, b * factor)
+			-- Return the hex code with alpha value appended
+			return "|cff" .. hex
 		end
 	end
 
-	-- Table
+	function K.AddClassIconToColor(class, textColor, iconSize)
+	local size = iconSize or 16
+	local color = textColor or "|CFFFFFFFF"
+
+	if class then
+		local classString = ""
+		local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
+		if L then
+			local imageSize = 128
+			classString = "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t" .. color
+			return classString
+			end
+		end
+	end
+end
+
+-- Table-related Functions
+do
 	function K.CopyTable(source, target)
+		-- Loop through all key-value pairs in the source table
 		for key, value in pairs(source) do
+			-- If the value is a table, copy its contents recursively
 			if type(value) == "table" then
+				-- If there's no key in the target table, create it
 				if not target[key] then
 					target[key] = {}
 				end
-
+				-- Copy the contents of the sub-table
 				for k in pairs(value) do
 					target[key][k] = value[k]
 				end
 			else
+				-- If the value is not a table, simply copy it
 				target[key] = value
 			end
 		end
 	end
 
 	function K.SplitList(list, variable, cleanup)
-		if cleanup then table_wipe(list) end
-
-		for word in gmatch(variable, "%S+") do
-			word = tonumber(word) or word -- use number if exists, needs review
-			list[word] = true
+		-- Wipe the table if cleanup is true
+		if cleanup then
+			table_wipe(list)
 		end
-	end
 
-	function K.AddClassIconToColor(class, textColor, iconSize)
-		local size = iconSize or 16
-		local color = textColor or "|CFFFFFFFF"
-
-		if class then
-			local classString = ""
-			local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
-			if L then
-				local imageSize = 128
-				classString = "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t" .. color
-				return classString
-			end
+		for word in string.gmatch(variable, "%S+") do
+			-- Convert word to number if it is numeric
+			word = tonumber(word) or word
+			-- Add word to the list
+			table.insert(list, word)
 		end
 	end
 end
 
+-- Gradient Frame and Font String Functions
 do
 	-- Gradient Frame
 	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
 	function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
+		-- set the size of the frame
 		self:SetSize(w, h)
+		-- set the frame strata
 		self:SetFrameStrata("BACKGROUND")
-
+		-- create the gradient texture
 		local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
+		-- set the texture to cover the entire frame
 		gradientFrame:SetAllPoints()
+		-- set the texture to the white 8x8 texture
 		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
+		-- set the gradient type and colors
 		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 
 	function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, y)
-		if not self then return end
+		if not self then
+			return
+		end
 
 		local fs = self:CreateFontString(nil, "OVERLAY")
 
-		if textstyle == " " or textstyle == "" or textstyle == nil then
+		-- check if fontstring is created or not
+		if not fs then
+			return
+		end
+
+		if not textstyle or textstyle == "" then
 			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "")
 			fs:SetShadowOffset(1, -1 / 2)
 		else
@@ -169,9 +188,11 @@ do
 			fs:SetTextColor(K.r, K.g, K.b)
 		elseif classcolor == "system" then
 			fs:SetTextColor(1, 0.8, 0)
-		elseif classcolor == "system" then
+		else
+			fs:SetTextColor(1, 1, 1)
 		end
 
+		-- check if position is set
 		if anchor and x and y then
 			fs:SetPoint(anchor, x, y)
 		else
@@ -182,40 +203,59 @@ do
 	end
 end
 
+-- Class Color and Unit Color Functions
 do
 	function K.ColorClass(class)
+		-- check if the class color exists in the class color table
 		local color = K.ClassColors[class]
-		if not color then return 1, 1, 1 end
-
+		-- if the class color does not exist, return white
+		if not color then
+			return 1, 1, 1
+		end
+		-- return the red, green, and blue values of the class color
 		return color.r, color.g, color.b
 	end
 
 	function K.UnitColor(unit)
+		-- set the default color to white
 		local r, g, b = 1, 1, 1
-
+		-- check if the unit is a player
 		if UnitIsPlayer(unit) then
 			local class = select(2, UnitClass(unit))
+			-- check if class exists, and get the color of the class
 			if class then
 				r, g, b = K.ColorClass(class)
 			end
+		-- check if the unit's tap is denied
 		elseif UnitIsTapDenied(unit) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
+			-- get the reaction of the unit to the player
 			local reaction = UnitReaction(unit, "player")
+			-- check if reaction exists, and get the color of the reaction
 			if reaction then
-				local color = K.Colors.reaction[reaction]
-				r, g, b = color[1], color[2], color[3]
+				local color = K.Colors.reaction[reaction] or FACTION_BAR_COLORS[reaction]
+				r = color.r or color[1] or 1
+				g = color.g or color[2] or 1
+				b = color.b or color[3] or 1
 			end
 		end
-
+		-- return the red, green, and blue values of the color
 		return r, g, b
 	end
 end
 
+-- Other Utility Functions
 do
 	function K.TogglePanel(frame)
-		if frame:IsShown() then frame:Hide()
-		else frame:Show() end
+		-- check if the frame is currently shown
+		if frame:IsShown() then
+			-- if the frame is shown, hide it
+			frame:Hide()
+		else
+			-- if the frame is not shown, show it
+			frame:Show()
+		end
 	end
 
 	function K.GetNPCID(guid)
@@ -232,8 +272,14 @@ do
 	end
 end
 
+-- Item Level Functions
 do
-	-- Itemlevel
+	local iLvlDB = {}
+	local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+	local essenceDescription = _G.GetSpellDescription(277253)
+	local essenceTextureID = 2975691
+	local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
+
 	function K.InspectItemTextures()
 		if not K.ScanTooltip.gems then
 			K.ScanTooltip.gems = {}
@@ -365,14 +411,13 @@ do
 end
 
 do
-	-- Chat channel check
 	function K.CheckChat()
-		return IsInRaid() and "RAID" or "PARTY"
+		return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 	end
 end
 
+-- Tooltip Functions
 do
-	-- Tooltip code ripped from StatBlockCore by Funkydude
 	function K.GetAnchors(frame)
 		local x, y = frame:GetCenter()
 
@@ -384,22 +429,21 @@ do
 		return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 	end
 
-	-- Fontstring
-	function K:SetFontSize(size)
-		self:SetFont(K.Font[1], size, K.Font[3])
-	end
 
 	function K.HideTooltip()
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:Hide()
 	end
 
 	local function tooltipOnEnter(self)
 		if GameTooltip:IsForbidden() then return end
 
+		-- Set the GameTooltip's owner and relative position to the 'self' object.
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
 
+		-- Check for various conditions to display the proper content
 		if self.title then
 			GameTooltip:AddLine(self.title)
 		end
@@ -436,8 +480,8 @@ do
 	end
 end
 
+-- Movable Frame and String Shortening Functions
 do
-	-- Movable Frame
 	function K.CreateMoverFrame(self, parent, saved)
 		local frame = parent or self
 		frame:SetMovable(true)
@@ -452,9 +496,7 @@ do
 
 		self:SetScript("OnDragStop", function()
 			frame:StopMovingOrSizing()
-			if not saved then
-				return
-			end
+			if not saved then return end
 
 			local orig, _, tar, x, y = frame:GetPoint()
 			KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
@@ -468,9 +510,7 @@ do
 			self:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]))
 		end
 	end
-end
 
-do
 	function K.ShortenString(string, numChars, dots)
 		local bytes = string:len()
 		if bytes <= numChars then
@@ -504,6 +544,7 @@ do
 	end
 end
 
+-- Interface Option Functions
 do
 	function K.HideInterfaceOption(self)
 		if not self then return end
@@ -513,8 +554,10 @@ do
 	end
 end
 
+-- Time Formatting Functions
 do
-	-- Timer Format
+	-- Variables to store time-related values in seconds
+	local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 	function K.FormatTime(s)
 		if s >= day then
 			return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
@@ -560,22 +603,24 @@ do
 	end
 end
 
+-- Map Position and Money Formatting Functions
 do
+	-- Maps rectangles for storing positional information
+	local mapRects = {}
+
+	-- Temporary 2D vector for calculations
+	local tempVec2D = CreateVector2D(0, 0)
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then return end
 
 		tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
-		if not tempVec2D.x then
-			return
-		end
+		if not tempVec2D.x then return end
 
 		local mapRect = mapRects[mapID]
 		if not mapRect then
 			local pos1 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
 			local pos2 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
-			if not pos1 or not pos2 then
-				return
-			end
+			if not pos1 or not pos2 then return end
 
 			mapRect = { pos1, pos2 }
 			mapRect[2]:Subtract(mapRect[1])

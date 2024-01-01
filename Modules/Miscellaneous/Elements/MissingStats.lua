@@ -162,8 +162,6 @@ local function CreateHeaderArrow(parent, direct, func)
 	tex:SetAllPoints()
 	K.SetupArrow(tex, arrowDirec)
 	bu.__texture = tex
-	bu:SetScript("OnEnter", K.Texture_OnEnter)
-	bu:SetScript("OnLeave", K.Texture_OnLeave)
 
 	bu:SetSize(15, 15)
 	bu.__owner = parent

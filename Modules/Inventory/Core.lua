@@ -159,8 +159,6 @@ function Module:CreateInfoFrame()
 	search:SetPoint("LEFT", 0, 6)
 	search:DisableDrawLayer("BACKGROUND")
 	search:CreateBackdrop()
-	search.Backdrop:SetPoint("TOPLEFT", 0, 0)
-	search.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
 	search.textFilters = BagSmartFilter
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
@@ -276,17 +274,16 @@ function Module:CreateCloseButton(f)
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:RegisterForClicks("AnyUp")
 	closeButton:SetSize(18, 18)
-	closeButton:CreateBorder()
+	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.85, 0.25, 0.25 })
 	closeButton:StyleButton()
 	closeButton.__owner = f
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
-	closeButton.Icon:SetAllPoints()
-	closeButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	closeButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
+	closeButton.Icon:SetAllPoints()
 
 	closeButton:SetScript("OnClick", CloseOrRestoreBags)
-	closeButton.title = _G.CLOSE .. "/" .. _G.RESET
+	closeButton.title = CLOSE .. "/" .. _G.RESET
 	K.AddTooltip(closeButton, "ANCHOR_TOP")
 
 	return closeButton
@@ -481,7 +478,7 @@ function Module:CreateFreeSlots()
 
 	local slot = CreateFrame("Button", name .. "FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
-	slot:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, 0.7, 0.7, 0.7)
+	slot:CreateBorder(nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, { 0.7, 0.7, 0.7 })
 	slot:StyleButton()
 	slot:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slot:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
@@ -1043,7 +1040,7 @@ function Module:OnEnable()
 		self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+		self:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 		self:StyleButton()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
