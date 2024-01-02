@@ -484,7 +484,7 @@ function Module:OnEnable()
 
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)
-	Minimap:SetMaskTexture(C["Media"].Textures.BlankTexture)
+	Minimap:SetMaskTexture(C["Media"].Textures.White8x8Texture)
 	DropDownList1:SetClampedToScreen(true)
 
 	-- Create the new minimap tracking dropdown frame and initialize it

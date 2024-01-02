@@ -1,73 +1,88 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-local select = _G.select
+local GetNumQuestChoices = GetNumQuestChoices
+local GetQuestItemLink = GetQuestItemLink
+local GetQuestItemInfo = GetQuestItemInfo
+local select = select
+local GetItemInfo = GetItemInfo
 
-local GetItemInfo = _G.GetItemInfo
-local GetNumQuestChoices = _G.GetNumQuestChoices
-local GetQuestItemInfo = _G.GetQuestItemInfo
-local GetQuestItemLink = _G.GetQuestItemLink
-local hooksecurefunc = _G.hooksecurefunc
+local questRewardGoldIconFrame
 
-function Module:SetupAutoBestReward()
-	local firstItem = _G.QuestInfoRewardsFrameQuestInfoItem1
-	if not firstItem then
-		return
+local function getQuestRewards()
+	local numChoices = GetNumQuestChoices()
+	if numChoices < 2 then
+		return nil
 	end
 
-	local numQuests = GetNumQuestChoices()
-	if numQuests < 2 then
-		return
+	local questRewards = {}
+	for i = 1, numChoices do
+		local btn = QuestInfoRewardsFrame.RewardButtons[i]
+		if btn and btn.type == "choice" then
+			questRewards[i] = btn
+		end
 	end
 
+	return questRewards
+end
+
+local function getBestQuestReward(questRewards)
 	local bestValue = 0
 	local bestItem
-	for i = 1, numQuests do
+
+	for i = 1, #questRewards do
 		local questLink = GetQuestItemLink("choice", i)
 		local _, _, amount = GetQuestItemInfo("choice", i)
 		local itemSellPrice = questLink and select(11, GetItemInfo(questLink))
 
-		local totalValue = (itemSellPrice and itemSellPrice * amount) or 0
+		-- Add the item's rarity and usefulness to the value calculation
+		local itemRarity = questLink and select(3, GetItemInfo(questLink))
+		local itemUsefulness = (itemRarity == 6) and 5 or itemRarity
+
+		if itemRarity == nil then
+			itemUsefulness = 0
+		end
+
+		local totalValue = (itemSellPrice and itemSellPrice * amount) + itemUsefulness
 		if totalValue > bestValue then
 			bestValue = totalValue
 			bestItem = i
 		end
 	end
 
+	return bestItem
+end
+
+function Module:SetupAutoBestReward()
+	local questRewards = getQuestRewards()
+	if not questRewards then return end
+
+	local bestItem = getBestQuestReward(questRewards)
 	if bestItem then
-		local btn = _G["QuestInfoRewardsFrameQuestInfoItem" .. bestItem]
-		if btn and btn.type == "choice" then
-			Module.QuestRewardGoldIconFrame:ClearAllPoints()
-			Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
-			Module.QuestRewardGoldIconFrame:Show()
-		end
+		local btn = questRewards[bestItem]
+		questRewardGoldIconFrame:ClearAllPoints()
+		questRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
+		questRewardGoldIconFrame:Show()
 	end
 end
 
 function Module:CreateAutoBestReward()
-	if not C["Automation"].AutoReward then
-		return
-	end
+	if not C["Automation"].AutoReward then return end
 
+	questRewardGoldIconFrame = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
+	questRewardGoldIconFrame:SetFrameStrata("HIGH")
+	questRewardGoldIconFrame:SetSize(20, 20)
+	questRewardGoldIconFrame:Hide()
+
+	local icon = questRewardGoldIconFrame:CreateTexture(nil, "OVERLAY")
+	icon:SetAllPoints(questRewardGoldIconFrame)
+	icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
+
+	-- Hook the OnHide script of the QuestFrameRewardPanel to hide the reward icon
+	_G.QuestFrameRewardPanel:HookScript("OnHide", function()
+		questRewardGoldIconFrame:Hide()
+	end)
+
+	-- Register the QUEST_COMPLETE event to show the best reward icon
 	K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
-
-	do -- questRewardMostValueIcon
-		local MostValue = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
-		MostValue:SetFrameStrata("HIGH")
-		MostValue:SetSize(20, 20)
-		MostValue:Hide()
-
-		MostValue.Icon = MostValue:CreateTexture(nil, "OVERLAY")
-		MostValue.Icon:SetAllPoints(MostValue)
-		MostValue.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
-
-		Module.QuestRewardGoldIconFrame = MostValue
-
-		hooksecurefunc(_G.QuestFrameRewardPanel, "Hide", function()
-			if Module.QuestRewardGoldIconFrame then
-				Module.QuestRewardGoldIconFrame:Hide()
-			end
-		end)
-	end
 end

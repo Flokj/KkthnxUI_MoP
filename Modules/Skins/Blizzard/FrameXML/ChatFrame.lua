@@ -5,6 +5,19 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
+local function SkinChatButton(button, size)
+	button:SkinButton()
+	button:SetSize(size, size)
+	if button.Flash then
+		button.Flash:Hide()
+	end
+end
+
+local function SkinCloseButton(button, size)
+	button:SkinCloseButton()
+	button:SetSize(size, size)
+end
+
 table_insert(C.defaultThemes, function()
 	-- Battlenet toast frame
 	BNToastFrame:SetClampedToScreen(true)
@@ -14,26 +27,18 @@ table_insert(C.defaultThemes, function()
 	BNToastFrame.TooltipFrame:HideBackdrop()
 	BNToastFrame.TooltipFrame:CreateBorder()
 
-	BNToastFrame.CloseButton:SkinCloseButton()
-	BNToastFrame.CloseButton:SetSize(32, 32)
-	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+	SkinCloseButton(BNToastFrame.CloseButton, 18)
 
-	local friendTex = "Interface\\HELPFRAME\\ReportLagIcon-Chat"
-	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
-	local homeTex = "Interface\\Buttons\\UI-HomeButton"
+	local HOME_TEXTURE = "Interface\\Buttons\\UI-HomeButton"
 
-	ChatFrameChannelButton:SkinButton()
-	ChatFrameChannelButton:SetSize(16, 16)
-	ChatFrameChannelButton.Flash:Kill()
+	SkinChatButton(ChatFrameChannelButton, 16)
+	SkinChatButton(ChatFrameMenuButton, 16)
 
-	ChatFrameMenuButton:SkinButton()
-	ChatFrameMenuButton:SetSize(16, 16)
-	ChatFrameMenuButton:SetNormalTexture(homeTex)
-	ChatFrameMenuButton:SetPushedTexture(homeTex)
+	ChatFrameMenuButton:SetNormalTexture(HOME_TEXTURE)
+	ChatFrameMenuButton:SetPushedTexture(HOME_TEXTURE)
 
 	VoiceChatChannelActivatedNotification:SetBackdrop(nil)
 	VoiceChatChannelActivatedNotification:CreateBorder()
-	VoiceChatChannelActivatedNotification.CloseButton:SkinCloseButton()
-	VoiceChatChannelActivatedNotification.CloseButton:SetSize(32, 32)
+	SkinCloseButton(VoiceChatChannelActivatedNotification.CloseButton, 32)
 	VoiceChatChannelActivatedNotification.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 end)

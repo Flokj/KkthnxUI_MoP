@@ -70,11 +70,13 @@ local eventList = {
 	"PLAYER_ENTERING_WORLD",
 }
 
-local function OnEvent()
-	subzone = GetSubZoneText()
-	zone = GetZoneText()
-	pvpType, _, faction = GetZonePVPInfo()
-	pvpType = pvpType or "neutral"
+local function OnEvent(_, event, ...)
+	if tContains(eventList, event) then
+		subzone = GetSubZoneText()
+		zone = GetZoneText()
+		pvpType, _, faction = GetZonePVPInfo()
+		pvpType = pvpType or "neutral"
+	end
 end
 
 local function OnEnter()
@@ -102,9 +104,12 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
+-- Function to handle mouse up event
 local function OnMouseUp(_, btn)
+	-- Toggle world map if left button is clicked
 	if btn == "LeftButton" then
 		ToggleWorldMap()
+	-- Open chat frame with position and target information if right button is clicked
 	elseif btn == "RightButton" then
 		local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
 		local unitName = nil
@@ -112,14 +117,16 @@ local function OnMouseUp(_, btn)
 			unitName = UnitName("target")
 		end
 
-		ChatFrame_OpenChat(string_format("%s: %s %s (%s) %s", "My Position", zone, subzone or "", formatCoords(), unitName or ""), SELECTED_DOCK_FRAME)
+		-- Format chat message with position, subzone, coordinates, and target name (if applicable)
+		local chatMsg = string_format("%s: %s %s (%s) %s", "My Position", zone, subzone or "", formatCoords(), unitName or "")
+
+		-- Open chat frame with message and selected dock frame
+		ChatFrame_OpenChat(chatMsg, SELECTED_DOCK_FRAME)
 	end
 end
 
 function Module:CreateCoordsDataText()
-	if not C["DataText"].Coords then
-		return
-	end
+	if not C["DataText"].Coords then return end
 
 	CoordsDataTextFrame = CoordsDataTextFrame or CreateFrame("Button", nil, UIParent)
 	CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)

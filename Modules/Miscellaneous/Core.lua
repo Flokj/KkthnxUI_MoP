@@ -72,54 +72,54 @@ function Module:OnEnable()
 	end
 
 	-- Auto chatBubbles
-	if C["Misc"].AutoBubbles then
-		local function updateBubble()
-			local name, instType = GetInstanceInfo()
-			if name and instType == "raid" then
-				SetCVar("chatBubbles", 1)
-			else
-				SetCVar("chatBubbles", 0)
+	local function enableAutoBubbles()
+		if C["Misc"].AutoBubbles then
+			local function updateBubble()
+				local name, instType = GetInstanceInfo()
+				if name and instType == "raid" then
+					SetCVar("chatBubbles", 1)
+				else
+					SetCVar("chatBubbles", 0)
+				end
 			end
+			K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
-
-	-- Readycheck sound on master channel
-	K:RegisterEvent("READY_CHECK", function()
-		PlaySound(SOUNDKIT.READY_CHECK, "master")
-	end)
+	enableAutoBubbles()
 
 	-- Instant delete
-	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
-	if deleteDialog.OnShow then
-		hooksecurefunc(deleteDialog, "OnShow", function(self)
-			self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-		end)
+	local function modifyDeleteDialog()
+		local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
+		if deleteDialog.OnShow then
+			hooksecurefunc(deleteDialog, "OnShow", function(self)
+				self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+			end)
+		end
 	end
-
-	-- Fix blizz error
-	MAIN_MENU_MICRO_ALERT_PRIORITY = MAIN_MENU_MICRO_ALERT_PRIORITY or {}
+	modifyDeleteDialog()
 
 	-- Fix blizz bug in addon list
-	local _AddonTooltip_Update = AddonTooltip_Update
-	function AddonTooltip_Update(owner)
-		if not owner then return end
-		if owner:GetID() < 1 then return end
-		_AddonTooltip_Update(owner)
-	end
+	local function fixAddonTooltip()
+		local _AddonTooltip_Update = AddonTooltip_Update
+		function AddonTooltip_Update(owner)
+			if not owner then
+				return
+			end
 
-	-- Fix MasterLooterFrame anchor issue
-	hooksecurefunc(MasterLooterFrame, "Show", function(self)
-		self:ClearAllPoints()
-	end)
+			if owner:GetID() < 1 then
+				return
+			end
+			_AddonTooltip_Update(owner)
+		end
+	end
+	fixAddonTooltip()
 
-	-- Fix inspect error in wrath beta
-	if not InspectTalentFrameSpentPoints then
-		InspectTalentFrameSpentPoints = CreateFrame("Frame")
+	local function fixPartyGuidePromote()
+		if not PROMOTE_GUIDE then
+			PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+		end
 	end
-	if not BrowseBidText then
-		BrowseBidText = CreateFrame("Frame")
-	end
+	fixPartyGuidePromote()
 end
 
 -- Hunter pet happiness
@@ -185,11 +185,11 @@ end
 local function KKUI_ClickMinimapButton(_, btn)
 	if btn == "LeftButton" then
 		-- Prevent options panel from showing if Blizzard options panel is showing
-		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
 			return
 		end
 
-		-- No modifier key toggles the options panel
+		-- Check if the player is in combat before opening the options panel
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
@@ -197,8 +197,6 @@ local function KKUI_ClickMinimapButton(_, btn)
 
 		K["GUI"]:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	elseif btn == "RightButton" then
-		--K.Print("Help info needs to be wrote")
 	end
 end
 

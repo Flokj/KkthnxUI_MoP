@@ -87,7 +87,7 @@ local function CreateBorder(bFrame, ...)
 	end
 
 	if not bFrame.KKUI_Background then
-		local BackgroundTexture = bgTexture or Media.Textures.BlankTexture
+		local BackgroundTexture = bgTexture or Media.Textures.White8x8Texture
 		local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
 		local BackgroundLayer = bgLayer or -2
 		local BackgroundPoint = bgPoint or 0
@@ -156,7 +156,7 @@ local function CreateShadow(frame, useBackdrop)
 	}
 
 	if useBackdrop then
-		backdrop.bgFile = C["Media"].Textures.BlankTexture
+		backdrop.bgFile = C["Media"].Textures.White8x8Texture
 		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
 	end
 

@@ -7,13 +7,13 @@ C["Media"] = {
 	},
 
 	["Backdrops"] = {
-		ColorBackdrop = { 0.045, 0.045, 0.045, 0.9 },
+		ColorBackdrop = { 0.060, 0.060, 0.060, 0.9 },
 	},
 
 	["Borders"] = {
 		AzeriteUIBorder = mediaFolder .. "Border\\AzeriteUI\\Border.tga",
 		AzeriteUITooltipBorder = mediaFolder .. "Border\\AzeriteUI\\Border_Tooltip.tga",
-		ColorBorder = { 1, 1, 1 }, -- Doesn't feel like this fits here
+		ColorBorder = { 1, 1, 1 },
 		GlowBorder = mediaFolder .. "Border\\Border_Glow_Overlay.tga",
 		KkthnxUIBorder = mediaFolder .. "Border\\KkthnxUI\\Border.tga",
 		KkthnxUITooltipBorder = mediaFolder .. "Border\\KkthnxUI\\Border_Tooltip.tga",
@@ -21,16 +21,17 @@ C["Media"] = {
 
 	["Textures"] = {
 		ArrowTexture = mediaFolder .. "Textures\\Arrow.tga",
-		BlankTexture = "Interface\\BUTTONS\\WHITE8X8",
+		BlankTexture = mediaFolder .. "Textures\\BlankTexture.blp",
 		CopyChatTexture = mediaFolder .. "Chat\\Copy.tga",
 		GlowTexture = mediaFolder .. "Textures\\GlowTex.tga",
 		LogoSmallTexture = mediaFolder .. "Textures\\LogoSmall.tga",
 		LogoTexture = mediaFolder .. "Textures\\Logo.tga",
 		MouseoverTexture = mediaFolder .. "Textures\\Mouseover.tga",
 		NewClassIconsTexture = mediaFolder .. "Unitframes\\NEW-ICONS-CLASSES.blp",
-		Spark128Texture = mediaFolder .. "Textures\\Spark_128",
-		Spark16Texture = mediaFolder .. "Textures\\Spark_16",
+		Spark128Texture = mediaFolder .. "Textures\\Spark_128.tga",
+		Spark16Texture = mediaFolder .. "Textures\\Spark_16.tga",
 		TargetIndicatorTexture = mediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
+		White8x8Texture = "Interface\\BUTTONS\\WHITE8X8",
 	},
 
 	["Fonts"] = {
@@ -67,10 +68,29 @@ function K.GetTexture(texture)
 end
 
 -- Register media types
-if K.SharedMedia then
-	for mediaType, mediaTable in pairs(C["Media"]) do
-		for name, path in pairs(mediaTable) do
-			K.SharedMedia:Register(mediaType, name, path)
-		end
+if K.LibSharedMedia then
+	--for mediaType, mediaTable in pairs(C["Media"]) do
+	--	for name, path in pairs(mediaTable) do
+	--		K.LibSharedMedia:Register(mediaType, name, path)
+	--	end
+	
+	for name, path in pairs(C["Media"].Borders) do
+		K.LibSharedMedia:Register("border", name, path)
+	end
+
+	-- Register Statusbars
+	for name, path in pairs(C["Media"].Statusbars) do
+		K.LibSharedMedia:Register("statusbar", name, path)
+	end
+
+	-- Register Sounds
+	for name, path in pairs(C["Media"].Sounds) do
+		K.LibSharedMedia:Register("sound", name, path)
+	end
+
+	-- Register Fonts
+	for name, path in pairs(C["Media"].Fonts) do
+		K.LibSharedMedia:Register("font", name, path)
 	end
 end
+

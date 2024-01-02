@@ -57,6 +57,7 @@ end
 
 -- Frame Existing Check
 local function IsFrameExists()
+	if not C["General"].MoveBlizzardFrames then	return end
 	for k in pairs(frames) do
 		if not _G[k] and K.isDeveloper then
 			K.Print("Frame not found:", k)
@@ -120,7 +121,7 @@ end
 
 local function MouseUpHandler(frame, button)
 	frame = parentFrame[frame] or frame
-	if frame and button == "LeftButton" then
+	if frame and button == "LeftButton" and frame:IsMovable() then
 		frame:StopMovingOrSizing()
 	end
 end
@@ -129,14 +130,12 @@ local function HookScript(frame, script, handler)
 	if not frame.GetScript then return end
 
 	local oldHandler = frame:GetScript(script)
-	if oldHandler then
-		frame:SetScript(script, function(...)
-			handler(...)
+	frame:SetScript(script, function(...)
+		handler(...)
+		if oldHandler then
 			oldHandler(...)
-		end)
-	else
-		frame:SetScript(script, handler)
-	end
+		end
+	end)
 end
 
 local function HookFrame(name, moveParent)
@@ -177,22 +176,19 @@ local function HookFrame(name, moveParent)
 end
 
 local function HookFrames(list)
+	if not C["General"].MoveBlizzardFrames then	return end
 	for name, child in pairs(list) do
 		HookFrame(name, child)
 	end
 end
 
 local function InitSetup()
-	if not C["General"].MoveBlizzardFrames then	return end
-	
 	CharacterFrameMoveCheck()
 	IsFrameExists()
 	HookFrames(frames)
 end
 
 local function AddonLoaded(_, name)
-	if not C["General"].MoveBlizzardFrames then	return end
-
 	local frameList = lodFrames[name]
 	if frameList then
 		HookFrames(frameList)

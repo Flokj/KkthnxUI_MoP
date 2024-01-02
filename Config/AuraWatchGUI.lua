@@ -134,7 +134,7 @@ local function AW_CreateCheckBox(parent, text, x, y, tip)
 	bg:CreateBorder()
 	cb.bg = bg
 
-	cb:SetHighlightTexture(C["Media"].Textures.BlankTexture)
+	cb:SetHighlightTexture(C["Media"].Textures.White8x8Texture)
 	local hl = cb:GetHighlightTexture()
 	if hl then
 		hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
