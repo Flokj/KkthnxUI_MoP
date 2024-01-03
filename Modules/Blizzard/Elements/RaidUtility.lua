@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local _G = _G
 local mod = _G.mod
 local next = _G.next
 local pairs = _G.pairs

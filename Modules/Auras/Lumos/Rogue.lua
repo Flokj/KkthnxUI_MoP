@@ -5,8 +5,6 @@ if K.Class ~= "ROGUE" then
 	return
 end
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local GetSpecialization = _G.GetSpecialization
 local IsPlayerSpell = _G.IsPlayerSpell

@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local table_insert = _G.table.insert
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 

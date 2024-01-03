@@ -5,8 +5,6 @@ if K.Class ~= "PALADIN" then
 	return
 end
 
-local _G = _G
-
 local GetCurrentGlyphNameForSpell = _G.GetCurrentGlyphNameForSpell
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture

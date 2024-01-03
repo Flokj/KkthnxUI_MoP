@@ -1,8 +1,6 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local _G = _G
-
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink

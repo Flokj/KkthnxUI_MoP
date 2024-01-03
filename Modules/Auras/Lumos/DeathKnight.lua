@@ -5,7 +5,6 @@ if K.Class ~= "DEATHKNIGHT" then
 	return
 end
 
-local _G = _G
 local math_floor = math.floor
 
 local GetSpecialization = _G.GetSpecialization

@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local math_min = _G.math.min
 local math_ceil = _G.math.ceil
 local table_insert = _G.table.insert

@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local GetSpellCharges = _G.GetSpellCharges
 local GetSpellCooldown = _G.GetSpellCooldown

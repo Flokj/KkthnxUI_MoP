@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
--- local _G = _G
 -- local pairs = _G.pairs
 -- local string_find = _G.string.find
 

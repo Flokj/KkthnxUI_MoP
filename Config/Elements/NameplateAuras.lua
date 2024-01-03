@@ -1,7 +1,5 @@
 local _, C = unpack(KkthnxUI)
 
-local _G = _G
-
 C.NameplateWhiteList = {
 	--[[ Boss/Other
     [24364] = true, -- Free Action 5s

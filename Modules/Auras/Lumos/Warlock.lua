@@ -5,8 +5,6 @@ if K.Class ~= "WARLOCK" then
 	return
 end
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture

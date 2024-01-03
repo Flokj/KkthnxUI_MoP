@@ -2,8 +2,6 @@ local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
 -- Sourced: NDui (siweia)
-
-local _G = _G
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local table_concat = _G.table.concat

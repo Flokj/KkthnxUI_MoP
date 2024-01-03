@@ -1,8 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("WorldMap")
 
-local _G = _G
-
 local GetLocale = _G.GetLocale
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc

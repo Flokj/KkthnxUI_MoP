@@ -1,7 +1,6 @@
 local _, C = unpack(KkthnxUI)
 
 -- Lua
-local _G = _G
 
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then return end

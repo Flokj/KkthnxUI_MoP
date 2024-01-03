@@ -1,18 +1,15 @@
 local K, C, L = unpack(KkthnxUI)
 local GUI = K["GUI"]
 
-local _G = _G
-
-local COLORS = _G.COLORS
-local FILTERS = _G.FILTERS
-local FOCUS = _G.FOCUS
-local INTERRUPT = _G.INTERRUPT
-local PET = _G.PET
-local PLAYER = _G.PLAYER
-local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
-local SlashCmdList = _G.SlashCmdList
-local TARGET = _G.TARGET
-local TUTORIAL_TITLE47 = _G.TUTORIAL_TITLE47
+local COLORS = COLORS
+local FILTERS = FILTERS
+local FOCUS = FOCUS
+local INTERRUPT = INTERRUPT
+local PET = PET
+local PLAYER = PLAYER
+local SlashCmdList = SlashCmdList
+local TARGET = TARGET
+local TUTORIAL_TITLE47 = TUTORIAL_TITLE47
 
 local emojiExampleIcon = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 local enableTextColor = "|cff00cc4c"
@@ -56,7 +53,7 @@ local function updateSmoothingAmount()
 end
 
 local function UpdatePlayerBuffs()
-	local frame = _G.oUF_Player
+	local frame = oUF_Player
 	if not frame then return end
 
 	local element = frame.Buffs
@@ -71,7 +68,7 @@ local function UpdatePlayerBuffs()
 end
 
 local function UpdatePlayerDebuffs()
-	local frame = _G.oUF_Player
+	local frame = oUF_Player
 	if not frame then return end
 
 	local element = frame.Debuffs
@@ -86,7 +83,7 @@ local function UpdatePlayerDebuffs()
 end
 
 local function UpdateTargetBuffs()
-	local frame = _G.oUF_Target
+	local frame = oUF_Target
 	if not frame then return end
 
 	local element = frame.Buffs
@@ -101,7 +98,7 @@ local function UpdateTargetBuffs()
 end
 
 local function UpdateTargetDebuffs()
-	local frame = _G.oUF_Target
+	local frame = oUF_Target
 	if not frame then return end
 
 	local element = frame.Debuffs

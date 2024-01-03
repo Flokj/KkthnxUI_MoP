@@ -1,29 +1,28 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Mover")
 
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local table_wipe = table.wipe
+local unpack = unpack
 
-local CANCEL = _G.CANCEL
-local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local InCombatLockdown = _G.InCombatLockdown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsModifierKeyDown = _G.IsModifierKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LOCK = _G.LOCK
-local NONE = _G.NONE
-local OKAY = _G.OKAY
-local PlaySound = _G.PlaySound
-local RESET = _G.RESET
-local SOUNDKIT = _G.SOUNDKIT
-local StaticPopup_Show = _G.StaticPopup_Show
-local UIErrorsFrame = _G.UIErrorsFrame
-local UIParent = _G.UIParent
+local CANCEL = CANCEL
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+local IsControlKeyDown = IsControlKeyDown
+local IsModifierKeyDown = IsModifierKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local LOCK = LOCK
+local NONE = NONE
+local OKAY = OKAY
+local PlaySound = PlaySound
+local RESET = RESET
+local SOUNDKIT = SOUNDKIT
+local StaticPopup_Show = StaticPopup_Show
+local UIErrorsFrame = UIErrorsFrame
+local UIParent = UIParent
 
 -- Frame Mover
 local MoverList = {}
@@ -34,14 +33,10 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	local key = "Mover"
 	if isAuraWatch then key = "AuraWatchMover" end
 
-	local mover = CreateFrame("Button", nil, UIParent)
+	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
-
-	mover.bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
-	mover.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
-	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 1, -1)
-	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -1, 1)
+	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 38 / 255, 125 / 255, 206 / 255, 80 / 255 })
 	mover:Hide()
 
 	mover.text = K.CreateFontString(mover, 12, text, "")
@@ -157,12 +152,14 @@ function Module:Mover_OnClick(btn)
 end
 
 function Module:Mover_OnEnter()
-	self.bg:SetColorTexture(K.r, K.g, K.b, 0.9)
+	--K.ShowOverlayGlow(self, "AutoCastGlow")
+	self.KKUI_Background:SetVertexColor(K.r, K.g, K.b, 0.8)
 	self.text:SetTextColor(1, 0.8, 0)
 end
 
 function Module:Mover_OnLeave()
-	self.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
+	--K.HideOverlayGlow(self, "AutoCastGlow")
+	self.KKUI_Background:SetVertexColor(38 / 255, 125 / 255, 206 / 255, 80 / 255)
 	self.text:SetTextColor(1, 1, 1)
 end
 

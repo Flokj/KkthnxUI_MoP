@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local next = _G.next
 
 local MouseIsOver = _G.MouseIsOver

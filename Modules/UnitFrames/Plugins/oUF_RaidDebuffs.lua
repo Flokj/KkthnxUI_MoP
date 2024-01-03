@@ -1,7 +1,6 @@
 local K = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local _G = _G
 local addon = {}
 
 K.oUF_RaidDebuffs = addon

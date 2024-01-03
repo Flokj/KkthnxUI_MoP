@@ -5,8 +5,6 @@ if K.Class ~= "SHAMAN" then
 	return
 end
 
-local _G = _G
-
 local GetSpecialization = _G.GetSpecialization
 local IsPlayerSpell = _G.IsPlayerSpell
 local IsUsableSpell = _G.IsUsableSpell

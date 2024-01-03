@@ -1,34 +1,33 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-local math_abs = _G.math.abs
-local math_floor = _G.math.floor
-local mod = _G.mod
-local select = _G.select
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_lower = _G.string.lower
-local string_match = _G.string.match
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
-local type = _G.type
-local unpack = _G.unpack
+local math_abs = math.abs
+local math_floor = math.floor
+local mod = mod
+local select = select
+local string_find = string.find
+local string_format = string.format
+local string_gsub = string.gsub
+local string_lower = string.lower
+local string_match = string.match
+local table_wipe = table.wipe
+local tonumber = tonumber
+local type = type
+local unpack = unpack
 
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
-local CreateVector2D = _G.CreateVector2D
-local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
-local GameTooltip = _G.GameTooltip
-local GetTime = _G.GetTime
-local ITEM_LEVEL = _G.ITEM_LEVEL
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
+local CreateVector2D = CreateVector2D
+local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
+local GameTooltip = GameTooltip
+local GetTime = GetTime
+local ITEM_LEVEL = ITEM_LEVEL
 local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
-local IsInRaid = _G.IsInRaid
-local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitReaction = _G.UnitReaction
+local IsInRaid = IsInRaid
+local UIParent = UIParent
+local UnitClass = UnitClass
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitReaction = UnitReaction
 
 -- General Utility Functions
 do
@@ -54,7 +53,7 @@ do
 
 		-- Format the shortened value.
 		local val = n / div
-		if div > 1 and val < 10 then
+		if div > 1 and val < 25 then
 			return string_format("%.1f%s", val, suffix)
 		else
 			return string_format("%d%s", val, suffix)
@@ -90,19 +89,77 @@ do
 		end
 	end
 
-	function K.AddClassIconToColor(class, textColor, iconSize)
-	local size = iconSize or 16
-	local color = textColor or "|CFFFFFFFF"
+	function K.GetClassIcon(class, iconSize)
+		local size = iconSize or 16
 
-	if class then
-		local classString = ""
-		local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
-		if L then
-			local imageSize = 128
-			classString = "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t" .. color
-			return classString
+		if class then
+			local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
+			if L then
+				local imageSize = 128
+				return "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t"
 			end
 		end
+	end
+
+	function K.GetClassColor(class)
+		if class then
+			if class == "DEATHKNIGHT" then
+				return "|CFFC41F3B"
+			elseif class == "DEMONHUNTER" then
+				return "|CFFA330C9"
+			elseif class == "DRUID" then
+				return "|CFFFF7D0A"
+			elseif class == "EVOKER" then
+				return "|CFF33937F"
+			elseif class == "HUNTER" then
+				return "|CFFA9D271"
+			elseif class == "MAGE" then
+				return "|CFF40C7EB"
+			elseif class == "MONK" then
+				return "|CFF00FF96"
+			elseif class == "PALADIN" then
+				return "|CFFF58CBA"
+			elseif class == "PRIEST" then
+				return "|CFFFFFFFF"
+			elseif class == "ROGUE" then
+				return "|CFFFFF569"
+			elseif class == "SHAMAN" then
+				return "|CFF0070DE"
+			elseif class == "WARLOCK" then
+				return "|CFF8787ED"
+			elseif class == "WARRIOR" then
+				return "|CFFC79C6E"
+			end
+		end
+	end
+
+	function K.GetClassIconAndColor(class, textColor, iconSize)
+		local classIcon = K.GetClassIcon(class, iconSize)
+		local classColor = K.GetClassColor(class)
+
+		return classIcon .. classColor
+	end
+
+	function K.GetTextureStrByAtlas(info, sizeX, sizeY)
+		local file = info and info.file
+		if not file then
+			return
+		end
+
+		local width = info.width
+		local height = info.height
+		local left = info.leftTexCoord
+		local right = info.rightTexCoord
+		local top = info.topTexCoord
+		local bottom = info.bottomTexCoord
+
+		local atlasWidth = width / (right - left)
+		local atlasHeight = height / (bottom - top)
+
+		sizeX = sizeX or 0
+		sizeY = sizeY or 0
+
+		return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, sizeX, sizeY, atlasWidth, atlasHeight, atlasWidth * left, atlasWidth * right, atlasHeight * top, atlasHeight * bottom)
 	end
 end
 
@@ -613,7 +670,7 @@ do
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then return end
 
-		tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
+		tempVec2D.x, tempVec2D.y = UnitPosition("player")
 		if not tempVec2D.x then return end
 
 		local mapRect = mapRects[mapID]

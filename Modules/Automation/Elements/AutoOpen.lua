@@ -3,10 +3,10 @@ local Module = K:GetModule("Automation")
 
 -- Auto opening of items in bag (kAutoOpen by Kellett)
 
-local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
-local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
-local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
-local C_Container_UseContainerItem = C_Container.UseContainerItem
+local GetContainerItemInfo = C_Container.GetContainerItemInfo
+local GetContainerItemLink = C_Container.GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
+local UseContainerItem = C_Container.UseContainerItem
 local OPENING = OPENING
 
 local openFrames = {} -- table to store which frames are open
@@ -55,16 +55,16 @@ local function BagDelayedUpdate()
 		-- loop through all the bags
 		for bag = 0, 4 do
 			-- loop through all the slots in the bag
-			for slot = 0, C_Container_GetContainerNumSlots(bag) do
+			for slot = 0, GetContainerNumSlots(bag) do
 				-- get the container item information
-				local cInfo = C_Container_GetContainerItemInfo(bag, slot)
+				local cInfo = GetContainerItemInfo(bag, slot)
 
 				-- check if the item has loot, is not locked and has an itemID
 				if cInfo and cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID then
 					-- check if the item is in the list of items to automatically open
 					if C.AutoOpenItems[cInfo.itemID] then
-						K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
-						C_Container_UseContainerItem(bag, slot)
+						K.Print(K.SystemColor .. OPENING .. ":|r " .. GetContainerItemLink(bag, slot))
+						UseContainerItem(bag, slot)
 						break
 					end
 				end

@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Loot")
 
-local _G = _G
 local max = _G.math.max
 local pairs = _G.pairs
 local table_insert = _G.table.insert

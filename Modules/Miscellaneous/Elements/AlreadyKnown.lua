@@ -48,7 +48,6 @@ local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
 local CreateFrame = CreateFrame
 
 -- Cache global variables
-local _G = _G
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {

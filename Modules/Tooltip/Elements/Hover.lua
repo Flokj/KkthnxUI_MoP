@@ -1,7 +1,6 @@
 local K, _, L = unpack(KkthnxUI)
 local Module = K:GetModule("Tooltip")
 
-local _G = _G
 local string_match = _G.string.match
 
 local GameTooltip = _G.GameTooltip

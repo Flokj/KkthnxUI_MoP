@@ -2,9 +2,6 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Loot")
 
 -- Sourced: ShestakUI (Wetxius, Shestak)
-
-local _G = _G
-
 local GetItemInfo = _G.GetItemInfo
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink

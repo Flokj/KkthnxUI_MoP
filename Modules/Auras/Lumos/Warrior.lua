@@ -5,8 +5,6 @@ if K.Class ~= "WARRIOR" then
 	return
 end
 
-local _G = _G
-
 local GetSpellTexture = _G.GetSpellTexture
 local IsUsableSpell = _G.IsUsableSpell
 local GetSpecialization = _G.GetSpecialization

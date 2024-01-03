@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local _G = _G
 local format = _G.format
 local min = _G.min
 
@@ -230,13 +229,8 @@ local function ResetSpellTarget(self)
 end
 
 local function UpdateSpellTarget(self, unit)
-	if not C["Nameplate"].CastTarget then
-		return
-	end
-
-	if not self.spellTarget then
-		return
-	end
+	if not C["Nameplate"].CastTarget then return end
+	if not self.spellTarget then return end
 
 	local unitTarget = unit and unit .. "target"
 	if unitTarget and UnitExists(unitTarget) then
@@ -254,22 +248,23 @@ end
 
 local function UpdateCastBarColor(self, unit)
 	local color = K.Colors.castbar.CastingColor
+
+	-- Check if the casting should be colored with class colors and the unit is a player
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		local t = Class and K.Colors.class[Class]
-		if t then
-			color = K.Colors.class[Class]
-		end
+		local _, class = UnitClass(unit)
+		color = class and K.Colors.class[class]
+
+	-- Check if the casting should be colored with reaction colors
 	elseif C["Unitframe"].CastReactionColor then
-		local Reaction = UnitReaction(unit, "player")
-		local t = Reaction and K.Colors.reaction[Reaction]
-		if t then
-			color = K.Colors.reaction[Reaction]
-		end
-	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
+		local reaction = UnitReaction(unit, "player")
+		color = reaction and K.Colors.reaction[reaction]
+
+	-- Check if the casting can only be interrupted by the caster
+	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
 		color = K.Colors.castbar.notInterruptibleColor
 	end
 
+	-- Set the bar color to the color obtained above
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 

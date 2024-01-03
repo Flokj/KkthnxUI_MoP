@@ -1,7 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
 
-local _G = _G
-
 local GetTrackingInfo = C_Minimap.GetTrackingInfo
 local GetNumTrackingTypes = C_Minimap.GetNumTrackingTypes
 

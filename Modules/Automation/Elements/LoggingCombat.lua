@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 if C["Automation"].AutoLoggingCombat ~= true then return end
 
 --	Auto enables combat log text file in raid instances(EasyLogger by Sildor)

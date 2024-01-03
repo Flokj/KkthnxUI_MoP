@@ -1,7 +1,6 @@
 local K = unpack(KkthnxUI)
 local Module = K:NewModule("ButtonRange")
 
-local _G = _G
 local next = _G.next
 local pairs = _G.pairs
 local unpack = _G.unpack

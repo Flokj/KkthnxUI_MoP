@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local _G = _G
 local string_format = _G.string.format
 local string_find = _G.string.find
 

@@ -18,12 +18,12 @@ oUF.colors.castbar = {
 
 -- Aura Coloring
 oUF.colors.debuff = {
-	none = { 204 / 255, 0 / 255, 0 / 255 },
-	Magic = { 51 / 255, 153 / 255, 255 / 255 },
-	Curse = { 204 / 255, 0 / 255, 255 / 255 },
-	Disease = { 153 / 255, 102 / 255, 0 / 255 },
-	Poison = { 0 / 255, 153 / 255, 0 / 255 },
-	[""] = { 0 / 255, 0 / 255, 0 / 255 },
+	none = { 0.8, 0, 0 },
+	Magic = { 0.2, 0.6, 1 },
+	Curse = { 0.8, 0, 1 },
+	Disease = { 0.6, 0.4, 0 },
+	Poison = { 0, 0.6, 0 },
+	[""] = { 1, 1, 1 },
 }
 
 oUF.colors.reaction = {
@@ -38,18 +38,18 @@ oUF.colors.reaction = {
 }
 
 oUF.colors.selection = {
-	[0] = { 255 / 255, 0 / 255, 0 / 255 }, -- Hostile
-	[1] = { 255 / 255, 129 / 255, 0 / 255 }, -- Unfriendly
-	[2] = { 255 / 255, 255 / 255, 0 / 255 }, -- Neutral
-	[3] = { 0 / 255, 255 / 255, 0 / 255 }, -- Friendly
-	[4] = { 0 / 255, 0 / 255, 255 / 255 }, -- Player Simple
-	[5] = { 96 / 255, 96 / 255, 255 / 255 }, -- Player Extended
-	[6] = { 170 / 255, 170 / 255, 255 / 255 }, -- Party
-	[7] = { 170 / 255, 255 / 255, 170 / 255 }, -- Party PvP
-	[8] = { 83 / 255, 201 / 255, 255 / 255 }, -- Friend
-	[9] = { 128 / 255, 128 / 255, 128 / 255 }, -- Dead
-	[12] = { 255 / 255, 255 / 255, 139 / 255 }, -- Self, buggy
-	[13] = { 0 / 255, 153 / 255, 0 / 255 }, -- Battleground Friendly PvP
+	[0] = { 0.87, 0.37, 0.37 }, -- HOSTILE
+	[1] = { 0.87, 0.37, 0.37 }, -- UNFRIENDLY
+	[2] = { 0.85, 0.77, 0.36 }, -- NEUTRAL
+	[3] = { 0.29, 0.67, 0.30 }, -- FRIENDLY
+	[4] = { 0, 0, 1 }, -- PLAYER_SIMPLE
+	[5] = { 0, 0, 1 }, -- PLAYER_EXTENDED
+	[6] = { 0, 0, 1 }, -- PARTY
+	[7] = { 0, 0, 1 }, -- PARTY_PVP
+	[8] = { 0, 0, 1 }, -- FRIEND
+	[9] = { 0.5, 0.5, 0.5 }, -- DEAD
+	[12] = { 1, 1, 0.55 }, -- SELF, buggy
+	[13] = { 0, 0.6, 0 }, -- BATTLEGROUND_FRIENDLY_PVP
 }
 
 oUF.colors.power = {
@@ -74,7 +74,7 @@ oUF.colors.power = {
 	["RUNES"] = { 0.55, 0.57, 0.61 },
 	["RUNIC_POWER"] = { 0, 0.82, 1 },
 	["SOUL_SHARDS"] = { 0.50, 0.32, 0.55 },
-	["UNUSED"] = { 195 / 255, 202 / 255, 217 / 255 },
+	["UNUSED"] = { 0.76, 0.79, 0.85 },
 }
 
 oUF.colors.class = {

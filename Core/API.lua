@@ -11,7 +11,7 @@ local K, C = unpack(KkthnxUI)
 
 local getmetatable, select = getmetatable, select
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
-local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver, UIParent = RegisterStateDriver, UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
@@ -23,7 +23,7 @@ end
 
 -- Frame Hiders
 do
-	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
+	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
 	K.UIFrameHider = CreateFrame("Frame")
 	K.UIFrameHider:Hide()

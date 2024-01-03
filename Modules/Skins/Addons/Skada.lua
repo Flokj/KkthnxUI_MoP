@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 

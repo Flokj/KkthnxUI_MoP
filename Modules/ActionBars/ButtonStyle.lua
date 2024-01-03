@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local next = _G.next
 local string_gsub = _G.string.gsub
 local unpack = _G.unpack

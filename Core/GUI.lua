@@ -1,67 +1,47 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 -- Sourced: Tukui (Tukz & Hydra)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
+-- Lua Standard Library Functions
+local floor = floor
+local match = string.match
+local pairs = pairs
+local sort = table.sort
+local tinsert = table.insert
+local tremove = table.remove
+local type = type
+local unpack = unpack
 
-local floor = _G.floor
-local match = _G.string.match
-local pairs = _G.pairs
-local sort = _G.table.sort
-local tinsert = _G.table.insert
-local tremove = _G.table.remove
-local type = _G.type
-local unpack = _G.unpack
+-- WoW API Functions and Variables
+local CreateFrame = CreateFrame
+local GameTooltip = GameTooltip
+local UIParent = UIParent
+local StaticPopupDialogs = StaticPopupDialogs
+local SlashCmdList = SlashCmdList
+local YES = YES
+local NO = NO
+local INFO = INFO
+local OKAY = OKAY
 
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local UIParent = _G.UIParent
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local YES = _G.YES
-local NO = _G.NO
-local INFO = _G.INFO
-local OKAY = _G.OKAY
-local SlashCmdList = _G.SlashCmdList
-
--- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
-local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
-local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
-local DruidIconColor = K.AddClassIconToColor("DRUID", "|CFFFF7D0A", 16)
-local HunterIconColor = K.AddClassIconToColor("HUNTER", "|CFFA9D271", 16)
-local MageIconColor = K.AddClassIconToColor("MAGE", "|CFF40C7EB", 16)
-local MonkIconColor = K.AddClassIconToColor("MONK", "|CFF00FF96", 16)
-local PaladinIconColor = K.AddClassIconToColor("PALADIN", "|CFFF58CBA", 16)
-local PriestIconColor = K.AddClassIconToColor("PRIEST", "|CFFFFFFFF", 16)
-local RogueIconColor = K.AddClassIconToColor("ROGUE", "|CFFFFF569", 16)
-local ShamanIconColor = K.AddClassIconToColor("SHAMAN", "|CFF0070DE", 16)
-local WarlockIconColor = K.AddClassIconToColor("WARLOCK", "|CFF8787ED", 16)
-local WarriorIconColor = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E", 16)
-
+-- Addon Specific Constants
 local BGColor = { 0.2, 0.2, 0.2 }
 local BrightColor = { 0.35, 0.35, 0.35 }
 local R, G, B = K.r, K.g, K.b
-
 local HeaderText = string.format("%s %s", K.Title .. K.SystemColor, SETTINGS .. "|r")
 
+-- UI Dimensions and Spacing
 local WindowWidth = 620
--- local WindowHeight = 360
-
 local Spacing = 7
 local LabelSpacing = 6
-
 local HeaderWidth = WindowWidth - (Spacing * 2)
 local HeaderHeight = 22
-
 local ButtonListWidth = 130
-
 local MenuButtonWidth = ButtonListWidth - (Spacing * 2)
 local MenuButtonHeight = 20
-
 local WidgetListWidth = (WindowWidth - ButtonListWidth) - (Spacing * 3) + 1
 local WidgetHeight = 20 -- All widgets are the same height
 local WidgetHighlightAlpha = 0.25
-
 local SwitchWidth = 46
 local EditBoxWidth = 134
 local ButtonWidth = 138
@@ -71,72 +51,53 @@ local DropdownWidth = 180
 local ListItemsToShow = 8
 local ColorButtonWidth = 110
 
+-- Miscellaneous
 local ColorPickerFrameCancel = K.Noop
 local LastActiveDropdown
 local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
--- Do not add class color/icon string unless they ask for it or agree apon it :D
 local CreditLines = {
-	-- stylua: ignore
-	K.GreyColor.. "[|r|CFFFFCC66PATREONS|r".. K.GreyColor.. "]",
-	" ",
-	-- -- Tier 1
-	-- stylua: ignore
-	K.GreyColor.. "[|r|CFFFFCC66Tier 1|r".. K.GreyColor.. "]",
-	"",
-	-- stylua: ignore
-	K.GreyColor.. "[|r|CFFFFCC66Tier 2|r".. K.GreyColor.. "]",
-	"",
-	-- stylua: ignore
-	K.GreyColor.. "[|r|CFFFFCC66Tier 3|r".. K.GreyColor.. "]",
-	WarriorIconColor .. "|cff8b0000Shovil|r",
-	"",
-	-- stylua: ignore
-	K.GreyColor.. "[|r|CFFFFCC66Tier 4|r".. K.GreyColor.. "]",
-	"",
-	-- stylua: ignore
-	"",
-	K.GreyColor .. "[|r|CFFFFCC66CREDITS|r" .. K.GreyColor .. "]",
-	"",
-	"Aftermathh",
-	RogueIconColor .. "Alteredcross|r",
-	"Alza",
-	ShamanIconColor .. "Azilroka",
-	"|cff00c0faBenik|r",
-	"Blazeflack",
-	"Caellian",
-	"Caith",
-	HunterIconColor .. "Cassamarra|r",
-	"Darth Predator",
-	"Elv - (|cff1784d1ElvUI|r)",
-	PriestIconColor .. "|cffe31c73Faffi|r|cfffc4796GS|r",
-	DruidIconColor .. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
-	"Haleth",
-	"Haste",
-	"Hungtar",
-	"Hydra - (|cFFFFC44DvUI|r)",
-	"Ishtara",
-	"KkthnxUI Community",
-	"LightSpark",
-	PriestIconColor .. "Magicnachos",
-	DruidIconColor .. "Merathilis",
-	"Nightcracker",
-	"P3lim",
-	PriestIconColor .. "Palooza|r",
-	DemonHunterIconColor .. "Rav99",
-	"Roth",
-	"Shestak - (ShestakUI)",
-	"Simpy",
-	"siweia - (|cff0080ffNDui|r)",
-	DeathKnightIconColor .. "Sophia|r",
-	"Sticklord",
-	"Tekkub",
-	"Tohveli",
-	"Tukz - (|cffff8000Tukui|r)",
-	"Tulla",
-	"Tuller",
-	"oUF Team",
+	{ type = "header", text = "PATREONS", color = "C0C0C0" },
+	{ type = "header", text = "" },
+	{ type = "header", text = "Tier 1" },
+	{ type = "header", text = "Tier 2" },
+	{ type = "header", text = "Tier 3" },
+	{ type = "name", text = "Shovil", class = "WARRIOR" },
+	{ type = "header", text = "Tier 4" },
+	{ type = "header", text = "" },
+	{ type = "header", text = "CREDITS" },
+	{ type = "header", text = "" },
+	{ type = "name", text = "Aftermathh" },
+	{ type = "name", text = "Alteredcross", class = "ROGUE" },
+	{ type = "name", text = "Alza" },
+	{ type = "name", text = "Azilroka", class = "SHAMAN" },
+	{ type = "name", text = "Benik", color = "00c0fa" },
+	{ type = "name", text = "Blazeflack" },
+	{ type = "name", text = "Caellian" },
+	{ type = "name", text = "Caith" },
+	{ type = "name", text = "Cassamarra", class = "HUNTER" },
+	{ type = "name", text = "Darth Predator" },
+	{ type = "name", text = "Elv", addOn = "(|cff1784d1ElvUI|r)" },
+	{ type = "name", text = K.GetClassIcon("PRIEST") .. "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST", color = "e31c73" },
+	{ type = "name", text = K.GetClassIcon("DRUID") .. "Goldpaw", class = "DRUID", addOn = "(|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)" },
+	{ type = "name", text = "Haleth" },
+	{ type = "name", text = "Haste" },
+	{ type = "name", text = "Hungtar" },
+	{ type = "name", text = "Hydra", addOn = "(|cFFFFC44DvUI|r)" },
+	{ type = "name", text = "Ishtara" },
+	{ type = "name", text = "KkthnxUI Community" },
+	{ type = "name", text = "LightSpark" },
+	{ type = "name", text = "Magicnachos", class = "PRIEST" },
+	{ type = "name", text = "Merathilis", class = "DRUID" },
+	{ type = "name", text = "Nightcracker" },
+	{ type = "name", text = "P3lim" },
+	{ type = "name", text = "Palooza", class = "PRIEST" },
+	{ type = "name", text = "Rav99", class = "DEMONHUNTER" },
+	{ type = "name", text = "Roth" },
+	{ type = "name", text = "Shestak", addOn = "ShestakUI" },
+	{ type = "name", text = "Simpy" },
+	{ type = "name", text = "siweia", addOn = "NDui" },
 }
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
@@ -161,59 +122,48 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 }
 
 local SetValue = function(group, option, value)
+	-- Check if C[group][option] is a table, if it is set C[group][option].Value = value, otherwise set C[group][option] = value
 	if type(C[group][option]) == "table" then
-		if C[group][option].Value then
-			C[group][option].Value = value
-		else
-			C[group][option] = value
-		end
+		C[group][option].Value = value
 	else
 		C[group][option] = value
 	end
 
-	local Settings
+	-- Recursively initialize the KkthnxUIDB table
+	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
+	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
+	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
+	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
-	if not KkthnxUIDB.Settings then
-		KkthnxUIDB.Settings = {}
-	end
+	-- Initialize the group table
+	Settings[group] = Settings[group] or {}
 
-	if not KkthnxUIDB.Settings[K.Realm] then
-		KkthnxUIDB.Settings[K.Realm] = {}
-	end
-
-	if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-	end
-
-	Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
-
-	if not Settings[group] then
-		Settings[group] = {}
-	end
-
+	-- Set the value of the option in the group
 	Settings[group][option] = value
 end
 
 local TrimHex = function(s)
-	local Subbed = match(s, "|c%x%x%x%x%x%x%x%x(.-)|r")
-
-	return Subbed or s
+	return string.match(s, "|c%x%x%x%x%x%x%x%x(.-)|r") or s
 end
 
 local AnchorOnEnter = function(self)
-	if self.Tooltip and match(self.Tooltip, "%S") then
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
-		GameTooltip:ClearLines()
-		GameTooltip:SetOwner(self, "ANCHOR_NONE")
-		GameTooltip:SetPoint("TOPLEFT", "KKUI_GUI", "TOPRIGHT", -3, -5)
-		GameTooltip:AddLine(INFO)
-		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163 / 255, 211 / 255, 255 / 255)
-		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
-		GameTooltip:Show()
+	if not self.Tooltip or not string.match(self.Tooltip, "%S") then
+		return
 	end
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
+	local info = "|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n"
+	local info_color = { 163 / 255, 211 / 255, 255 / 255 }
+
+	GameTooltip:ClearLines()
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint("TOPLEFT", "KKUI_GUI", "TOPRIGHT", -3, -5)
+	GameTooltip:AddLine(INFO)
+	GameTooltip:AddLine(info, unpack(info_color))
+	GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
+	GameTooltip:Show()
 end
 
 local AnchorOnLeave = function()
@@ -224,44 +174,50 @@ local AnchorOnLeave = function()
 	GameTooltip:Hide()
 end
 
-local GetOrderedIndex = function(t)
+local function GetOrderedIndex(t)
 	local OrderedIndex = {}
 
 	for key in pairs(t) do
-		tinsert(OrderedIndex, key)
+		OrderedIndex[#OrderedIndex + 1] = key
 	end
 
-	sort(OrderedIndex, function(a, b)
+	table.sort(OrderedIndex, function(a, b)
 		return TrimHex(a) < TrimHex(b)
 	end)
 
 	return OrderedIndex
 end
 
-local OrderedNext = function(t, state)
+local function OrderedNext(t, state)
 	local OrderedIndex = GetOrderedIndex(t)
 	local Key
+	local NextIndex
 
 	if state == nil then
-		Key = OrderedIndex[1]
-
-		return Key, t[Key]
-	end
-
-	for i = 1, #OrderedIndex do
-		if OrderedIndex[i] == state then
-			Key = OrderedIndex[i + 1]
+		NextIndex = 1
+	else
+		for i = 1, #OrderedIndex do
+			if OrderedIndex[i] == state then
+				NextIndex = i + 1
+				break
+			end
 		end
 	end
 
-	if Key then
-		return Key, t[Key]
-	end
+	Key = OrderedIndex[NextIndex]
 
-	-- return
+	if Key then
+		-- print("Key: ", Key)
+		-- print("Value: ", t[Key])
+		return Key, t[Key]
+	else
+		-- print("Iteration ended")
+	end
 end
 
-local PairsByKeys = function(t)
+-- PairsByKeys function to iterate through the elements of a table in a specific order
+local function PairsByKeys(t)
+	-- Returns the iterator function and its initial state, so that it can be used with the for loop
 	return OrderedNext, t, nil
 end
 
@@ -416,6 +372,7 @@ local SwitchOnLeave = function(self)
 end
 
 local CreateSwitch = function(self, group, option, text, tooltip, hook)
+	-- print("group:", group, "option:", option)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
@@ -1263,7 +1220,7 @@ GUI.Widgets.CreateDropdown = CreateDropdown
 
 -- Color selection
 local ColorOnMouseUp = function(self, button)
-	local CPF = _G.ColorPickerFrame
+	local CPF = ColorPickerFrame
 
 	if CPF:IsShown() then
 		return
@@ -1677,10 +1634,11 @@ end
 
 local CreditLineHeight = 20
 
-local SetUpCredits = function(frame)
+local function SetUpCredits(frame)
 	frame.Lines = {}
 
 	for i = 1, #CreditLines do
+		local entry = CreditLines[i]
 		local Line = CreateFrame("Frame", nil, frame)
 		Line:SetSize(frame:GetWidth(), CreditLineHeight)
 
@@ -1689,7 +1647,23 @@ local SetUpCredits = function(frame)
 		Line.Text:SetFontObject(K.UIFont)
 		Line.Text:SetFont(select(1, Line.Text:GetFont()), 16, select(3, Line.Text:GetFont()))
 		Line.Text:SetJustifyH("CENTER")
-		Line.Text:SetText(CreditLines[i])
+
+		if entry.type == "header" then
+			Line.Text:SetText(entry.text)
+			if entry.color then
+				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
+			end
+		elseif entry.type == "name" then
+			if entry.class then
+				Line.Text:SetTextColor(K.ClassColors[entry.class].r, K.ClassColors[entry.class].g, K.ClassColors[entry.class].b)
+			elseif entry.color then
+				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
+			end
+			Line.Text:SetText(entry.text)
+			if entry.addOn then
+				Line.Text:SetText(Line.Text:GetText() .. " - " .. entry.addOn)
+			end
+		end
 
 		if i == 1 then
 			Line:SetPoint("TOP", frame, 0, -1)
@@ -1885,7 +1859,19 @@ GUI.Enable = function(self)
 	Apply:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Apply:SetScript("OnEnter", ButtonOnEnter)
 	Apply:SetScript("OnLeave", ButtonOnLeave)
-	Apply:HookScript("OnMouseUp", _G.ReloadUI)
+	Apply:HookScript("OnMouseUp", function()
+		K.SetupUIScale()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if GUI:IsShown() then
+			GUI:Toggle()
+		end
+
+		StaticPopup_Show("KKUI_CHANGES_RELOAD")
+	end)
 
 	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
 	Apply.Highlight:SetAllPoints()

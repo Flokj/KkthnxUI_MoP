@@ -1,8 +1,7 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Installer")
 
-local _G = _G
-local table_wipe = _G.table.wipe
+local table_wipe = table.wipe
 
 --[[ local function ForceZygorOptions()
 -- 	if not IsAddOnLoaded("Zygor") then
@@ -204,18 +203,18 @@ local function ForceDBMOptions()
 		},
 	}
 
-	if not _G.DBM_AllSavedOptions["Default"] then
-		_G.DBM_AllSavedOptions["Default"] = {}
+	if not _DBM_AllSavedOptions["Default"] then
+		_DBM_AllSavedOptions["Default"] = {}
 	end
-	_G.DBM_AllSavedOptions["Default"]["WarningY"] = -170
-	_G.DBM_AllSavedOptions["Default"]["WarningX"] = 0
-	_G.DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
-	_G.DBM_AllSavedOptions["Default"]["SpecialWarningX"] = 0
-	_G.DBM_AllSavedOptions["Default"]["SpecialWarningY"] = -260
-	_G.DBM_AllSavedOptions["Default"]["SpecialWarningFontStyle"] = "OUTLINE"
-	_G.DBM_AllSavedOptions["Default"]["HideObjectivesFrame"] = false
-	_G.DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
-	_G.DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
+	DBM_AllSavedOptions["Default"]["WarningY"] = -170
+	DBM_AllSavedOptions["Default"]["WarningX"] = 0
+	DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
+	DBM_AllSavedOptions["Default"]["SpecialWarningX"] = 0
+	DBM_AllSavedOptions["Default"]["SpecialWarningY"] = -260
+	DBM_AllSavedOptions["Default"]["SpecialWarningFontStyle"] = "OUTLINE"
+	DBM_AllSavedOptions["Default"]["HideObjectivesFrame"] = false
+	DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
+	DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
 
 	KkthnxUIDB.Variables["DBMRequest"] = false
 end

@@ -12,7 +12,7 @@ local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
 local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
+local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local GetItemInfo = GetItemInfo
 local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame
@@ -123,7 +123,7 @@ end
 local function DeleteHeirlooms()
 	for bag = 0, 4 do
 		for slot = 1, C_Container.GetContainerNumSlots(bag) do
-			local item = { GetContainerItemInfo(bag, slot) }
+			local item = { C_Container.GetContainerItemInfo(bag, slot) }
 			if item[4] == 7 then -- Heirloom items
 				_G.print("Heirloom Item to Delete: " .. item[1] .. " in Bag: " .. bag .. " Slot: " .. slot)
 			end
@@ -191,7 +191,7 @@ local function StoreAndDisableAddons()
 
 	for i = 1, addonCount do
 		local name = C_AddOns.GetAddOnInfo(i)
-		if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+		if name ~= "KkthnxUI" and IsAddOnLoaded(name) then
 			addonsToDisable = addonsToDisable + 1
 		end
 	end
@@ -208,7 +208,7 @@ local function StoreAndDisableAddons()
 		OnAccept = function()
 			for i = 1, addonCount do
 				local name = C_AddOns.GetAddOnInfo(i)
-				if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+				if name ~= "KkthnxUI" and IsAddOnLoaded(name) then
 					KkthnxUIDB.DisabledAddOns[name] = true
 					C_AddOns.DisableAddOn(name)
 				end

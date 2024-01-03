@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local S = K:GetModule("Skins")
 
-local _G = _G
 local pairs, tinsert, select = pairs, tinsert, select
 local GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches = GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches
 local IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool = IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool

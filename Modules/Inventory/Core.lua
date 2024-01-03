@@ -3,7 +3,6 @@ local Module = K:NewModule("Bags")
 
 local cargBags = K.cargBags
 
-local _G = _G
 local ceil = _G.ceil
 local ipairs = _G.ipairs
 local string_match = _G.string.match
@@ -27,7 +26,7 @@ local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
 local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
+local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local PickupContainerItem = C_Container.PickupContainerItem
 local SplitContainerItem = C_Container.SplitContainerItem
 

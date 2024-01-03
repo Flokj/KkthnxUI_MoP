@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Minimap")
 
-local _G = _G
 local math_floor = _G.math.floor
 local mod = _G.mod
 local pairs = _G.pairs
@@ -40,19 +39,30 @@ function Module:CreateStyle()
 	anim.fader:SetDuration(1)
 	anim.fader:SetSmoothing("OUT")
 
-	local function updateMinimapBorderAnimation()
-		if not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() and not IsInInstance() then
-				if not anim:IsPlaying() then
-					minimapMailPulse:Show()
-					anim:Play()
-				end
-			else
-				if anim and anim:IsPlaying() then
-					anim:Stop()
-					minimapMailPulse:Hide()
-				end
+	-- Add comments to describe the purpose of the function
+	local function updateMinimapBorderAnimation(event)
+		local borderColor = nil
+
+		-- If player enters combat, set border color to red
+		if event == "PLAYER_REGEN_DISABLED" then
+			borderColor = { 1, 0, 0, 0.8 }
+		elseif not InCombatLockdown() then
+			if C_Calendar.GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
+				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
+				borderColor = { 1, 1, 0, 0.8 }
 			end
+		end
+
+		-- If a border color was set, show the minimap mail pulse frame and play the animation
+		if borderColor then
+			minimapMailPulse:Show()
+			minimapMailPulse:SetBackdropBorderColor(unpack(borderColor))
+			anim:Play()
+		else
+			minimapMailPulse:Hide()
+			minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
+			-- Stop the animation
+			anim:Stop()
 		end
 	end
 	K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateMinimapBorderAnimation)
@@ -60,7 +70,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MiniMapMailFrame:HookScript("OnHide", function()
+	MinimapMailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end

@@ -5,7 +5,6 @@ if K.Class ~= "DRUID" then
 	return
 end
 
-local _G = _G
 local math_floor = _G.math.floor
 
 local GetSpecialization = _G.GetSpecialization

@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Infobar")
 
-local _G = _G
 local date = _G.date
 local mod = _G.mod
 local pairs = _G.pairs

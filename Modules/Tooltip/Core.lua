@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Tooltip")
 
-local _G = _G
 local pairs = _G.pairs
 local select = _G.select
 local string_find = _G.string.find
@@ -532,7 +531,6 @@ function Module:OnEnable()
 
 	-- Elements
 	local loadTooltipModules = {
-		"CreateTargetedInfo",
 		"CreateTooltipID",
 		"CreateTooltipIcons",
 	}

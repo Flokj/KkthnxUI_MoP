@@ -7,6 +7,7 @@ function Module:OnEnable()
 		"CreateInterruptAnnounce",
 		"CreateItemAnnounce",
 		"CreateKillingBlow",
+		"CreatePullCountdown",
 		"CreateQuestNotifier",
 		"CreateRareAnnounce",
 		"CreateResetInstance",

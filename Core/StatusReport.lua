@@ -1,13 +1,11 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
-local CreateFrame = _G.CreateFrame
-local GetAddOnInfo = _G.GetAddOnInfo
-local GetCVarBool = _G.GetCVarBool
-local GetNumAddOns = _G.GetNumAddOns
-local GetRealZoneText = _G.GetRealZoneText
-local UNKNOWN = _G.UNKNOWN
+local CreateFrame = CreateFrame
+local GetAddOnInfo = GetAddOnInfo
+local GetCVarBool = GetCVarBool
+local GetNumAddOns = GetNumAddOns
+local GetRealZoneText = GetRealZoneText
+local UNKNOWN = UNKNOWN
 
 local CI = LibStub("LibClassicInspector")
 
@@ -34,16 +32,16 @@ local function GetBestScale()
 end
 
 local EnglishClassName = {
-	DEATHKNIGHT = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B") .. "Death Knight",
-	DRUID = K.AddClassIconToColor("DRUID", "|CFFFF7D0A") .. "Druid",
-	HUNTER = K.AddClassIconToColor("HUNTER", "|CFFA9D271") .. "Hunter",
-	MAGE = K.AddClassIconToColor("MAGE", "|CFF40C7EB") .. "Mage",
-	PALADIN = K.AddClassIconToColor("PALADIN", "|CFFF58CBA") .. "Paladin",
-	PRIEST = K.AddClassIconToColor("PRIEST", "|CFFFFFFFF") .. "Priest",
-	ROGUE = K.AddClassIconToColor("ROGUE", "|CFFFFF569") .. "Rogue",
-	SHAMAN = K.AddClassIconToColor("SHAMAN", "|CFF0070DE") .. "Shaman",
-	WARLOCK = K.AddClassIconToColor("WARLOCK", "|CFF8787ED") .. "Warlock",
-	WARRIOR = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E") .. "Warrior",
+	DEATHKNIGHT = K.GetClassIconAndColor("DEATHKNIGHT", "|CFFC41F3B") .. "Death Knight",
+	DRUID = K.GetClassIconAndColor("DRUID", "|CFFFF7D0A") .. "Druid",
+	HUNTER = K.GetClassIconAndColor("HUNTER", "|CFFA9D271") .. "Hunter",
+	MAGE = K.GetClassIconAndColor("MAGE", "|CFF40C7EB") .. "Mage",
+	PALADIN = K.GetClassIconAndColor("PALADIN", "|CFFF58CBA") .. "Paladin",
+	PRIEST = K.GetClassIconAndColor("PRIEST", "|CFFFFFFFF") .. "Priest",
+	ROGUE = K.GetClassIconAndColor("ROGUE", "|CFFFFF569") .. "Rogue",
+	SHAMAN = K.GetClassIconAndColor("SHAMAN", "|CFF0070DE") .. "Shaman",
+	WARLOCK = K.GetClassIconAndColor("WARLOCK", "|CFF8787ED") .. "Warlock",
+	WARRIOR = K.GetClassIconAndColor("WARRIOR", "|CFFC79C6E") .. "Warrior",
 }
 
 local function CreateStatusContent(num, width, parent, anchorTo, content)

@@ -4,7 +4,6 @@ local oUF = K.oUF
 -- Sourced: yClassColors (yleaf)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
 local string_format = _G.string.format
 local table_insert = _G.table.insert
 local string_split = _G.string.split
