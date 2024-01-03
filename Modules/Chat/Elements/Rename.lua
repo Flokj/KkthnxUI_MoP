@@ -1,13 +1,10 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
-
-local BetterDate = _G.BetterDate
-local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
-local CHAT_TIMESTAMP_FORMAT = _G.CHAT_TIMESTAMP_FORMAT
-local time = _G.time
+local string_find, string_gsub = string.find, string.gsub
+local BetterDate = BetterDate
+local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
@@ -16,34 +13,65 @@ local timestampFormat = {
 	[5] = "[%H:%M:%S] ",
 }
 
+local IsDeveloper = K.isDeveloper
+local WhisperColorEnabled = C["Chat"].WhisperColor
+local TimestampFormat = C["Chat"].TimestampFormat.Value
+
+local function GetCurrentTime()
+	local locTime = time()
+	local realmTime = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
+
+	if realmTime then
+		realmTime.day, realmTime.min, realmTime.sec = realmTime.monthDay, realmTime.minute, date("%S")
+		realmTime = time(realmTime)
+	end
+
+	return locTime, realmTime
+end
+
 function Module:SetupChannelNames(text, ...)
-	if string_find(text, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then return end
+	if string_find(text, INTERFACE_ACTION_BLOCKED) and not IsDeveloper then return end
 
 	local r, g, b = ...
-	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
+	if WhisperColorEnabled and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
 		r, g, b = r * 0.7, g * 0.7, b * 0.7
 	end
 
-	-- Timestamp
-	if C["Chat"].TimestampFormat.Value > 1 then
-		local currentTime = time()
-		local oldTimeStamp = CHAT_TIMESTAMP_FORMAT and string_gsub(BetterDate(CHAT_TIMESTAMP_FORMAT, currentTime), "%[([^]]*)%]", "%%[%1%%]")
-		if oldTimeStamp then
-			text = string_gsub(text, oldTimeStamp, "")
+	if TimestampFormat > 1 then
+		local locTime, realmTime = GetCurrentTime()
+		local defaultTimestamp = GetCVar("showTimestamps")
+
+		if defaultTimestamp == "none" then
+			defaultTimestamp = nil
 		end
 
-		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", currentTime)
+		local oldTimeStamp = defaultTimestamp and gsub(BetterDate(defaultTimestamp, locTime), "%[([^]]*)%]", "%%[%1%%]")
+		if oldTimeStamp then
+			text = gsub(text, oldTimeStamp, "")
+		end
+
+		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[TimestampFormat] .. "|r", realmTime or locTime)
 		text = timeStamp .. text
 	end
 
 	if C["Chat"].OldChatNames then
-		return self.oldAddMsg(self, text, r, g, b)
+		return self.oldAddMessage(self, text, r, g, b)
 	else
-		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
+		return self.oldAddMessage(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
 	end
 end
 
-function Module:CreateChatRename()
+local function renameChatFrames()
+	for i = 1, _G.NUM_CHAT_WINDOWS do
+		if i ~= 2 then
+			local chatFrame = _G["ChatFrame" .. i]
+			chatFrame.oldAddMessage = chatFrame.AddMessage
+			chatFrame.AddMessage = Module.SetupChannelNames
+		end
+	end
+end
+
+local function renameChatStrings()
 	for i = 1, _G.NUM_CHAT_WINDOWS do
 		if i ~= 2 then
 			local chatFrame = _G["ChatFrame" .. i]
@@ -138,4 +166,9 @@ function Module:CreateChatRename()
 	_G.CHAT_FLAG_AFK = "[AFK] "
 	_G.CHAT_FLAG_DND = "[DND] "
 	_G.CHAT_FLAG_GM = "[GM] "
+end
+
+function Module:CreateChatRename()
+	renameChatFrames()
+	renameChatStrings()
 end

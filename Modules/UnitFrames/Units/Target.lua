@@ -166,8 +166,6 @@ function Module:CreateTarget()
 		Buffs.showStealableBuffs = true
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
-		Buffs.PreUpdate = Module.bolsterPreUpdate
-		Buffs.PostUpdate = Module.bolsterPostUpdate
 
 		self.Buffs = Buffs
 	end

@@ -2,30 +2,33 @@ local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
-local pairs = _G.pairs
-local string_format = _G.string.format
-local unpack = _G.unpack
 
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local CreateFrame = _G.CreateFrame
-local GetRuneCooldown = _G.GetRuneCooldown
-local IsInInstance = _G.IsInInstance
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
-local PlaySound = _G.PlaySound
-local SOUNDKIT = _G.SOUNDKIT
-local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local UnitExists = _G.UnitExists
-local UnitFactionGroup = _G.UnitFactionGroup
-local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
-local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitIsEnemy = _G.UnitIsEnemy
-local UnitIsFriend = _G.UnitIsFriend
-local UnitIsPVP = _G.UnitIsPVP
-local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitThreatSituation = _G.UnitThreatSituation
-local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
+-- Lua functions
+local pairs = pairs
+local string_format = string.format
+local unpack = unpack
+
+-- WoW API
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local CreateFrame = CreateFrame
+local GetRuneCooldown = GetRuneCooldown
+local IsInInstance = IsInInstance
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local PlaySound = PlaySound
+local SOUNDKIT = SOUNDKIT
+local UIParent = UIParent
+local UnitClass = UnitClass
+local UnitExists = UnitExists
+local UnitFactionGroup = UnitFactionGroup
+local UnitFrame_OnEnter = UnitFrame_OnEnter
+local UnitFrame_OnLeave = UnitFrame_OnLeave
+local UnitIsEnemy = UnitIsEnemy
+local UnitIsFriend = UnitIsFriend
+local UnitIsPVP = UnitIsPVP
+local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
+local UnitIsPlayer = UnitIsPlayer
+local UnitThreatSituation = UnitThreatSituation
+local oUF_RaidDebuffs = oUF_RaidDebuffs
 
 local lastPvPSound = false
 local phaseIconTexCoords = {
@@ -83,57 +86,32 @@ end
 function Module:UpdateThreat(_, unit)
 	if unit ~= self.unit then return end
 
-	local portraitStyle = C["Unitframe"].PortraitStyle.Value
+	-- Get the current threat status of the unit
 	local status = UnitThreatSituation(unit)
+
+	-- Get the portrait style, health frame, and portrait frame
+	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local health = self.Health
 	local portrait = self.Portrait
 
-	local r, g, b
+	-- Determine the border object based on the portrait style
+	local borderObject
 	if portraitStyle == "ThreeDPortraits" then
-		if not portrait.KKUI_Border then
-			return
-		end
+		borderObject = portrait.KKUI_Border
+	elseif portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
+		borderObject = portrait.Border and portrait.Border.KKUI_Border
+	else
+		borderObject = health.KKUI_Border
+	end
 
-		if status and status > 1 then
-			r, g, b = GetThreatStatusColor(status)
-			portrait.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			if C["General"].ColorTextures then
-				portrait.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				portrait.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
+	-- Update the border color based on threat status
+	if status and status > 1 then
+		local r, g, b = unpack(oUF.colors.threat[status])
+		if borderObject then
+			borderObject:SetVertexColor(r, g, b)
 		end
-	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
-		if not portrait.Border.KKUI_Border then
-			return
-		end
-
-		if status and status > 1 then
-			r, g, b = GetThreatStatusColor(status)
-			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			if C["General"].ColorTextures then
-				portrait.Border.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
-		end
-	elseif portraitStyle == "NoPortraits" then
-		if not health.KKUI_Border then
-			return
-		end
-
-		if status and status > 1 then
-			r, g, b = GetThreatStatusColor(status)
-			health.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			if C["General"].ColorTextures then
-				health.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				health.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
-		end
+	else
+		K.SetBorderColor(borderObject)
 	end
 end
 
@@ -158,17 +136,6 @@ function Module:CreateHeader()
 	end)
 end
 
-local function createBarMover(bar, text, value, anchor)
-	local mover = K.Mover(bar, text, value, anchor, bar:GetHeight() + bar:GetWidth() + 6, bar:GetHeight())
-	bar:ClearAllPoints()
-	bar:SetPoint("RIGHT", mover)
-	bar.mover = mover
-end
-
-local function updateSpellTarget(self, _, unit)
-	Module.PostCastUpdate(self.Castbar, unit)
-end
-
 function Module:ToggleCastBarLatency(frame)
 	frame = frame or _G.oUF_Player
 	if not frame then return end
@@ -185,11 +152,19 @@ function Module:ToggleCastBarLatency(frame)
 	end
 end
 
+local function createBarMover(bar, text, value, anchor)
+	local mover = K.Mover(bar, text, value, anchor, bar:GetHeight() + bar:GetWidth() + 6, bar:GetHeight())
+	bar:ClearAllPoints()
+	bar:SetPoint("RIGHT", mover)
+	bar.mover = mover
+end
+
+local function updateSpellTarget(self, _, unit)
+	Module.PostCastUpdate(self.Castbar, unit)
+end
+
 function Module:CreateCastBar(self)
 	local mystyle = self.mystyle
-	-- if mystyle ~= "nameplate" and not C["Unitframe"].Castbars then
-	-- 	return
-	-- end
 
 	local Castbar = CreateFrame("StatusBar", "oUF_Castbar" .. mystyle, self)
 	Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -338,6 +313,7 @@ function Module.PostCreateAura(element, button)
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
+	
 	button.count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
@@ -384,19 +360,13 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
-			if C["General"].ColorTextures then
-				button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
-			end
+			button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 		end
 	else
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-		elseif C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
-			button.KKUI_Border:SetVertexColor(1, 1, 1)
+			K.SetBorderColor(button.KKUI_Border)
 		end
 	end
 
@@ -410,22 +380,6 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 	end
 end
 
-function Module.bolsterPreUpdate(element)
-	element.bolster = 0
-	element.bolsterIndex = nil
-end
-
-function Module.bolsterPostUpdate(element)
-	if not element.bolsterIndex then return end
-
-	for _, button in pairs(element) do
-		if button == element.bolsterIndex then
-			button.count:SetText(element.bolster)
-			return
-		end
-	end
-end
-
 local isCasterPlayer = {
 	["player"] = true,
 	["pet"] = true,
@@ -434,18 +388,17 @@ local isCasterPlayer = {
 
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
-	if name and spellID == 209859 then
-		element.bolster = element.bolster + 1
-		if not element.bolsterIndex then
-			element.bolsterIndex = button
+	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
+
+	if style == "nameplate" or style == "boss" or style == "arena" then
+		if name and spellID == 209859 then -- pass all bolster
 			return true
 		end
-	elseif style == "nameplate" or style == "boss" or style == "arena" then
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
+		elseif isStealable and not UnitIsPlayer(unit) then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
@@ -454,7 +407,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
 		end
 	else
-		return (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name)
+		return (showDebuffType and button.isPlayer) or (not showDebuffType and name)
 	end
 end
 
@@ -491,6 +444,12 @@ function Module.PostUpdateRunes(element, runemap)
 				rune:SetScript("OnUpdate", OnUpdateRunes)
 			end
 		end
+	end
+end
+
+local function SetStatusBarColor(element, r, g, b)
+	for i = 1, #element do
+		element[i]:SetStatusBarColor(r, g, b)
 	end
 end
 
@@ -833,6 +792,10 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Raid")
 
 		-- Hide Default RaidFrame
+		if CompactPartyFrame then
+			CompactPartyFrame:UnregisterAllEvents()
+		end
+
 		if _G.CompactRaidFrameManager_SetSetting then
 			_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")

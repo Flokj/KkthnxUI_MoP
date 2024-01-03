@@ -1,77 +1,28 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Tooltip")
 
-local pairs = _G.pairs
-local select = _G.select
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_len = _G.string.len
-local string_upper = _G.string.upper
-
-local AFK = _G.AFK
-local BOSS = _G.BOSS
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
-local DAMAGE = _G.DAMAGE
-local DEAD = _G.DEAD
-local DND = _G.DND
-local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
-local FACTION_HORDE = _G.FACTION_HORDE
-local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
-local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
-local GetGuildInfo = _G.GetGuildInfo
-local GetItemInfo = _G.GetItemInfo
-local GetMouseFocus = _G.GetMouseFocus
-local GetRaidTargetIndex = _G.GetRaidTargetIndex
-local HEALER = _G.HEALER
-local ICON_LIST = _G.ICON_LIST
-local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
-local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsInGroup = _G.IsInGroup
-local IsInGuild = _G.IsInGuild
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LEVEL = _G.LEVEL
-local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
-local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
-local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
-local PVP = _G.PVP
-local TANK = _G.TANK
-local TARGET = _G.TARGET
-local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
-local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local UnitClassification = _G.UnitClassification
-local UnitCreatureType = _G.UnitCreatureType
-local UnitExists = _G.UnitExists
-local UnitFactionGroup = _G.UnitFactionGroup
-local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
-local UnitIsAFK = _G.UnitIsAFK
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsDND = _G.UnitIsDND
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsPVP = _G.UnitIsPVP
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
-local UnitLevel = _G.UnitLevel
-local UnitName = _G.UnitName
-local UnitPVPName = _G.UnitPVPName
-local UnitRace = _G.UnitRace
-local UnitRealmRelationship = _G.UnitRealmRelationship
-local YOU = _G.YOU
-local hooksecurefunc = _G.hooksecurefunc
+local strfind, format, strupper, strlen, pairs, unpack = string.find, string.format, string.upper, string.len, pairs, unpack
+local ICON_LIST = ICON_LIST
+local HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR
+local PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE = PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE
+local YOU, TARGET, AFK, DND, DEAD, PLAYER_OFFLINE = YOU, TARGET, AFK, DND, DEAD, PLAYER_OFFLINE
+local FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL = FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
+local LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL = LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL
+local UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID = UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID
+local UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction = UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction
+local InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo = InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo
+local GetCreatureDifficultyColor, UnitCreatureType, UnitClassification = GetCreatureDifficultyColor, UnitCreatureType, UnitClassification
+local UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel = UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel
+local GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild = GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild
+local GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet = GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet
 
 local CI = LibStub("LibClassicInspector")
 
 local classification = {
-	worldboss = string_format("|cffAF5050 %s|r", BOSS),
-	rareelite = string_format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
+	worldboss = format("|cffAF5050 %s|r", BOSS),
+	rareelite = format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
 	elite = "|cffAF5050+|r",
-	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
+	rare = format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
 
@@ -116,7 +67,7 @@ function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
-		if linetext and string_find(linetext, LEVEL) then
+		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
 		end
 	end
@@ -124,7 +75,7 @@ end
 
 function Module:GetTarget(unit)
 	if UnitIsUnit(unit, "player") then
-		return string_format("|cffff0000%s|r", ">" .. string_upper(YOU) .. "<")
+		return format("|cffff0000%s|r", ">" .. strupper(YOU) .. "<")
 	else
 		return K.RGBToHex(K.UnitColor(unit)) .. UnitName(unit) .. "|r"
 	end
@@ -188,7 +139,7 @@ function Module:OnTooltipSetUnit()
 
 		local status = (UnitIsAFK(unit) and AFK) or (UnitIsDND(unit) and DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
 		if status then
-			status = string_format(" |cffffcc00[%s]|r", status)
+			status = format(" |cffffcc00[%s]|r", status)
 		end
 		GameTooltipTextLeft1:SetFormattedText("%s", name .. (status or ""))
 
@@ -338,7 +289,7 @@ function Module:OnTooltipSetUnit()
 		if tarRicon and tarRicon > 8 then
 			tarRicon = nil
 		end
-		local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon] .. "10|t") or "", Module:GetTarget(unit .. "target"))
+		local tar = format("%s%s", (tarRicon and ICON_LIST[tarRicon] .. "10|t") or "", Module:GetTarget(unit .. "target"))
 		self:AddLine(TARGET .. ": " .. tar)
 	end
 
@@ -348,7 +299,7 @@ function Module:OnTooltipSetUnit()
 		if npcID then
 			local reaction = UnitReaction(unit, "player")
 			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
-			self:AddDoubleLine(string_format(npcIDstring, standingText or "", npcID))
+			self:AddDoubleLine(format(npcIDstring, standingText or "", npcID))
 		end
 	end
 
@@ -614,7 +565,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 	IMECandidatesFrame.selection:SetVertexColor(r, g, b)
 
 	-- Others
-	C_Timer_After(6, function()
+	C_Timer.After(6, function()
 		-- Lib minimap icon
 		if LibDBIconTooltip then
 			Module.ReskinTooltip(LibDBIconTooltip)
