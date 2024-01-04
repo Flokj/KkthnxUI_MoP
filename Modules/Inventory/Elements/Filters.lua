@@ -47,7 +47,7 @@ local function isItemJunk(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterJunk then return end
 
-	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice
+	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice
 end
 
 local function isItemEquipSet(item)

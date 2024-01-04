@@ -175,7 +175,7 @@ C["Auras"] = {
 	["Reminder"] = false,
 	["ReverseBuffs"] = false,
 	["ReverseDebuffs"] = false,
-	["TotemSize"] = 32,
+	["TotemSize"] = 24,
 	["Totems"] = true,
 	["VerticalTotems"] = false,
 }

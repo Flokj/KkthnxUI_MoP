@@ -57,8 +57,9 @@ function Module:OnEnable()
 		"CreatePetHappiness",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
-		"UpdateMaxCameraZoom",
 	}
+	
+	C_Timer_After(0, Module.UpdateMaxCameraZoom)
 
 	for _, funcName in ipairs(loadMiscModules) do
 		local func = self[funcName]

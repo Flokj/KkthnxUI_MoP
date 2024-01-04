@@ -545,7 +545,7 @@ local Auras = function(self)
 	Window:CreateSection(TUTORIAL_TITLE47)
 	Window:CreateSwitch("Auras", "Totems", enableTextColor .. L["Enable TotemBar"])
 	Window:CreateSwitch("Auras", "VerticalTotems", L["Vertical TotemBar"], nil, UpdateTotemBar)
-	Window:CreateSlider("Auras", "TotemSize", L["Totems IconSize"], 24, 60, 1, nil, UpdateTotemBar)
+	Window:CreateSlider("Auras", "TotemSize", L["Totems IconSize"], 20, 60, 1, nil, UpdateTotemBar)
 end
 
 local AuraWatch = function(self)
