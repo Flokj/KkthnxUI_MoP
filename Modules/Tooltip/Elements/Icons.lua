@@ -1,19 +1,14 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
-local gsub = _G.gsub
-
-local CreateFrame = _G.CreateFrame
-local GetItemIcon = _G.GetItemIcon
-local GetSpellTexture = _G.GetSpellTexture
-local hooksecurefunc = _G.hooksecurefunc
-
+local gsub = gsub
+local GetItemIcon, GetSpellTexture = GetItemIcon, GetSpellTexture
 local newString = "0:0:64:64:5:59:5:59"
 
 function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName() .. "TextLeft1"]
 	local titleText = title and title:GetText()
-	if titleText then
+	if titleText and not strfind(titleText, ":20:20:") then
 		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, titleText)
 	end
 
@@ -22,7 +17,6 @@ function Module:SetupTooltipIcon(icon)
 		if not line then
 			break
 		end
-
 		local text = line:GetText()
 		if text and text ~= " " then
 			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T%1:14:14:" .. newString .. "|t")
@@ -65,18 +59,6 @@ function Module:HookTooltipMethod()
 	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
 end
 
-local function updateBackdropColor(self, r, g, b)
-	if self:GetParent().bg.KKUI_Border then
-		self:GetParent().bg.KKUI_Border:SetVertexColor(r, g, b)
-	end
-end
-
-local function resetBackdropColor(self)
-	if self:GetParent().bg.KKUI_Border then
-		self:GetParent().bg.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
-end
-
 function Module:ReskinRewardIcon()
 	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
@@ -91,26 +73,31 @@ function Module:ReskinRewardIcon()
 	local iconBorder = self.IconBorder
 	iconBorder:SetAlpha(0)
 
-	hooksecurefunc(iconBorder, "SetVertexColor", updateBackdropColor)
-	hooksecurefunc(iconBorder, "Hide", resetBackdropColor)
+	local greyRGB = K.QualityColors[0].r
+	hooksecurefunc(self.IconBorder, "SetVertexColor", function(_, r, g, b)
+		if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
+			r, g, b = 1, 1, 1
+		end
+		self.bg.KKUI_Border:SetVertexColor(r, g, b)
+	end)
+
+	hooksecurefunc(self.IconBorder, "Hide", function()
+		K.SetBorderColor(self.bg.KKUI_Border)
+	end)
 end
 
-function Module:ReskinTooltipIcons()
+function Module:CreateTooltipIcons()
+	if not C["Tooltip"].Icons then return end
+
+	-- Add Icons
 	Module.HookTooltipMethod(GameTooltip)
 	Module.HookTooltipMethod(ItemRefTooltip)
-	Module.HookTooltipMethod(ShoppingTooltip1)
-	Module.HookTooltipMethod(ShoppingTooltip2)
 
+	-- Cut Icons
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
 		Module.SetupTooltipIcon(self)
 	end)
 
 	-- Tooltip rewards icon
 	Module.ReskinRewardIcon(EmbeddedItemTooltip.ItemTooltip)
-end
-
-function Module:CreateTooltipIcons()
-	if not C["Tooltip"].Icons then return end
-
-	self:ReskinTooltipIcons()
 end

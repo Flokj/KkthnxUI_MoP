@@ -890,8 +890,8 @@ local Tooltip = function(self)
 
 	-- Advanced section
 	Window:CreateSection("Advanced")
-	Window:CreateSwitch("Tooltip", "Cursor", L["Follow Cursor"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
+	Window:CreateDropdown("Tooltip", "CursorMode", L["Follow Cursor"])
 end
 
 local function updateUFTextScale() -- WIP

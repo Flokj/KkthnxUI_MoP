@@ -537,6 +537,49 @@ do
 	end
 end
 
+-- Overlay Glow Functions
+do
+	function K.CreateGlowFrame(self, size, splus)
+		splus = splus or 8 -- set the additional size to 8 if not specified
+		local glowFrame = CreateFrame("Frame", nil, self)
+		glowFrame:SetPoint("CENTER")
+		glowFrame:SetSize(size + splus, size + splus)
+
+		return glowFrame
+	end
+
+	function K.ShowOverlayGlow(self, template, ...)
+		local args = { ... }
+		template = template or "ButtonGlow" -- set the default template to ButtonGlow
+
+		if not K.LibCustomGlow then	return end
+
+		if template == "ButtonGlow" then
+			K.LibCustomGlow.ButtonGlow_Start(self, unpack(args))
+		elseif template == "AutoCastGlow" then
+			K.LibCustomGlow.AutoCastGlow_Start(self, unpack(args))
+		elseif template == "PixelGlow" then
+			K.LibCustomGlow.PixelGlow_Start(self, unpack(args))
+		end
+	end
+
+	function K.HideOverlayGlow(self, template)
+		template = template or "ButtonGlow" -- set the default template to ButtonGlow
+
+		if not K.LibCustomGlow then
+			return
+		end
+
+		if template == "ButtonGlow" then
+			K.LibCustomGlow.ButtonGlow_Stop(self)
+		elseif template == "AutoCastGlow" then
+			K.LibCustomGlow.AutoCastGlow_Stop(self)
+		elseif template == "PixelGlow" then
+			K.LibCustomGlow.PixelGlow_Stop(self)
+		end
+	end
+end
+
 -- Movable Frame and String Shortening Functions
 do
 	function K.CreateMoverFrame(self, parent, saved)

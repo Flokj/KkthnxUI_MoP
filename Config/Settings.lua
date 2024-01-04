@@ -487,7 +487,6 @@ C["Tooltip"] = {
 	["ClassColor"] = true,
 	["CombatHide"] = false,
 	["ShowTalents"] = true,
-	["Cursor"] = false,
 	["Enable"] = true,
 	["FactionIcon"] = true,
 	["HideRank"] = true,
@@ -496,6 +495,24 @@ C["Tooltip"] = {
 	["Icons"] = true,
 	["ShowIDs"] = true,
 	["TargetBy"] = true,
+	["CursorMode"] = {
+		["Options"] = {
+			["DISABLE"] = 1,
+			["LEFT"] = 2,
+			["TOP"] = 3,
+			["RIGHT"] = 4,
+		},
+		["Value"] = 1,
+	},	
+	["TipAnchor"] = {
+		["Options"] = {
+			["TOPLEFT"] = 1,
+			["TOPRIGHT"] = 2,
+			["BOTTOMLEFT"] = 3,
+			["BOTTOMRIGHT"] = 4,
+		},
+		Value = 4,
+	},
 }
 
 -- Unitframe

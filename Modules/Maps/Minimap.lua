@@ -157,22 +157,17 @@ function Module:ReskinRegions()
 	hl:SetAllPoints(MiniMapTrackingIcon)
 
 	-- Mail icon
-	if MiniMapMailFrame then
-		MiniMapMailFrame:ClearAllPoints()
-		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, 12)
-		else
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, -2)
-		end
-		MiniMapMailIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\mail.blp")
-
-		--MiniMapMailFrame:SetScale(1.7)
-		MiniMapMailIcon:SetSize(28, 28)
-		--MiniMapMailIcon:SetRotation(rad(-27.5))
-		MiniMapMailFrame:SetHitRectInsets(11, 2, 13, 7)
-		MiniMapMailIcon:SetVertexColor(1, 1, 1)
-		MiniMapMailIcon:SetAlpha(0.9)
+	MiniMapMailFrame:ClearAllPoints()
+	if C["DataText"].Time then
+		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, 12)
+	else
+		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, -2)
 	end
+	MiniMapMailIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\mail.blp")
+	MiniMapMailIcon:SetSize(28, 28)
+	MiniMapMailFrame:SetHitRectInsets(11, 2, 13, 7)
+	MiniMapMailIcon:SetVertexColor(1, 1, 1)
+	MiniMapMailIcon:SetAlpha(0.9)
 
 	-- Invites Icon
 	GameTimeCalendarInvitesTexture:ClearAllPoints()

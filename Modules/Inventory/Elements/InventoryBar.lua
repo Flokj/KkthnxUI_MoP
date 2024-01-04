@@ -43,7 +43,6 @@ function Module:SizeAndPositionBagBar()
 		return
 	end
 
-	RegisterStateDriver(bagBar, "visibility", "[petbattle] hide; show")
 	bagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0 or 1)
 
 	for i, button in ipairs(buttonList) do

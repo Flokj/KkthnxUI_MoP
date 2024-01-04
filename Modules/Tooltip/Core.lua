@@ -326,8 +326,8 @@ end
 
 function Module:ReskinStatusBar()
 	self.StatusBar:ClearAllPoints()
-	self.StatusBar:SetPoint("BOTTOMLEFT", self.tooltipStyle, "TOPLEFT", 0, 6)
-	self.StatusBar:SetPoint("BOTTOMRIGHT", self.tooltipStyle, "TOPRIGHT", -0, 6)
+	self.StatusBar:SetPoint("BOTTOMLEFT", self.bg, "TOPLEFT", 0, 6)
+	self.StatusBar:SetPoint("BOTTOMRIGHT", self.bg, "TOPRIGHT", -0, 6)
 	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	self.StatusBar:SetHeight(11)
 	self.StatusBar:CreateBorder()
@@ -362,21 +362,32 @@ function Module:GameTooltip_ShowProgressBar()
 end
 
 -- Anchor and mover
+local cursorIndex = {
+	[1] = "ANCHOR_NONE",
+	[2] = "ANCHOR_CURSOR_LEFT",
+	[3] = "ANCHOR_CURSOR",
+	[4] = "ANCHOR_CURSOR_RIGHT",
+}
+local anchorIndex = {
+	[1] = "TOPLEFT",
+	[2] = "TOPRIGHT",
+	[3] = "BOTTOMLEFT",
+	[4] = "BOTTOMRIGHT",
+}
+
 local mover
 function Module:GameTooltip_SetDefaultAnchor(parent)
 	if self:IsForbidden() then return end
 	if not parent then return end
 
-	if C["Tooltip"].Cursor then
-		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
-	else
+	local mode = C["Tooltip"].CursorMode.Value
+	self:SetOwner(parent, cursorIndex[mode])
+	if mode == 1 then
 		if not mover then
-			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36 }, 240, 120)
+			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 38 }, 100, 100)
 		end
-
-		self:SetOwner(parent, "ANCHOR_NONE")
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMRIGHT", mover)
+		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor.Value], mover)
 	end
 end
 
@@ -406,44 +417,47 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 	end
 end
 
+-- Tooltip skin
 function Module:ReskinTooltip()
 	if not self then
-		if K.isDeveloper then K.Print("Unknown tooltip spotted!") end
+		if K.isDeveloper then
+			print("Unknown tooltip spotted.")
+		end
 		return
 	end
+	if self:IsForbidden() then
+		return
+	end
+	self:SetScale(1)
 
-	if self:IsForbidden() then return end
-
-	if not self.isTipStyled then
+	if not self.tipStyled then
 		self:HideBackdrop()
 		self:DisableDrawLayer("BACKGROUND")
-
-		self.tooltipStyle = CreateFrame("Frame", nil, self)
-		self.tooltipStyle:SetPoint("TOPLEFT", self, 2, -2)
-		self.tooltipStyle:SetPoint("BOTTOMRIGHT", self, -2, 2)
-		self.tooltipStyle:SetFrameLevel(self:GetFrameLevel())
-		self.tooltipStyle:CreateBorder()
+		self.bg = CreateFrame("Frame", nil, self)
+		self.bg:SetPoint("TOPLEFT", self, 2, -2)
+		self.bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		self.bg:SetFrameLevel(self:GetFrameLevel())
+		self.bg:CreateBorder()
 
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)
 		end
 
-		self.isTipStyled = true
+		self.tipStyled = true
 	end
 
-	if C["General"].ColorTextures then
-		self.tooltipStyle.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		self.tooltipStyle.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
+	K.SetBorderColor(self.bg.KKUI_Border)
 
-	if C["Tooltip"].ClassColor and self.GetItem then
-		local _, item = self:GetItem()
-		if item then
-			local quality = select(3, GetItemInfo(item))
+	if not C["Tooltip"].ClassColor then return end
+
+	local data = self.GetTooltipData and self:GetTooltipData()
+	if data then
+		local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
+		if link then
+			local quality = select(3, GetItemInfo(link))
 			local color = K.QualityColors[quality or 1]
 			if color then
-				self.tooltipStyle.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 			end
 		end
 	end
