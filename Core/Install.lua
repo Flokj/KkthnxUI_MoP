@@ -432,46 +432,34 @@ local function HelloWorld()
 
 	local goTutor = CreateFrame("Button", nil, welcome)
 	goTutor:SetPoint("BOTTOM", 0, 10)
-	goTutor:SetSize(110, 20)
+	goTutor:SetSize(110, 22)
 	goTutor:SkinButton()
+
+	if welcome:IsShown() then
+		K.ShowOverlayGlow(goTutor, "AutoCastGlow")
+	end
+
+	-- XMAS STUFF!
+	local red = "|cFFFF0000" -- Red color start
+	local green = "|cFF00FF00" -- Green color start
+	local reset = "|r" -- Reset color
+
+	local text = red .. "I" .. reset .. green .. "N" .. reset .. red .. "S" .. reset .. green .. "T" .. reset .. red .. "A" .. reset .. green .. "L" .. reset .. red .. "L" .. reset .. green .. "!" .. reset
 
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.UIFont)
-	goTutor.text:SetPoint("CENTER")
-	goTutor.text:SetText("Install")
-
-	goTutor.glowFrame = CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
-	goTutor.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
-	goTutor.glowFrame:SetPoint("TOPLEFT", goTutor, -5, 5)
-	goTutor.glowFrame:SetPoint("BOTTOMRIGHT", goTutor, 5, -5)
-	goTutor.glowFrame:SetBackdropBorderColor(K.r, K.g, K.b)
-	goTutor.glowFrame:Hide()
-
-	goTutor.glowFrame.Animation = goTutor.glowFrame:CreateAnimationGroup()
-	goTutor.glowFrame.Animation:SetLooping("BOUNCE")
-	goTutor.glowFrame.Animation.Fader = goTutor.glowFrame.Animation:CreateAnimation("Alpha")
-	goTutor.glowFrame.Animation.Fader:SetFromAlpha(0.8)
-	goTutor.glowFrame.Animation.Fader:SetToAlpha(0.2)
-	goTutor.glowFrame.Animation.Fader:SetDuration(1)
-	goTutor.glowFrame.Animation.Fader:SetSmoothing("OUT")
-
-	if not goTutor.glowFrame.Animation:IsPlaying() then
-		goTutor.glowFrame.Animation:Play()
-		goTutor.glowFrame:Show()
-	end
+	goTutor.text:SetPoint("CENTER", 0, -1)
+	goTutor.text:SetText(text)
 
 	goTutor:SetScript("OnClick", function()
-		if goTutor.glowFrame.Animation and goTutor.glowFrame.Animation:IsPlaying() then
-			goTutor.glowFrame.Animation:Stop()
-			goTutor.glowFrame:Hide()
-		end
+		K.HideOverlayGlow(goTutor, "AutoCastGlow")
 		welcome:Hide()
 		YesTutor()
 	end)
 
 	local goTwitch = CreateFrame("Button", nil, welcome)
-	goTwitch:SetPoint("BOTTOM", 0, 50)
-	goTwitch:SetSize(110, 20)
+	goTwitch:SetPoint("BOTTOMLEFT", 21, 50)
+	goTwitch:SetSize(90, 20)
 	goTwitch:SkinButton()
 
 	goTwitch.text = goTwitch:CreateFontString(nil, "OVERLAY")
@@ -483,9 +471,23 @@ local function HelloWorld()
 		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.twitch.tv/kkthnxtv")
 	end)
 
+	local goDiscord = CreateFrame("Button", nil, welcome)
+	goDiscord:SetPoint("LEFT", goTwitch, "RIGHT", 6, 0)
+	goDiscord:SetSize(90, 22)
+	goDiscord:SkinButton()
+
+	goDiscord.text = goDiscord:CreateFontString(nil, "OVERLAY")
+	goDiscord.text:SetFontObject(K.UIFont)
+	goDiscord.text:SetPoint("CENTER")
+	goDiscord.text:SetText("|CFF7289daDiscord|r")
+
+	goDiscord:SetScript("OnClick", function()
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://discord.gg/Rc9wcK9cAB")
+	end)
+
 	local goPaypal = CreateFrame("Button", nil, welcome)
-	goPaypal:SetPoint("BOTTOM", -120, 50)
-	goPaypal:SetSize(110, 20)
+	goPaypal:SetPoint("LEFT", goDiscord, "RIGHT", 6, 0)
+	goPaypal:SetSize(90, 22)
 	goPaypal:SkinButton()
 
 	goPaypal.text = goPaypal:CreateFontString(nil, "OVERLAY")
@@ -494,12 +496,12 @@ local function HelloWorld()
 	goPaypal.text:SetText("|CFF0079C1Paypal|r")
 
 	goPaypal:SetScript("OnClick", function()
-		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.paypal.com/paypalme/kkthnx")
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.paypal.com/paypalme/KkthnxTV")
 	end)
 
 	local goPatreon = CreateFrame("Button", nil, welcome)
-	goPatreon:SetPoint("BOTTOM", 120, 50)
-	goPatreon:SetSize(110, 20)
+	goPatreon:SetPoint("LEFT", goPaypal, "RIGHT", 6, 0)
+	goPatreon:SetSize(90, 22)
 	goPatreon:SkinButton()
 
 	goPatreon.text = goPatreon:CreateFontString(nil, "OVERLAY")

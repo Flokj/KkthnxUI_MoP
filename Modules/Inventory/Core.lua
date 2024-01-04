@@ -1058,28 +1058,17 @@ function Module:OnEnable()
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
-			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 18 })
-			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
-			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
-			self.glowFrame:Hide()
-
-			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
-			self.glowFrame.Animation:SetLooping("BOUNCE")
-			self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
-			self.glowFrame.Animation.Fader:SetFromAlpha(1)
-			self.glowFrame.Animation.Fader:SetToAlpha(0.2)
-			self.glowFrame.Animation.Fader:SetDuration(0.9)
-			self.glowFrame.Animation.Fader:SetSmoothing("OUT")
+			self.glowFrame = CreateFrame("Frame", nil, self)
+			self.glowFrame:SetPoint("CENTER")
+			self.glowFrame:SetSize(iconSize + 8, iconSize + 8)
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
 	end
 
 	function MyButton:ItemOnEnter()
-		if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
-			self.glowFrame.Animation:Stop()
-			self.glowFrame:Hide()
+		if self.glowFrame then
+			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
 			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
 		end
 	end
@@ -1155,22 +1144,14 @@ function Module:OnEnable()
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.quality]
 				if item.questID or item.isQuestItem then
-					self.glowFrame:SetBackdropBorderColor(1, 0.82, 0.2)
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
 				elseif color and item.quality and item.quality > -1 then
-					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b)
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { color.r, color.g, color.b, 1 })
 				else
-					self.glowFrame:SetBackdropBorderColor(1, 1, 1)
-				end
-
-				if not self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Play()
-					self.glowFrame:Show()
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
 				end
 			else
-				if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Stop()
-					self.glowFrame:Hide()
-				end
+				K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
 			end
 		end
 
@@ -1353,8 +1334,7 @@ function Module:OnEnable()
 	local function updateBagSize(button)
 		button:SetSize(iconSize, iconSize)
 		if button.glowFrame then
-			button.glowFrame:SetPoint("TOPLEFT", button, -5, 5)
-			button.glowFrame:SetPoint("BOTTOMRIGHT", button, 5, -5)
+			button.glowFrame:SetSize(iconSize + 8, iconSize + 8)
 		end
 	end
 

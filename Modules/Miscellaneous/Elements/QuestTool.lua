@@ -63,10 +63,10 @@ local Module = K:GetModule("Miscellaneous")
 -- 			local _, spellID = GetActionInfo(button.action)
 -- 			local name = spellID and GetSpellInfo(spellID)
 -- 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
--- 				K.ShowOverlayGlow(button)
--- 			else
--- 				K.HideOverlayGlow(button)
--- 			end
+--				K.LibCustomGlow.ButtonGlow_Start(button)
+--			else
+--				K.LibCustomGlow.ButtonGlow_Stop(button)
+--			end
 -- 		end
 -- 		Module.isGlowing = true
 -- 	else

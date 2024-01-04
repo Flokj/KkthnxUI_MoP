@@ -306,12 +306,11 @@ function Module:PostCastStart(unit)
 	UpdateCastBarColor(self, unit)
 
 	if self.__owner.mystyle == "nameplate" then
-		-- Major spells
-		-- if C.db["Nameplate"]["CastbarGlow"] and
-		if Module.MajorSpells[self.spellID] then
-			K.ShowButtonGlow(self.glowFrame)
+		
+		if C.MajorSpells[self.spellID] then
+			K.ShowOverlayGlow(self.glowFrame)
 		else
-			K.HideButtonGlow(self.glowFrame)
+			K.HideOverlayGlow(self.glowFrame)
 		end
 
 		-- Spell target

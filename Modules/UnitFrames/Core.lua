@@ -248,7 +248,7 @@ function Module:CreateCastBar(self)
 
 		Castbar.glowFrame = CreateFrame("Frame", nil, Castbar)
 		Castbar.glowFrame:SetPoint("CENTER", Castbar.Icon)
-		Castbar.glowFrame:SetSize(iconSize, iconSize)
+		Castbar.glowFrame:SetSize(iconSize, iconSize)		
 
 		local spellTarget = K.CreateFontString(Castbar, C["Nameplate"].NameTextSize + 2)
 		spellTarget:ClearAllPoints()
