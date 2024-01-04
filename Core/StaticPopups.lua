@@ -1,4 +1,4 @@
-local K, _, L = unpack(KkthnxUI)
+local K, L = KkthnxUI[1], KkthnxUI[3]
 
 local ACCEPT = ACCEPT
 local CANCEL = CANCEL
@@ -36,7 +36,7 @@ StaticPopupDialogs["KKUI_RESET_CHAT"] = {
 	end,
 }
 
-StaticPopupDialogs["QUEST_CHECK_ID"] = {
+StaticPopupDialogs["KKUI_QUEST_CHECK_ID"] = {
 	text = "Check Quest ID",
 	button1 = "Scan",
 
@@ -45,7 +45,7 @@ StaticPopupDialogs["QUEST_CHECK_ID"] = {
 			return
 		end
 
-		K.CheckQuestStatus(self.editBox:GetText())
+		self:GetParent():Hide()
 	end,
 
 	OnShow = function(self)
@@ -116,14 +116,5 @@ StaticPopupDialogs["KKUI_CHANGES_RELOAD"] = {
 	end,
 	hideOnEscape = false,
 	whileDead = 1,
-	preferredIndex = 3,
-}
-
-StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
-	text = CONFIRM_LOOT_DISTRIBUTION,
-	button1 = YES,
-	button2 = NO,
-	timeout = 0,
-	hideOnEscape = 1,
 	preferredIndex = 3,
 }

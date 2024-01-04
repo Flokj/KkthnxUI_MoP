@@ -11,6 +11,7 @@ local function SetupMirrorBars(bar)
 		bar:SetStatusBarTexture()
 	end
 	local text = _G[bar:GetName() .. "Text"]
+	local spark = bar.spark
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
@@ -20,11 +21,11 @@ local function SetupMirrorBars(bar)
 	text:SetFont(text:GetFont(), 12, nil)
 	text:SetPoint("BOTTOM", bar, "TOP", 0, 4)
 
-	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetSize(64, bar:GetHeight())
-	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
-	bar.spark:SetBlendMode("ADD")
-	bar.spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark = bar:CreateTexture(nil, "OVERLAY")
+	spark:SetSize(64, bar:GetHeight())
+	spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
 end

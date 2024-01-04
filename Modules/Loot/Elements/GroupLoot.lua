@@ -4,23 +4,23 @@ local Module = K:GetModule("Loot")
 -- Lua functions
 local pairs, unpack, tonumber = pairs, unpack, tonumber
 
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local CreateFrame = CreateFrame
+local GameTooltip = GameTooltip
+local GameTooltip_ShowCompareItem = GameTooltip_ShowCompareItem
 local GameTooltip_Hide = GameTooltip_Hide
-local GetLootRollItemInfo = _G.GetLootRollItemInfo
-local GetLootRollItemLink = _G.GetLootRollItemLink
-local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
-local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
-local IsModifiedClick = _G.IsModifiedClick
-local IsShiftKeyDown = _G.IsShiftKeyDown
+local GetLootRollItemInfo = GetLootRollItemInfo
+local GetLootRollItemLink = GetLootRollItemLink
+local GetLootRollTimeLeft = GetLootRollTimeLeft
+local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
+local IsModifiedClick = IsModifiedClick
+local IsShiftKeyDown = IsShiftKeyDown
 local GREED, NEED, PASS = GREED, NEED, PASS
-local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
-local RollOnLoot = _G.RollOnLoot
-local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
-local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
+local ROLL_DISENCHANT = ROLL_DISENCHANT
+local RollOnLoot = RollOnLoot
+local C_LootHistoryGetItem = C_LootHistory.GetItem
+local C_LootHistoryGetPlayerInfo = C_LootHistory.GetPlayerInfo
 
 -- Constants for roll dimensions and direction
 local FRAME_WIDTH, FRAME_HEIGHT, RollDirection = 328, 26, 2

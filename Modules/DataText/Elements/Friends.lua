@@ -1,50 +1,47 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Infobar")
 
-local string_find = _G.string.find
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local string_find = string.find
+local string_format = string.format
+local table_insert = table.insert
+local table_sort = table.sort
+local table_wipe = table.wipe
+local unpack = unpack
 
-local BNet_GetBattlenetClientAtlas = BNet_GetBattlenetClientAtlas or BNet_GetClientTexture
-local BNet_GetClientEmbeddedAtlas = BNet_GetClientEmbeddedAtlas or BNet_GetClientEmbeddedTexture 
-local BNGetNumFriends = _G.BNGetNumFriends
-local BNet_GetClientEmbeddedTexture = _G.BNet_GetClientEmbeddedTexture
-local BNet_GetClientTexture = _G.BNet_GetClientTexture
-local BNet_GetValidatedCharacterName = _G.BNet_GetValidatedCharacterName
-local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
-local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
-local C_BattleNet_GetFriendNumGameAccounts = _G.C_BattleNet.GetFriendNumGameAccounts
-local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
-local C_FriendList_GetNumOnlineFriends = _G.C_FriendList.GetNumOnlineFriends
-local C_Timer_After = _G.C_Timer.After
-local EXPANSION_NAME0 = _G.EXPANSION_NAME0
-local GameTooltip = _G.GameTooltip
-local GetDisplayedInviteType = _G.GetDisplayedInviteType
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetRealZoneText = _G.GetRealZoneText
-local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
-local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
-local InviteToGroup = _G.C_PartyInfo.InviteUnit
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local MouseIsOver = _G.MouseIsOver
+local BNGetNumFriends = BNGetNumFriends
+local BNet_GetValidatedCharacterName = BNet_GetValidatedCharacterName
+local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
+local C_BattleNet_GetFriendGameAccountInfo = C_BattleNet.GetFriendGameAccountInfo
+local C_BattleNet_GetFriendNumGameAccounts = C_BattleNet.GetFriendNumGameAccounts
+local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
+local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
+local C_Timer_After = C_Timer.After
+local EXPANSION_NAME0 = EXPANSION_NAME0
+local EXPANSION_NAME2 = EXPANSION_NAME2
+local GameTooltip = GameTooltip
+local GetDisplayedInviteType = GetDisplayedInviteType
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetRealZoneText = GetRealZoneText
+local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+local HybridScrollFrame_Update = HybridScrollFrame_Update
+local InviteToGroup = C_PartyInfo.InviteUnit
+local IsAltKeyDown = IsAltKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local MouseIsOver = MouseIsOver
 
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
-local FRIENDS_TEXTURE_DND = _G.FRIENDS_TEXTURE_DND
-local FRIENDS_TEXTURE_ONLINE = _G.FRIENDS_TEXTURE_ONLINE
-local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
-local RAF_RECRUITER_FRIEND = _G.RAF_RECRUITER_FRIEND
-local RAF_RECRUIT_FRIEND = _G.RAF_RECRUIT_FRIEND
-local UNKNOWN = _G.UNKNOWN
+local BNET_CLIENT_WOW = BNET_CLIENT_WOW
+local FRIENDS_TEXTURE_AFK = FRIENDS_TEXTURE_AFK
+local FRIENDS_TEXTURE_DND = FRIENDS_TEXTURE_DND
+local FRIENDS_TEXTURE_ONLINE = FRIENDS_TEXTURE_ONLINE
+local GUILD_ONLINE_LABEL = GUILD_ONLINE_LABEL
+local RAF_RECRUITER_FRIEND = RAF_RECRUITER_FRIEND
+local RAF_RECRUIT_FRIEND = RAF_RECRUIT_FRIEND
+local UNKNOWN = UNKNOWN
 
-local WOW_PROJECT_ID = _G.WOW_PROJECT_ID or 11
-local WOW_PROJECT_60 = _G.WOW_PROJECT_CLASSIC or 2
-local WOW_PROJECT_TBC = _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5
+local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
+local WOW_PROJECT_ID = WOW_PROJECT_ID or 1
+local WOW_PROJECT_WRATH = 11
 local CLIENT_WOW_DIFF = "WoV" -- for sorting
 
 local r, g, b = K.r, K.g, K.b
@@ -89,7 +86,7 @@ local function buildFriendTable(num)
 			end
 
 			local class = K.ClassList[info.className]
-			table_insert(friendTable, { info.name, info.level, class, info.area, status })
+			table_insert(friendTable, { info.name, info.level, class, info.area, status, info.notes })
 		end
 	end
 
@@ -167,8 +164,8 @@ local function buildBNetTable(num)
 
 				if wowProjectID == WOW_PROJECT_60 then
 					gameText = EXPANSION_NAME0
-				elseif wowProjectID == WOW_PROJECT_TBC then
-					gameText = gsub(gameText, "%s%-.+", "")
+				elseif wowProjectID == WOW_PROJECT_WRATH then
+					gameText = EXPANSION_NAME2
 				end
 
 				local infoText = GetOnlineInfoText(client, isMobile, rafLinkType, gameText)
@@ -212,7 +209,7 @@ local function FriendsPanel_UpdateButton(button)
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
 		button.zone:SetText(string_format("%s%s", zoneColor, area))
-		button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+		button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
 		button.data = friendTable[index]
@@ -235,7 +232,7 @@ local function FriendsPanel_UpdateButton(button)
 		elseif client == BNET_CLIENT_WOW then
 			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-" .. factionName)
 		else
-			button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(client))
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
 		end
 
 		button.isBNet = true
@@ -244,7 +241,7 @@ local function FriendsPanel_UpdateButton(button)
 end
 
 local function FriendsPanel_Update()
-	local scrollFrame = _G.KKUI_FriendsInfobarScrollFrame
+	local scrollFrame = KKUI_FriendsDataTextScrollFrame
 	local usedHeight = 0
 	local buttons = scrollFrame.buttons
 	local height = scrollFrame.buttonHeight
@@ -284,9 +281,12 @@ local function inviteFunc(_, bnetIDGameAccount, guid)
 end
 
 local inviteTypeToButtonText = {
-	["INVITE"] = _G.TRAVEL_PASS_INVITE,
-	["SUGGEST_INVITE"] = _G.SUGGEST_INVITE,
-	["REQUEST_INVITE"] = _G.REQUEST_INVITE,
+	["INVITE"] = TRAVEL_PASS_INVITE,
+	["SUGGEST_INVITE"] = SUGGEST_INVITE,
+	["REQUEST_INVITE"] = REQUEST_INVITE,
+	["INVITE_CROSS_FACTION"] = TRAVEL_PASS_INVITE_CROSS_FACTION,
+	["SUGGEST_INVITE_CROSS_FACTION"] = SUGGEST_INVITE_CROSS_FACTION,
+	["REQUEST_INVITE_CROSS_FACTION"] = REQUEST_INVITE_CROSS_FACTION,
 }
 
 local function GetButtonTexFromInviteType(guid, factionName)
@@ -348,7 +348,7 @@ local function buttonOnClick(self, btn)
 			else
 				InviteToGroup(self.data[1])
 			end
-			elseif IsShiftKeyDown() then
+		elseif IsShiftKeyDown() then
 			local name = self.isBNet and self.data[3] or self.data[1]
 			if name then
 				if MailFrame:IsShown() then
@@ -404,7 +404,7 @@ local function buttonOnEnter(self)
 					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
 
 					-- Get TBC realm name from richPresence
-					if wowProjectID == WOW_PROJECT_TBC then
+					if wowProjectID == WOW_PROJECT_WRATH then
 						local realm, count = gsub(gameText, "^.-%-%s", "")
 						if count > 0 then
 							realmName = "-" .. realm
@@ -446,10 +446,14 @@ local function buttonOnEnter(self)
 		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
 		GameTooltip:AddLine(" ")
 
-		local name, level, class, area = unpack(self.data)
+		local name, level, class, area, _, note = unpack(self.data)
 		local classColor = K.RGBToHex(K.ColorClass(class))
 		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
 		GameTooltip:AddLine(string_format("%s%s", inactiveZone, area))
+		if note and note ~= "" then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(format(noteString, note), 1, 0.8, 0)
+		end
 	end
 	GameTooltip:Show()
 end
@@ -515,7 +519,7 @@ local function FriendsPanel_Init()
 	infoFrame.friendCountText = K.CreateFontString(infoFrame, 13, "-/-", "", nil, "TOPRIGHT", -15, -12)
 	infoFrame.friendCountText:SetTextColor(0, 0.6, 1)
 
-	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsDataTextScrollFrame", infoFrame, "HybridScrollFrameTemplate")
 	scrollFrame:SetSize(370, 400)
 	scrollFrame:SetPoint("TOPLEFT", 7, -35)
 	infoFrame.scrollFrame = scrollFrame

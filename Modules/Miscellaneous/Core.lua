@@ -1,28 +1,28 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Miscellaneous")
 
-local select = _G.select
-local string_match = _G.string.match
-local tonumber = _G.tonumber
+local select = select
+local string_match = string.match
+local tonumber = tonumber
 
-local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
-local GetItemInfo = _G.GetItemInfo
-local GetItemQualityColor = _G.GetItemQualityColor
-local GetMerchantItemLink = _G.GetMerchantItemLink
-local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
-local GetSpellInfo = _G.GetSpellInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsGuildMember = _G.IsGuildMember
-local PlaySound = _G.PlaySound
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local StaticPopup_Show = _G.StaticPopup_Show
-local UIParent = _G.UIParent
-local UnitGUID = _G.UnitGUID
-local hooksecurefunc = _G.hooksecurefunc
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local C_Timer_After = C_Timer.After
+local CreateFrame = CreateFrame
+local GetItemInfo = GetItemInfo
+local GetItemQualityColor = GetItemQualityColor
+local GetMerchantItemLink = GetMerchantItemLink
+local GetMerchantItemMaxStack = GetMerchantItemMaxStack
+local GetSpellInfo = GetSpellInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsGuildMember = IsGuildMember
+local PlaySound = PlaySound
+local StaticPopupDialogs = StaticPopupDialogs
+local StaticPopup_Show = StaticPopup_Show
+local UIParent = UIParent
+local UnitGUID = UnitGUID
+local hooksecurefunc = hooksecurefunc
 
 -- Localizing WoW UI constants
 local FRIEND = FRIEND
