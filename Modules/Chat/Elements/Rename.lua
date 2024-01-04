@@ -14,8 +14,6 @@ local timestampFormat = {
 }
 
 local IsDeveloper = K.isDeveloper
-local WhisperColorEnabled = C["Chat"].WhisperColor
-local TimestampFormat = C["Chat"].TimestampFormat.Value
 
 local function GetCurrentTime()
 	local locTime = time()
@@ -33,11 +31,11 @@ function Module:SetupChannelNames(text, ...)
 	if string_find(text, INTERFACE_ACTION_BLOCKED) and not IsDeveloper then return end
 
 	local r, g, b = ...
-	if WhisperColorEnabled and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
+	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
 		r, g, b = r * 0.7, g * 0.7, b * 0.7
 	end
 
-	if TimestampFormat > 1 then
+	if C["Chat"].TimestampFormat.Value > 1 then
 		local locTime, realmTime = GetCurrentTime()
 		local defaultTimestamp = GetCVar("showTimestamps")
 
@@ -50,7 +48,7 @@ function Module:SetupChannelNames(text, ...)
 			text = gsub(text, oldTimeStamp, "")
 		end
 
-		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[TimestampFormat] .. "|r", realmTime or locTime)
+		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", realmTime or locTime)
 		text = timeStamp .. text
 	end
 
@@ -72,14 +70,6 @@ local function renameChatFrames()
 end
 
 local function renameChatStrings()
-	for i = 1, _G.NUM_CHAT_WINDOWS do
-		if i ~= 2 then
-			local chatFrame = _G["ChatFrame" .. i]
-			chatFrame.oldAddMsg = chatFrame.AddMessage
-			chatFrame.AddMessage = Module.SetupChannelNames
-		end
-	end
-
 	-- Online/Offline
 	_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
 	_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")

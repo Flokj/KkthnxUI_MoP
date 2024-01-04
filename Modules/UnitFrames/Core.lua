@@ -106,7 +106,7 @@ function Module:UpdateThreat(_, unit)
 
 	-- Update the border color based on threat status
 	if status and status > 1 then
-		local r, g, b = unpack(oUF.colors.threat[status])
+		local r, g, b = GetThreatStatusColor(status)
 		if borderObject then
 			borderObject:SetVertexColor(r, g, b)
 		end
