@@ -11,7 +11,7 @@
    <Script file="LibClassicInspector\LibClassicInspector.lua"/>   
 	
    <Script file="LibRangeCheck-3.0\LibRangeCheck-3.0.lua"/>
-   <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/>
+   <!--Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/-->
    <Script file="LibBase64-1.0\LibBase64-1.0.lua" />
    <Script file="LibShowUIPanel-1.0\LibShowUIPanel-1.0.lua"/>
    <Script file="LibCustomGlow-1.0\LibCustomGlow-1.0.lua" />

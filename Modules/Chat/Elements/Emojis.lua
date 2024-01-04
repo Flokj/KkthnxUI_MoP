@@ -33,7 +33,7 @@ function Module:SetupEmojis(_, msg)
 
 		if emoji and match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
 			emoji = "|T" .. emoji .. ":14:14|t"
-			local base64 = K.Base64:Encode(word)
+			local base64 = K.LibBase64:Encode(word)
 			local replacement = base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1"
 			msg = gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", replacement .. emoji .. "%2")
 		end

@@ -484,7 +484,7 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	["ClassColor"] = true,
+	["ClassColor"] = false,
 	["CombatHide"] = false,
 	["ShowTalents"] = true,
 	["Enable"] = true,

@@ -69,12 +69,12 @@ Engine[3] = {} -- L, Locale
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
-K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
-K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
-K.Deflate = LibStub("LibDeflate-KkthnxUI")
+K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
+K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
+K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
 K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 K.LibRangeCheck = LibStub("LibRangeCheck-3.0")
-K.Serialize = LibStub("LibSerialize-KkthnxUI")
+K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
 K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
 K.cargBags = Engine.cargBags
 K.oUF = Engine.oUF
