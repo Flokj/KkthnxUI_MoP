@@ -172,19 +172,12 @@ function Module:CreateBoss()
 		Castbar:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 		Castbar:SetSize(C["Boss"].HealthWidth, 18)
 		Castbar:CreateBorder()
-		Castbar.castTicks = {}
 
 		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		Castbar.Spark:SetBlendMode("ADD")
 		Castbar.Spark:SetAlpha(0.8)
-
-		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
-		shield:SetAtlas("Soulbinds_Portrait_Lock")
-		shield:SetSize(28, 28)
-		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
-		Castbar.Shield = shield
 
 		local timer = K.CreateFontString(Castbar, 11, "", "", false, "RIGHT", -3, 0)
 		local name = K.CreateFontString(Castbar, 11, "", "", false, "LEFT", 3, 0)
@@ -201,18 +194,12 @@ function Module:CreateBoss()
 		Castbar.Button:SetAllPoints(Castbar.Icon)
 		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
 
-		local stage = K.CreateFontString(Castbar, 16)
-		stage:ClearAllPoints()
-		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
-		Castbar.stageString = stage
-
 		Castbar.decimal = "%.1f"
 
 		Castbar.Time = timer
 		Castbar.Text = name
 		Castbar.OnUpdate = Module.OnCastbarUpdate
 		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastUpdate = Module.PostCastUpdate
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible

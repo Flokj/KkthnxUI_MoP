@@ -275,5 +275,5 @@ C.NameplateShowPowerList = {
 
 -- Important readings highlighted
 C.MajorSpells = {
-	--[27072] = true,	-- 寒冰箭
+	--[47855] = true,	-- 寒冰箭
 }

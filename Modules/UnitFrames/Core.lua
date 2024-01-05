@@ -248,7 +248,7 @@ function Module:CreateCastBar(self)
 
 		Castbar.glowFrame = CreateFrame("Frame", nil, Castbar)
 		Castbar.glowFrame:SetPoint("CENTER", Castbar.Icon)
-		Castbar.glowFrame:SetSize(iconSize, iconSize)		
+		Castbar.glowFrame:SetSize(iconSize, iconSize)
 
 		local spellTarget = K.CreateFontString(Castbar, C["Nameplate"].NameTextSize + 2)
 		spellTarget:ClearAllPoints()
@@ -614,7 +614,6 @@ function Module:CreateUnits()
 		Module:UpdateGroupRoles()
 		Module:QuestIconCheck()
 		Module:RefreshPlateOnFactionChanged()
-		Module:RefreshMajorSpells()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")

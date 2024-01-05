@@ -1029,7 +1029,6 @@ local Boss = function(self)
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Boss", "Enable", enableTextColor .. L["Enable Boss"], "Toggle Boss Module On/Off")
 	Window:CreateSwitch("Boss", "Castbars", L["Show Castbars"])
-	Window:CreateSwitch("Boss", "CastbarIcon", "Show Castbars Icon")
 	Window:CreateSwitch("Boss", "Smooth", L["Smooth Bar Transition"])
 
 	Window:CreateSection(L["Sizes"])

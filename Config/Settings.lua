@@ -650,7 +650,6 @@ C["Party"] = {
 }
 
 C["Boss"] = {
-	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["Enable"] = false,
 	["Smooth"] = false,

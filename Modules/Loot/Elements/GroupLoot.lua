@@ -284,8 +284,6 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 				f.rolls[rollerName] = {rollType, class}
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
 			end
-
-			completedRolls[rollid] = true
 			break
 		end
 	end

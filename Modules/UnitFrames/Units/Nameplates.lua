@@ -1133,24 +1133,3 @@ function Module:CreateGCDTicker(self)
 
 	self.GCD = GCD
 end
-
-Module.MajorSpells = {}
-function Module:RefreshMajorSpells()
-	wipe(Module.MajorSpells)
-
-	for spellID in pairs(C.MajorSpells) do
-		local name = GetSpellInfo(spellID)
-		if name then
-			local modValue = KkthnxUIDB.MajorSpells[spellID]
-			if modValue == nil then
-				Module.MajorSpells[spellID] = true
-			end
-		end
-	end
-
-	for spellID, value in pairs(KkthnxUIDB.MajorSpells) do
-		if value then
-			Module.MajorSpells[spellID] = true
-		end
-	end
-end

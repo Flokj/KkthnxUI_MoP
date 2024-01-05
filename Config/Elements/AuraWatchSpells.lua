@@ -68,28 +68,6 @@ function Module:AddNewAuraWatch(class, list)
 	end
 end
 
-function Module:CheckMajorSpells()
-	for spellID in pairs(C.MajorSpells) do
-		local name = GetSpellInfo(spellID)
-		if name then
-			if KkthnxUIDB.MajorSpells[spellID] then
-				KkthnxUIDB.MajorSpells[spellID] = nil
-			end
-		else
-			if K.isDeveloper then
-				K.Print("Invalid majorspells ID: " .. spellID)
-			end
-		end
-	end
-
-	for spellID, value in pairs(KkthnxUIDB.MajorSpells) do
-		if value == false and C.MajorSpells[spellID] == nil then
-			KkthnxUIDB.MajorSpells[spellID] = nil
-		end
-	end
-end
-
 function Module:OnEnable()
 	C.AuraWatchList = AuraWatchList
-	Module:CheckMajorSpells()
 end
