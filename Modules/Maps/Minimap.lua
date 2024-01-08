@@ -1,19 +1,20 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Minimap")
 
-local math_floor = _G.math.floor
-local mod = _G.mod
-local pairs = _G.pairs
-local select = _G.select
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
+local math_floor = math.floor
+local mod = mod
+local pairs = pairs
+local select = select
+local table_insert = table.insert
+local table_sort = table.sort
 
-local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
-local GetUnitName = _G.GetUnitName
-local InCombatLockdown = _G.InCombatLockdown
-local Minimap = _G.Minimap
-local UnitClass = _G.UnitClass
-local hooksecurefunc = _G.hooksecurefunc
+local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local GetUnitName = GetUnitName
+local InCombatLockdown = InCombatLockdown
+local Minimap = Minimap
+local UnitClass = UnitClass
+local hooksecurefunc = hooksecurefunc
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -264,6 +265,7 @@ function Module:HideMinimapClock()
 	end
 end
 
+local GameTimeFrameStyled
 function Module:ShowCalendar()
 	if C["Minimap"].Calendar then
 		if not GameTimeFrameStyled then
@@ -291,8 +293,7 @@ function Module:ShowCalendar()
 				GameTimeFrame:SetHighlightTexture(0)
 				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
-
-				calendarText:SetText(C_DateAndTime.GetCurrentCalendarTime().monthDay)
+				calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
 			end)
 
 			GameTimeFrameStyled = true

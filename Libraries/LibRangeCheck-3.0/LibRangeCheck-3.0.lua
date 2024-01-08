@@ -128,28 +128,15 @@ local InteractLists = {
 local MeleeRange = 2
 local FriendSpells, HarmSpells, ResSpells, PetSpells = {}, {}, {}, {}
 
-for _, n in ipairs({ "EVOKER", "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" }) do
+for _, n in ipairs({"DEATHKNIGHT","DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "ROGUE" }) do
 	FriendSpells[n], HarmSpells[n], ResSpells[n], PetSpells[n] = {}, {}, {}, {}
 end
-
--- Evoker
-tinsert(HarmSpells.EVOKER, 369819) -- Disintegrate (25 yards)
-
-tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
-tinsert(FriendSpells.EVOKER, 360823) -- Naturalize (Preservation) (30 yards)
-
-tinsert(ResSpells.EVOKER, 361227) -- Return (40 yards)
 
 -- Death Knights
 tinsert(HarmSpells.DEATHKNIGHT, 49576) -- Death Grip (30 yards)
 tinsert(HarmSpells.DEATHKNIGHT, 47541) -- Death Coil (Unholy) (40 yards)
 
 tinsert(ResSpells.DEATHKNIGHT, 61999) -- Raise Ally (40 yards)
-
--- Demon Hunters
-tinsert(HarmSpells.DEMONHUNTER, 185123) -- Throw Glaive (Havoc) (30 yards)
-tinsert(HarmSpells.DEMONHUNTER, 183752) -- Consume Magic (20 yards)
-tinsert(HarmSpells.DEMONHUNTER, 204021) -- Fiery Brand (Vengeance) (30 yards)
 
 -- Druids
 tinsert(FriendSpells.DRUID, 8936) -- Regrowth (40 yards, level 3)
@@ -195,18 +182,6 @@ tinsert(HarmSpells.MAGE, 116) -- Frostbolt (40 yards)
 tinsert(HarmSpells.MAGE, 133) -- Fireball (40 yards)
 tinsert(HarmSpells.MAGE, 44425) -- Arcane Barrage (40 yards)
 
--- Monks
-tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards)
-tinsert(FriendSpells.MONK, 115546) -- Provoke (30 yards)
-tinsert(FriendSpells.MONK, 116670) -- Vivify (40 yards)
-
-tinsert(HarmSpells.MONK, 115546) -- Provoke (30 yards)
-tinsert(HarmSpells.MONK, 115078) -- Paralysis (20 yards)
-tinsert(HarmSpells.MONK, 100780) -- Tiger Palm (Melee Range)
-tinsert(HarmSpells.MONK, 117952) -- Crackling Jade Lightning (40 yards)
-
-tinsert(ResSpells.MONK, 115178) -- Resuscitate (40 yards, level 13)
-
 -- Paladins
 tinsert(FriendSpells.PALADIN, 19750) -- Flash of Light (40 yards, level 4)
 tinsert(FriendSpells.PALADIN, 85673) -- Word of Glory (40 yards, level 7)
@@ -251,11 +226,9 @@ tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 if isRetail then
 	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
 	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
-else
-	tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 end
 
-tinsert(HarmSpells.ROGUE, 185565) -- Poisoned Knife (Assassination) (30 yards, level 29)
+tinsert(HarmSpells.ROGUE, 2764) -- Poisoned Knife (Assassination) (30 yards, level 29)
 tinsert(HarmSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18)
 tinsert(HarmSpells.ROGUE, 185763) -- Pistol Shot (Outlaw) (20 yards)
 tinsert(HarmSpells.ROGUE, 2094) -- Blind (15 yards)

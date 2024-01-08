@@ -1,25 +1,24 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Auras")
 
 -- Sourced: NDui (Siweia)
-local math_floor = _G.math.floor
-local select = _G.select
-local string_format = _G.string.format
-local string_match = _G.string.match
 
-local CreateFrame = _G.CreateFrame
-local DebuffTypeColor = _G.DebuffTypeColor
-local GameTooltip = _G.GameTooltip
-local GetInventoryItemQuality = _G.GetInventoryItemQuality
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetItemQualityColor = _G.GetItemQualityColor
-local GetTime = _G.GetTime
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
-local RegisterStateDriver = _G.RegisterStateDriver
-local SecureHandlerSetFrameRef = _G.SecureHandlerSetFrameRef
-local UIParent = _G.UIParent
-local UnitAura = _G.UnitAura
+local math_floor = math.floor
+local select = select
+local string_format = string.format
+
+local CreateFrame = CreateFrame
+local DebuffTypeColor = DebuffTypeColor
+local GameTooltip = GameTooltip
+local GetInventoryItemQuality = GetInventoryItemQuality
+local GetInventoryItemTexture = GetInventoryItemTexture
+local GetTime = GetTime
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local RegisterAttributeDriver = RegisterAttributeDriver
+local RegisterStateDriver = RegisterStateDriver
+local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
+local UIParent = UIParent
+local UnitAura = UnitAura
 
 local day, hour, minute = 86400, 3600, 60
 
@@ -45,8 +44,13 @@ end
 function Module:HideBlizBuff()
 	if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then return end
 
-	K.HideInterfaceOption(_G.BuffFrame)
-	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", function(_, isLogin, isReload)
+		if isLogin or isReload then
+			K.HideInterfaceOption(_G.BuffFrame)
+			K.HideInterfaceOption(_G.TemporaryEnchantFrame)
+			BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
+		end
+	end)
 end
 
 function Module:BuildBuffFrame()
@@ -103,25 +107,22 @@ end
 function Module:UpdateTimer(elapsed)
 	local onTooltip = GameTooltip:IsOwned(self)
 
-	if not (self.timeLeft or self.offset or onTooltip) then
+	if not (self.timeLeft or self.expiration or onTooltip) then
 		self:SetScript("OnUpdate", nil)
 		return
 	end
 
-	if self.offset then
-		local expiration = select(self.offset, GetWeaponEnchantInfo())
-		if expiration then
-			self.timeLeft = expiration / 1e3
-		else
-			self.timeLeft = 0
-		end
-	elseif self.timeLeft then
+	if self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
 	end
 
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 		return
+	end
+
+	if self.expiration then
+		self.timeLeft = self.expiration / 1e3 - (GetTime() - self.oldTime)
 	end
 
 	if self.timeLeft and self.timeLeft >= 0 then
@@ -186,27 +187,20 @@ function Module:UpdateAuras(button, index)
 end
 
 function Module:UpdateTempEnchant(button, index)
-	--local quality = GetInventoryItemQuality("player", index)
-	button.icon:SetTexture(GetInventoryItemTexture("player", index))
-
-	local offset = 2
-	local weapon = button:GetName():sub(-1)
-	if string_match(weapon, "2") then
-		offset = 6
-	end
-
-	--if quality then
-		--button.KKUI_Border:SetVertexColor(GetItemQualityColor(quality))
-	--end
-	button.KKUI_Border:SetVertexColor(0.64, 0.19, 0.79)
-	local expirationTime = select(offset, GetWeaponEnchantInfo())
+	local expirationTime = select(button.enchantOffset, GetWeaponEnchantInfo())
 	if expirationTime then
-		button.offset = offset
+		local quality = GetInventoryItemQuality("player", index)
+		local color = K.QualityColors[quality or 1]
+		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+		button.icon:SetTexture(GetInventoryItemTexture("player", index))
+
+		button.expiration = expirationTime
+		button.oldTime = GetTime()
 		button:SetScript("OnUpdate", Module.UpdateTimer)
 		button.nextUpdate = -1
 		Module.UpdateTimer(button, 0)
 	else
-		button.offset = nil
+		button.expiration = nil
 		button.timeLeft = nil
 		button.timer:SetText("")
 	end
@@ -276,6 +270,8 @@ function Module:CreateAuraHeader(filter)
 
 	local header = CreateFrame("Frame", name, UIParent, "SecureAuraHeaderTemplate")
 	header:SetClampedToScreen(true)
+	header:UnregisterEvent("UNIT_AURA") -- we only need to watch player and vehicle
+	header:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
 	header:SetAttribute("unit", "player")
 	header:SetAttribute("filter", filter)
 	header.filter = filter
@@ -326,9 +322,13 @@ function Module:Button_OnEnter()
 	self:SetScript("OnUpdate", Module.UpdateTimer)
 end
 
+local indexToOffset = { 2, 6, 10 }
 function Module:CreateAuraIcon(button)
 	button.header = button:GetParent()
 	button.filter = button.header.filter
+	button.name = button:GetName()
+	local enchantIndex = tonumber(strmatch(button.name, "TempEnchant(%d)$"))
+	button.enchantOffset = indexToOffset[enchantIndex]
 
 	local cfg = Module.settings.Debuffs
 	if button.filter == "HELPFUL" then
@@ -353,7 +353,7 @@ function Module:CreateAuraIcon(button)
 	button:StyleButton()
 	button:CreateBorder()
 
-	button:RegisterForClicks("RightButtonUp")
+	button:RegisterForClicks("RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 	button:SetScript("OnEnter", Module.Button_OnEnter)

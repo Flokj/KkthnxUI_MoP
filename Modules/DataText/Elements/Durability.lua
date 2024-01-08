@@ -1,13 +1,13 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
-local math_floor = _G.math.floor
-local string_gsub = _G.string.gsub
-local table_sort = _G.table.sort
+local math_floor = math.floor
+local string_gsub = string.gsub
+local table_sort = table.sort
 
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetInventoryItemDurability = _G.GetInventoryItemDurability
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetInventoryItemLink = GetInventoryItemLink
+local GetInventoryItemDurability = GetInventoryItemDurability
+local GetInventoryItemTexture = GetInventoryItemTexture
 
 local DurabilityDataText
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
@@ -120,13 +120,8 @@ local function NewSetLevelFunction()
 end
 
 function Module:CreateDurabilityDataText()
-	if not C["Misc"].SlotDurability then
-		return
-	end
-
-	if CharacterNameFrame then
-		CharacterNameFrame:Hide()
-	end
+	if not C["Misc"].SlotDurability then return end
+	if CharacterNameFrame then CharacterNameFrame:Hide() end
 
 	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction) -- Replace this function as we set our own style so we can set our durr stat
 

@@ -1,6 +1,5 @@
-local K, C = _G.unpack(select(2, ...))
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
-
 
 local string_find = string.find
 
