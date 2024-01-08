@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local string_format, table_insert, table_sort, table_wipe = string.format, table.insert, table.sort, table.wipe
 local GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown

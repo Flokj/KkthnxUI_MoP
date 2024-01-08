@@ -1,5 +1,5 @@
 local K, C = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local select = _G.select
 local string_format = _G.string.format

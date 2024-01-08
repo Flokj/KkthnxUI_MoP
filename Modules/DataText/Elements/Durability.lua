@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local math_floor = _G.math.floor
 local string_gsub = _G.string.gsub

@@ -23,7 +23,7 @@ local C_LootHistoryGetItem = C_LootHistory.GetItem
 local C_LootHistoryGetPlayerInfo = C_LootHistory.GetPlayerInfo
 
 -- Constants for roll dimensions and direction
-local FRAME_WIDTH, FRAME_HEIGHT, RollDirection = 328, 26, 2
+local RollWidth, RollHeight, RollDirection = 328, 26, 2
 
 -- Cache for roll data to improve performance
 local cachedRolls, cachedIndex = {}, {}
@@ -90,7 +90,7 @@ end
 local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...)
 	local f = CreateFrame("Button", nil, parent)
 	f:SetPoint(...)
-	f:SetSize(FRAME_HEIGHT - 4, FRAME_HEIGHT - 4)
+	f:SetSize(RollHeight - 4, RollHeight - 4)
 	f:SetNormalTexture(ntex)
 
 	if ptex then f:SetPushedTexture(ptex) end
@@ -115,19 +115,18 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	return f, txt
 end
 
-function Module:CreateRollFrame()
-	local frame = CreateFrame("Frame", "KKUI_LootRollFrame", UIParent)
-	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
-	frame:CreateBorder()
-	frame:SetScript("OnEvent", Module.LootRoll_Cancel)
+function Module:CreateRollFrame(name)
+	local frame = CreateFrame("Frame", name or "KKUI_LootRollFrame", UIParent)
+	frame:SetSize(RollWidth, RollHeight)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetFrameLevel(10)
+	frame:SetScript("OnEvent", Module.LootRoll_Cancel)
 	frame:RegisterEvent("CANCEL_LOOT_ROLL")
 	frame:Hide()
 
 	local button = CreateFrame("Button", nil, frame)
-	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 3), 0)
-	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
+	button:SetPoint("RIGHT", frame, "LEFT", -6, 0)
+	button:SetSize(frame:GetHeight(), frame:GetHeight())
 	button:CreateBorder()
 	button:SetScript('OnEvent', SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
@@ -135,46 +134,45 @@ function Module:CreateRollFrame()
 	button:SetScript("OnClick", LootClick)
 	frame.button = button
 
-	button.icon = button:CreateTexture(nil, "OVERLAY")
-	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- Initialization of icon, stack, and item level
+	local icon, stack, ilvl = button:CreateTexture(nil, "OVERLAY"), button:CreateFontString(nil, "OVERLAY"), button:CreateFontString(nil, "OVERLAY")
+	icon:SetAllPoints()
+	icon:SetTexCoord(unpack(K.TexCoords))
+	button.icon = icon
 
-	button.stack = button:CreateFontString(nil, 'OVERLAY')
-	button.stack:SetPoint('BOTTOMRIGHT', -1, 1)
-	button.stack:SetFontObject(K.UIFontOutline)
+	stack:SetPoint("BOTTOMRIGHT", -1, 2)
+	stack:SetFontObject(K.UIFontOutline)
+	button.stack = stack
 
-	button.ilvl = button:CreateFontString(nil, 'OVERLAY')
-	button.ilvl:SetPoint('BOTTOM', button, 'BOTTOM', 0, 0)
-	button.ilvl:SetFontObject(K.UIFontOutline)
+	ilvl:SetPoint("BOTTOMLEFT", 1, 1)
+	ilvl:SetFontObject(K.UIFontOutline)
+	button.ilvl = ilvl
 
-	local tfade = frame:CreateTexture(nil, "BORDER")
-	tfade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, 0)
-	tfade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 0)
-	tfade:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-	tfade:SetBlendMode("ADD")
-	tfade:SetGradient("HORIZONTAL", CreateColor(0.1, 0.1, 0.1, 0), CreateColor(0.1, 0.1, 0.1, 0))
-
+	-- Status bar creation and configuration
 	local status = CreateFrame("StatusBar", nil, frame)
-	status:SetAllPoints()
+	status:SetAllPoints(frame)
 	status:SetScript("OnUpdate", StatusUpdate)
 	status:SetFrameLevel(status:GetFrameLevel() - 1)
 	status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	status:SetFrameLevel(status:GetFrameLevel() - 1)
+	status:CreateBorder()
 	status:SetStatusBarColor(0.8, 0.8, 0.8, 0.9)
 	status.parent = frame
 	frame.status = status
 
-	local spark = frame:CreateTexture(nil, "OVERLAY")
-	spark:SetSize(128, FRAME_HEIGHT)
+	-- Spark for status bar
+	local spark = status:CreateTexture(nil, "ARTWORK", nil, 1)
+	spark:SetSize(128, RollHeight)
 	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetPoint("CENTER", status:GetStatusBarTexture(), "RIGHT", 0, 0)
 	spark:SetBlendMode("BLEND")
 	spark:SetAlpha(0.8)
 	status.spark = spark
 
-	local need, needtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Dice-Up", "Interface\\Buttons\\UI-GroupLoot-Dice-Highlight", "Interface\\Buttons\\UI-GroupLoot-Dice-Down", 1, NEED, "LEFT", frame.button, "RIGHT", 5, -1)
-	local greed, greedtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Coin-Up", "Interface\\Buttons\\UI-GroupLoot-Coin-Highlight", "Interface\\Buttons\\UI-GroupLoot-Coin-Down", 2, GREED, "LEFT", need, "RIGHT", 0, -1)
-	local de, detext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-DE-Up", "Interface\\Buttons\\UI-GroupLoot-DE-Highlight", "Interface\\Buttons\\UI-GroupLoot-DE-Down", 3, ROLL_DISENCHANT, "LEFT", greed, "RIGHT", 0, -1)
-	local pass, passtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Pass-Up", nil, "Interface\\Buttons\\UI-GroupLoot-Pass-Down", 0, PASS, "LEFT", de or greed, "RIGHT", 0, 2)
+	local need, needtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Dice-Up", "Interface\\Buttons\\UI-GroupLoot-Dice-Highlight", "Interface\\Buttons\\UI-GroupLoot-Dice-Down", 1, NEED, "LEFT", frame.button, "RIGHT", 6, -1)
+	local greed, greedtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Coin-Up", "Interface\\Buttons\\UI-GroupLoot-Coin-Highlight", "Interface\\Buttons\\UI-GroupLoot-Coin-Down", 2, GREED, "LEFT", need, "RIGHT", 3, -1)
+	local de, detext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-DE-Up", "Interface\\Buttons\\UI-GroupLoot-DE-Highlight", "Interface\\Buttons\\UI-GroupLoot-DE-Down", 3, ROLL_DISENCHANT, "LEFT", greed, "RIGHT", 3, -1)
+	local pass, passtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Pass-Up", nil, "Interface\\Buttons\\UI-GroupLoot-Pass-Down", 0, PASS, "LEFT", de or greed, "RIGHT", 3, 2)
 	frame.needbutt, frame.greedbutt, frame.disenchantbutt = need, greed, de
 	frame.need, frame.greed, frame.pass, frame.disenchant = needtext, greedtext, passtext, detext
 

@@ -1,5 +1,5 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local string_find = string.find
 local string_format = string.format

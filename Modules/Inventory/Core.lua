@@ -1384,7 +1384,6 @@ function Module:OnEnable()
 	K:RegisterEvent("AUCTION_HOUSE_CLOSED", Module.CloseBags)
 
 	-- Update infobar slots
-	--local INFO = K:GetModule("Infobar")
 	if _G.KKUI_GoldDataText then
 		Backpack.OnOpen = function()
 			if not KkthnxUIDB.ShowSlots then

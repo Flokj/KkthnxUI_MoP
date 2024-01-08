@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local max = math.max
 local format = string.format

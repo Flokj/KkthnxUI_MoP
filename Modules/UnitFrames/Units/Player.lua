@@ -339,7 +339,7 @@ function Module:CreatePlayer()
 	end
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	LeaderIndicator:SetSize(12, 12)
+	LeaderIndicator:SetSize(14, 14)
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	else
@@ -347,7 +347,7 @@ function Module:CreatePlayer()
 	end
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	AssistantIndicator:SetSize(12, 12)
+	AssistantIndicator:SetSize(14, 14)
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	else

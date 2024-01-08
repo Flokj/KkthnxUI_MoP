@@ -1,36 +1,34 @@
-local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local Module = K:GetModule("DataText")
 
-local pairs = _G.pairs
-local string_format = _G.string.format
-local unpack = _G.unpack
+local pairs = pairs
+local string_format = string.format
+local unpack = unpack
 
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local CURRENCY = _G.CURRENCY
-local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
-local GameTooltip = _G.GameTooltip
-local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
-local GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
-local GetMoney = _G.GetMoney
-local GetNumWatchedTokens = _G.GetNumWatchedTokens
-local IsControlKeyDown = _G.IsControlKeyDown
-local NO = _G.NO
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local TOTAL = _G.TOTAL
-local YES = _G.YES
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local CURRENCY = CURRENCY
+local C_CurrencyInfo_GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local C_Timer_NewTicker = C_Timer.NewTicker
+local C_WowTokenPublic_GetCurrentMarketPrice = C_WowTokenPublic.GetCurrentMarketPrice
+local C_WowTokenPublic_UpdateMarketPrice = C_WowTokenPublic.UpdateMarketPrice
+local GameTooltip = GameTooltip
+local GetAutoCompleteRealms = GetAutoCompleteRealms
+local GetMoney = GetMoney
+local IsControlKeyDown = IsControlKeyDown
+local NO = NO
+local StaticPopupDialogs = StaticPopupDialogs
+local TOTAL = TOTAL
+local YES = YES
 
-local slotString = "Bags" .. ": %s%d"
+local slotString = BAGSLOTTEXT .. ": %s%d"
+local ticker
 local profit = 0
 local spent = 0
 local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
 local GoldDataText
 local RebuildCharList
-
-local replacedTextures = {
-	[136998] = "Interface\\PVPFrame\\PVP-Currency-Alliance",
-	[137000] = "Interface\\PVPFrame\\PVP-Currency-Horde",
-}
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = { [1] = K.Realm }
@@ -86,7 +84,15 @@ local eventList = {
 	"TRADE_MONEY_CHANGED",
 }
 
+local function UpdateMarketPrice()
+	return C_WowTokenPublic_UpdateMarketPrice()
+end
+
 local function OnEvent(_, event, arg1)
+	if not IsLoggedIn() then
+		return
+	end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		GoldDataText:UnregisterEvent(event)
@@ -98,6 +104,11 @@ local function OnEvent(_, event, arg1)
 		if arg1 < 0 or arg1 > 4 then
 			return
 		end
+	end
+
+	if not ticker then
+		C_WowTokenPublic_UpdateMarketPrice()
+		ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
 	end
 
 	local newMoney = GetMoney()
@@ -157,7 +168,7 @@ function RebuildCharList()
 					if not menuList[index] then
 						menuList[index] = {}
 					end
-					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
+					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. " - " .. realm, "none")
 					menuList[index].notCheckable = true
 					menuList[index].arg1 = realm
 					menuList[index].arg2 = name
@@ -168,6 +179,7 @@ function RebuildCharList()
 	end
 end
 
+local title
 local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
@@ -187,12 +199,12 @@ local function OnEnter(self)
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine(L["RealmCharacter"], 0.5, 0.7, 1)
+	GameTooltip:AddLine(CHARACTER_BUTTON .. ":", 0.5, 0.7, 1)
 	for _, realm in pairs(crossRealms) do
 		local thisRealmList = KkthnxUIDB.Gold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
-				local name = Ambiguate(k .. "-" .. realm, "none")
+				local name = Ambiguate(k .. " - " .. realm, "none")
 				local gold, class = unpack(v)
 				local r, g, b = K.ColorClass(class)
 				GameTooltip:AddDoubleLine(getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
@@ -203,21 +215,40 @@ local function OnEnter(self)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
 
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
+
+	title = false
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2533) -- Tier charges
+	if chargeInfo then
+		if not title then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(CURRENCY .. ":", 0.6, 0.8, 1)
+			title = true
+		end
+		local iconTexture = "|T" .. chargeInfo.iconFileID .. ":12:12:0:0:50:50:4:46:4:46|t"
+		local currencyText = iconTexture .. " " .. chargeInfo.name
+		GameTooltip:AddDoubleLine(currencyText, chargeInfo.quantity .. "/" .. chargeInfo.maxQuantity, 1, 1, 1, 1, 1, 1)
+	end
+
 	for i = 1, GetNumWatchedTokens() do
 		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
-		if name and i == 1 then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
-		end
 
 		if name and count then
+			if not title then
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
+				title = true
+			end
+
 			local total = C_CurrencyInfo_GetCurrencyInfo(currencyID).maxQuantity
-			icon = replacedTextures[icon] or icon -- replace classic honor icons
-			local iconTexture = " |T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t"
+			local iconTexture = "|T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
+			local currencyText = iconTexture .. name
+
 			if total > 0 then
-				GameTooltip:AddDoubleLine(name, count .. "/" .. total .. iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(currencyText, BreakUpLargeNumbers(count) .. "/" .. K.ShortValue(total), 1, 1, 1, 1, 1, 1)
 			else
-				GameTooltip:AddDoubleLine(name, count .. iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(currencyText, BreakUpLargeNumbers(count), 1, 1, 1, 1, 1, 1)
 			end
 		end
 	end
@@ -226,9 +257,9 @@ local function OnEnter(self)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(" ", K.RightButton .. "Switch Mode" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		if KkthnxUIDB.ShowSlots then
-			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Inventory" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. BINDING_NAME_TOGGLEBACKPACK .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		else
-			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Currency" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. BINDING_NAME_TOGGLECURRENCY .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		end
 		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"] .. K.RightButton .. "Reset Gold" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end

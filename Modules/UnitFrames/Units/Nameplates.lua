@@ -58,7 +58,7 @@ function Module:UpdatePlateCVars()
 	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 	SetCVar("nameplateNotSelectedAlpha", 1)
-	SetCVar("nameplateShowOnlyNames", 1)
+	SetCVar("nameplateShowOnlyNames", 0)
 	SetCVar("nameplateShowFriendlyNPCs", 1)
 	SetCVar("ClampTargetNameplateToScreen", 1)
 
