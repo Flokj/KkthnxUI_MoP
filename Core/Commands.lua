@@ -231,7 +231,7 @@ local function RestoreAddons()
 		button2 = "No",
 		OnAccept = function()
 			for name in pairs(KkthnxUIDB.DisabledAddOns) do
-				C_AddOns.EnableAddOn(name)
+				EnableAddOn(name)
 			end
 
 			wipe(KkthnxUIDB.DisabledAddOns)

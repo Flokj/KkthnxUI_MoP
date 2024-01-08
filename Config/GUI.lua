@@ -20,7 +20,7 @@ local function updateBagSize()
 end
 
 local function UpdateBagSortOrder()
-	_G.SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
 end
 
 local function UpdateBagStatus()
@@ -140,7 +140,7 @@ local function UpdateHotkeys()
 end
 
 local function UpdateMarkerGrid()
-	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
+	K:GetModule("Miscellaneous"):RaidTool_UpdateGrid()
 end
 
 local function UpdateActionbar1()
@@ -745,6 +745,9 @@ local Misc = function(self)
 
 	-- Raid Tool Section
 	Window:CreateSection("Raid Tool")
+	Window:CreateSwitch("Misc", "RaidTool", L["Show Raid Utility Frame"])
+	Window:CreateEditBox("Misc", "DBMCount", "DBMCount - Add Info")
+	Window:CreateSlider("Misc", "MarkerBarSize", "Marker Bar Size - Add Info", 20, 40, 1, nil, UpdateMarkerGrid)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 
 	-- Misc Section
@@ -812,7 +815,6 @@ local Nameplate = function(self)
 
 	Window:CreateSection("Player Nameplate Toggles")
 	Window:CreateSwitch("Nameplate", "ShowPlayerPlate", enableTextColor .. L["Enable Personal Resource"], nil, togglePlayerPlate)
-	--Window:CreateSwitch("Nameplate", "ClassAuras", L["Track Personal Class Auras"])
 	Window:CreateSwitch("Nameplate", "PPGCDTicker", L["Enable GCD Ticker"])
 	Window:CreateSwitch("Nameplate", "PPHideOOC", L["Only Visible in Combat"])
 	Window:CreateSwitch("Nameplate", "PPOnFire", "Always Refresh PlayerPlate Auras")
@@ -1068,7 +1070,6 @@ local Raid = function(self)
 	Window:CreateSwitch("Raid", "HorizonRaid", L["Horizontal Raid Frames"])
 	Window:CreateSwitch("Raid", "MainTankFrames", L["Show MainTank Frames"])
 	Window:CreateSwitch("Raid", "ManabarShow", L["Show Manabars"])
-	Window:CreateSwitch("Raid", "RaidUtility", L["Show Raid Utility Frame"])
 	Window:CreateSwitch("Raid", "ReverseRaid", L["Reverse Raid Frame Growth"])
 	Window:CreateSwitch("Raid", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Raid", "ShowNotHereTimer", L["Show Away/DND Status"])

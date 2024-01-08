@@ -16,7 +16,6 @@
    <Script file="Blizzard\Elements\AlertFrames.lua" />
    <Script file="Blizzard\Elements\ColorPicker.lua" />
    <Script file="Blizzard\Elements\MirrorBars.lua" />
-   <Script file="Blizzard\Elements\RaidUtility.lua" />
    <!-- Chat -->
    <Script file="Chat\Core.lua" />
    <Script file="Chat\Elements\Copy.lua" />
@@ -111,6 +110,7 @@
    <Script file="Miscellaneous\Elements\HelmCloakToggle.lua" />
    <Script file="Miscellaneous\Elements\Focuser.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
+   <Script file="Miscellaneous\Elements\RaidTool.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />

@@ -6,7 +6,6 @@ function Module:OnEnable()
 		"CreateAlertFrames",
 		"CreateColorPicker",
 		"CreateMirrorBars",
-		"CreateRaidUtility",
 	}
 
 	for _, funcName in ipairs(loadBlizzardModules) do

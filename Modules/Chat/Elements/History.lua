@@ -81,4 +81,3 @@ function Module:CreateChatHistory()
 
 	printChatHistory()
 end
-

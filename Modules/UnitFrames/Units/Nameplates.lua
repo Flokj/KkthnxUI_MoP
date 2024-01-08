@@ -1,43 +1,44 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local math_floor = _G.math.floor
-local math_rad = _G.math.rad
-local pairs = _G.pairs
-local string_format = _G.string.format
-local string_match = _G.string.match
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
-local unpack = _G.unpack
+-- Lua functions
+local math_rad = math.rad
+local pairs = pairs
+local string_format = string.format
+local table_wipe = table.wipe
+local tonumber = tonumber
+local unpack = unpack
 
-local Ambiguate = _G.Ambiguate
-local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
-local C_NamePlate_SetNamePlateEnemySize = _G.C_NamePlate.SetNamePlateEnemySize
-local C_NamePlate_SetNamePlateFriendlySize = _G.C_NamePlate.SetNamePlateFriendlySize
-local CreateFrame = _G.CreateFrame
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
-local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local INTERRUPTED = _G.INTERRUPTED
-local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
-local SetCVar = _G.SetCVar
-local UnitClassification = _G.UnitClassification
-local UnitExists = _G.UnitExists
-local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitIsUnit = _G.UnitIsUnit
-local UnitName = _G.UnitName
-local UnitNameplateShowsWidgetsOnly = _G.UnitNameplateShowsWidgetsOnly
-local UnitPlayerControlled = _G.UnitPlayerControlled
-local UnitReaction = _G.UnitReaction
-local UnitThreatSituation = _G.UnitThreatSituation
-local hooksecurefunc = _G.hooksecurefunc
+-- WoW API
+local Ambiguate = Ambiguate
+local C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
+local C_NamePlate_SetNamePlateEnemySize = C_NamePlate.SetNamePlateEnemySize
+local C_NamePlate_SetNamePlateFriendlySize = C_NamePlate.SetNamePlateFriendlySize
+local CreateFrame = CreateFrame
+local GetNumGroupMembers = GetNumGroupMembers
+local GetNumSubgroupMembers = GetNumSubgroupMembers
+local GetPlayerInfoByGUID = GetPlayerInfoByGUID
+local INTERRUPTED = INTERRUPTED
+local InCombatLockdown = InCombatLockdown
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local SetCVar = SetCVar
+local UnitClassification = UnitClassification
+local UnitExists = UnitExists
+local UnitGUID = UnitGUID
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local UnitIsConnected = UnitIsConnected
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitIsUnit = UnitIsUnit
+local UnitName = UnitName
+local UnitNameplateShowsWidgetsOnly = UnitNameplateShowsWidgetsOnly
+local UnitPlayerControlled = UnitPlayerControlled
+local UnitReaction = UnitReaction
+local UnitThreatSituation = UnitThreatSituation
+local hooksecurefunc = hooksecurefunc
 
+-- Custom data
 local customUnits = {}
 local showPowerList = {}
 
@@ -51,16 +52,7 @@ local NPClassifies = {
 
 -- Init
 function Module:UpdatePlateCVars()
-	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)		
-	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
-	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
-	SetCVar("nameplateNotSelectedAlpha", 1)
-	SetCVar("nameplateShowOnlyNames", 0)
-	SetCVar("nameplateShowFriendlyNPCs", 1)
-	SetCVar("ClampTargetNameplateToScreen", 1)
+	if InCombatLockdown() then return end
 
 	local topInset, bottomInset = -1, -1
 	if C["Nameplate"].InsideView then
@@ -69,6 +61,22 @@ function Module:UpdatePlateCVars()
 
 	SetCVar("nameplateOtherTopInset", topInset)
 	SetCVar("nameplateOtherBottomInset", bottomInset)
+
+	local settings = {
+		namePlateMinScale = C["Nameplate"].MinScale,
+		namePlateMaxScale = C["Nameplate"].MinScale,
+		nameplateMinAlpha = C["Nameplate"].MinAlpha,
+		nameplateMaxAlpha = C["Nameplate"].MinAlpha,		
+		nameplateOverlapV = C["Nameplate"].VerticalSpacing,
+		nameplateNotSelectedAlpha = 1,
+		nameplateShowOnlyNames =  0,
+		nameplateShowFriendlyNPCs = 1,
+		ClampTargetNameplateToScreen = 1,
+	}
+
+	for cvar, value in pairs(settings) do
+		SetCVar(cvar, value)
+	end
 end
 
 function Module:UpdateClickableSize()
@@ -81,14 +89,20 @@ end
 
 function Module:SetupCVars()
 	Module:UpdatePlateCVars()
-	SetCVar("nameplateOverlapH", 0.8)
-	SetCVar("nameplateSelectedAlpha", 1)
+	local settings = {
+		nameplateOverlapH = 0.8,
+		nameplateSelectedAlpha = 1,
+		nameplateSelectedScale = C["Nameplate"].SelectedScale,
+		nameplateLargerScale = 1,
+		nameplateGlobalScale = 1,
+		nameplateMaxDistance = C["Nameplate"].Distance,
+	}
+
+	for cvar, value in pairs(settings) do
+		SetCVar(cvar, value)
+	end
+
 	Module:UpdateClickableSize()
-
-	SetCVar("nameplateSelectedScale", C["Nameplate"].SelectedScale)
-	SetCVar("nameplateLargerScale", 1)
-	SetCVar("nameplateGlobalScale", 1)
-
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
@@ -373,9 +387,9 @@ function Module:AddTargetIndicator(self)
 
 	-- Name glow
 	TargetIndicator.nameGlow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	TargetIndicator.nameGlow:SetSize(120, 80)
+	TargetIndicator.nameGlow:SetSize(150, 80)
 	TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
-	TargetIndicator.nameGlow:SetVertexColor(255/255, 255/255, 255/255, 0.3)
+	TargetIndicator.nameGlow:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 	TargetIndicator.nameGlow:SetBlendMode("ADD")
 	TargetIndicator.nameGlow:SetPoint("CENTER", self, "BOTTOM")
 
@@ -394,13 +408,6 @@ function Module:QuestIconCheck()
 
 	CheckInstanceStatus()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
-end
-
-local function isQuestTitle(textLine)
-	local r, g, b = textLine:GetTextColor()
-	if r > 0.99 and g > 0.82 and b == 0 then
-		return true
-	end
 end
 
 function Module:UpdateQuestUnit(_, unit)
@@ -646,13 +653,6 @@ function Module:CreatePlates()
 	self.npcTitle:Hide()
 	self:Tag(self.npcTitle, "[npctitle]")
 
-	self.guildName = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
-	self.guildName:SetTextColor(211 / 255, 211 / 255, 211 / 255)
-	self.guildName:ClearAllPoints()
-	self.guildName:SetPoint("TOP", self, "BOTTOM", 0, -10)
-	self.guildName:Hide()
-	self:Tag(self.guildName, "[guildname]")
-
 	local tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
 	tarName:ClearAllPoints()
 	tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
@@ -687,11 +687,11 @@ function Module:CreatePlates()
 	self.Auras.size = C["Nameplate"].AuraSize
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
+	self.Auras.CustomFilter = Module.CustomFilter
 
 	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 
 	self.Auras.showStealableBuffs = true
-	self.Auras.CustomFilter = Module.CustomFilter
 	self.Auras.PostCreateIcon = Module.PostCreateAura
 	self.Auras.PostUpdateIcon = Module.PostUpdateAura
 
@@ -782,6 +782,8 @@ function Module:UpdateNameplateSize()
  
 	-- self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
 	-- self.healthValue:UpdateTag()
+
+	self.nameText:UpdateTag()
 end
 
 function Module:RefreshNameplats()
@@ -810,7 +812,6 @@ function Module:UpdatePlateByType()
 	local name = self.nameText
 	local hpval = self.healthValue
 	local title = self.npcTitle
-	local guild = self.guildName
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
 
@@ -831,7 +832,6 @@ function Module:UpdatePlateByType()
 
 		hpval:Hide()
 		title:Hide()
-		guild:Hide()
 
 		raidtarget:SetPoint("BOTTOM", name, "TOP", 0, 5)
 		raidtarget:SetParent(self)
@@ -854,7 +854,6 @@ function Module:UpdatePlateByType()
 
 		hpval:Show()
 		title:Hide()
-		guild:Hide()
 
 		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
 		if questIcon then questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0) end
@@ -965,10 +964,6 @@ function Module:CreatePlayerPlate()
 
 	Module:CreateClassPower(self)
 
-	--if C["Nameplate"].ClassAuras then
-	--	K:GetModule("Auras"):CreateLumos(self)
-	--end
-
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()
 	self.powerText = K.CreateFontString(textFrame, 12, "")
@@ -992,14 +987,14 @@ function Module:TogglePlayerPlate()
 end
 
 function Module:TogglePlatePower()
-	local plate = _G.oUF_PlayerPlate
+	local plate = oUF_PlayerPlate
 	if not plate then return end
 
 	plate.powerText:SetShown(C["Nameplate"].PPPowerText)
 end
 
 function Module:TogglePlateVisibility()
-	local plate = _G.oUF_PlayerPlate
+	local plate = oUF_PlayerPlate
 	if not plate then return end
 
 	if C["Nameplate"].PPHideOOC then
@@ -1045,7 +1040,7 @@ function Module:UpdateTargetClassPower()
 end
 
 function Module:ToggleTargetClassPower()
-	local plate = _G.oUF_TargetPlate
+	local plate = oUF_TargetPlate
 	if not plate then return end
 
 	local playerPlate = _G.oUF_PlayerPlate
@@ -1102,7 +1097,7 @@ function Module:ToggleTargetClassPower()
 end
 
 function Module:ResizeTargetPower()
-	local plate = _G.oUF_TargetPlate
+	local plate = oUF_TargetPlate
 	if not plate then return end
 
 	local barWidth = C["Nameplate"].PlateWidth
