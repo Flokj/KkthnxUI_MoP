@@ -512,11 +512,3 @@ C.DebuffsTracking_PvP = {
 		[19753] = Priority(), -- Divine Intervention
 	},
 }
-
--- Buffs that really we dont need to see
-C.DebuffsTracking_Blacklist = {
-	type = "Blacklist",
-	spells = {
-		[186403] = Priority(), -- Sign of Battle
-	},
-}

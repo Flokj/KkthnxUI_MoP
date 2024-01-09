@@ -36,11 +36,11 @@ end
 
 -- Default filter
 local function isItemInBag(item)
-	return item.bagID >= 0 and item.bagID <= 4
+	return item.bagId >= 0 and item.bagId <= 4
 end
 
 local function isItemInBank(item)
-	return item.bagID == -1 or item.bagID >= 5 and item.bagID <= 11
+	return item.bagId == -1 or item.bagId >= 5 and item.bagId <= 11
 end
 
 local function isItemJunk(item)
@@ -135,7 +135,7 @@ end
 local function isEmptySlot(item)
 	if not C["Inventory"].GatherEmpty then return end
 
-	return Module.initComplete and not item.texture and (C["Inventory"].ItemFilter or cargBags.BagGroups[item.bagID] == 0)
+	return Module.initComplete and not item.texture and (C["Inventory"].ItemFilter or cargBags.BagGroups[item.bagId] == 0)
 end
 
 local function isItemKeyRing(item)
@@ -171,7 +171,7 @@ function Module:GetFilters()
 	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end
 	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) end
-	filters.onlyReagent = function(item) return item.bagID == -3 end
+	filters.onlyReagent = function(item) return item.bagId == -3 end
 	filters.onlyKeyring = function(item) return isItemKeyRing(item) end
 	filters.bagGoods = function(item) return isItemInBag(item) and isTradeGoods(item) end
 	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end

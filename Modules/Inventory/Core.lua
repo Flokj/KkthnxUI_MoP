@@ -574,15 +574,15 @@ local function splitOnClick(self)
 		return
 	end
 
-	PickupContainerItem(self.bagID, self.slotID)
+	PickupContainerItem(self.bagId, self.slotID)
 
-	local info = C_Container.GetContainerItemInfo(self.bagID, self.slotID)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotID)
 	local texture = info and info.iconFileID
 	local itemCount = info and info.stackCount
 	local locked = info and info.isLocked
 
 	if texture and not locked and itemCount and itemCount > KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
-		SplitContainerItem(self.bagID, self.slotID, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
+		SplitContainerItem(self.bagId, self.slotId, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 
 		local bagID, slotID = Module:GetEmptySlot("Bag", 0)
 		if slotID then
@@ -712,7 +712,7 @@ local function favouriteOnClick(self)
 		return
 	end
 
-		local info = C_Container.GetContainerItemInfo(self.bagID, self.slotID)
+		local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
 		local texture = info and info.iconFileID
 		local quality = info and info.quality
 		local link = info and info.hyperlink
@@ -773,7 +773,7 @@ end
 local function customJunkOnClick(self)
 	if not customJunkEnable then return end
 
-	local info = C_Container.GetContainerItemInfo(self.bagID, self.slotID)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local itemID = info and info.itemID
 	local price = select(11, GetItemInfo(itemID))
@@ -835,12 +835,12 @@ local function deleteButtonOnClick(self)
 		return
 	end
 	local texture, quality
-	local info = C_Container.GetContainerItemInfo(self.bagID, self.slotID)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local quality = info and info.quality
 
 	if IsControlKeyDown() and IsAltKeyDown() and texture and (quality < LE_ITEM_QUALITY_RARE) then
-		PickupContainerItem(self.bagID, self.slotID)
+		PickupContainerItem(self.bagId, self.slotId)
 		DeleteCursorItem()
 	end
 end
@@ -1047,7 +1047,7 @@ function Module:OnEnable()
 	function MyButton:ItemOnEnter()
 		if self.glowFrame then
 			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
-			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
+			C_NewItems_RemoveNewItem(self.bagId, self.slotId)
 		end
 	end
 
@@ -1075,7 +1075,7 @@ function Module:OnEnable()
 			return
 		end
 
-		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagID, item.slotID)
+		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagId, item.slotId)
 		if text and text ~= "" then
 			local icon = CanIMogIt.tooltipOverlayIcons[unmodifiedText]
 			self.canIMogIt:SetTexture(icon)
@@ -1089,7 +1089,7 @@ function Module:OnEnable()
 		if not hasPawn then return end
 		if not PawnIsContainerItemAnUpgrade then return end
 		if self.UpgradeIcon then
-			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
+			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagId, item.slotId))
 		end
 	end
 
@@ -1119,7 +1119,7 @@ function Module:OnEnable()
 		end
 
 		if self.glowFrame then
-			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
+			if C_NewItems_IsNewItem(item.bagId, item.slotId) then
 				local color = K.QualityColors[item.quality]
 				if item.questID or item.isQuestItem then
 					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
@@ -1134,7 +1134,7 @@ function Module:OnEnable()
 		end
 
 		if C["Inventory"].SpecialBagsColor then
-			local bagType = cargBags.BagGroups[item.bagID]
+			local bagType = cargBags.BagGroups[item.bagId]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
 			self:SetBackdropColor(unpack(color))
 		else
@@ -1361,11 +1361,11 @@ function Module:OnEnable()
 		end
 
 		if classID == LE_ITEM_CLASS_CONTAINER then
-			cargBags.BagGroups[self.bagID] = subClassID or 0
+			cargBags.BagGroups[self.bagId] = subClassID or 0
 		elseif classID == LE_ITEM_CLASS_QUIVER then
-			cargBags.BagGroups[self.bagID] = -1
+			cargBags.BagGroups[self.bagId] = -1
 		else
-			cargBags.BagGroups[self.bagID] = 0
+			cargBags.BagGroups[self.bagId] = 0
 		end
 	end
 

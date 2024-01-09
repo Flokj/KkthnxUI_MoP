@@ -202,7 +202,7 @@ function Module:UpdateHotKey()
 	end
 end
 
-function Module:UpdateEquipItemColor()
+function Module:UpdateBarBorderColor()
 	if not self.KKUI_Border then return end
 
 	if IsEquippedAction(self.action) then
@@ -422,5 +422,5 @@ function Module:CreateBarSkin()
 	Module:UpdateStanceHotKey()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
 	-- Equip item
-	hooksecurefunc("ActionButton_Update", Module.UpdateEquipItemColor)
+	hooksecurefunc("ActionButton_Update", Module.UpdateBarBorderColor)
 end

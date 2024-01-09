@@ -29,16 +29,16 @@ local GUILD = GUILD
 local NO = NO
 local YES = YES
 
-local KKUI_MISC_LIST = {}
+local KKUI_MISC_MODULE = {}
 
 function Module:RegisterMisc(name, func)
-	if not KKUI_MISC_LIST[name] then
-		KKUI_MISC_LIST[name] = func
+	if not KKUI_MISC_MODULE[name] then
+		KKUI_MISC_MODULE[name] = func
 	end
 end
 
 function Module:OnEnable()
-	for name, func in next, KKUI_MISC_LIST do
+	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
 		end
@@ -398,7 +398,14 @@ do
 			if maxStack and maxStack > 1 then
 				if not cache[itemLink] then
 					local r, g, b = GetItemQualityColor(quality or 1)
-					StaticPopup_Show("BUY_STACK", " ", " ", {["texture"] = texture, ["name"] = name, ["color"] = { r, g, b, 1 }, ["link"] = itemLink, ["index"] = id, ["count"] = maxStack})
+					StaticPopup_Show("BUY_STACK", " ", " ", {
+						["texture"] = texture,
+						["name"] = name,
+						["color"] = { r, g, b, 1 },
+						["link"] = itemLink,
+						["index"] = id,
+						["count"] = maxStack,
+					})
 				else
 					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 				end
@@ -412,26 +419,26 @@ end
 -- Fix Drag Collections taint
 do
 	local done
-	local function setupMisc(event, addon)
+	local function fixCollectionTaint(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
 			CollectionsJournal:HookScript("OnShow", function()
 				if not done then
 					if InCombatLockdown() then
-						K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+						K:RegisterEvent("PLAYER_REGEN_ENABLED", fixCollectionTaint)
 					else
 						K.CreateMoverFrame(CollectionsJournal)
 					end
 					done = true
 				end
 			end)
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, fixCollectionTaint)
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			K.CreateMoverFrame(CollectionsJournal)
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, fixCollectionTaint)
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupMisc)
+	K:RegisterEvent("ADDON_LOADED", fixCollectionTaint)
 end
 
 -- Select target when click on raid units
@@ -448,23 +455,23 @@ do
 		end
 	end
 
-	local function setupMisc(event, addon)
+	local function setupfixRaidGroup(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_RaidUI" then
 			if not InCombatLockdown() then
 				fixRaidGroupButton()
 			else
-				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupfixRaidGroup)
 			end
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, setupfixRaidGroup)
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			if RaidGroupButton1 and RaidGroupButton1:GetAttribute("type") ~= "target" then
 				fixRaidGroupButton()
-				K:UnregisterEvent(event, setupMisc)
+				K:UnregisterEvent(event, setupfixRaidGroup)
 			end
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupMisc)
+	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
 end
 
 function Module:CreateBlockStrangerInvites()

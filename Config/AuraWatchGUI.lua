@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local math_floor = math.floor
 local table_insert = table.insert
@@ -53,12 +53,16 @@ local function optOnClick(self)
 end
 
 local function optOnEnter(self)
-	if self.selected then return end
+	if self.selected then
+		return
+	end
 	self.KKUI_Background:SetVertexColor(1, 1, 1, 0.3)
 end
 
 local function optOnLeave(self)
-	if self.selected then return end
+	if self.selected then
+		return
+	end
 	self.KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
 end
 
@@ -82,7 +86,9 @@ end
 
 local function createLabel(parent, text, tip)
 	local label = K.CreateFontString(parent, 14, text, "", "system", "CENTER", 0, 25)
-	if not tip then return end
+	if not tip then
+		return
+	end
 
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetAllPoints(label)
@@ -93,11 +99,11 @@ local function createLabel(parent, text, tip)
 end
 
 local function AW_CreateEditbox(parent, text, x, y, tip, width, height)
-	local h = height or 24
-	local w = width or 90
+	local height = height or 24
+	local width = width or 90
 
 	local eb = CreateFrame("EditBox", nil, parent)
-	eb:SetSize(w, h)
+	eb:SetSize(width, height)
 	eb:SetPoint("TOPLEFT", x, y)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
@@ -135,30 +141,26 @@ local function AW_CreateCheckBox(parent, text, x, y, tip)
 
 	cb:SetHighlightTexture(C["Media"].Textures.White8x8Texture)
 	local hl = cb:GetHighlightTexture()
-	if hl then
-		hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
-		hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)
-		hl:SetVertexColor(0, 1, 0, 0.25)
-	end
+	hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
+	hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)
+	hl:SetVertexColor(0, 1, 0, 0.25)
 
 	local ch = cb:GetCheckedTexture()
-	if ch then
-		ch:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
-		ch:SetTexCoord(0, 1, 0, 1)
-		ch:SetDesaturated(true)
-		ch:SetVertexColor(1, 1, 0)
-	end
+	ch:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
+	ch:SetTexCoord(0, 1, 0, 1)
+	ch:SetDesaturated(true)
+	ch:SetVertexColor(1, 1, 0)
 
 	cb.Type = "CheckBox"
 	return cb
 end
 
 local function AW_CreateDropdown(parent, text, x, y, data, tip, width, height)
-	local w = width or 90
-	local h = height or 24
+	local width = width or 90
+	local height = height or 24
 
 	local dd = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-	dd:SetSize(w, h)
+	dd:SetSize(width, height)
 	dd:SetPoint("TOPLEFT", x, y)
 	createLabel(dd, text, tip)
 	dd:CreateBorder()
@@ -184,8 +186,8 @@ local function AW_CreateDropdown(parent, text, x, y, data, tip, width, height)
 	local opt, index = {}, 0
 	for i, j in pairs(data) do
 		opt[i] = CreateFrame("Button", nil, list, "BackdropTemplate")
-		opt[i]:SetPoint("TOPLEFT", 4, -4 - (i - 1) * (h + 6))
-		opt[i]:SetSize(w - 8, h)
+		opt[i]:SetPoint("TOPLEFT", 4, -4 - (i - 1) * (height + 6))
+		opt[i]:SetSize(width - 8, height)
 		opt[i]:CreateBorder()
 
 		local text = K.CreateFontString(opt[i], 14, j, "", false, "LEFT", 5, 0)
@@ -200,7 +202,7 @@ local function AW_CreateDropdown(parent, text, x, y, data, tip, width, height)
 		dd.options[i] = opt[i]
 		index = index + 1
 	end
-	list:SetSize(w, index * (h + 5) + 6)
+	list:SetSize(width, index * (height + 5) + 6)
 
 	dd.Type = "DropDown"
 	return dd
@@ -288,7 +290,10 @@ local function auraWatchHide()
 end
 
 local function CreatePanel()
-	if f then f:Show() return end
+	if f then
+		f:Show()
+		return
+	end
 
 	-- Structure
 	f = CreateFrame("Frame", "KKUI_AuraWatchGUI", UIParent)
@@ -522,16 +527,16 @@ local function CreatePanel()
 
 	-- Main
 	local groups = {
-		L["Player Aura"], 		-- 1 PlayerBuff
-		L["Special Aura"], 		-- 2 SPECIAL
-		L["Target Aura"], 		-- 3 TargetDebuff
-		L["Warning"], 			-- 4 Warning
-		L["Focus Aura"], 		-- 5 FOCUS
-		L["Spell Cooldown"], 	-- 6 CD
-		L["Enchant Aura"], 		-- 7 Enchant
-		L["Raid Buff"], 		-- 8 RaidBuff
-		L["Raid Debuff"], 		-- 9 RaidDebuff
-		L["InternalCD"], 		-- 10 InternalCD
+		L["Player Aura"], -- 1 PlayerBuff
+		L["Special Aura"], -- 2 SPECIAL
+		L["Target Aura"], -- 3 TargetDebuff
+		L["Warning"], -- 4 Warning
+		L["Focus Aura"], -- 5 FOCUS
+		L["Spell Cooldown"], -- 6 CD
+		L["Enchant Aura"], -- 7 Enchant
+		L["Raid Buff"], -- 8 RaidBuff
+		L["Raid Debuff"], -- 9 RaidDebuff
+		L["InternalCD"], -- 10 InternalCD
 	}
 
 	local preSet = {
@@ -562,12 +567,16 @@ local function CreatePanel()
 	end
 
 	local function tabOnEnter(self)
-		if self.selected then return end
+		if self.selected then
+			return
+		end
 		self.KKUI_Background:SetVertexColor(r, g, b, 0.3)
 	end
 
 	local function tabOnLeave(self)
-		if self.selected then return end
+		if self.selected then
+			return
+		end
 		self.KKUI_Background:SetVertexColor(0.04, 0.04, 0.04, 0.9)
 	end
 
@@ -619,7 +628,9 @@ local function CreatePanel()
 
 					local optionText = Option[1].Text:GetText()
 					if optionText == "AuraID" then
-						for k = 2, 10 do Option[k]:Show() end
+						for k = 2, 10 do
+							Option[k]:Show()
+						end
 						Option[3].options[preSet[i][1]]:Click()
 						if preSet[i][2] then
 							Option[4].options[1]:Click()
@@ -770,6 +781,4 @@ SlashCmdList["KKUI_AWCONFIG"] = function()
 	CreatePanel()
 end
 SLASH_KKUI_AWCONFIG1 = "/kkaurawatch"
-SLASH_KKUI_AWCONFIG2 = "/kaw"
-SLASH_KKUI_AWCONFIG3 = "/aw"
-SLASH_KKUI_AWCONFIG4 = "/kkaw"
+SLASH_KKUI_AWCONFIG1 = "/kkaw"
