@@ -1,38 +1,17 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Chat")
 
-local strfind, strmatch, gsub, strrep = string.find, string.match, string.gsub, string.rep
-local pairs, ipairs, tonumber = pairs, ipairs, tonumber
-local min, max, tremove = math.min, math.max, table.remove
-local IsGuildMember, C_FriendList_IsFriend, IsGUIDInGroup, C_Timer_After = IsGuildMember, C_FriendList.IsFriend, IsGUIDInGroup, C_Timer.After
-local Ambiguate, UnitIsUnit, BNGetGameAccountInfoByGUID, GetTime, SetCVar = Ambiguate, UnitIsUnit, BNGetGameAccountInfoByGUID, GetTime, SetCVar
+local math_min = math.min
+local gsub = string.gsub
+local pairs, ipairs = pairs, ipairs
+local tremove = table.remove
+
+local IsGuildMember, C_FriendList_IsFriend, IsGUIDInGroup = IsGuildMember, C_FriendList.IsFriend, IsGUIDInGroup
+local Ambiguate, GetTime = Ambiguate, GetTime
+local BNGetGameAccountInfoByGUID = BNGetGameAccountInfoByGUID
 
 -- Filter Chat symbols
 local msgSymbols = { "`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~" }
-
-local addonBlockList = {
-	"%(Task completed%)",
-	"%*%*.+%*%*",
-	"%[Accept task%]",
-	":.+>",
-	"<Bigfoot",
-	"<LFG>",
-	"<Team Item Level:.+>",
-	"<iLvl>",
-	"Attribute Notification",
-	"EUI[:_]",
-	"Interrupt:. +|Hspell",
-	"PS death: .+>",
-	"Progress:",
-	"Task progress prompt",
-	"Xihan",
-	"wow.+Redemption Code",
-	"wow.+Verification Code",
-	"|Hspell.+=>",
-	"【Love Plugin]",
-	"【Love is not easy】",
-	("%-"):rep(20),
-}
 
 local FilterList = {}
 function Module:UpdateFilterList()
@@ -59,7 +38,7 @@ function Module:CompareStrDiff(string_A, string_B)
 	for i = 1, length_A do
 		this_table[1] = i
 		for j = 1, length_B do
-			local cost = (string_A[i] == string_B[j]) and last_table[j] or (min(last_table[j + 1], this_table[j], last_table[j]) + 1)
+			local cost = (string_A[i] == string_B[j]) and last_table[j] or (math_min(last_table[j + 1], this_table[j], last_table[j]) + 1)
 			this_table[j + 1] = cost
 		end
 
@@ -73,17 +52,18 @@ function Module:CompareStrDiff(string_A, string_B)
 end
 
 C.BadBoys = {} -- debug
-local chatLines, prevLineID, filterResult = {}, 0, false
+local chatLines, prevLineID, filterResult = {}, 0, false or nil
 
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
+		-- Ignore messages from self, GMs in whispers, and developers
 		return
 	elseif guid and (IsGuildMember(guid) or BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
+		-- Ignore messages from guild members, friends, and group members
 		return
 	end
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
-		K.Print("DEBUG: GetFilterResult", name)
 		Module.MuteCache[name] = GetTime()
 		return true
 	end
@@ -118,7 +98,6 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 				end
 			end
 		end
-
 		if matches == 0 and found then
 			return 0
 		end
@@ -143,21 +122,18 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	if filterMsg == "" then
 		filterMsg = msg
 	end
-
 	for i = 1, #filterMsg do
 		msgTable[2][i] = filterMsg:byte(i)
 	end
-
 	local chatLinesSize = #chatLines
 	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_MONSTER_SAY" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
+		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
 			tremove(chatLines, i)
 			return true
 		end
 	end
-
 	if chatLinesSize >= 30 then
 		tremove(chatLines, 1)
 	end
@@ -169,48 +145,15 @@ function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, 
 
 		local name = Ambiguate(author, "none")
 		filterResult = Module:GetFilterResult(event, msg, name, flag, guid)
-
 		if filterResult and filterResult ~= 0 then
 			C.BadBoys[name] = (C.BadBoys[name] or 0) + 1
 		end
-
 		if filterResult == 0 then
 			filterResult = true
 		end
 	end
 
 	return filterResult
-end
-
-local function toggleCVar(value)
-	value = tonumber(value) or 1
-	SetCVar(cvar, value)
-end
-
-function Module:ToggleChatBubble(party)
-	cvar = "chatBubbles" .. (party and "Party" or "")
-	if not GetCVarBool(cvar) then return end
-	toggleCVar(0)
-	C_Timer_After(0.01, toggleCVar)
-end
-
-function Module:UpdateAddOnBlocker(event, msg, author)
-	local name = Ambiguate(author, "none")
-	if UnitIsUnit(name, "player") then return end
-
-	for _, word in ipairs(addonBlockList) do
-		if strfind(msg, word) then
-			if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
-				Module:ToggleChatBubble()
-			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
-				Module:ToggleChatBubble(true)
-			elseif event == "CHAT_MSG_WHISPER" then
-				K.Print("DEBUG: UpdateAddOnBlocker", name)
-				Module.MuteCache[name] = GetTime()
-			end
-			return true
-		end
-	end
 end
 
 function Module:CreateChatFilter()
@@ -220,23 +163,10 @@ function Module:CreateChatFilter()
 		self:UpdateFilterList()
 		self:UpdateFilterWhiteList()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-	end
-
-	if C["Chat"].BlockAddonAlert then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
 	end
 end

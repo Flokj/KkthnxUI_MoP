@@ -1,30 +1,30 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Bags")
 
 local cargBags = K.cargBags
 
-local ceil = _G.ceil
-local ipairs = _G.ipairs
-local string_match = _G.string.match
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local ceil = ceil
+local ipairs = ipairs
+local string_match = string.match
+local table_wipe = table.wipe
+local unpack = unpack
 
-local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
-local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
-local C_Timer_After = _G.C_Timer.After
-local ClearCursor = _G.ClearCursor
-local CreateFrame = _G.CreateFrame
-local DeleteCursorItem = _G.DeleteCursorItem
-local GetInventoryItemID = _G.GetInventoryItemID
-local GetItemInfo = _G.GetItemInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local PlaySound = _G.PlaySound
-local SOUNDKIT = _G.SOUNDKIT
-local SortBags = _G.SortBags
-local SortBankBags = _G.SortBankBags
+local C_NewItems_IsNewItem = C_NewItems.IsNewItem
+local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
+local C_Timer_After = C_Timer.After
+local ClearCursor = ClearCursor
+local CreateFrame = CreateFrame
+local DeleteCursorItem = DeleteCursorItem
+local GetInventoryItemID = GetInventoryItemID
+local GetItemInfo = GetItemInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local LE_ITEM_QUALITY_POOR = LE_ITEM_QUALITY_POOR
+local PlaySound = PlaySound
+local SOUNDKIT = SOUNDKIT
+local SortBags = SortBags
+local SortBankBags = SortBankBags
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local PickupContainerItem = C_Container.PickupContainerItem
@@ -42,7 +42,9 @@ function Module:ReverseSort()
 	for bag = 0, 4 do
 		local numSlots = GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
-			local texture, _, locked = C_Container.GetContainerItemInfo(bag, slot)
+			local info = C_Container.GetContainerItemInfo(bag, slot)
+			local texture = info and info.iconFileID
+			local locked = info and info.isLocked
 			if (slot <= numSlots / 2) and texture and not locked and not sortCache["b" .. bag .. "s" .. slot] then
 				PickupContainerItem(bag, slot)
 				PickupContainerItem(bag, numSlots + 1 - slot)
@@ -143,12 +145,12 @@ function Module:CreateInfoFrame()
 	infoFrame:SetSize(160, 18)
 
 	local icon = infoFrame:CreateTexture(nil, "ARTWORK")
-	icon:SetSize(20, 20)
+	icon:SetSize(22, 22)
 	icon:SetPoint("LEFT", 0, 2)
 	icon:SetTexture("Interface\\Minimap\\Tracking\\None")
 
 	local hl = infoFrame:CreateTexture(nil, "HIGHLIGHT")
-	hl:SetSize(20, 20)
+	hl:SetSize(22, 22)
 	hl:SetPoint("LEFT", 0, 2)
 	hl:SetTexture("Interface\\Minimap\\Tracking\\None")
 
@@ -163,7 +165,7 @@ function Module:CreateInfoFrame()
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(K.UIFontOutline)
 	currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
-	currencyTag:SetPoint("TOP", self, "BOTTOM", 0, -6)
+	currencyTag:SetPoint("TOP", _G.KKUI_BackpackBag, "BOTTOM", 0, -6)
 
 	infoFrame.title = SEARCH
 	K.AddTooltip(infoFrame, "ANCHOR_TOPLEFT", K.InfoColorTint .. "|nClick to search your bag items.|nYou can type in item names or item equip locations.|n|n'boe' for items that bind on equip and 'quest' for quest items.")
@@ -931,16 +933,17 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 12, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 13, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
 		AddNewContainer("Bag", 6, "AmmoItem", filters.bagAmmo)
 		AddNewContainer("Bag", 8, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 7, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 10, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
+		AddNewContainer("Bag", 11, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 9, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 11, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 12, "BagQuest", filters.bagQuest)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -960,9 +963,10 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 8, "BankEquipSet", filters.bankEquipSet)
 		AddNewContainer("Bank", 9, "BankLegendary", filters.bankLegendary)
 		AddNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
-		AddNewContainer("Bank", 11, "BankConsumable", filters.bankConsumable)
-		AddNewContainer("Bank", 10, "BankGoods", filters.bankGoods)
-		AddNewContainer("Bank", 12, "BankQuest", filters.bankQuest)
+		AddNewContainer("Bank", 10, "BankCollection", filters.bankCollection)
+		AddNewContainer("Bank", 12, "BankConsumable", filters.bankConsumable)
+		AddNewContainer("Bank", 11, "BankGoods", filters.bankGoods)
+		AddNewContainer("Bank", 13, "BankQuest", filters.bankQuest)
 
 		f.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
 		f.bank.__anchor = { "BOTTOMLEFT", 25, 50 }

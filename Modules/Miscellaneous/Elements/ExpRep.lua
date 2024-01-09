@@ -6,7 +6,6 @@ local string_format = _G.string.format
 local pairs = _G.pairs
 local select = _G.select
 
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local IsLevelAtEffectiveMaxLevel = _G.IsLevelAtEffectiveMaxLevel
@@ -87,7 +86,7 @@ function Module:ExpBar_Update()
 			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = (reaction == 9 and { r = 0, g = 0.5, b = 0.9 }) or _G.FACTION_BAR_COLORS[reaction] -- reaction 9 is Paragon
+		local color = (reaction == 9 and { r = 0, g = 0.5, b = 0.9 }) or K.Colors.faction[reaction] -- reaction 9 is Paragon
 		self:SetStatusBarColor(color.r, color.g, color.b)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
@@ -139,7 +138,7 @@ function Module:ExpBar_UpdateTooltip()
 		local name, reaction, minValue, maxValue, curValue = GetWatchedFactionInfo()
 
 		if name then
-			GameTooltip:AddLine(name, FACTION_BAR_COLORS[reaction].r, FACTION_BAR_COLORS[reaction].g, FACTION_BAR_COLORS[reaction].b)
+			GameTooltip:AddLine(name, K.RGBToHex(0, 0.74, 0.95))
 
 			if reaction ~= _G.MAX_REPUTATION_REACTION then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)

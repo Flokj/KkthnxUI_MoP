@@ -172,6 +172,8 @@ function Module:GetFilters()
 	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) end
 	filters.onlyReagent = function(item) return item.bagId == -3 end
+	filters.bagCollection = function(item) return isItemInBag(item) and isItemCollection(item) end
+	filters.bankCollection = function(item) return isItemInBank(item) and isItemCollection(item) end
 	filters.onlyKeyring = function(item) return isItemKeyRing(item) end
 	filters.bagGoods = function(item) return isItemInBag(item) and isTradeGoods(item) end
 	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end

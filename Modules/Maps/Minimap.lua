@@ -26,10 +26,12 @@ function Module:CreateStyle()
 	if not C["Minimap"].MailPulse then return end
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
-	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
+	minimapMailPulse:SetBackdrop({
+		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay",
+		edgeSize = 12,
+	})
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
-	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
 	minimapMailPulse:Hide()
 
 	local anim = minimapMailPulse:CreateAnimationGroup()

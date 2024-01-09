@@ -160,7 +160,7 @@
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <!--Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" /-->
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
-   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
+   <!--Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" /-->
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\AtlasLoot.lua" />
    <!--Include file="Skins\Addons\LortiTextures.lua" /-->
