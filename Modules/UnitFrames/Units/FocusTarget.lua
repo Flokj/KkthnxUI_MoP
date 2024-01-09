@@ -1,9 +1,11 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local select = select
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
 function Module:CreateFocusTarget()
 	self.mystyle = "focustarget"
@@ -128,8 +130,8 @@ function Module:CreateFocusTarget()
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	self.Debuffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
 	self.Debuffs.num = 3
 	self.Debuffs.iconsPerRow = 3
 

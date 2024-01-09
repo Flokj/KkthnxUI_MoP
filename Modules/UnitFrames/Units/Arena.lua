@@ -1,9 +1,11 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+-- Lua functions
+local select = select
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
 function Module:CreateArena()
 	self.mystyle = "arena"
@@ -11,6 +13,7 @@ function Module:CreateArena()
 	local arenaWidth = C["Arena"].HealthWidth
 	local arenaHeight = C["Arena"].HealthHeight
 	local arenaPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.

@@ -1,15 +1,18 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local select = select
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
 function Module:CreateFocus()
 	self.mystyle = "focus"
 
 	local focusWidth = C["Unitframe"].FocusHealthWidth
 	local focusPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -150,7 +153,7 @@ function Module:CreateFocus()
 		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6 --C["Unitframe"].TargetBuffsPerRow
+		self.Buffs.iconsPerRow = 6 -- C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
 		Module:UpdateAuraContainer(focusWidth, self.Buffs, self.Buffs.num)
@@ -161,76 +164,61 @@ function Module:CreateFocus()
 	end
 
 	if C["Unitframe"].FocusCastbar then
-		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
-		self.Castbar:SetPoint("TOP", self.Buffs, "BOTTOM", 0, -6)
-		self.Castbar:SetPoint("CENTER", self.Buffs)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
+		local Castbar = CreateFrame("StatusBar", "oUF_CastbarFocus", self)
+		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		Castbar:SetFrameLevel(10)
+		Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
+		Castbar:CreateBorder()
+		Castbar.castTicks = {}
 
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
+		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark:SetAlpha(0.8)
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject(K.UIFont)
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
+		local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
+		local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+		name:SetJustifyH("LEFT")
 
-		self.Castbar.decimal = "%.2f"
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		Castbar.Button:CreateBorder()
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+		Castbar.decimal = "%.2f"
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject(K.UIFont)
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
+		Castbar.Time = timer
+		Castbar.Text = name
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		if C["Unitframe"].FocusCastbarIcon then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(20, 20)
-			self.Castbar.Button:CreateBorder()
+		local mover = K.Mover(Castbar, "Focus Castbar", "FocusCB", { "BOTTOM", UIParent, "BOTTOM", -474, 750 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
+		Castbar:ClearAllPoints()
+		Castbar:SetPoint("RIGHT", mover)
+		Castbar.mover = mover
 
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(C["Unitframe"].FocusCastbarHeight, C["Unitframe"].FocusCastbarHeight)
-			self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
-
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
-
-		local FocusCastbarPoint
-		if C["Unitframe"].FocusBuffs then
-			FocusCastbarPoint = self.Buffs
-		else
-			FocusCastbarPoint = self.Power
-		end
-
-		K.Mover(self.Castbar, "FocusCastbar", "FocusCastbar", { "TOP", FocusCastbarPoint, "BOTTOM", 0, -6 }, focusWidth, C["Unitframe"].FocusCastbarHeight)
+		self.Castbar = Castbar
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
-
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
+		mhpb:SetTexture(HealPredictionTexture)
 		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local ohpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
 		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
+		ohpb:SetTexture(HealPredictionTexture)
 		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
 		self.HealPredictionAndAbsorb = {
@@ -238,7 +226,6 @@ function Module:CreateFocus()
 			otherBar = ohpb,
 			maxOverflow = 1,
 		}
-		self.predicFrame = frame
 	end
 
 	-- Level

@@ -1,12 +1,14 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local select = select
-local string_format = _G.string.format
+local string_format = string.format
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
-function Module.PostUpdateAddPower(element, _, cur, max)
+function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
 		local perc = cur / max * 100
 		if perc == 100 then
@@ -16,6 +18,7 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
 		end
+
 		element.Text:SetText(perc)
 	end
 end
@@ -26,7 +29,9 @@ function Module:CreatePlayer()
 	local playerWidth = C["Unitframe"].PlayerHealthWidth
 	local playerHeight = C["Unitframe"].PlayerHealthHeight
 	local playerPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetAllPoints()
@@ -78,7 +83,9 @@ function Module:CreatePlayer()
 	Power.colorPower = true
 	Power.frequentUpdates = true
 
-	if C["Unitframe"].Smooth then K:SmoothBar(Power) end
+	if C["Unitframe"].Smooth then
+		K:SmoothBar(Power)
+	end
 
 	Power.Value = Power:CreateFontString(nil, "OVERLAY")
 	Power.Value:SetPoint("CENTER", Power, "CENTER", 0, 0)
@@ -163,7 +170,66 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerCastbar then
-		Module:CreateCastBar(self)
+		local Castbar = CreateFrame("StatusBar", "oUF_CastbarPlayer", self)
+		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		Castbar:SetFrameLevel(10)
+		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
+		Castbar:CreateBorder()
+		Castbar.castTicks = {}
+
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
+		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark:SetAlpha(0.8)
+
+		local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
+		local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+		name:SetJustifyH("LEFT")
+
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		Castbar.Button:CreateBorder()
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+
+		local safeZone = Castbar:CreateTexture(nil, "OVERLAY")
+		safeZone:SetTexture(K.GetTexture(C["General"].Texture))
+		safeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+		safeZone:SetPoint("TOPRIGHT")
+		safeZone:SetPoint("BOTTOMRIGHT")
+		Castbar:SetFrameLevel(10)
+		Castbar.SafeZone = safeZone
+
+		local lagStr = K.CreateFontString(Castbar, 11)
+		lagStr:ClearAllPoints()
+		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
+		Castbar.LagString = lagStr
+
+		Module:ToggleCastBarLatency(self)
+
+		Castbar.decimal = "%.2f"
+
+		Castbar.Time = timer
+		Castbar.Text = name
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+
+		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
+		Castbar:ClearAllPoints()
+		Castbar:SetPoint("RIGHT", mover)
+		Castbar.mover = mover
+
+		self.Castbar = Castbar
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -172,12 +238,12 @@ function Module:CreatePlayer()
 
 		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
+		mhpb:SetTexture(HealPredictionTexture)
 		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
 		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
 		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
+		ohpb:SetTexture(HealPredictionTexture)
 		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
 		self.HealPredictionAndAbsorb = {
@@ -272,69 +338,54 @@ function Module:CreatePlayer()
 	end
 
 	-- Swing timer
-	if C["Unitframe"].Swingbar then
+	if C["Unitframe"].SwingBar then
+		local width, height = C["Unitframe"].SwingWidth, C["Unitframe"].SwingHeight
+
 		local bar = CreateFrame("Frame", nil, self)
-		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
-		bar:SetSize(width, 13)
-		bar:SetPoint("TOP", UIParent, "CENTER", -10, -175)
+		bar:SetSize(width, height)
+		bar.mover = K.Mover(bar, "UFs SwingBar", "Swing", { "BOTTOM", UIParent, "BOTTOM", 0, 176 })
+		bar:ClearAllPoints()
+		bar:SetPoint("CENTER", bar.mover)
 
 		local two = CreateFrame("StatusBar", nil, bar)
-		two:Hide()
-		two:SetAllPoints()
 		two:SetStatusBarTexture(UnitframeTexture)
 		two:SetStatusBarColor(0.8, 0.8, 0.8)
 		two:CreateBorder()
-
-		local twospark = two:CreateTexture(nil, "OVERLAY")
-		twospark:SetTexture(C["Media"].Textures.Spark16Texture)
-		twospark:SetHeight(14)
-		twospark:SetBlendMode("ADD")
-		twospark:SetPoint("CENTER", two:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		local bg = two:CreateTexture(nil, "BACKGROUND", nil, 1)
-		bg:Hide()
-		bg:SetPoint("TOPRIGHT")
-		bg:SetPoint("BOTTOMRIGHT")
-		bg:SetColorTexture(0.87, 0.37, 0.37, 0.3)
+		two:Hide()
+		two:SetAllPoints()
 
 		local main = CreateFrame("StatusBar", nil, bar)
-		main:Hide()
-		main:SetAllPoints()
 		main:SetStatusBarTexture(UnitframeTexture)
 		main:SetStatusBarColor(0.8, 0.8, 0.8)
 		main:CreateBorder()
-
-		local mainspark = main:CreateTexture(nil, "OVERLAY")
-		mainspark:SetTexture(C["Media"].Textures.Spark16Texture)
-		mainspark:SetHeight(14)
-		mainspark:SetBlendMode("ADD")
-		mainspark:SetPoint("CENTER", main:GetStatusBarTexture(), "RIGHT", 0, 0)
+		main:Hide()
+		main:SetAllPoints()
 
 		local off = CreateFrame("StatusBar", nil, bar)
-		off:Hide()
-		off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -3)
-		off:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, -6)
 		off:SetStatusBarTexture(UnitframeTexture)
 		off:SetStatusBarColor(0.8, 0.8, 0.8)
 		off:CreateBorder()
-
-		local offspark = off:CreateTexture(nil, "OVERLAY")
-		offspark:SetTexture(C["Media"].Textures.Spark16Texture)
-		offspark:SetHeight(14)
-		offspark:SetBlendMode("ADD")
-		offspark:SetPoint("CENTER", off:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		if C["Unitframe"].SwingbarTimer then
-			bar.Text = K.CreateFontString(bar, 12, "", "")
-			bar.TextMH = K.CreateFontString(main, 12, "", "")
-			bar.TextOH = K.CreateFontString(off, 12, "", "", false, "CENTER", 1, -5)
+		off:Hide()
+		if C["Unitframe"].OffOnTop then
+			off:SetPoint("BOTTOMLEFT", bar, "TOPLEFT", 0, 6)
+			off:SetPoint("BOTTOMRIGHT", bar, "TOPRIGHT", 0, 6)
+		else
+			off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -6)
+			off:SetPoint("TOPRIGHT", bar, "BOTTOMRIGHT", 0, -6)
 		end
+		off:SetHeight(height)
+
+		bar.Text = K.CreateFontString(bar, 12, "")
+		bar.Text:SetShown(C["Unitframe"].SwingTimer)
+		bar.TextMH = K.CreateFontString(main, 12, "")
+		bar.TextMH:SetShown(C["Unitframe"].SwingTimer)
+		bar.TextOH = K.CreateFontString(off, 12, "")
+		bar.TextOH:SetShown(C["Unitframe"].SwingTimer)
 
 		self.Swing = bar
 		self.Swing.Twohand = two
 		self.Swing.Mainhand = main
 		self.Swing.Offhand = off
-		self.Swing.bg = bg
 		self.Swing.hideOoc = true
 	end
 
@@ -369,8 +420,9 @@ function Module:CreatePlayer()
 
 	local CombatIndicator = Health:CreateTexture(nil, "OVERLAY")
 	CombatIndicator:SetSize(26, 26)
-	CombatIndicator:SetPoint("LEFT", 6, 0)
+	CombatIndicator:SetPoint("LEFT", 6, -1)
 	CombatIndicator:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon")
+	CombatIndicator:SetAlpha(0.7)
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
@@ -422,17 +474,6 @@ function Module:CreatePlayer()
 		Override = Module.UpdateThreat,
 	}
 
-	-- Fader
-	--if C["Unitframe"].CombatFade then
-	--	self.Fader = {
-	--		[1] = { Combat = 1, Arena = 1, Instance = 1 },
-	--		[2] = { PlayerTarget = 1, PlayerNotMaxHealth = 1, PlayerNotMaxMana = 1, Casting = 1 },
-	--		[3] = { Stealth = 0.5 },
-	--		[4] = { notCombat = 0, PlayerTaxi = 0 },
-	--	}
-	--	self.NormalAlpha = 1
-	--end
-
 	self.Overlay = Overlay
 	self.Health = Health
 	self.Power = Power
@@ -444,5 +485,4 @@ function Module:CreatePlayer()
 	self.ResurrectIndicator = ResurrectIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-
 end

@@ -1,17 +1,19 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local select = select
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
 function Module:CreatePet()
 	self.mystyle = "pet"
 
-	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local petHeight = C["Unitframe"].PetHealthHeight
-	local petWidth = C["Unitframe"].PetHealthWidth
 	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetAllPoints()
@@ -131,15 +133,10 @@ function Module:CreatePet()
 	Debuffs.initialAnchor = "TOPLEFT"
 	Debuffs["growth-x"] = "RIGHT"
 	Debuffs["growth-y"] = "DOWN"
-	Debuffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
-	Debuffs:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
+	Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMLEFT", 0, -6)
+	Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMRIGHT", 0, -6)
 	Debuffs.num = 3
 	Debuffs.iconsPerRow = 3
-
-	Module:UpdateAuraContainer(petWidth, Debuffs, Debuffs.num)
-
-	Debuffs.PostCreateIcon = Module.PostCreateAura
-	Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" then
@@ -175,6 +172,8 @@ function Module:CreatePet()
 		Override = Module.UpdateThreat,
 	}
 
+	local Range = Module.CreateRangeIndicator(self)
+
 	self.Overlay = Overlay
 	self.Health = Health
 	self.Power = Power
@@ -184,7 +183,5 @@ function Module:CreatePet()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-
-	Module.CreateRangeIndicator(self)
-	Module:CreateSparkleCastBar(self)
+	self.Range = Range
 end

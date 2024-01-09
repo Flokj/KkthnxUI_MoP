@@ -8,19 +8,20 @@ local function SetupAutoQuestCheckButton()
 	if isCheckButtonCreated then return end
 
 	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
-	AutoQuestCheckButton:SetHitRectInsets(-5, -5, -5, -5)
-	AutoQuestCheckButton:SetPoint("TOPRIGHT", -125, -40)
-	AutoQuestCheckButton:SetSize(15, 15)
-	AutoQuestCheckButton:SkinCheckBox()
+	AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
+	AutoQuestCheckButton:SetSize(24, 24)
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
 	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
 
+	AutoQuestCheckButton:SetHitRectInsets(0, 0 - AutoQuestCheckButton.text:GetWidth(), 0, 0)
 	AutoQuestCheckButton:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
 	AutoQuestCheckButton:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
+
+	isCheckButtonCreated = true
 
 	function AutoQuestCheckButton.UpdateTooltip(self)
 		if GameTooltip:IsForbidden() then return end
@@ -57,8 +58,6 @@ local function SetupAutoQuestCheckButton()
 		Questie_Toggle:SetPoint("LEFT", WorldMapZoomOutButton, "RIGHT", 5, 0)
 		Questie_Toggle.SetPoint = K.Noop
 	end
-
-	isCheckButtonCreated = true
 end
 WorldMapFrame:HookScript("OnShow", SetupAutoQuestCheckButton)
 

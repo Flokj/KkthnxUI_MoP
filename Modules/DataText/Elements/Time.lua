@@ -1,46 +1,53 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
-local date = _G.date
-local mod = _G.mod
-local pairs = _G.pairs
-local string_format = _G.string.format
-local tonumber = _G.tonumber
+local date = date
+local mod = mod
+local pairs = pairs
+local string_format = string.format
+local tonumber = tonumber
 
-local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
-local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
-local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
-local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
-local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
-local FULLDATE = _G.FULLDATE
-local GameTime_GetGameTime = _G.GameTime_GetGameTime
-local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
-local GameTooltip = _G.GameTooltip
-local GetCVarBool = _G.GetCVarBool
-local GetGameTime = _G.GetGameTime
-local GetNumSavedInstances = _G.GetNumSavedInstances
-local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
-local QUESTS_LABEL = _G.QUESTS_LABEL
-local QUEST_COMPLETE = _G.QUEST_COMPLETE
-local RequestRaidInfo = _G.RequestRaidInfo
-local SecondsToTime = _G.SecondsToTime
-local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
-local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
+local CALENDAR_FULLDATE_MONTH_NAMES = CALENDAR_FULLDATE_MONTH_NAMES
+local CALENDAR_WEEKDAY_NAMES = CALENDAR_WEEKDAY_NAMES
+local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
+local C_TaskQuest_GetThreatQuests = C_TaskQuest.GetThreatQuests
+local FULLDATE = FULLDATE
+local GameTime_GetGameTime = GameTime_GetGameTime
+local GameTime_GetLocalTime = GameTime_GetLocalTime
+local GameTooltip = GameTooltip
+local GetCVarBool = GetCVarBool
+local GetGameTime = GetGameTime
+local GetNumSavedInstances = GetNumSavedInstances
+local GetSavedInstanceInfo = GetSavedInstanceInfo
+local QUESTS_LABEL = QUESTS_LABEL
+local QUEST_COMPLETE = QUEST_COMPLETE
+local RequestRaidInfo = RequestRaidInfo
+local SecondsToTime = SecondsToTime
+local TIMEMANAGER_TICKER_12HOUR = TIMEMANAGER_TICKER_12HOUR
+local TIMEMANAGER_TICKER_24HOUR = TIMEMANAGER_TICKER_24HOUR
 
 local TimeDataText
+local TimeDataTextEntered
 
 -- Data
-
 local questlist = {
-	{ name = "Mean One", id = 6983 },
-	{ name = "Blingtron", id = 34774 },
+	{ name = "Feast of Winter Veil", id = 6983 },
+	{ name = "Blingtron Daily Gift", id = 34774 },
+	{ name = "500 Timewarped Badges", id = 40168, texture = 1129674 }, -- TBC
+	{ name = "500 Timewarped Badges", id = 40173, texture = 1129686 }, -- WotLK
+	{ name = "500 Timewarped Badges", id = 40786, texture = 1304688 }, -- Cata
+	{ name = "500 Timewarped Badges", id = 45563, texture = 1530590 }, -- MoP
+	{ name = "500 Timewarped Badges", id = 55499, texture = 1129683 }, -- WoD
+	{ name = "500 Timewarped Badges", id = 64710, texture = 1467047 }, -- Legion
 }
 
 local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color .. TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor .. (hour < 12 and "AM" or "PM")
+		local timerUnit = K.MyClassColor .. (hour < 12 and TIMEMANAGER_AM or TIMEMANAGER_PM)
 
 		if hour >= 12 then
 			if hour > 12 then
@@ -114,7 +121,7 @@ function Module:TimeOnEnter()
 				r, g, b = 192 / 255, 192 / 255, 192 / 255
 			end
 
-			GameTooltip:AddDoubleLine(name .. " - " .. maxPlayers .. " " .. _G.PLAYER .. " (" .. diffName .. ") (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(name .. " - " .. maxPlayers .. " " .. PLAYER .. " (" .. diffName .. ") (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
@@ -139,14 +146,14 @@ function Module:TimeOnEnter()
 	for _, v in pairs(questlist) do
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
 			addTitle(QUESTS_LABEL)
-			GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+			GameTooltip:AddDoubleLine(v.itemID and GetItemLink(v.itemID) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		end
 	end
 
 	-- Help Info
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton .. "Toggle Calendar")
-	GameTooltip:AddLine(K.RightButton .. "Toggle Clock")
+	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
+	GameTooltip:AddLine(K.RightButton .. GAMETIME_TOOLTIP_TOGGLE_CLOCK)
 	GameTooltip:Show()
 end
 
@@ -157,10 +164,7 @@ end
 
 function Module:TimeOnMouseUp(btn)
 	if btn == "RightButton" then
-		TimeManager_LoadUI()
-		if TimeManager_Toggle then
-			TimeManager_Toggle()
-		end
+		_G.TimeManager_Toggle()
 	else
 		_G.ToggleCalendar()
 	end
@@ -168,7 +172,7 @@ end
 
 function Module:CreateTimeDataText()
 	if not C["DataText"].Time then return end
-	if not Minimap then	return end
+	if not Minimap then return end
 
 	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
 	TimeDataText:SetFrameLevel(8)

@@ -1,10 +1,10 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+local select = select
 
-local CreateFrame = _G.CreateFrame
-local UnitIsUnit = _G.UnitIsUnit
+local CreateFrame = CreateFrame
+local UnitIsUnit = UnitIsUnit
 
 function Module:CreateParty()
 	self.mystyle = "party"
@@ -172,78 +172,58 @@ function Module:CreateParty()
 	Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
 	if C["Party"].Castbars then
-		local Castbar = CreateFrame("StatusBar", "PartyCastbar", self)
-		Castbar:SetStatusBarTexture(UnitframeTexture)
-		Castbar:SetClampedToScreen(true)
+		local Castbar = CreateFrame("StatusBar", "oUF_CastbarParty", self)
+		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		Castbar:SetFrameLevel(10)
+		Castbar:SetPoint("BOTTOM", Health, "TOP", 0, 6)
+		Castbar:SetSize(C["Party"].HealthWidth, 18)
 		Castbar:CreateBorder()
+		Castbar.castTicks = {}
 
-		Castbar:ClearAllPoints()
-		if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
-			Castbar:SetPoint("TOPLEFT", C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetPoint("TOPRIGHT", 0, 22)
-		else
-			Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetPoint("TOPRIGHT", 0, 22)
-		end
-		Castbar:SetHeight(16)
-
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY")
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 		Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark:SetAlpha(0.8)
 
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject(K.UIFont)
-		Castbar.Time:SetFont(select(1, Castbar.Time:GetFont()), 11, select(3, Castbar.Time:GetFont()))
-		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Time:SetJustifyH("RIGHT")
+		local timer = K.CreateFontString(Castbar, 11, "", "", false, "RIGHT", -3, 0)
+		local name = K.CreateFontString(Castbar, 11, "", "", false, "LEFT", 3, 0)
+		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+		name:SetJustifyH("LEFT")
 
-		Castbar.decimal = "%.2f"
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		Castbar.Button:CreateBorder()
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+
+		Castbar.decimal = "%.1f"
+
+		Castbar.Time = timer
+		Castbar.Text = name
 		Castbar.OnUpdate = Module.OnCastbarUpdate
 		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject(K.UIFont)
-		Castbar.Text:SetFont(select(1, Castbar.Text:GetFont()), 11, select(3, Castbar.Text:GetFont()))
-		Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
-		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Text:SetJustifyH("LEFT")
-		Castbar.Text:SetWordWrap(false)
-
-		if C["Party"].CastbarIcon then
-			Castbar.Button = CreateFrame("Frame", nil, Castbar)
-			Castbar.Button:SetSize(16, 16)
-			Castbar.Button:CreateBorder()
-
-			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
-			Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			Castbar.Icon:SetPoint("RIGHT", Castbar, "LEFT", -6, 0)
-
-			Castbar.Button:SetAllPoints(Castbar.Icon)
-		end
 
 		self.Castbar = Castbar
 	end
 
 	if C["Party"].ShowHealPrediction then
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
-
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local mhpb = Health:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
+		mhpb:SetTexture(HealPredictionTexture)
 		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local ohpb = Health:CreateTexture(nil, "BORDER", nil, 5)
 		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
+		ohpb:SetTexture(HealPredictionTexture)
 		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
 		self.HealPredictionAndAbsorb = {
@@ -251,7 +231,6 @@ function Module:CreateParty()
 			otherBar = ohpb,
 			maxOverflow = 1,
 		}
-		self.predicFrame = frame
 	end
 
 	local StatusIndicator = Power:CreateFontString(nil, "OVERLAY")
@@ -378,5 +357,5 @@ function Module:CreateParty()
 	self.ResurrectIndicator = ResurrectIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	--self.Range = Range
+	self.Range = Range
 end

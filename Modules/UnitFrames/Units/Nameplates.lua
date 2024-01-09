@@ -611,6 +611,10 @@ function Module:SpellInterruptor(self)
 	self:RegisterCombatEvent("SPELL_INTERRUPT", Module.UpdateSpellInterruptor)
 end
 
+local function updateSpellTarget(self, _, unit)
+	Module.PostCastUpdate(self.Castbar, unit)
+end
+
 -- Create Nameplates
 local platesList = {}
 function Module:CreatePlates()
@@ -664,7 +668,54 @@ function Module:CreatePlates()
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
 
-	Module:CreateCastBar(self)
+	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
+	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
+	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
+	self.Castbar:SetHeight(self:GetHeight())
+	self.Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	self.Castbar:SetFrameLevel(10)
+	self.Castbar:CreateShadow(true)
+	self.Castbar.castTicks = {}
+
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight() - 2)
+	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark:SetAlpha(0.8)
+
+	self.Castbar.Time = K.CreateFontString(self.Castbar, 12, "", "", false, "RIGHT", 0, -1)
+	self.Castbar.Text = K.CreateFontString(self.Castbar, 12, "", "", false, "LEFT", 0, -1)
+	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
+	self.Castbar.Text:SetJustifyH("LEFT")
+
+	self.Castbar.Icon = self.Castbar:CreateTexture(nil, "ARTWORK")
+	self.Castbar.Icon:SetSize(self:GetHeight() * 2 + 5, self:GetHeight() * 2 + 5)
+	self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
+	self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.Button:CreateShadow(true)
+	self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+	self.Castbar.Button:SetFrameLevel(self.Castbar:GetFrameLevel())
+
+	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Icon)
+	self.Castbar.glowFrame:SetSize(self:GetHeight() * 2 + 5, self:GetHeight() * 2 + 5)
+
+	self.Castbar.spellTarget = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize + 2)
+	self.Castbar.spellTarget:ClearAllPoints()
+	self.Castbar.spellTarget:SetJustifyH("LEFT")
+	self.Castbar.spellTarget:SetPoint("TOPLEFT", self.Castbar.Text, "BOTTOMLEFT", 0, -6)
+	self:RegisterEvent("UNIT_TARGET", updateSpellTarget)
+
+	self.Castbar.timeToHold = 0.5
+	self.Castbar.decimal = "%.1f"
+	self.Castbar.OnUpdate = Module.OnCastbarUpdate
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostCastUpdate = Module.PostCastUpdate
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostCastFail = Module.PostCastFailed
+	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)

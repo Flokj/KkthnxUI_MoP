@@ -1113,7 +1113,6 @@ local WorldMap = function(self)
 
 	Window:CreateSection("WorldMap Reveal")
 	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])
-	Window:CreateColorSelection("WorldMap", "MapRevealGlowColor", L["Map Reveal Shadow Color"])
 
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])

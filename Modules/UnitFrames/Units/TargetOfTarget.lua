@@ -1,9 +1,11 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local CreateFrame = _G.CreateFrame
+local CreateFrame = CreateFrame
 
 function Module:CreateTargetOfTarget()
+	self.mystyle = "targetoftarget"
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local targetOfTargetWidth = C["Unitframe"].TargetTargetHealthWidth
 	local targetOfTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
@@ -126,8 +128,8 @@ function Module:CreateTargetOfTarget()
 	Debuffs.initialAnchor = "BOTTOMLEFT"
 	Debuffs["growth-x"] = "RIGHT"
 	Debuffs["growth-y"] = "DOWN"
-	Debuffs:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 6)
-	Debuffs:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 6)
+	Debuffs:SetPoint("BOTTOMLEFT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "TOPLEFT", 0, 6)
+	Debuffs:SetPoint("BOTTOMRIGHT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "TOPRIGHT", 0, 6)
 	Debuffs.num = 3
 	Debuffs.iconsPerRow = 3
 
@@ -168,5 +170,5 @@ function Module:CreateTargetOfTarget()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-	--self.Range = Range
+	self.Range = Range
 end

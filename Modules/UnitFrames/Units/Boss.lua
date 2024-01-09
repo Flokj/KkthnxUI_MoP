@@ -1,9 +1,11 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+-- Lua functions
+local select = select
 
-local CreateFrame = _G.CreateFrame
+-- WoW API
+local CreateFrame = CreateFrame
 
 function Module:CreateBoss()
 	self.mystyle = "boss"
@@ -11,6 +13,7 @@ function Module:CreateBoss()
 	local bossWidth = C["Boss"].HealthWidth
 	local bossHeight = C["Boss"].HealthHeight
 	local bossPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
@@ -139,10 +142,10 @@ function Module:CreateBoss()
 	self.Buffs.initialAnchor = "TOPLEFT"
 	self.Buffs["growth-x"] = "RIGHT"
 	self.Buffs["growth-y"] = "DOWN"
-	self.Buffs.num = 5
+	self.Buffs.num = 6
 	self.Buffs.spacing = 6
-	self.Buffs.iconsPerRow = 5
-	self.Buffs.onlyShowPlayer = true
+	self.Buffs.iconsPerRow = 6
+	self.Buffs.onlyShowPlayer = false
 
 	Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
@@ -156,12 +159,12 @@ function Module:CreateBoss()
 	self.Debuffs.initialAnchor = "RIGHT"
 	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.num = 4
-	self.Debuffs.iconsPerRow = 4
+	self.Debuffs.num = 5
+	self.Debuffs.iconsPerRow = 5
 
-	Module:UpdateAuraContainer(bossWidth - 18, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 
-	self.Debuffs.onlyShowPlayer = true
+	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
@@ -172,6 +175,7 @@ function Module:CreateBoss()
 		Castbar:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 		Castbar:SetSize(C["Boss"].HealthWidth, 18)
 		Castbar:CreateBorder()
+		Castbar.castTicks = {}
 
 		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
@@ -200,6 +204,7 @@ function Module:CreateBoss()
 		Castbar.Text = name
 		Castbar.OnUpdate = Module.OnCastbarUpdate
 		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible

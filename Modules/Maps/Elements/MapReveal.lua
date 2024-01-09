@@ -1,19 +1,18 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("WorldMap")
 
-local math_ceil = _G.math.ceil
-local mod = _G.mod
-local table_insert = _G.table.insert
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
+local math_ceil = math.ceil
+local mod = mod
+local table_wipe = table.wipe
+local table_insert = table.insert
 
-local C_Map_GetMapArtID = _G.C_Map.GetMapArtID
-local C_MapExplorationInfo_GetExploredMapTextures = _G.C_MapExplorationInfo.GetExploredMapTextures
-local C_Map_GetMapArtLayers = _G.C_Map.GetMapArtLayers
+local C_Map_GetMapArtID = C_Map.GetMapArtID
+local C_Map_GetMapArtLayers = C_Map.GetMapArtLayers
+local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
 
-local shownMapCache = {}
-local exploredCache = {}
-local fileDataIDs = {}
+local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
 
 local function GetStringFromInfo(info)
 	return format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
@@ -55,7 +54,6 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 	if not self.layerIndex then
 		self.layerIndex = WorldMapFrame.ScrollContainer:GetCurrentLayerIndex()
 	end
-
 	local layers = C_Map_GetMapArtLayers(mapID)
 	local layerInfo = layers and layers[self.layerIndex]
 	if not layerInfo then
@@ -110,22 +108,20 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 					texture:SetTexture(fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR")
 
 					if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap then
-						texture:SetVertexColor(0.7, 0.7, 0.7)
 						if C["WorldMap"].MapRevealGlow then
 							texture:SetVertexColor(0.7, 0.7, 0.7)
 						else
 							texture:SetVertexColor(1, 1, 1)
 						end
-						texture:SetDrawLayer("ARTWORK", -1)
+						texture:SetDrawLayer("ARTWORK", -2)
 						texture:Show()
-
 						if fullUpdate then
 							self.textureLoadGroup:AddTexture(texture)
 						end
 					else
 						texture:Hide()
 					end
-					tinsert(shownMapCache, texture)
+					table_insert(shownMapCache, texture)
 				end
 			end
 		end
@@ -141,16 +137,12 @@ end
 function Module:CreateWorldMapReveal()
 	if IsAddOnLoaded("Leatrix_Maps") then return end
 
-	local bu = CreateFrame("CheckButton", nil, _G.WorldMapFrame, "OptionsCheckButtonTemplate")
+	local bu = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
 	bu:SetHitRectInsets(-5, -5, -5, -5)
-	bu:SetPoint("TOPRIGHT", -235, -40)
-	bu:SetSize(15, 15)
-	bu:SkinCheckBox()
+	bu:SetPoint("TOPRIGHT", -260, 0)
+	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
-
-	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	bu.text:SetPoint("LEFT", 24, 0)
-	bu.text:SetText("Map Reveal")
+	bu.text = K.CreateFontString(bu, 12, "Map Reveal", "", "system", "LEFT", 24, 0)
 
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooksecurefunc(pin, "RefreshOverlays", Module.MapData_RefreshOverlays)
