@@ -415,32 +415,30 @@ function Module:CreateSortButton(name)
 	return sortButton
 end
 
-function Module:GetContainerEmptySlot(bagID, bagGroup)
-	if cargBags.BagGroups[bagID] == bagGroup then
-		for slotID = 1, GetContainerNumSlots(bagID) do
-			if not GetContainerItemID(bagID, slotID) then
-				return slotID
-			end
+function Module:GetContainerEmptySlot(bagID)
+	for slotID = 1, GetContainerNumSlots(bagID) do
+		if not GetContainerItemID(bagID, slotID) then
+			return slotID
 		end
 	end
 end
 
-function Module:GetEmptySlot(bagType, bagGroup)
-	if bagType == "Bag" then
+function Module:GetEmptySlot(name)
+	if name == "Bag" then
 		for bagID = 0, NUM_BAG_SLOTS do
-			local slotID = Module:GetContainerEmptySlot(bagID, bagGroup)
+			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
 		end
-	elseif bagType == "Bank" then
-		local slotID = Module:GetContainerEmptySlot(-1, bagGroup)
+	elseif name == "Bank" then
+		local slotID = Module:GetContainerEmptySlot(-1)
 		if slotID then
 			return -1, slotID
 		end
 
 		for bagID = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
-			local slotID = Module:GetContainerEmptySlot(bagID, bagGroup)
+			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
@@ -449,7 +447,7 @@ function Module:GetEmptySlot(bagType, bagGroup)
 end
 
 function Module:FreeSlotOnDrop()
-	local bagID, slotID = Module:GetEmptySlot(self.__owner.Settings.BagType, self.__owner.bagGroup)
+	local bagID, slotID = Module:GetEmptySlot(self.__name)
 	if slotID then
 		PickupContainerItem(bagID, slotID)
 	end
@@ -464,12 +462,9 @@ local freeSlotContainer = {
 
 function Module:CreateFreeSlots()
 	local name = self.name
-	local bagGroup = freeSlotContainer[name]
-	if not bagGroup then
+	if not freeSlotContainer[name] then
 		return
 	end
-
-	self.bagGroup = bagGroup
 
 	local slot = CreateFrame("Button", name .. "FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
@@ -478,14 +473,13 @@ function Module:CreateFreeSlots()
 	slot:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slot:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
 	K.AddTooltip(slot, "ANCHOR_RIGHT", "FreeSlots")
-	slot.__owner = self
+	slot.__name = name
 
 	local tag = self:SpawnPlugin("TagDisplay", "|cff669dff[space]|r", slot)
 	tag:SetFontObject(K.UIFontOutline)
 	tag:SetFont(select(1, tag:GetFont()), 16, select(3, tag:GetFont()))
 	tag:SetPoint("CENTER", 0, 0)
-	tag.__owner = self
-	slot.tag = tag
+	tag.__name = name
 
 	self.freeSlot = slot
 end
@@ -576,9 +570,9 @@ local function splitOnClick(self)
 		return
 	end
 
-	PickupContainerItem(self.bagId, self.slotID)
+	PickupContainerItem(self.bagId, self.slotId)
 
-	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotID)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local itemCount = info and info.stackCount
 	local locked = info and info.isLocked
@@ -586,7 +580,7 @@ local function splitOnClick(self)
 	if texture and not locked and itemCount and itemCount > KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
 		SplitContainerItem(self.bagId, self.slotId, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 
-		local bagID, slotID = Module:GetEmptySlot("Bag", 0)
+		local bagID, slotID = Module:GetEmptySlot("Bag")
 		if slotID then
 			PickupContainerItem(bagID, slotID)
 		end
@@ -714,12 +708,11 @@ local function favouriteOnClick(self)
 		return
 	end
 
-		local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
-		local texture = info and info.iconFileID
-		local quality = info and info.quality
-		local link = info and info.hyperlink
-		local itemID = info and info.itemID
-
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local texture = info and info.iconFileID
+	local quality = info and info.quality
+	local link = info and info.hyperlink
+	local itemID = info and info.itemID
 	if texture and quality > LE_ITEM_QUALITY_POOR then
 		ClearCursor()
 		Module.selectItemID = itemID
@@ -836,7 +829,6 @@ local function deleteButtonOnClick(self)
 	if not deleteEnable then
 		return
 	end
-	local texture, quality
 	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local quality = info and info.quality
@@ -917,9 +909,9 @@ function Module:OnEnable()
 	end)
 
 	Module.Bags = Backpack
-	cargBags.BagGroups = {}
-	cargBags.BagGroups[0] = 0 -- backpack
-	cargBags.BagGroups[-1] = 0 -- bank
+	Module.BagsType = {}
+	Module.BagsType[0] = 0 -- Backpack
+	Module.BagsType[-1] = 0 -- Bank
 
 	local f = {}
 	local filters = Module:GetFilters()
@@ -940,9 +932,9 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 6, "AmmoItem", filters.bagAmmo)
 		AddNewContainer("Bag", 8, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 7, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
+		AddNewContainer("Bag", 9, "BagCollection", filters.bagCollection)
 		AddNewContainer("Bag", 11, "Consumable", filters.bagConsumable)
-		AddNewContainer("Bag", 9, "BagGoods", filters.bagGoods)
+		AddNewContainer("Bag", 10, "BagGoods", filters.bagGoods)
 		AddNewContainer("Bag", 12, "BagQuest", filters.bagQuest)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
@@ -1023,7 +1015,7 @@ function Module:OnEnable()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
 		parentFrame:SetAllPoints()
-		parentFrame:SetFrameLevel(5)
+		parentFrame:SetFrameLevel(12)
 
 		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.Favourite:SetAtlas("auctionhouse-icon-favorite")
@@ -1056,9 +1048,8 @@ function Module:OnEnable()
 	end
 
 	local bagTypeColor = {
-		[-1] = { 0.67, 0.83, 0.45, 0.25 }, -- 箭袋/弹药
-		[0] = { 0.3, 0.3, 0.3, 0.3 }, -- 容器
-		[1] = { 0.53, 0.53, 0.93, 0.25 }, -- 灵魂袋
+		[0] = { 1, 1, 1, 0.3 }, -- 容器
+		[1] = false, -- 灵魂袋
 		[2] = { 0, 0.5, 0, 0.25 }, -- 草药袋
 		[3] = { 0.8, 0, 0.8, 0.25 }, -- 附魔袋
 		[4] = { 1, 0.8, 0, 0.25 }, -- 工程袋
@@ -1068,6 +1059,7 @@ function Module:OnEnable()
 		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- 铭文包
 		[9] = { 0.4, 0.6, 1, 0.25 }, -- 工具箱
 		[10] = { 0.8, 0, 0, 0.25 }, -- 烹饪包
+		[11] = { 0.2, 0.8, 0.2, 0.25 }, -- 材料包
 	}
 
 	local function isItemNeedsLevel(item)
@@ -1093,6 +1085,8 @@ function Module:OnEnable()
 		if not hasPawn then return end
 		if not PawnIsContainerItemAnUpgrade then return end
 		if self.UpgradeIcon then
+			self.UpgradeIcon:ClearAllPoints()
+			self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
 			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagId, item.slotId))
 		end
 	end
@@ -1138,7 +1132,7 @@ function Module:OnEnable()
 		end
 
 		if C["Inventory"].SpecialBagsColor then
-			local bagType = cargBags.BagGroups[item.bagId]
+			local bagType = Module.BagsType[item.bagId]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
 			self:SetBackdropColor(unpack(color))
 		else
@@ -1239,24 +1233,29 @@ function Module:OnEnable()
 			K.CreateMoverFrame(self, nil, true)
 		end
 
+		self.iconSize = iconSize
+		Module.CreateFreeSlots(self)
+
 		local label
-		if strmatch(name, "AmmoItem$") then
+		if string_match(name, "AmmoItem$") then
 			label = K.Class == "HUNTER" and INVTYPE_AMMO or SOUL_SHARDS
-		elseif strmatch(name, "Equipment$") then
+		elseif string_match(name, "Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
-		elseif strmatch(name, "EquipSet$") then
+		elseif string_match(name, "EquipSet$") then
 			label = L["Equipement Set"]
 		elseif name == "BankLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
-		elseif strmatch(name, "Consumable$") then
+		elseif string_match(name, "Consumable$") then
 			label = BAG_FILTER_CONSUMABLES
 		elseif name == "Junk" then
 			label = BAG_FILTER_JUNK
+		elseif string_match(name, "Collection") then
+			label = COLLECTIONS
 		elseif name == "Keyring" then
 			label = KEYRING
-		elseif strmatch(name, "Goods") then
+		elseif string_match(name, "Goods") then
 			label = AUCTION_CATEGORY_TRADE_GOODS
-		elseif strmatch(name, "Quest") then
+		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
 		elseif strmatch(name, "Custom%d") then
 			label = GetCustomGroupTitle(settings.Index)
@@ -1267,15 +1266,13 @@ function Module:OnEnable()
 			return
 		end
 
-		self.iconSize = iconSize
-		Module.CreateInfoFrame(self)
-		Module.CreateFreeSlots(self)
+		Module.CreateInfoFrame(self)		
 
 		local buttons = {}
 		buttons[1] = Module.CreateCloseButton(self, f)
+		buttons[2] = Module.CreateSortButton(self, name)
 		if name == "Bag" then
-			Module.CreateBagBar(self, settings, NUM_BAG_SLOTS)
-			buttons[2] = Module.CreateSortButton(self, name)
+			Module.CreateBagBar(self, settings, NUM_BAG_SLOTS)			
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateKeyToggle(self)
 			buttons[5] = Module.CreateSplitButton(self)
@@ -1284,8 +1281,7 @@ function Module:OnEnable()
 			buttons[8] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
 			Module.CreateBagBar(self, settings, NUM_BANKBAGSLOTS)
-			buttons[2] = Module.CreateBagToggle(self)
-			buttons[3] = Module.CreateSortButton(self, name)
+			buttons[3] = Module.CreateBagToggle(self)
 		end
 
 		for i = 1, #buttons do
@@ -1365,11 +1361,9 @@ function Module:OnEnable()
 		end
 
 		if classID == LE_ITEM_CLASS_CONTAINER then
-			cargBags.BagGroups[self.bagId] = subClassID or 0
-		elseif classID == LE_ITEM_CLASS_QUIVER then
-			cargBags.BagGroups[self.bagId] = -1
+			Module.BagsType[self.bagId] = subClassID or 0
 		else
-			cargBags.BagGroups[self.bagId] = 0
+			Module.BagsType[self.bagId] = 0
 		end
 	end
 

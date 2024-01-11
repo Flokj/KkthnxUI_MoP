@@ -50,7 +50,7 @@ function Module:CreateStyle()
 		if event == "PLAYER_REGEN_DISABLED" then
 			borderColor = { 1, 0, 0, 0.8 }
 		elseif not InCombatLockdown() then
-			if C_Calendar.GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
+			if C_Calendar.GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() then
 				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
 				borderColor = { 1, 1, 0, 0.8 }
 			end
@@ -73,7 +73,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MinimapMailFrame:HookScript("OnHide", function()
+	MiniMapMailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end

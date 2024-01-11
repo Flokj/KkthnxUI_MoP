@@ -133,8 +133,8 @@ function Module:CreatePet()
 	Debuffs.initialAnchor = "TOPLEFT"
 	Debuffs["growth-x"] = "RIGHT"
 	Debuffs["growth-y"] = "DOWN"
-	Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMLEFT", 0, -6)
-	Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMRIGHT", 0, -6)
+	Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMLEFT", 0, -16)
+	Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMRIGHT", 0, -16)
 	Debuffs.num = 3
 	Debuffs.iconsPerRow = 3
 

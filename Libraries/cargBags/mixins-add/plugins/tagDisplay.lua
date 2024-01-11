@@ -98,31 +98,28 @@ local function createIcon(icon, iconValues)
 end
 
 -- Tags
-local function GetNumFreeSlots(self)
-	local bagType = self.Settings.BagType
-	if bagType == "Bag" then
-		local totalFree = 0
-		for i = 0, 4 do
-			if cargBags.BagGroups[i] == self.bagGroup then
-				totalFree = totalFree + C_Container.GetContainerNumFreeSlots(i)
+local function GetNumFreeSlots(name)
+	if name == "Bag" then
+		local totalFree, freeSlots, bagFamily = 0
+		for i = 0, 4 do -- reagent bank excluded
+			freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i)
+			if bagFamily == 0 then
+				totalFree = totalFree + freeSlots
 			end
 		end
 		return totalFree
-	elseif bagType == "Bank" then
-		local totalFree = self.bagGroup == 0 and C_Container.GetContainerNumFreeSlots(-1) or 0
-		for i = 5, 11 do
-			if cargBags.BagGroups[i] == self.bagGroup then
-				totalFree = totalFree + C_Container.GetContainerNumFreeSlots(i)
-			end
+	elseif name == "Bank" then
+		local numFreeSlots = GetContainerNumFreeSlots(-1)
+		for bagID = 6, 12 do
+			numFreeSlots = numFreeSlots + C_Container.GetContainerNumFreeSlots(bagID)
 		end
-		return totalFree
+		return numFreeSlots
 	end
 end
 
-tagPool["space"] = function(tag)
-	local self = tag.__owner
-	self.totalFree = GetNumFreeSlots(self)
-	return self.totalFree
+tagPool["space"] = function(self)
+	local str = GetNumFreeSlots(self.__name)
+	return str
 end
 
 tagPool["item"] = function(self, item)

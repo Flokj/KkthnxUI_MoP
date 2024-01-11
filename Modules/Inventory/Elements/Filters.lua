@@ -64,9 +64,9 @@ local function isItemAmmo(item)
 	if C["Inventory"].GatherEmpty and not item.texture then return false end
 
 	if K.Class == "HUNTER" then
-		return item.equipLoc == AmmoEquipLoc or cargBags.BagGroups[item.bagID] == -1
+		return item.equipLoc == AmmoEquipLoc or Module.BagsType[item.bagID] == -1
 	elseif K.Class == "WARLOCK" then
-		return item.id == 6265 or cargBags.BagGroups[item.bagID] == 1
+		return item.id == 6265 or Module.BagsType[item.bagID] == 1
 	end
 end
 
@@ -135,7 +135,7 @@ end
 local function isEmptySlot(item)
 	if not C["Inventory"].GatherEmpty then return end
 
-	return Module.initComplete and not item.texture and (C["Inventory"].ItemFilter or cargBags.BagGroups[item.bagId] == 0)
+	return Module.initComplete and not item.texture and (C["Inventory"].ItemFilter or Module.BagsType[item.bagId] == 0)
 end
 
 local function isItemKeyRing(item)

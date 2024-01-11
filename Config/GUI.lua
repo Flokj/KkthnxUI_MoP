@@ -690,7 +690,7 @@ local Minimap = function(self)
 	Window:CreateSection("Features")
 	Window:CreateSwitch("Minimap", "EasyVolume", newFeatureIcon .. L["EasyVolume"], L["EasyVolumeTip"])
 	Window:CreateSwitch("Minimap", "MailPulse", newFeatureIcon .. L["Pulse Minimap Mail"])
-	Window:CreateSwitch("Minimap", "QueueStatusText", newFeatureIcon .. L["QueueStatus"])
+	--Window:CreateSwitch("Minimap", "QueueStatusText", newFeatureIcon .. L["QueueStatus"])
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
 
 	-- Recycle Bin Section
