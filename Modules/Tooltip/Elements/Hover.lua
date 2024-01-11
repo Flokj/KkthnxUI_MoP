@@ -1,10 +1,10 @@
-local K, _, L = unpack(KkthnxUI)
+local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
-local string_match = _G.string.match
+local string_match = string.match
 
-local GameTooltip = _G.GameTooltip
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local GameTooltip = GameTooltip
+local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 
 local strmatch = string.match
 

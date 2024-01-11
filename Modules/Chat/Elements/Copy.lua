@@ -1,8 +1,8 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Chat")
 
 -- Sourced: NDui (siweia)
-local string_format = string.format
+
 local string_gsub = string.gsub
 local table_concat = table.concat
 local tostring = tostring
@@ -19,6 +19,7 @@ local HEIRLOOMS = HEIRLOOMS
 local InCombatLockdown = InCombatLockdown
 local IsAddOnLoaded = IsAddOnLoaded
 local OPTIONS_MENU = OPTIONS_MENU
+local PlaySound = PlaySound
 local QUESTS_LABEL = QUESTS_LABEL
 local RELOADUI = RELOADUI
 local ReloadUI = ReloadUI
@@ -46,7 +47,6 @@ local menuList = {
 		text = STATUS,
 		notCheckable = true,
 		func = function()
-			--SlashCmdList["KKUI_STATUSREPORT"]()
 			K:ShowStatusReport()
 		end,
 	},
@@ -100,6 +100,7 @@ local menuList = {
 			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
 		end,
 	},
+
 	{
 		text = "Roll",
 		notCheckable = true,
@@ -185,6 +186,7 @@ local menuList = {
 					end
 
 					if IsAddOnLoaded("Details") then
+						PlaySound(21968)
 						_G._detalhes:ToggleWindows()
 					else
 						K.Print("Details is not loaded!")
@@ -209,6 +211,7 @@ local menuList = {
 					end
 
 					if IsAddOnLoaded("Skada") then
+						PlaySound(21968)
 						_G.Skada:ToggleWindow()
 					else
 						K.Print("Skada is not loaded!")
@@ -231,10 +234,14 @@ local function isMessageProtected(msg)
 end
 
 local function replaceMessage(msg, r, g, b)
+	-- Convert the color values to a hex string
 	local hexRGB = K.RGBToHex(r, g, b)
-	msg = string_gsub(msg, "|T(.-):.-|t", "%1") -- accept texture path or id
-
-	return string_format("%s%s|r", hexRGB, msg)
+	-- Replace the texture path or id with only the path/id
+	msg = string.gsub(msg, "|T(.-):.-|t", "%1")
+	-- Replace the atlas path or id with only the path/id
+	msg = string.gsub(msg, "|A(.-):.-|a", "%1")
+	-- Return the modified message with the hex color code added
+	return string.format("%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()
@@ -255,9 +262,10 @@ end
 function Module:ChatCopy_OnClick(btn)
 	if btn == "LeftButton" then
 		if not frame:IsShown() then
-			local chatframe = _G.SELECTED_DOCK_FRAME
+			local chatframe = SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
 			FCF_SetChatWindowFontSize(chatframe, chatframe, 0.01)
+			PlaySound(21968)
 			frame:Show()
 
 			local lineCt = Module.GetChatLines(chatframe)
@@ -323,11 +331,16 @@ function Module:ChatCopy_Create()
 	editBox:SetAutoFocus(false)
 	editBox:SetFontObject(K.UIFont)
 	editBox:SetWidth(scrollArea:GetWidth())
-	editBox:SetHeight(scrollArea:GetHeight())
-	editBox:SetScript("OnEscapePressed", function() frame:Hide() end)
-	
-	editBox:SetScript("OnTextChanged", function(_, userInput) 
-		if userInput then return end
+	editBox:SetHeight(400)
+	editBox:SetScript("OnEscapePressed", function()
+		frame:Hide()
+	end)
+
+	editBox:SetScript("OnTextChanged", function(_, userInput)
+		if userInput then
+			return
+		end
+
 		local _, max = scrollArea.ScrollBar:GetMinMaxValues()
 		for _ = 1, max do
 			ScrollFrameTemplate_OnMouseWheel(scrollArea, -1)
@@ -384,6 +397,7 @@ function Module:ChatCopy_Create()
 	kkuiconfig:RegisterForClicks("AnyUp")
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
+			PlaySound(111)
 			_G.EasyMenu(menuList, menuFrame, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.GUI:Toggle()

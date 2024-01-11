@@ -7,7 +7,7 @@ local unpack = unpack
 
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CURRENCY = CURRENCY
-local C_CurrencyInfo_GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
 local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
 local C_Timer_NewTicker = C_Timer.NewTicker
 local C_WowTokenPublic_GetCurrentMarketPrice = C_WowTokenPublic.GetCurrentMarketPrice
@@ -231,8 +231,11 @@ local function OnEnter(self)
 		GameTooltip:AddDoubleLine(currencyText, chargeInfo.quantity .. "/" .. chargeInfo.maxQuantity, 1, 1, 1, 1, 1, 1)
 	end
 
-	for i = 1, GetNumWatchedTokens() do
-		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
+	for i = 1, 6 do
+		local currencyInfo = GetBackpackCurrencyInfo(i)
+		if not currencyInfo then break end
+
+		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
 
 		if name and count then
 			if not title then

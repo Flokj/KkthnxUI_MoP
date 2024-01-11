@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
@@ -166,6 +166,12 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 	element:SetHeight((size + element.spacing) * maxLines)
 end
 
+function Module:UpdateIconTexCoord(width, height)
+	local ratio = height / width
+	local mult = (1 - ratio) / 2
+	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+end
+
 function Module.PostCreateAura(element, button)
 	local fontSize = element.fontSize or element.size * 0.45
 	local parentFrame = CreateFrame("Frame", nil, button)
@@ -197,6 +203,8 @@ function Module.PostCreateAura(element, button)
 	if not button.timer then
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 	end
+
+	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
@@ -423,6 +431,12 @@ end
 local textScaleFrames = {
 	["player"] = true,
 	["target"] = true,
+	["focus"] = true,
+	["pet"] = true,
+	--["targetoftarget"] = true, temporarily disabled
+	["focustarget"] = true,
+	["boss"] = true,
+	["arena"] = true,
 }
 
 function Module:UpdateTextScale()
@@ -571,8 +585,6 @@ function Module:CreateUnits()
 				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame" .. i, "Arena" .. i, { "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -C["Arena"].YOffset }, arenaMoverWidth, arenaMoverHeight)
 			end
 		end
-
-		SetCVar("showArenaEnemyFrames", 0) -- Why these still load and show is dumb.
 	end
 
 	local partyMover

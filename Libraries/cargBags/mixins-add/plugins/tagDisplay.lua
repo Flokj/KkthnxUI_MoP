@@ -42,7 +42,7 @@ CALLBACKS
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local GetContainerNumFreeSlots = C_Container and C_Container.GetContainerNumFreeSlots or GetContainerNumFreeSlots
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 
 local tagPool, tagEvents, object = {}, {}
 local function tagger(tag, ...)
@@ -102,7 +102,7 @@ local function GetNumFreeSlots(name)
 	if name == "Bag" then
 		local totalFree, freeSlots, bagFamily = 0
 		for i = 0, 4 do -- reagent bank excluded
-			freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i)
+			freeSlots, bagFamily = GetContainerNumFreeSlots(i)
 			if bagFamily == 0 then
 				totalFree = totalFree + freeSlots
 			end
@@ -111,7 +111,7 @@ local function GetNumFreeSlots(name)
 	elseif name == "Bank" then
 		local numFreeSlots = GetContainerNumFreeSlots(-1)
 		for bagID = 6, 12 do
-			numFreeSlots = numFreeSlots + C_Container.GetContainerNumFreeSlots(bagID)
+			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots
 	end
@@ -132,20 +132,21 @@ tagPool["item"] = function(self, item)
 	end
 end
 
-tagPool["currency"] = function(self, id)
-	local _, count, icon = GetBackpackCurrencyInfo(id)
-
-	if count then
-		return count .. createIcon(icon, self.iconValues)
+tagPool["currency"] = function(_, id)
+	local currencyInfo = GetBackpackCurrencyInfo(id)
+	if not currencyInfo then return end
+	
+	local name, count, icon = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
+	if name and count then
+		local iconTexture = "|T" .. icon .. ":13:15:0:0:50:50:4:46:4:46|t "
+		return (iconTexture .. BreakUpLargeNumbers(count))
 	end
-
-	return BreakUpLargeNumbers(count) .. createIcon(icon, self.iconValues)
 end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
 	local str
-	for i = 1, GetNumWatchedTokens() do
+	for i = 1, 6 do -- Limit to 6 tracked
 		local curr = self.tags["currency"](self, i)
 		if curr then
 			str = (str and str .. " " or "") .. curr

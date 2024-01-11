@@ -350,7 +350,7 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "Macro", L["Enable Macro"])
 	Window:CreateSwitch("ActionBar", "MicroBar", L["Enable MicroBar"])
 	Window:CreateSwitch("ActionBar", "OverrideWA", L["Enable OverrideWA"])
-	Window:CreateSwitch("ActionBar", "FadeMicroBar", L["Mouseover MicroBar"])
+	Window:CreateSwitch("ActionBar", "FadeMicroMenu", L["Mouseover MicroBar"])
 	Window:CreateSlider("ActionBar", "MMSSTH", L["MMSSThreshold"], 60, 600, 1, L["MMSSThresholdTip"])
 	Window:CreateSlider("ActionBar", "TenthTH", L["TenthThreshold"], 0, 60, 1, L["TenthThresholdTip"])
 

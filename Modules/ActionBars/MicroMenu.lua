@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
 -- Import Lua functions
@@ -116,7 +116,7 @@ function MicroButtonCreate(parent, data)
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
 		end
 
-		if C["ActionBar"].FadeMicroBar then
+		if C["ActionBar"].FadeMicroMenu then
 			button:HookScript("OnEnter", OnMicroButtonEnter)
 		end
 
@@ -138,7 +138,7 @@ function Module:MicroMenu()
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(302, 30)
-	menubar:SetAlpha((C["ActionBar"].FadeMicroBar and not menubar.IsMouseOvered and 0) or 1)
+	menubar:SetAlpha((C["ActionBar"].FadeMicroMenu and not menubar.IsMouseOvered and 0) or 1)
 	menubar:EnableMouse(false)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
 
