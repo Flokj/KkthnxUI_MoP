@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Loot")
 
 -- Local references to global functions
@@ -9,7 +9,7 @@ local IsModifiedClick = IsModifiedClick
 local LootSlot = LootSlot
 local GetItemInfo = GetItemInfo
 local GetItemFamily = GetItemFamily
-local C_Container_GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 local GetItemCount = GetItemCount
 local PlaySound = PlaySound
 
@@ -29,7 +29,7 @@ local function CanLootItem(itemLink, itemQuantity)
 	local itemFamily = GetItemFamily(itemLink)
 
 	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS do
-		local free, bagFamily = C_Container_GetContainerNumFreeSlots(i)
+		local free, bagFamily = GetContainerNumFreeSlots(i)
 		if i == 5 then
 			if isCraftingReagent and free > 0 then
 				return true
@@ -105,4 +105,3 @@ function Module:CreateFasterLoot()
 		K:UnregisterEvent("UI_ERROR_MESSAGE", HandleErrorMessage)
 	end
 end
-

@@ -140,8 +140,8 @@ function Module:CreateFocus()
 		Module:UpdateAuraContainer(focusWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
-		self.Debuffs.PostCreateIcon = Module.PostCreateAura
-		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Debuffs.PostCreateButton = Module.PostCreateButton
+		self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
 	if C["Unitframe"].FocusBuffs then
@@ -159,8 +159,8 @@ function Module:CreateFocus()
 		Module:UpdateAuraContainer(focusWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
-		self.Buffs.PostCreateIcon = Module.PostCreateAura
-		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Buffs.PostCreateButton = Module.PostCreateButton
+		self.Buffs.PostUpdateButton = Module.PostUpdateButton
 	end
 
 	if C["Unitframe"].FocusCastbar then

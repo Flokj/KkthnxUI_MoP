@@ -56,6 +56,7 @@ function Module:OnEnable()
 		"CreatePetHappiness",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
+		"CreateVehicleSeatMover",
 	}
 	
 	C_Timer_After(0, Module.UpdateMaxCameraZoom)
@@ -521,7 +522,7 @@ function Module:NakedIcon()
 end
 
 -- Reanchor Vehicle
-function Module:VehicleSeatMover()
+function Module:CreateVehicleSeatMover()
 	if not VehicleSeatIndicator then return end
 
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
@@ -529,7 +530,7 @@ function Module:VehicleSeatMover()
 	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOMRIGHT", UIParent, -400, 30})
 
 	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
-		if parent == "MinimapCluster" or parent == MinimapCluster then
+		if parent ~= frame then
 			self:ClearAllPoints()
 			self:SetPoint("TOPLEFT", frame)
 		end

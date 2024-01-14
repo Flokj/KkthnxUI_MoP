@@ -140,13 +140,13 @@ local function createAuraIcon(element, index)
 	button.count = count
 	button.cd = cd
 
-	--[[ Callback: Auras:PostCreateIcon(button)
+	--[[ Callback: Auras:PostCreateButton(button)
 	Called after a new aura button has been created.
 
 	* self   - the widget holding the aura buttons
 	* button - the newly created aura button (Button)
 	--]]
-	if(element.PostCreateIcon) then element:PostCreateIcon(button) end
+	if(element.PostCreateButton) then element:PostCreateButton(button) end
 
 	return button
 end
@@ -246,7 +246,7 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			button:SetID(index)
 			button:Show()
 
-			--[[ Callback: Auras:PostUpdateIcon(unit, button, index, position)
+			--[[ Callback: Auras:PostUpdateButton(unit, button, index, position)
 			Called after the aura button has been updated.
 
 			* self        - the widget holding the aura buttons
@@ -259,8 +259,8 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			* debuffType  - the debuff type of the aura (string?)['Curse', 'Disease', 'Magic', 'Poison']
 			* isStealable - whether the aura can be stolen or purged (boolean)
 			--]]
-			if(element.PostUpdateIcon) then
-				element:PostUpdateIcon(unit, button, index, position, duration, expiration, debuffType, isStealable)
+			if(element.PostUpdateButton) then
+				element:PostUpdateButton(unit, button, index, position, duration, expiration, debuffType, isStealable)
 			end
 
 			return VISIBLE

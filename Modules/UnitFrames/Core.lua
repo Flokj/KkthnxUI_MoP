@@ -172,7 +172,7 @@ function Module:UpdateIconTexCoord(width, height)
 	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
 end
 
-function Module.PostCreateAura(element, button)
+function Module.PostCreateButton(element, button)
 	local fontSize = element.fontSize or element.size * 0.45
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
@@ -207,7 +207,7 @@ function Module.PostCreateAura(element, button)
 	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
-function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
+function Module.PostUpdateButton(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
 		button:SetSize(element.size, element.size * 1)

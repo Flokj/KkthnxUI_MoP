@@ -220,8 +220,8 @@ function Module:CreateRaid()
 		Buffs.onlyShowPlayer = onlyShowPlayer
 		Buffs.filter = filter
 		Buffs.IsRaid = true
-		Buffs.PostCreateIcon = Module.PostCreateAura
-		Buffs.PostUpdateIcon = Module.PostUpdateAura
+		Buffs.PostCreateButton = Module.PostCreateButton
+		Buffs.PostUpdateButton = Module.PostUpdateButton
 
 		self.Buffs = Buffs
 	end

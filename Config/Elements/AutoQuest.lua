@@ -1,6 +1,6 @@
 local _, C = unpack(KkthnxUI)
 
-C.AutoQuest = {
+C.AutoQuestData = {
 	IgnoreQuestNPC = {
 	[88570] = true,		-- Fate-Twister Tiklal
 	[87391] = true,		-- Fate-Twister Seress

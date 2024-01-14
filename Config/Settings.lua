@@ -18,38 +18,44 @@ C["ActionBar"] = {
 	Bar1Num = 12,
 	Bar1PerRow = 12,
 	Bar1Size = 32,
+
 	Bar2Font = 12,
 	Bar2Num = 12,
 	Bar2PerRow = 12,
 	Bar2Size = 32,
+
 	Bar3Font = 12,
 	Bar3Num = 12,
 	Bar3PerRow = 12,
 	Bar3Size = 32,
+
 	Bar4Fader = false,
 	Bar4Font = 12,
 	Bar4Num = 12,
 	Bar4PerRow = 4,
 	Bar4Size = 32,
+
 	Bar5Fader = false,
 	Bar5Font = 12,
 	Bar5Num = 12,
 	Bar5PerRow = 4,
 	Bar5Size = 32,
+
 	BarPetFont = 12,
 	BarPetNum = 10,
 	BarPetPerRow = 10,
 	BarPetSize = 26,
+
 	BarStanceFont = 12,
 	BarStancePerRow = 10,
 	BarStanceSize = 30,
 	BarXFader = false,
-	Cooldowns = true,
-	Count = true,
+
 	CustomBar = false,
 	CustomBarButtonSize = 34,
 	CustomBarNumButtons = 12,
 	CustomBarNumPerRow = 12,
+
 	Enable = true,
 	FadeCustomBar = false,
 	FadeMicroMenu = false,
@@ -61,6 +67,8 @@ C["ActionBar"] = {
 	PetBar = true,
 	Scale = 1,
 	StanceBar = true,
+	Cooldowns = true,
+	Count = true,
 	TenthTH = 3,
 	VehButtonSize = 34,
 	TotemBar = true,
@@ -558,7 +566,7 @@ C["Unitframe"] = {
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
-	
+
 	SwingBar = false,
 	SwingWidth = 274,
 	SwingHeight = 14,
