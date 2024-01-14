@@ -649,20 +649,18 @@ function Module:CreatePlates()
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 	self.nameText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, 4)
-	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
 	self.npcTitle:ClearAllPoints()
-	self.npcTitle:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.npcTitle:SetPoint("TOP", self.nameText, "BOTTOM", 0, -4)
 	self.npcTitle:Hide()
 	self:Tag(self.npcTitle, "[npctitle]")
 
-	local tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
-	tarName:ClearAllPoints()
-	tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
-	tarName:Hide()
-	self:Tag(tarName, "[tarname]")
-	self.tarName = tarName
+	self.tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
+	self.tarName:ClearAllPoints()
+	self.tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.tarName:Hide()
+	self:Tag(self.tarName, "[tarname]")
 
 	self.healthValue = K.CreateFontString(self.Overlay, C["Nameplate"].HealthTextSize, "", "", false, "CENTER", 0, 0)
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
@@ -719,7 +717,6 @@ function Module:CreatePlates()
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
-	self.RaidTargetIndicator:SetParent(self.Health)
 	self.RaidTargetIndicator:SetSize(40, 40)
 
 	self.Auras = CreateFrame("Frame", nil, self)
@@ -738,7 +735,7 @@ function Module:CreatePlates()
 	self.Auras.size = C["Nameplate"].AuraSize
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
-	self.Auras.CustomFilter = Module.CustomFilter
+	self.Auras.FilterAura = Module.CustomFilter
 
 	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 
@@ -866,7 +863,10 @@ function Module:UpdatePlateByType()
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
 
+	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
+	self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
+	self.npcTitle:UpdateTag()
 	raidtarget:ClearAllPoints()
 
 	if self.plateType == "NameOnly" then
@@ -877,8 +877,6 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[nprare] [color][name] [nplevel]")
-		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 
 		hpval:Hide()
@@ -888,6 +886,7 @@ function Module:UpdatePlateByType()
 		raidtarget:SetParent(self)
 
 		if questIcon then questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0) end
+
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
 			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -5)
@@ -902,11 +901,13 @@ function Module:UpdatePlateByType()
 		name:SetJustifyH("CENTER")
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, 4)
+		self:Tag(self.nameText, "[name]")
 
 		hpval:Show()
 		title:Hide()
 
 		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -8, 25)
+
 		if questIcon then questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0) end
 
 		if self.widgetContainer then

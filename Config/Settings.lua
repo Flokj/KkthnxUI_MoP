@@ -558,8 +558,12 @@ C["Unitframe"] = {
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
-	Swingbar = false,
-	SwingbarTimer = false,
+	
+	SwingBar = false,
+	SwingWidth = 274,
+	SwingHeight = 14,
+	SwingTimer = true,
+	OffOnTop = false,
 
 	-- Target
 	TargetHealthHeight = 36,
