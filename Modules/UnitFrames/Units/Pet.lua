@@ -128,16 +128,6 @@ function Module:CreatePet()
 	Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	self:Tag(Level, "[fulllevel]")
 
-	local Debuffs = CreateFrame("Frame", nil, self)
-	Debuffs.spacing = 6
-	Debuffs.initialAnchor = "TOPLEFT"
-	Debuffs["growth-x"] = "RIGHT"
-	Debuffs["growth-y"] = "DOWN"
-	Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMLEFT", 0, -16)
-	Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HidePetName and Power or Name, "BOTTOMRIGHT", 0, -16)
-	Debuffs.num = 3
-	Debuffs.iconsPerRow = 3
-
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" then
 		RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)

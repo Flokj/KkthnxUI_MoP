@@ -735,7 +735,7 @@ function Module:CreatePlates()
 	self.Auras.size = C["Nameplate"].AuraSize
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
-	self.Auras.FilterAura = Module.CustomFilter
+	self.Auras.CustomFilter = Module.CustomFilter
 
 	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 

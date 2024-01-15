@@ -425,7 +425,7 @@ end
 
 function Module:GetEmptySlot(name)
 	if name == "Bag" then
-		for bagID = 0, NUM_BAG_SLOTS do
+		for bagID = 0, 4 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -437,7 +437,7 @@ function Module:GetEmptySlot(name)
 			return -1, slotID
 		end
 
-		for bagID = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
+		for bagID = 6, 12 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -456,8 +456,8 @@ end
 local freeSlotContainer = {
 	["Bag"] = 0,
 	["Bank"] = 0,
-	["AmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
-	["BankAmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
+	--["AmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
+	--["BankAmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
 }
 
 function Module:CreateFreeSlots()
@@ -1257,7 +1257,7 @@ function Module:OnEnable()
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
-		elseif strmatch(name, "Custom%d") then
+		elseif string_match(name, "Custom%d") then
 			label = GetCustomGroupTitle(settings.Index)
 		end
 
@@ -1272,7 +1272,7 @@ function Module:OnEnable()
 		buttons[1] = Module.CreateCloseButton(self, f)
 		buttons[2] = Module.CreateSortButton(self, name)
 		if name == "Bag" then
-			Module.CreateBagBar(self, settings, NUM_BAG_SLOTS)			
+			Module.CreateBagBar(self, settings, 5)			
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateKeyToggle(self)
 			buttons[5] = Module.CreateSplitButton(self)
@@ -1280,7 +1280,7 @@ function Module:OnEnable()
 			buttons[7] = Module.CreateJunkButton(self)
 			buttons[8] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
-			Module.CreateBagBar(self, settings, NUM_BANKBAGSLOTS)
+			Module.CreateBagBar(self, settings, 7)
 			buttons[3] = Module.CreateBagToggle(self)
 		end
 

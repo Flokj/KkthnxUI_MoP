@@ -130,8 +130,8 @@ function Module:CreateFocusTarget()
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
-	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -50)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideFocusTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -50)
 	self.Debuffs.num = 3
 	self.Debuffs.iconsPerRow = 3
 

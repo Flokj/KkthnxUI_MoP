@@ -37,6 +37,7 @@ local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
 local ContainerIDToInventoryID = C_Container and C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
+local maxBagSlots = 5
 
 function Implementation:GetBagButtonClass()
 	return self:GetClass("BagButton", true, "BagButton")
@@ -59,7 +60,7 @@ function BagButton:Create(bagID)
 	local isBankBag = (bagID>=5 and bagID<=11)
 	local button = setmetatable(CreateFrame("Button", name, nil, "ItemButtonTemplate, BackdropTemplate"), self.__index)
 
-	local invID = (isBankBag and bagID-4) or C_Container.ContainerIDToInventoryID(bagID)
+	local invID = (isBankBag and bagID - maxBagSlots) or C_Container.ContainerIDToInventoryID(bagID)
 	button.invID = invID
 	button:SetID(invID)
 	button.bagId = bagID
@@ -87,8 +88,8 @@ function BagButton:Update()
 	self.Icon:SetTexture(icon or self.bgTex)
 	self.Icon:SetDesaturated(IsInventoryItemLocked(self.invID))
 
-	if(self.bagId > NUM_BAG_SLOTS) then
-		if(self.bagId-NUM_BAG_SLOTS <= GetNumBankSlots()) then
+	if(self.bagId > maxBagSlots) then
+		if(self.bagId-maxBagSlots <= GetNumBankSlots()) then
 			self.Icon:SetVertexColor(1, 1, 1)
 			self.notBought = nil
 		else
@@ -188,7 +189,7 @@ end
 
 local function onLock(self, _, bagID, slotID)
 	if(bagID == -1 and slotID > NUM_BANKGENERIC_SLOTS) then
-		bagID, slotID = C_Container.ContainerIDToInventoryID(slotID-NUM_BANKGENERIC_SLOTS+NUM_BAG_SLOTS)
+		bagID, slotID = C_Container.ContainerIDToInventoryID(slotID-NUM_BANKGENERIC_SLOTS+maxBagSlots)
 	end
 
 	if(slotID) then return end
