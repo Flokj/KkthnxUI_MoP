@@ -1,29 +1,25 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local oUF = K.oUF
 
 -- Sourced: yClassColors (yleaf)
 -- Edited: KkthnxUI (Kkthnx)
 
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local string_split = _G.string.split
-
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local BNGetFriendInfo = _G.BNGetFriendInfo
-local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
-local FRIENDS_BUTTON_TYPE_BNET = _G.FRIENDS_BUTTON_TYPE_BNET
-local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
-local FRIENDS_WOW_NAME_COLOR_CODE = _G.FRIENDS_WOW_NAME_COLOR_CODE
-local FauxScrollFrame_GetOffset = _G.FauxScrollFrame_GetOffset
-local GUILDMEMBERS_TO_DISPLAY = _G.GUILDMEMBERS_TO_DISPLAY
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local UIDropDownMenu_GetSelectedID = _G.UIDropDownMenu_GetSelectedID
-local WHOS_TO_DISPLAY = _G.WHOS_TO_DISPLAY
+local string_format = string.format
+local table_insert = table.insert
+local string_split = string.split
 
 -- Helper Functions
 local function classColor(class, showRGB)
-	local color = K.ClassColors[K.ClassList[class] or class] or K.ClassColors["PRIEST"]
-	return showRGB and { color.r, color.g, color.b } or "|c" .. color.colorStr
+	local color = K.ClassColors[K.ClassList[class] or class]
+	if not color then
+		color = K.ClassColors["PRIEST"]
+	end
+
+	if showRGB then
+		return color.r, color.g, color.b
+	else
+		return "|c" .. color.colorStr
+	end
 end
 
 local function diffColor(level)
@@ -71,11 +67,11 @@ end
 hooksecurefunc("GuildStatus_Update", updateGuildStatus)
 
 -- Friends List Update
-local FRIENDS_LEVEL_TEMPLATE = _G.FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
+local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
 FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
 
 local function updateFriendsFrame()
-	local scrollFrame = _G.FriendsFrameFriendsScrollFrame
+	local scrollFrame = FriendsFrameFriendsScrollFrame
 	local buttons = scrollFrame.buttons
 	local playerArea = GetRealZoneText()
 
