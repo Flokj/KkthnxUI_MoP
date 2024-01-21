@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 -- Caching global functions and variables for performance
 local pairs, type, string_gmatch, print = pairs, type, string.gmatch, print
@@ -60,7 +60,7 @@ local function IsFrameExists()
 	if not C["General"].MoveBlizzardFrames then	return end
 	for k in pairs(frames) do
 		if not _G[k] and K.isDeveloper then
-			K.Print("Frame not found:", k)
+			print("Frame not found:", k)
 		end
 	end
 end
