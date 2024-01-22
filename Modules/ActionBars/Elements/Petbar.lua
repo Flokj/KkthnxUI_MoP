@@ -1,14 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local table_insert = _G.table.insert
-
-local CreateFrame = _G.CreateFrame
-local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
-
-local cfg = C.Bars.BarPet
+local _G = _G
+local tinsert = tinsert
 local margin = C.Bars.BarMargin
 
 function Module:CreatePetbar()
@@ -17,24 +11,25 @@ function Module:CreatePetbar()
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarPet", UIParent, "SecureHandlerStateTemplate")
 	frame.mover = K.Mover(frame, "Pet Actionbar", "PetBar", { "BOTTOM", _G.KKUI_ActionBar3, "TOP", 0, margin })
-	Module.movers[7] = frame.mover
+	Module.movers[10] = frame.mover
 
-	_G.PetActionBarFrame:SetParent(frame)
-	_G.PetActionBarFrame:EnableMouse(false)
-	_G.SlidingActionBarTexture0:SetTexture(nil)
-	_G.SlidingActionBarTexture1:SetTexture(nil)
+	PetActionBarFrame:SetParent(frame)
+	PetActionBarFrame:EnableMouse(false)
+	SlidingActionBarTexture0:SetTexture(nil)
+	SlidingActionBarTexture1:SetTexture(nil)
 
 	for i = 1, num do
 		local button = _G["PetActionButton" .. i]
-		table_insert(buttonList, button)
-		table_insert(Module.buttons, button)
+		tinsert(buttonList, button)
+		tinsert(Module.buttons, button)
+		local hotkey = button.HotKey
+		if hotkey then
+			hotkey:ClearAllPoints()
+			hotkey:SetPoint("TOPRIGHT")
+		end
 	end
 	frame.buttons = buttonList
 	-- stylua: ignore
-	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; [pet] show; hide"
+	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	if cfg.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
-	end
 end

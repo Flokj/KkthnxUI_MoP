@@ -1,8 +1,11 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
-local table_insert = table.insert
-local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
+-- Utility functions
+local tinsert = tinsert
+
+-- Layout constants
+local margin, padding = 6, 0
 
 -- Number of stance slots (default to 10 if not defined)
 local num = NUM_STANCE_SLOTS or 10
@@ -57,7 +60,7 @@ function Module:CreateStancebar()
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
 	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
-	Module.movers[8] = frame.mover
+	Module.movers[11] = frame.mover
 
 	-- StanceBar
 	StanceBarFrame:SetParent(frame)
@@ -68,8 +71,8 @@ function Module:CreateStancebar()
 
 	for i = 1, num do
 		local button = _G["StanceButton" .. i]
-		table_insert(buttonList, button)
-		table_insert(Module.buttons, button)
+		tinsert(buttonList, button)
+		tinsert(Module.buttons, button)
 	end
 
 	frame.buttons = buttonList

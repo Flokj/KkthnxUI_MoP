@@ -43,35 +43,6 @@ local function DisableAllScripts(frame)
 	end
 end
 
-local function buttonShowGrid(name, showgrid)
-	for i = 1, 12 do
-		local button = _G[name .. i]
-		if button then
-			button:SetAttribute("showgrid", showgrid)
-			ActionButton_ShowGrid(button, ACTION_BUTTON_SHOW_GRID_REASON_CVAR)
-		end
-	end
-end
-
-local function toggleButtonGrid()
-	if InCombatLockdown() then
-		updateAfterCombat = true
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-	else
-		local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
-		buttonShowGrid("ActionButton", showgrid)
-		buttonShowGrid("MultiBarBottomLeftButton", showgrid)
-		buttonShowGrid("MultiBarBottomRightButton", showgrid)
-		buttonShowGrid("MultiBarRightButton", showgrid)
-		buttonShowGrid("MultiBarLeftButton", showgrid)
-		buttonShowGrid("KKUI_ActionBarXButton", showgrid)
-		if updateAfterCombat then
-			K:UnregisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-			updateAfterCombat = false
-		end
-	end
-end
-
 local function updateTokenVisibility()
 	TokenFrame_LoadUI()
 	TokenFrame_Update()
@@ -95,11 +66,6 @@ function Module:HideBlizz()
 
 	-- Hide blizz options
 	SetCVar("multiBarRightVerticalLayout", 0)
-	-- Update button grid
-	hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
-	hooksecurefunc("MultiActionBar_HideAllGrids", toggleButtonGrid)
-	K:RegisterEvent("ACTIONBAR_HIDEGRID", toggleButtonGrid)
-	toggleButtonGrid()
 	InterfaceOptionsActionBarsPanelStackRightBars:EnableMouse(false)
 	InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
 	-- Update token panel

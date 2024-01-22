@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
 -- WoW API bindings for easy reference
@@ -14,15 +14,13 @@ local UIErrorsFrame = UIErrorsFrame
 
 -- Button types
 local function hookActionButton(self)
-	local pet = self.commandName and string_find(self.commandName, "^BONUSACTION") and "PET"
-	local stance = self.commandName and string_find(self.commandName, "^SHAPESHIFT") and "STANCE"
+	local pet = self.commandName and strfind(self.commandName, "^BONUSACTION") and "PET"
+	local stance = self.commandName and strfind(self.commandName, "^SHAPESHIFT") and "STANCE"
 	Module:Bind_Update(self, pet or stance or nil)
 end
-
 local function hookMacroButton(self)
 	Module:Bind_Update(self, "MACRO")
 end
-
 local function hookSpellButton(self)
 	Module:Bind_Update(self, "SPELL")
 end
@@ -33,13 +31,13 @@ function Module:Bind_RegisterButton(button)
 	end
 end
 
+local macroInit
 function Module:Bind_RegisterMacro()
-	if self ~= "Blizzard_MacroUI" then return end
 	if macroInit then return end
 
 	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local button = select(i, self.ScrollTarget:GetChildren())
+			local button = self.ScrollTarget:GetChildren()[i]
 			if not button.bindHooked then
 				button:HookScript("OnEnter", hookMacroButton)
 				button.bindHooked = true
@@ -59,14 +57,12 @@ function Module:Bind_Create()
 	frame:EnableKeyboard(true)
 	frame:EnableMouseWheel(true)
 	frame:CreateBorder()
-	frame.KKUI_Background:SetVertexColor(1, 0.8, 0, 0.25)
-	frame.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	frame:Hide()
 
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-		GameTooltip:AddLine(frame.tipName or frame.name, 0.5, 0.7, 1)
+		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
 
 		if #frame.bindings == 0 then
 			GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)
@@ -80,12 +76,13 @@ function Module:Bind_Create()
 		end
 		GameTooltip:Show()
 	end)
-
 	frame:SetScript("OnLeave", Module.Bind_HideFrame)
-	frame:SetScript("OnKeyUp", function(_, key) 
-		Module:Bind_Listener(key) end)
-	frame:SetScript("OnMouseUp", function(_, key) 
-		Module:Bind_Listener(key) end)
+	frame:SetScript("OnKeyUp", function(_, key)
+		Module:Bind_Listener(key)
+	end)
+	frame:SetScript("OnMouseUp", function(_, key)
+		Module:Bind_Listener(key)
+	end)
 	frame:SetScript("OnMouseWheel", function(_, delta)
 		if delta > 0 then
 			Module:Bind_Listener("MOUSEWHEELUP")
@@ -94,7 +91,7 @@ function Module:Bind_Create()
 		end
 	end)
 
-	for _, button in pairs(Module.buttons) do
+	for _, button in ipairs(Module.buttons) do
 		Module:Bind_RegisterButton(button)
 	end
 
@@ -124,7 +121,7 @@ function Module:Bind_Update(button, spellmacro)
 
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(button)
-		frame.name = GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
+		frame.name = GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
 		frame.id = button.selectionIndex or button:GetID()
@@ -175,7 +172,7 @@ function Module:Bind_Update(button, spellmacro)
 	end
 
 	-- Refresh tooltip
-	frame:GetScript("OnEnter")()
+	frame:GetScript("OnEnter")
 end
 
 local ignoreKeys = {
@@ -203,7 +200,7 @@ function Module:Bind_Listener(key)
 				SetBinding(frame.bindings[i])
 			end
 		end
-		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
+		K.Print(format(L["Clear Binds"], frame.tipName or frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
 		return
@@ -215,8 +212,8 @@ function Module:Bind_Listener(key)
 	-- Use the mapping table to replace specific key values
 	key = mappingKeys[key] or key
 
-	if string_find(key, "Button%d") then
-		key = string_upper(key)
+	if strfind(key, "Button%d") then
+		key = strupper(key)
 	end
 
 	local alt = IsAltKeyDown() and "ALT-" or ""
@@ -237,7 +234,6 @@ function Module:Bind_HideFrame()
 	local frame = Module.keybindFrame
 	frame:ClearAllPoints()
 	frame:Hide()
-
 	if not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 end
 
@@ -249,10 +245,10 @@ end
 function Module:Bind_Deactivate(save)
 	if save == true then
 		SaveBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
-		K.Print(K.SystemColor .. L["Save KeyBinds"] .. "|r")
+		K.Print(" |cff00ff00" .. L["Save KeyBinds"] .. "|r")
 	else
 		LoadBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
-		K.Print(K.SystemColor .. L["Discard KeyBinds"] .. "|r")
+		K.Print(" |cffffff00" .. L["Discard KeyBinds"] .. "|r")
 	end
 
 	Module:Bind_HideFrame()
@@ -305,6 +301,8 @@ function Module:Bind_CreateDialog()
 	button1.text:SetPoint("CENTER", button1)
 	button1.text:SetText(APPLY)
 
+	--- @class MyButton : Button
+	--- @field public text FontString
 	local button2 = CreateFrame("Button", nil, frame, "OptionsButtonTemplate")
 	button2:SetSize(118, 20)
 	button2:SkinButton()
@@ -338,7 +336,7 @@ function Module:Bind_CreateDialog()
 	Module.keybindDialog = frame
 end
 
-SlashCmdList["KKUI_KEYBINDS"] = function()
+SlashCmdList["KKUI_KEYBIND"] = function()
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return
@@ -348,8 +346,8 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 	Module:Bind_Activate()
 	Module:Bind_CreateDialog()
 end
-
-_G.SLASH_KKUI_KEYBINDS1 = "/kb"
-_G.SLASH_KKUI_KEYBINDS2 = "/bb"
-_G.SLASH_KKUI_KEYBINDS3 = "/bind"
-_G.SLASH_KKUI_KEYBINDS4 = "/kkb"
+SLASH_KKUI_KEYBIND1 = "/kb"
+SLASH_KKUI_KEYBIND2 = "/bb"
+SLASH_KKUI_KEYBIND3 = "/bind"
+SLASH_KKUI_KEYBIND4 = "/binds"
+SLASH_KKUI_KEYBIND5 = "/kkb"

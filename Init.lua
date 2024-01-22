@@ -70,6 +70,7 @@ local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
+K.LibActionButton = LibStub("LibActionButton-1.0")
 K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
 K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
 K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
@@ -117,9 +118,14 @@ K.InfoColorTint = "|CFF93BAFF" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 
 -- Media Info
+-- Media Info
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"
+K.UIFontSize = select(2, _G.KkthnxUIFont:GetFont())
+K.UIFontStyle = select(3, _G.KkthnxUIFont:GetFont())
 K.UIFontOutline = "KkthnxUIFontOutline"
+K.UIFontSize = select(2, _G.KkthnxUIFontOutline:GetFont())
+K.UIFontStyle = select(3, _G.KkthnxUIFontOutline:GetFont())
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
@@ -303,6 +309,9 @@ end
 
 -- Register events for initializing the addon
 K:RegisterEvent("PLAYER_LOGIN", function()
+	-- Set CVars
+	SetCVar("ActionButtonUseKeyDown", 1)
+
 	-- Set up UI scaling
 	K.SetupUIScale()
 

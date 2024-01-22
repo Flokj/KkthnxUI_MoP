@@ -224,13 +224,13 @@ function Module:UpdateButtonConfig(i)
 		-- Set the button lock attribute based on the CVAR value
 		button:SetAttribute("buttonlock", lockBars)
 		-- Set the unlocked prevent drag attribute to the opposite of the button lock attribute
-		button:SetAttribute("unlockedpreventdrag", not lockBars)
+		--button:SetAttribute("unlockedpreventdrag", not lockBars) -- make sure button can drag without being click
 		-- Set the check mouseover cast attribute to true
 		button:SetAttribute("checkmouseovercast", true)
 		-- Set the check focus cast attribute to true
 		button:SetAttribute("checkfocuscast", true)
 		-- Set the check self cast attribute to true
-		-- button:SetAttribute("checkselfcast", true)
+		button:SetAttribute("checkselfcast", true)
 		-- Set the unit 2 attribute to "player"
 		-- button:SetAttribute("*unit2", "player")
 		-- Update the config for the button
@@ -414,11 +414,10 @@ function Module:OnEnable()
 	Module.movers = {}
 	local loadActionBarModules = {
 		"CreateBars",
-		"CreateCustomBar",
 		"CreateLeaveVehicle",
 		"CreatePetbar",
 		"CreateStancebar",
-		"CreateBarSkin",
+		"ReskinBars",
 		"UpdateBarConfig",
 		"UpdateBarVisibility",
 		"UpdateAllSize",
@@ -439,5 +438,4 @@ function Module:OnEnable()
 
 	Module:ReassignBindings()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
-
 end
