@@ -176,6 +176,10 @@ local function UIScaleNotice()
 	end
 end
 
+local function UpdateQuestFontSize()
+	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
+end
+
 local function UpdateCustomUnitList()
 	K:GetModule("Unitframes"):CreateUnitTable()
 end
@@ -894,7 +898,7 @@ local Skins = function(self)
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
 	Window:CreateSection("Font Tweaks")
-	Window:CreateSlider("Skins", "FontScale", "Global Font Scale", .5, 1.5, .05)
+	Window:CreateSlider("Skins", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
 	--Window:CreateSlider("Skins", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
 
 	-- Disabled / Broken Skins

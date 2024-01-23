@@ -1,5 +1,4 @@
-local K = unpack(KkthnxUI)
-local Module = K:GetModule("Tooltip")
+local K = KkthnxUI[1]
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
@@ -48,6 +47,7 @@ local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
 local CreateFrame = CreateFrame
 
 -- Cache global variables
+local _G = _G
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
@@ -78,9 +78,7 @@ local function IsAlreadyKnown(link, index)
 			return isPetCollected(speciesID)
 		else
 			if knowns[link] then return true end
-			if not knowables[itemClassID] then
-				return
-			end
+			if not knowables[itemClassID] then return end
 
 			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 			K.ScanTooltip:SetHyperlink(link)

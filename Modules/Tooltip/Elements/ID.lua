@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
 local strmatch, format, tonumber, select, strfind = string.match, string.format, tonumber, select, string.find
@@ -44,9 +44,7 @@ end
 
 function Module:UpdateItemSellPrice()
 	local frame = GetMouseFocus()
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	if frame:IsForbidden() then
 		return
@@ -121,9 +119,7 @@ end
 
 function Module:SetHyperLinkID(link)
 	local linkType, id = strmatch(link, "^(%a+):(%d+)")
-	if not linkType or not id then
-		return
-	end
+	if not linkType or not id then return end
 
 	if linkType == "spell" or linkType == "enchant" or linkType == "trade" then
 		Module.AddLineForID(self, id, types.spell)

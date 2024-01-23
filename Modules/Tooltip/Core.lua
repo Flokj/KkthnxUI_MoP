@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Tooltip")
 
 local strfind, format, strupper, strlen, pairs, unpack = string.find, string.format, string.upper, string.len, pairs, unpack
@@ -450,11 +450,10 @@ function Module:ReskinTooltip()
 
 	if not C["Tooltip"].ClassColor then return end
 
-	local data = self.GetTooltipData and self:GetTooltipData()
-	if data then
-		local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
-		if link then
-			local quality = select(3, GetItemInfo(link))
+	if C["Tooltip"].ClassColor and self.GetItem then
+		local _, item = self:GetItem()
+		if item then
+			local quality = select(3, GetItemInfo(item))
 			local color = K.QualityColors[quality or 1]
 			if color then
 				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
@@ -498,6 +497,7 @@ function Module:OnEnable()
 	local loadTooltipModules = {
 		"CreateTooltipID",
 		"CreateTooltipIcons",
+		"CreateTargetedInfo",
 	}
 
 	for _, funcName in ipairs(loadTooltipModules) do

@@ -53,6 +53,7 @@ function Module:OnEnable()
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
+		"CreateQuestSizeUpdate",
 		"CreatePetHappiness",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
@@ -337,6 +338,12 @@ function Module:CreateErrorFrameToggle()
 	else
 		K:UnregisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
 	end
+end
+
+function Module:CreateQuestSizeUpdate()
+	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
+	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
+	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
 end
 
 -- TradeFrame hook

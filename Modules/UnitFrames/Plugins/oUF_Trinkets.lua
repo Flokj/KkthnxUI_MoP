@@ -1,5 +1,6 @@
-local K = unpack(KkthnxUI)
-local oUF = K.oUF or oUF
+local K = KkthnxUI[1]
+local oUF = K.oUF
+assert(oUF, "oUF not loaded")
 
 local Update = function(self, event, ...)
 	local _, instanceType = IsInInstance()
@@ -19,11 +20,13 @@ local Update = function(self, event, ...)
 
 	if event == "ARENA_COOLDOWNS_UPDATE" then
 		local unit = ...
+		local tunit = self.unit
 
 		if self.unit == unit then
 			C_PvP.RequestCrowdControlSpell(unit)
 
 			local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit)
+
 			if spellID and startTime ~= 0 and duration ~= 0 then
 				CooldownFrame_Set(self.Trinket.cooldownFrame, startTime / 1000, duration / 1000, 1)
 			end
@@ -33,6 +36,7 @@ local Update = function(self, event, ...)
 
 		if self.unit == unit then
 			local _, _, spellTexture = GetSpellInfo(spellID)
+
 			self.Trinket.Icon:SetTexture(spellTexture)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then

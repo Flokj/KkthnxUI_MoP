@@ -1,34 +1,15 @@
 local K, C, L = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local string_format = _G.string.format
-local string_find = _G.string.find
-
-local AFK = _G.AFK
-local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
-local DEAD = _G.DEAD
-local DND = _G.DND
-local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
-local LEVEL = _G.LEVEL
-local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
-local UnitClass = _G.UnitClass
-local UnitClassification = _G.UnitClassification
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitHasVehicleUI = _G.UnitHasVehicleUI
-local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
-local UnitIsAFK = _G.UnitIsAFK
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsDND = _G.UnitIsDND
-local UnitIsDead = _G.UnitIsDead
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsGhost = _G.UnitIsGhost
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitLevel = _G.UnitLevel
-local UnitPower = _G.UnitPower
-local UnitPowerType = _G.UnitPowerType
-local UnitReaction = _G.UnitReaction
+local format, floor = string.format, math.floor
+local AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL = AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL
+local ALTERNATE_POWER_INDEX = ALTERNATE_POWER_INDEX or 10
+local UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer = UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer
+local UnitHealth, UnitHealthMax, UnitPower, UnitPowerType = UnitHealth, UnitHealthMax, UnitPower, UnitPowerType
+local UnitClass, UnitReaction, UnitLevel, UnitClassification = UnitClass, UnitReaction, UnitLevel, UnitClassification
+local UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost = UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost
+local GetCreatureDifficultyColor = GetCreatureDifficultyColor
+local GetSpellInfo, UnitIsFeignDeath = GetSpellInfo, UnitIsFeignDeath
 
 local FEIGN_DEATH
 local function GetFeignDeathTag()
@@ -71,7 +52,7 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per, cur = GetUnitHealthPerc(unit)
@@ -260,22 +241,12 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
-	local title = _G[string_format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
-	if title and not string_find(title, "^" .. LEVEL) then
+	local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+	if title and not strfind(title, "^" .. LEVEL) then
 		return title
 	end
 end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
-
-oUF.Tags.Methods["guildname"] = function(unit)
-	if not UnitIsPlayer(unit) then return end
-
-	local guildName = GetGuildInfo(unit)
-	if guildName then
-		return string_format("<%s>", guildName)
-	end
-end
-oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE PLAYER_GUILD_UPDATE"
 
 oUF.Tags.Methods["tarname"] = function(unit)
 	local tarUnit = unit .. "target"
@@ -288,6 +259,9 @@ oUF.Tags.Events["tarname"] = "UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE UNIT
 -- AltPower value tag
 oUF.Tags.Methods["altpower"] = function(unit)
 	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
-	return cur > 0 and cur
+	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
+	if max > 0 and not UnitIsDeadOrGhost(unit) then
+		return format("%s%%", floor(cur/max*100 + .5))
+	end
 end
 oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
