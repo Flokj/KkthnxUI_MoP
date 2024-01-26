@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Chat")
 
 -- Lua Standard Functions
@@ -52,7 +52,7 @@ local whisperEvents = {
 	["CHAT_MSG_BN_WHISPER"] = true,
 }
 
-local function GetGroupDistribution()
+local function getGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
 	if instanceType == "pvp" then return "/bg " end
 	if IsInRaid() then return "/ra " end
@@ -204,6 +204,7 @@ function Module:SkinChat()
 
 	local eb = _G[name .. "EditBox"]
 	eb:SetAltArrowKeyMode(false)
+	eb:SetClampedToScreen(true)
 	eb:ClearAllPoints()
 	eb:SetPoint("BOTTOMLEFT", self.__background, "TOPLEFT", 0, 20)
 	eb:SetPoint("TOPRIGHT", self.__background, "TOPRIGHT", 0, 46)
@@ -221,14 +222,13 @@ function Module:SkinChat()
 
 	local tab = _G[name .. "Tab"]
 	tab:SetAlpha(1)
-	tab.Text:SetFont(font, fontSize + 1, fontStyle)
+	tab.Text:SetFont(font, select(2, _G.KkthnxUIFont:GetFont()) + 1, fontStyle)
 	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
 	charCount:SetFontObject(K.UIFont)
-	charCount:SetTextColor(190, 190, 190, 0.4)
 	charCount:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
 	charCount:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)
 	charCount:SetJustifyH("CENTER")
@@ -273,7 +273,7 @@ local cycles = {
 	{ chatType = "INSTANCE_CHAT", IsActive = function() return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) end, },
 	{ chatType = "GUILD", IsActive = function() return IsInGuild() end, },
 	{ chatType = "OFFICER", IsActive = function() return C_GuildInfo_IsGuildOfficer() end, },
-	{ chatType = "CHANNEL", IsActive = function(_, editbox) 
+	{ chatType = "CHANNEL", IsActive = function(_, editbox)
 		if Module.InWorldChannel and Module.WorldChannelID then
 				editbox:SetAttribute("channelTarget", Module.WorldChannelID)
 				return true
@@ -286,28 +286,24 @@ local cycles = {
 function Module:UpdateEditBoxColor()
 	if not C["Chat"].Enable then return end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
-		return
-	end
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
 
 	local editBox = ChatEdit_ChooseBoxForSend()
 	local chatType = editBox:GetAttribute("chatType")
 	local editBoxBorder = editBox.KKUI_Border
 
-	if not chatType then
-		return
-	end
+	if not chatType then return end
 
 	-- Increase inset on right side to make room for character count text
 	local insetLeft, insetRight, insetTop, insetBottom = editBox:GetTextInsets()
 	editBox:SetTextInsets(insetLeft, insetRight + 18, insetTop, insetBottom)
 
 	if editBoxBorder then
-		local r, g, b
 		if chatType == "CHANNEL" then
 			local id = GetChannelName(editBox:GetAttribute("channelTarget"))
 
 			if id == 0 then
+				local r, g, b
 				if C["General"].ColorTextures then
 					r, g, b = unpack(C["General"].TexturesColor)
 				else
@@ -315,11 +311,11 @@ function Module:UpdateEditBoxColor()
 				end
 				editBoxBorder:SetVertexColor(r, g, b)
 			else
-				r, g, b = ChatTypeInfo[chatType .. id].r, ChatTypeInfo[chatType .. id].g, ChatTypeInfo[chatType .. id].b
+				local r, g, b = ChatTypeInfo[chatType .. id].r, ChatTypeInfo[chatType .. id].g, ChatTypeInfo[chatType .. id].b
 				editBoxBorder:SetVertexColor(r, g, b)
 			end
 		else
-			r, g, b = ChatTypeInfo[chatType].r, ChatTypeInfo[chatType].g, ChatTypeInfo[chatType].b
+			local r, g, b = ChatTypeInfo[chatType].r, ChatTypeInfo[chatType].g, ChatTypeInfo[chatType].b
 			editBoxBorder:SetVertexColor(r, g, b)
 		end
 	end
@@ -436,13 +432,11 @@ function Module:PlayWhisperSound(event, _, author)
 	if whisperEvents[event] then
 		local name = Ambiguate(author, "none")
 		local currentTime = GetTime()
-		
 		if Module.MuteCache[name] == currentTime then return end
 
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
 		end
-
 		self.soundTimer = currentTime + 5
 	end
 end
@@ -465,9 +459,7 @@ end
 function Module:OnEnable()
 	if not C["Chat"].Enable then return end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
-		return
-	end
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
 
 	for i = 1, NUM_CHAT_WINDOWS do
 		Module.SkinChat(_G["ChatFrame" .. i])

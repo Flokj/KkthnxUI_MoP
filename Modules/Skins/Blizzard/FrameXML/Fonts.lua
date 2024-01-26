@@ -10,14 +10,10 @@ local unifiedBlizzFonts = false
 
 local function ReskinFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
 	if not obj then return end
-
 	if style == "NONE" or not style then style = "" end
-
 	obj:SetFont(font, size, style)
-
 	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb, sa) end
 	if sox and soy then obj:SetShadowOffset(sox, soy) end
-
 	if r and g and b then
 		obj:SetTextColor(r, g, b)
 	elseif r then
@@ -43,7 +39,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.CombatTextFont, COMBAT, 120, nil, nil, nil, nil, nil, 1, -1)
 
 	local BUBBLE = GetKkthnxUIFont
-	ReskinFont(_G.ChatBubbleFont, BUBBLE, 9, GetKkthnxUIFontStyle) -- 13
+	ReskinFont(_G.ChatBubbleFont, BUBBLE, 13, GetKkthnxUIFontStyle) -- 13
 
 	local PLATE = NORMAL
 	local LARGE = NORMAL
@@ -115,7 +111,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.GameFontNormalMed2, NORMAL, stock and medium or medium) -- 14  Quest tracker
 	ReskinFont(_G.GameFontNormalMed3, NORMAL, stock and medium or 15) -- 14
 	ReskinFont(_G.GameFontNormalSmall2, NORMAL, stock and small or 12) -- 11  MissionUI Followers names
-	ReskinFont(_G.GameTooltipHeader, NORMAL, size) -- 14
+	--ReskinFont(_G.GameTooltipHeader, NORMAL, size) -- 14
 	ReskinFont(_G.InvoiceFont_Med, NORMAL, stock and size or 12) -- 12  Mail
 	ReskinFont(_G.InvoiceFont_Small, NORMAL, stock and small or size) -- 10  Mail
 	ReskinFont(_G.MailFont_Large, NORMAL, 14) -- 10  Mail
@@ -176,7 +172,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.SystemFont_Shadow_Small, NORMAL, small) -- 10
 	ReskinFont(_G.SystemFont_Small, NORMAL, stock and small or size) -- 10
 	ReskinFont(_G.SystemFont_Tiny, NORMAL, stock and tiny or size) -- 09
-	ReskinFont(_G.Tooltip_Med, NORMAL, size) -- 12
-	ReskinFont(_G.Tooltip_Small, NORMAL, stock and small or size) -- 10
+	--ReskinFont(_G.Tooltip_Med, NORMAL, size) -- 12
+	--ReskinFont(_G.Tooltip_Small, NORMAL, stock and small or size) -- 10
 	ReskinFont(_G.ZoneTextString, NORMAL, stock and enormous or 32, outline) -- 32
 end)

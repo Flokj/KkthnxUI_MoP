@@ -203,7 +203,6 @@ function Module:CreatePlayer()
 		safeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 		safeZone:SetPoint("TOPRIGHT")
 		safeZone:SetPoint("BOTTOMRIGHT")
-		Castbar:SetFrameLevel(10)
 		Castbar.SafeZone = safeZone
 
 		local lagStr = K.CreateFontString(Castbar, 11)
