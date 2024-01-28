@@ -264,7 +264,7 @@ end
 
 function Module:ItemLevel_UpdateMerchant(link)
 	if not self.iLvl then
-		self.iLvl = K.CreateFontString(_G[self:GetName() .. "ItemButton"], 12 + 1, "", "", false, "BOTTOMLEFT", 1, 1)
+		self.iLvl = K.CreateFontString(_G[self:GetName() .. "ItemButton"], 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 	end
 	self.iLvl:SetText("")
 	if link then
@@ -295,6 +295,8 @@ function Module:ItemLevel_FlyoutUpdate(id)
 	end
 
 	local quality, level = select(3, GetItemInfo(id))
+	if quality and quality <= 1 then return end
+
 	local color = K.QualityColors[quality or 0]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
@@ -308,9 +310,7 @@ function Module:ItemLevel_FlyoutSetup()
 	if not location then return end
 
 	if tonumber(location) then
-		if location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION then
-			return
-		end
+		if location >= PDFITEMFLYOUT_FIRST_SPECIAL_LOCATION then return end
 		local id = EquipmentManager_GetItemInfoByLocation(location)
 		if id then
 			Module.ItemLevel_FlyoutUpdate(self, id)

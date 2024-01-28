@@ -42,7 +42,7 @@ CALLBACKS
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
+local GetContainerNumFreeSlots = C_Container and C_Container.GetContainerNumFreeSlots or GetContainerNumFreeSlots
 
 local tagPool, tagEvents, object = {}, {}
 local function tagger(tag, ...)
@@ -134,8 +134,9 @@ end
 
 tagPool["currency"] = function(_, id)
 	local currencyInfo = GetBackpackCurrencyInfo(id)
-	if not currencyInfo then return end
-	
+	if not currencyInfo then
+		return
+	end
 	local name, count, icon = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
 	if name and count then
 		local iconTexture = "|T" .. icon .. ":13:15:0:0:50:50:4:46:4:46|t "

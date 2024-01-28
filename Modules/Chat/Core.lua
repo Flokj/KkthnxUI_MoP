@@ -478,11 +478,6 @@ function Module:OnEnable()
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
 
-	-- Font size
-	for i = 1, 15 do
-		CHAT_FONT_HEIGHTS[i] = i + 8
-	end
-
 	-- Default
 	if CHAT_OPTIONS then -- only flash whisper
 		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true

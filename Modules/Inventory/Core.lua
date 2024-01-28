@@ -437,7 +437,7 @@ function Module:GetEmptySlot(name)
 			return -1, slotID
 		end
 
-		for bagID = 6, 12 do
+		for bagID = 5, 11 do
 			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
@@ -1272,7 +1272,7 @@ function Module:OnEnable()
 		buttons[1] = Module.CreateCloseButton(self, f)
 		buttons[2] = Module.CreateSortButton(self, name)
 		if name == "Bag" then
-			Module.CreateBagBar(self, settings, 5)			
+			Module.CreateBagBar(self, settings, 4)			
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateKeyToggle(self)
 			buttons[5] = Module.CreateSplitButton(self)
@@ -1342,7 +1342,7 @@ function Module:OnEnable()
 		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end
 
-	function BagButton:OnUpdate()
+	function BagButton:OnUpdateButton()
 		local id = GetInventoryItemID("player", (self.GetInventorySlot and self:GetInventorySlot()) or self.invID)
 		if not id then
 			return

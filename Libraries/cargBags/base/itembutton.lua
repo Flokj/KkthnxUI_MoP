@@ -39,7 +39,12 @@ function ItemButton:GetTemplate(bagID)
       (bagID == -3 and ReagentBankFrame) or (bagID == -1 and BankFrame) or (bagID and _G["ContainerFrame"..bagID + 1]) or ContainerFrame1;
 end
 
-local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
+local mt_gen_key = {
+	__index = function(self, k)
+		self[k] = {}
+		return self[k]
+	end,
+}
 
 --[[!
 	Fetches a new instance of the ItemButton, creating one if necessary
@@ -61,7 +66,7 @@ function ItemButton:New(bagID, slotID)
 	button.slotId = slotID
 	button:SetID(slotID)
 	button:Show()
-	button:HookScript("OnEnter", button.OnEnter)
+	button:HookScript("OnEnter", button.ButtonOnEnter)
 	if bagID == BANK_CONTAINER then
 		button.GetInventorySlot = ButtonInventorySlot
 		button.UpdateTooltip = BankFrameItemButton_OnEnter
@@ -79,6 +84,7 @@ end
 	@return button <ItemButton>
 	@callback button:OnCreate(tpl)
 ]]
+
 function ItemButton:Create(tpl, parent)
 	local impl = self.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
@@ -86,14 +92,25 @@ function ItemButton:Create(tpl, parent)
 
 	local button = setmetatable(CreateFrame("Button", name, parent, tpl..", BackdropTemplate"), self.__index)
 
-	if(button.Scaffold) then button:Scaffold(tpl) end
-	if(button.OnCreate) then button:OnCreate(tpl) end
-	local btnNT = _G[button:GetName().."NormalTexture"]
+	if button.Scaffold then
+		button:Scaffold(tpl)
+	end
+	if button.OnCreate then
+		button:OnCreate(tpl)
+	end
+
+	local btnNT = _G[button:GetName() .. "NormalTexture"]
 	local btnNIT = button.NewItemTexture
 	local btnBIT = button.BattlepayItemTexture
-	if btnNT then btnNT:SetTexture("") end
-	if btnNIT then btnNIT:SetTexture("") end
-	if btnBIT then btnBIT:SetTexture("") end
+	if btnNT then
+		btnNT:SetTexture("")
+	end
+	if btnNIT then
+		btnNIT:SetTexture("")
+	end
+	if btnBIT then
+		btnBIT:SetTexture("")
+	end
 
 	button:RegisterForDrag("LeftButton") -- fix button drag in 9.0
 
@@ -113,6 +130,6 @@ end
 	@param item <table> [optional]
 	@return item <table>
 ]]
-function ItemButton:GetItemInfo(item)
+function ItemButton:GetInfo(item)
 	return self.implementation:GetItemInfo(self.bagId, self.slotId, item)
 end
