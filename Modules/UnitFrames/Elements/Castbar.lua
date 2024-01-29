@@ -164,7 +164,7 @@ local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 				ticks[i] = bar:CreateTexture(nil, "OVERLAY")
 				ticks[i]:SetTexture(C["Media"].Textures.White8x8Texture)
 				ticks[i]:SetVertexColor(0, 0, 0, 0.7)
-				ticks[i]:SetWidth(K.Mult)
+				ticks[i]:SetWidth(1)
 				ticks[i]:SetHeight(height)
 			end
 			ticks[i]:ClearAllPoints()
@@ -287,7 +287,7 @@ function Module:PostCastStart(unit)
 				safeZone:SetWidth(self:GetWidth() * timeDiff / self.max)
 				safeZone:Show()
 				lagString:SetFormattedText("%d ms", timeDiff * 1000)
-				lagString:Hide() --- Show Text Castbar Latency
+				lagString:Hide() --- Hide/Show Text Castbar Latency
 			else
 				safeZone:Hide()
 				lagString:Hide()
