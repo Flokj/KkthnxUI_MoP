@@ -1,16 +1,21 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+local select = select
 
-local CreateFrame = _G.CreateFrame
-local GetThreatStatusColor = _G.GetThreatStatusColor
-local UnitIsUnit = _G.UnitIsUnit
-local UnitThreatSituation = _G.UnitThreatSituation
+local CreateFrame = CreateFrame
+local GetThreatStatusColor = GetThreatStatusColor
+local UnitIsUnit = UnitIsUnit
+local UnitThreatSituation = UnitThreatSituation
 
 local function UpdateRaidThreat(self, _, unit)
-	if unit ~= self.unit then return end
-	if not self.KKUI_Border then return end
+	if unit ~= self.unit then
+		return
+	end
+
+	if not self.KKUI_Border then
+		return
+	end
 
 	local situation = UnitThreatSituation(unit)
 	if situation and situation > 0 then
@@ -22,7 +27,9 @@ local function UpdateRaidThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
-	if self.unit ~= unit then return end
+	if self.unit ~= unit then
+		return
+	end
 
 	local powerType = UnitPowerType(unit)
 	local isHealer = UnitGroupRolesAssigned(unit) == "HEALER"
@@ -32,14 +39,12 @@ local function UpdateRaidPower(self, _, unit)
 			self.Health:ClearAllPoints()
 			self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
 			self.Health:SetPoint("TOPRIGHT", self)
-
 			self.Power:Show()
 		end
 	else
 		if self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
 			self.Health:SetAllPoints(self)
-
 			self.Power:Hide()
 		end
 	end
@@ -105,22 +110,19 @@ function Module:CreateRaid()
 		self.Power = Power
 
 		table.insert(self.__elements, UpdateRaidPower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
 		self:RegisterEvent("UNIT_POWER_UPDATE", UpdateRaidPower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
 	end
 
 	if C["Raid"].ShowHealPrediction then
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
-
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local mhpb = Health:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
-		mhpb:SetTexture(K.GetTexture(C["General"].Texture))
+		mhpb:SetTexture(HealPredictionTexture)
 		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
+		local ohpb = Health:CreateTexture(nil, "BORDER", nil, 5)
 		ohpb:SetWidth(1)
-		ohpb:SetTexture(K.GetTexture(C["General"].Texture))
+		ohpb:SetTexture(HealPredictionTexture)
 		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
 		self.HealPredictionAndAbsorb = {
@@ -128,7 +130,6 @@ function Module:CreateRaid()
 			otherBar = ohpb,
 			maxOverflow = 1,
 		}
-		self.predicFrame = frame
 	end
 
 	local Name = self:CreateFontString(nil, "OVERLAY")
@@ -322,7 +323,7 @@ function Module:CreateRaid()
 	self.Health = Health
 	self.Name = Name
 	self.Overlay = Overlay
-	self.ReadyCheckIndicator = ReadyCheckIndicator
+	-- self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.PhaseIndicator = PhaseIndicator
 	self.SummonIndicator = SummonIndicator
 	self.RaidTargetIndicator = RaidTargetIndicator

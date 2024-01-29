@@ -33,11 +33,12 @@ end
 
 local macroInit
 function Module:Bind_RegisterMacro()
+	if self ~= "Blizzard_MacroUI" then return end
 	if macroInit then return end
 
 	hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local button = self.ScrollTarget:GetChildren()[i]
+			local button = select(i, self.ScrollTarget:GetChildren())
 			if not button.bindHooked then
 				button:HookScript("OnEnter", hookMacroButton)
 				button.bindHooked = true
