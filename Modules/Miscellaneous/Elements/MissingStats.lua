@@ -1,5 +1,5 @@
 local K, C = unpack(KkthnxUI)
-local M = K:GetModule("Miscellaneous")
+local Module = K:GetModule("Miscellaneous")
 
 local wipe, gmatch, tinsert, ipairs, pairs = wipe, gmatch, tinsert, ipairs, pairs
 local tonumber, tostring, max = tonumber, tostring, max
@@ -191,7 +191,7 @@ local function CreatePlayerILvl(parent, category)
 	iLvlFrame.background:Show()
 	iLvlFrame.background:SetAtlas("UI-Character-Info-ItemLevel-Bounce", true)
 
-	M.PlayerILvl = K.CreateFontString(iLvlFrame, 20)
+	Module.PlayerILvl = K.CreateFontString(iLvlFrame, 20)
 end
 
 local function GetItemSlotLevel(unit, index)
@@ -221,7 +221,7 @@ local function GetILvlTextColor(level)
 	end
 end
 
-function M:UpdateUnitILvl(unit, text)
+function Module:UpdateUnitILvl(unit, text)
 	if not text then return end
 
 	local total = 0
@@ -258,8 +258,8 @@ function M:UpdateUnitILvl(unit, text)
 	text:SetTextColor(GetILvlTextColor(average))
 end
 
-function M:UpdatePlayerILvl()
-	M:UpdateUnitILvl("player", M.PlayerILvl)
+function Module:UpdatePlayerILvl()
+	Module:UpdateUnitILvl("player", Module.PlayerILvl)
 end
 
 local function CreateStatHeader(parent, index, category)
@@ -299,8 +299,8 @@ end
 local function ToggleMagicRes()
 	if C["Misc"].ImprovedStats then
 		CharacterResistanceFrame:ClearAllPoints()
-		CharacterResistanceFrame:SetPoint("TOPLEFT", M.StatPanel2, 14, -30)
-		CharacterResistanceFrame:SetParent(M.StatPanel2)
+		CharacterResistanceFrame:SetPoint("TOPLEFT", Module.StatPanel2, 14, -30)
+		CharacterResistanceFrame:SetParent(Module.StatPanel2)
 		if not hasOtherAddon then
 			CharacterModelFrame:SetSize(231, 320)
 		end -- size in retail
@@ -329,7 +329,7 @@ local function ToggleMagicRes()
 end
 
 local function UpdateStats()
-	if not (M.StatPanel2 and M.StatPanel2:IsShown()) then return end
+	if not (Module.StatPanel2 and Module.StatPanel2:IsShown()) then return end
 
 	for _, frame in pairs(categoryFrames) do
 		SetCharacterStats(frame.statsTable, frame.category)
@@ -340,20 +340,20 @@ local function ToggleStatPanel(texture)
 	if C["Misc"].ImprovedStats then
 		K.SetupArrow(texture, "left")
 		CharacterAttributesFrame:Hide()
-		M.StatPanel2:Show()
+		Module.StatPanel2:Show()
 	else
 		K.SetupArrow(texture, "right")
 		CharacterAttributesFrame:SetShown(not hasOtherAddon)
-		M.StatPanel2:Hide()
+		Module.StatPanel2:Hide()
 	end
 	ToggleMagicRes()
 end
 
-M.OtherPanels = { "DCS_StatScrollFrame", "CSC_SideStatsFrame" }
+Module.OtherPanels = { "DCS_StatScrollFrame", "CSC_SideStatsFrame" }
 local found
-function M:FindAddOnPanels()
+function Module:FindAddOnPanels()
 	if not found then
-		for _, name in pairs(M.OtherPanels) do
+		for _, name in pairs(Module.OtherPanels) do
 			if _G[name] then
 				tinsert(PaperDollFrame.__statPanels, _G[name])
 			end
@@ -365,16 +365,16 @@ function M:FindAddOnPanels()
 		found = true
 	end
 
-	M:SortAddOnPanels()
+	Module:SortAddOnPanels()
 end
 
-function M:SortAddOnPanels()
+function Module:SortAddOnPanels()
 	local prev
 	for _, frame in pairs(PaperDollFrame.__statPanels) do
 		frame:ClearAllPoints()
 		if not prev then
-			if M.StatPanel2:IsShown() then
-				frame:SetPoint("TOPLEFT", M.StatPanel2, "TOPRIGHT", 3, 0)
+			if Module.StatPanel2:IsShown() then
+				frame:SetPoint("TOPLEFT", Module.StatPanel2, "TOPRIGHT", 3, 0)
 			else
 				frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -32, -15 - K.Mult)
 			end
@@ -386,14 +386,14 @@ function M:SortAddOnPanels()
 	end
 end
 
-function M:CharacterStatePanel()
+function Module:CharacterStatePanel()
 	hasOtherAddon = IsAddOnLoaded("CharacterStatsTBC")
 
 	local statPanel = CreateFrame("Frame", "KKUI_StatPanel", PaperDollFrame, "BasicFrameTemplateWithInset")
 	statPanel:SetSize(200, 422)
 	statPanel:SetPoint("TOPLEFT", PaperDollFrame, "TOPRIGHT", -28, -13 - K.Mult)
 
-	M.StatPanel2 = statPanel
+	Module.StatPanel2 = statPanel
 
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetPoint("TOPLEFT", 0, -62)
@@ -416,7 +416,7 @@ function M:CharacterStatePanel()
 
 	-- Player iLvl
 	CreatePlayerILvl(stat, STAT_AVERAGE_ITEM_LEVEL)
-	hooksecurefunc("PaperDollFrame_UpdateStats", M.UpdatePlayerILvl)
+	hooksecurefunc("PaperDollFrame_UpdateStats", Module.UpdatePlayerILvl)
 
 	-- Player stats
 	local categories = {
@@ -451,13 +451,13 @@ function M:CharacterStatePanel()
 	bu:SetScript("OnClick", function(self)
 		C["Misc"].ImprovedStats = not C["Misc"].ImprovedStats
 		ToggleStatPanel(self.__texture)
-		M:SortAddOnPanels()
+		Module:SortAddOnPanels()
 	end)
 
 	ToggleStatPanel(bu.__texture)
 
 	PaperDollFrame:HookScript("OnShow", function()
-		M:FindAddOnPanels()
+		Module:FindAddOnPanels()
 	end)
 
 	-- Block LeatrixPlus toggle
@@ -475,4 +475,4 @@ function M:CharacterStatePanel()
 	end
 end
 
-M:RegisterMisc("StatPanel", M.CharacterStatePanel)
+Module:RegisterMisc("StatPanel", Module.CharacterStatePanel)
