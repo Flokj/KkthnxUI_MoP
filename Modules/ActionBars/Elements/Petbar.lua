@@ -3,7 +3,7 @@ local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local tinsert = tinsert
-local margin = C.Bars.BarMargin
+local margin = 6
 
 function Module:CreatePetbar()
 	local num = NUM_PET_ACTION_SLOTS

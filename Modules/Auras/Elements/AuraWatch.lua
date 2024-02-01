@@ -232,7 +232,7 @@ end
 local function BuildICON(iconSize)
 	iconSize = iconSize * C["AuraWatch"].IconScale
 
-	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
+	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
 	frame:SetSize(iconSize, iconSize)
 
 	frame.bg = CreateFrame("Frame", nil, frame)
@@ -271,7 +271,7 @@ end
 
 -- Bar mode
 local function BuildBAR(barWidth, iconSize)
-	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
+	local frame = CreateFrame("Frame", nil, K.PetBattleFrameHider)
 	frame:SetSize(iconSize, iconSize)
 	frame:CreateBorder()
 
@@ -670,7 +670,7 @@ function Module:AuraWatch_IntTimer(elapsed)
 end
 
 function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, sourceName)
-	if not K.PetBattleHider:IsShown() then
+	if not K.PetBattleFrameHider:IsShown() then
 		return
 	end
 

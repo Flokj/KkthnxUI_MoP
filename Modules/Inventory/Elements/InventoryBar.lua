@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Bags")
 
 local ipairs = ipairs
@@ -7,18 +7,18 @@ local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
 local GetCVarBool = GetCVarBool
-local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 
 local buttonList = {}
-local bagBar
 local bagPosition
 
 function Module:BagBar_OnEnter()
+	local bagBar = _G.KKUI_BagBar
 	return C["Inventory"].BagBarMouseover and UIFrameFadeIn(bagBar, 0.2, bagBar:GetAlpha(), 1)
 end
 
 function Module:BagBar_OnLeave()
+	local bagBar = _G.KKUI_BagBar
 	return C["Inventory"].BagBarMouseover and UIFrameFadeOut(bagBar, 0.2, bagBar:GetAlpha(), 0)
 end
 
@@ -94,14 +94,6 @@ function Module:SizeAndPositionBagBar()
 	else
 		bagBar:SetSize(bagBarSize, btnSize + btnSpace)
 	end
-
-	Module:UpdateMainButtonCount()
-end
-
-function Module:UpdateMainButtonCount()
-	local mainCount = buttonList[1].Count
-	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
-	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
 end
 
 function Module:CreateInventoryBar()

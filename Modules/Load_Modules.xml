@@ -150,7 +150,7 @@
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
    <!--Include file="Skins\Blizzard\FrameXML\Fonts.lua" /-->
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
-   <!--Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" /-->
+   <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <!-- Skins AddOns -->

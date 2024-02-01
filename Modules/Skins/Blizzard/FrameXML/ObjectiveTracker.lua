@@ -1,6 +1,7 @@
-local K, C = unpack(KkthnxUI)
-local S = K:GetModule("Skins")
+local K, C = KkthnxUI[1], KkthnxUI[2]
+local Module = K:GetModule("Skins")
 
+local _G = getfenv(0)
 local pairs, tinsert, select = pairs, tinsert, select
 local GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches = GetNumQuestLogEntries, GetQuestLogTitle, GetNumQuestWatches
 local IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool = IsShiftKeyDown, RemoveQuestWatch, ShowUIPanel, GetCVarBool
@@ -15,7 +16,7 @@ local headerString = QUESTS_LABEL.." %s/%s"
 
 local frame
 
-function S:ExtQuestLogFrame()
+function Module:ExtQuestLogFrame()
 	-- Move ClassicCodex
 	if CodexQuest then
 		local buttonShow = CodexQuest.buttonShow
@@ -38,7 +39,7 @@ function S:ExtQuestLogFrame()
 	end
 end
 
-function S:QuestLogLevel()
+function Module:QuestLogLevel()
 	local numEntries = GetNumQuestLogEntries()
 	local scrollOffset = HybridScrollFrame_GetOffset(QuestLogListScrollFrame)
 	local buttons = QuestLogListScrollFrame.buttons
@@ -112,7 +113,7 @@ local function reskinQuestIcon(button)
 	end
 end
 
-function S:QuestTracker()
+function Module:QuestTracker()
 	-- Mover for quest tracker
 	frame = CreateFrame("Frame", "KKUI_QuestMover", UIParent)
 	frame:SetSize(240, 50)
@@ -149,9 +150,9 @@ function S:QuestTracker()
 	bg:SetPoint("TOPLEFT", -25, 5)
 	bg:SetSize(250, 30)
 
-	S:ExtQuestLogFrame()
-	hooksecurefunc("QuestLog_Update", S.QuestLogLevel)
-	hooksecurefunc(QuestLogListScrollFrame, "update", S.QuestLogLevel)
+	Module:ExtQuestLogFrame()
+	hooksecurefunc("QuestLog_Update", Module.QuestLogLevel)
+	hooksecurefunc(QuestLogListScrollFrame, "update", Module.QuestLogLevel)
 
 	-- Extend the wrap text on WatchFrame, needs review
 	hooksecurefunc("WatchFrame_SetLine", function(line)
