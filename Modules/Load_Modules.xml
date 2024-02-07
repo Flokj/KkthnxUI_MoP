@@ -51,7 +51,6 @@
    <Script file="Auras\Elements\AuraWatch.lua" />
    <Script file="Auras\Elements\Reminder.lua" />
    <Script file="Auras\Elements\Totems.lua" />
-   <!--Include file="Auras\Lumos\Lumos.xml" /-->
    <!-- Maps -->
    <Script file="Maps\MiniMap.lua" />
    <Script file="Maps\WorldMap.lua" />
@@ -174,7 +173,6 @@
    <Include file="Skins\Addons\OPie.lua" />
    <Include file="Skins\Addons\RaiderIO.lua" />
    <Include file="Skins\Addons\Spy.lua" />
-   <Include file="Skins\Addons\Hekili.lua" />
    <Include file="Skins\Addons\TellMeWhen.lua" />
    <Include file="Skins\Addons\TitanPanel.lua" /> -->
 </Ui>

@@ -521,7 +521,6 @@ C["Skins"] = {
 	DeadlyBossMods = false,
 	Details = false,
 	Dominos = false,
-	Hekili = false,
 	RareScanner = false,
 	Skada = true,
 	Spy = false,

@@ -904,7 +904,6 @@ local Skins = function(self)
 	-- Disabled / Broken Skins
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
-	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])
 	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
 	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
 	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])

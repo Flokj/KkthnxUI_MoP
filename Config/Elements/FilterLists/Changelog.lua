@@ -169,7 +169,7 @@ local KKUI_Changelog = {
 				Header = "Changed",
 				Entries = {
 					"[Border] Changed the texture and brightness of the default KkthnxUI border. You won't notice much of a difference here",
-					"[LibActionButton] Changed back to the default lib so MaxDPS / Hekili will work without needing support",
+					"[LibActionButton] Changed back to the default lib so MaxDPS",
 					"[Nameplates] Changed and updated quest icon code",
 					"[Skins] Changed professions icons to be smaller so they do not overlap (Idk why they are so close in the first place)",
 				},
@@ -189,7 +189,6 @@ local KKUI_Changelog = {
 					"[Datatext] Fixed friends throwing a nil value",
 					"[GroupLoot] Fixed all issues related to group loot",
 					"[Inventory] Fixed setitems to check for nil",
-					"[Lumos] Fixed lumos for personal resource display for all classes",
 					"[Skins] Fixed Details not checking for the proper default texture?",
 				},
 			},
