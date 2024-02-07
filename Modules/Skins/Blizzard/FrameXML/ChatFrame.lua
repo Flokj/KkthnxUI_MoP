@@ -1,8 +1,6 @@
-local K, C = unpack(KkthnxUI)
-
-local table_insert = _G.table.insert
-
-local hooksecurefunc = _G.hooksecurefunc
+local K, C = KkthnxUI[1], KkthnxUI[2]
+local table_insert = table.insert
+local hooksecurefunc = hooksecurefunc
 
 local function SkinChatButton(button, size)
 	button:SkinButton()

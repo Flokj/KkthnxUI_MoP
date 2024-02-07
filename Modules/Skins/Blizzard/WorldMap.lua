@@ -1,6 +1,4 @@
-local K, C = unpack(KkthnxUI)
-
-local table_insert = _G.table.insert
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 tinsert(C.defaultThemes, function()
 

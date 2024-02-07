@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 
 K.Devs = {
 	["Енот-Пламегор"] = true,

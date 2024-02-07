@@ -81,7 +81,6 @@ function Module:ForceDefaultCVars()
 		{ "instantQuestText", 1 },
 		{ "lockActionBars", 1 },
 		{ "lootUnderMouse", 1 },
-		{ "lossOfControl", 0 },
 		{ "overrideArchive", 0 },
 		{ "profanityFilter", 0 },
 		{ "removeChatDelay", 1 },
@@ -97,7 +96,6 @@ function Module:ForceDefaultCVars()
 		{ "whisperMode", "inline" },
 		{ "ActionButtonUseKeyDown", 1 },
 		{ "fstack_preferParentKeys", 0 },
-		{ "showNPETutorials", 0 },
 		{ "statusTextDisplay", "BOTH" },
 		{ "threatWarning", 3 },
 	}

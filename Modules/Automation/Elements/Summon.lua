@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
 local C_SummonInfo_ConfirmSummon, C_SummonInfo_GetSummonConfirmAreaName, C_SummonInfo_GetSummonConfirmSummoner = C_SummonInfo.ConfirmSummon, C_SummonInfo.GetSummonConfirmAreaName, C_SummonInfo.GetSummonConfirmSummoner

@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local GetTrackingInfo = C_Minimap.GetTrackingInfo
 local GetNumTrackingTypes = C_Minimap.GetNumTrackingTypes

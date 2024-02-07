@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local function colourPopout(self)
 	self.arrow:SetVertexColor(0, 0.6, 1)

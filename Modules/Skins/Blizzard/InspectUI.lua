@@ -1,11 +1,8 @@
-local _, C = unpack(KkthnxUI)
-
--- Lua
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then return end
 
-	-- Inspect
 	local slots = {
 		"Head",
 		"Neck",
@@ -30,10 +27,9 @@ C.themes["Blizzard_InspectUI"] = function()
 
 	for i = 1, #slots do
 		local slot = _G["Inspect" .. slots[i] .. "Slot"]
-
 		slot:StripTextures()
 		slot:SetNormalTexture(0)
-		slot.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		slot.bg = CreateFrame("Frame", nil, slot)
 		slot.bg:SetAllPoints(slot.icon)
