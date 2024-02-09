@@ -1,23 +1,10 @@
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
---[[
-By Tukz, for Tukui
-.Thickness : Thickness of the statusbar
-.Tracker : Table of buffs spell id to track, if not spiecified, use default listing
-.Texture : Texture you want to use for status bars
-.Icons : Set to true if you wish to use squared icons instead of status bars
-.SpellTextures : Spell Textures instead of colored squares
-.MaxAuras : Set the max amount of status or icons shows
-Example:
-local AuraTrack = CreateFrame("Frame", nil, Health)
-AuraTrack:SetAllPoints()
-AuraTrack.Texture = C.Medias.Normal
-self.AuraTrack = AuraTrack
-]]
+-- By Tukz, for Tukui
 
 local Tracker = {
-	-- Priest
+	-- PRIEST
 	[1243] = { 1, 1, 0.66 }, -- Power Word: Fortitude(Rank 1)
 	[1244] = { 1, 1, 0.66 }, -- Power Word: Fortitude(Rank 2)
 	[1245] = { 1, 1, 0.66 }, -- Power Word: Fortitude(Rank 3)
@@ -75,7 +62,8 @@ local Tracker = {
 	[25222] = { 0.33, 0.73, 0.75 }, -- Renew(Rank 12)
 	[48067] = { 0.33, 0.73, 0.75 }, -- Renew(Rank 13)
 	[48068] = { 0.33, 0.73, 0.75 }, -- Renew(Rank 14)
-	-- Hunter
+
+	-- HUNTER
 	[19506] = { 0.89, 0.09, 0.05 }, -- Trueshot Aura (Rank 1)
 	[20905] = { 0.89, 0.09, 0.05 }, -- Trueshot Aura (Rank 2)
 	[20906] = { 0.89, 0.09, 0.05 }, -- Trueshot Aura (Rank 3)
@@ -84,7 +72,8 @@ local Tracker = {
 	[20043] = { 0.33, 0.93, 0.79 }, -- Aspect of the Wild (Rank 1)
 	[20190] = { 0.33, 0.93, 0.79 }, -- Aspect of the Wild (Rank 2)
 	[27045] = { 0.33, 0.93, 0.79 }, -- Aspect of the Wild (Rank 3)
-	-- Mage
+
+	-- MAGE
 	[1459] = { 0.89, 0.09, 0.05 }, -- Arcane Intellect(Rank 1)
 	[1460] = { 0.89, 0.09, 0.05 }, -- Arcane Intellect(Rank 2)
 	[1461] = { 0.89, 0.09, 0.05 }, -- Arcane Intellect(Rank 3)
@@ -106,7 +95,8 @@ local Tracker = {
 	[27130] = { 0.2, 0.8, 0.2 }, -- Amplify Magic(Rank 5)
 	[33946] = { 0.2, 0.8, 0.2 }, -- Amplify Magic(Rank 6)
 	[130] = { 0.00, 0.00, 0.50 }, -- Slow Fall
-	-- Paladin
+
+	-- PALADIN
 	[1044] = { 0.89, 0.45, 0 }, -- Blessing of Freedom
 	[6940] = { 0.89, 0.1, 0.1 }, -- Blessing Sacrifice(Rank 1)
 	[20729] = { 0.89, 0.1, 0.1 }, -- Blessing Sacrifice(Rank 2)
@@ -154,7 +144,8 @@ local Tracker = {
 	[28791] = { 1.00, 1.00, 0.07 }, -- Holy Power (attack power)
 	[28793] = { 1.00, 1.00, 0.07 }, -- Holy Power (spell damage)
 	[28795] = { 1.00, 1.00, 0.07 }, -- Holy Power (mana regeneration)
-	-- Druid
+
+	-- DRUID
 	[1126] = { 0.2, 0.8, 0.8 }, -- Mark of the Wild(Rank 1)
 	[5232] = { 0.2, 0.8, 0.8 }, -- Mark of the Wild(Rank 2)
 	[6756] = { 0.2, 0.8, 0.8 }, -- Mark of the Wild(Rank 3)
@@ -207,9 +198,8 @@ local Tracker = {
 	[33763] = { 0.33, 0.37, 0.47 }, -- Lifebloom(Rank 1)
 	[48450] = { 0.33, 0.37, 0.47 }, -- Lifebloom(Rank 2)
 	[48451] = { 0.33, 0.37, 0.47 }, -- Lifebloom(Rank 3)
-	-- Rogue
-	-- No buffs to track
-	-- Shaman
+
+	-- SHAMAN
 	[974] = { 0.2, 0.2, 1 }, -- Earth Shield(Rank 1)
 	[32593] = { 0.2, 0.2, 1 }, -- Earth Shield(Rank 2)
 	[32594] = { 0.2, 0.2, 1 }, -- Earth Shield(Rank 3)
@@ -258,7 +248,8 @@ local Tracker = {
 	[10626] = { 1.00, 1.00, 1.00 }, -- Grace of Air Totem(Rank 2)
 	[25360] = { 1.00, 1.00, 1.00 }, -- Grace of Air Totem(Rank 3)
 	[2895] = { 1.00, 1.00, 1.00 }, -- Wrath of Air Totem(Rank 1)
-	-- Warlock
+
+	-- WARLOCK
 	[5597] = { 0.89, 0.09, 0.05 }, -- Unending Breath
 	[6512] = { 0.2, 0.8, 0.2 }, -- Detect Lesser Invisibility
 	[2970] = { 0.2, 0.8, 0.2 }, -- Detect Invisibility
@@ -273,7 +264,8 @@ local Tracker = {
 	[24605] = { 0.08, 0.59, 0.41 }, -- Furious Howl(Rank 2)
 	[24603] = { 0.08, 0.59, 0.41 }, -- Furious Howl(Rank 3)
 	[24597] = { 0.08, 0.59, 0.41 }, -- Furious Howl(Rank 4)
-	-- Warrior
+
+	-- WARRIOR
 	[6673] = { 0.2, 0.2, 1 }, -- Battle Shout(Rank 1)
 	[5242] = { 0.2, 0.2, 1 }, -- Battle Shout(Rank 2)
 	[6192] = { 0.2, 0.2, 1 }, -- Battle Shout(Rank 3)

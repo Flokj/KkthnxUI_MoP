@@ -105,18 +105,12 @@ do
 		if class then
 			if class == "DEATHKNIGHT" then
 				return "|CFFC41F3B"
-			elseif class == "DEMONHUNTER" then
-				return "|CFFA330C9"
 			elseif class == "DRUID" then
 				return "|CFFFF7D0A"
-			elseif class == "EVOKER" then
-				return "|CFF33937F"
 			elseif class == "HUNTER" then
 				return "|CFFA9D271"
 			elseif class == "MAGE" then
 				return "|CFF40C7EB"
-			elseif class == "MONK" then
-				return "|CFF00FF96"
 			elseif class == "PALADIN" then
 				return "|CFFF58CBA"
 			elseif class == "PRIEST" then

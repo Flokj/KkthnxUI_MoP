@@ -7,8 +7,6 @@ local GetNumAddOns = GetNumAddOns
 local GetRealZoneText = GetRealZoneText
 local UNKNOWN = UNKNOWN
 
-local CI = LibStub("LibClassicInspector")
-
 local function AreOtherAddOnsEnabled()
 	local addons
 
@@ -222,3 +220,10 @@ function K:ShowStatusReport()
 	if not K.StatusFrame:IsShown() then UpdateStatusFrame() K.StatusFrame:Show()
 	else K.StatusFrame:Hide() end
 end
+
+SlashCmdList.STATUSREPORT = function()
+	K:ShowStatusReport()
+end
+
+SLASH_STATUSREPORT1 = "/kkstatus"
+SLASH_STATUSREPORT2 = "/kstatus"

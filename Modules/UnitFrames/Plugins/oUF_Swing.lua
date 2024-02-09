@@ -5,8 +5,9 @@ local oUF = K.oUF
 -- KkthnxUI MOD
 
 local select = select
-local GetTime = GetTime
+
 local GetInventoryItemID = GetInventoryItemID
+local GetTime = GetTime
 local UnitAttackSpeed = UnitAttackSpeed
 local UnitRangedDamage = UnitRangedDamage
 local UnitCastingInfo = UnitCastingInfo
@@ -15,7 +16,6 @@ local meleeing, rangeing, lasthit
 local MainhandID = GetInventoryItemID("player", 16)
 local OffhandID = GetInventoryItemID("player", 17)
 local RangedID = GetInventoryItemID("player", 18)
-local playerGUID = UnitGUID("player")
 local AUTO_CAST_TIME = 0
 local delayTime = 0
 
@@ -28,9 +28,11 @@ local function SwingStopped(element)
 	if swing:IsShown() then
 		return
 	end
+
 	if swingMH:IsShown() then
 		return
 	end
+
 	if swingOH:IsShown() then
 		return
 	end
@@ -222,7 +224,6 @@ local function RangedChange(self, _, unit)
 
 	local bar = self.Swing
 	local swing = bar.Twohand
-
 	local NewRangedID = GetInventoryItemID("player", 18)
 	local now = GetTime()
 	local speed = UnitRangedDamage("player")
@@ -262,7 +263,7 @@ local function Ranged(self, _, unit, _, spellID)
 	rangeing = true
 	bar:Show()
 
-	swing.speed = UnitRangedDamage(unit) * 0.82
+	swing.speed = UnitRangedDamage(unit) * .82
 	swing.min = GetTime()
 	swing.max = swing.min + swing.speed
 	swing:Show()
@@ -279,7 +280,7 @@ local function Ranged(self, _, unit, _, spellID)
 end
 
 local function Melee(self, _, _, sourceGUID)
-	if sourceGUID ~= playerGUID then
+	if sourceGUID ~= K.GUID then
 		return
 	end
 
@@ -346,7 +347,7 @@ end
 local function ParryHaste(self, ...)
 	local destGUID, _, _, _, missType = select(7, ...)
 
-	if destGUID ~= playerGUID then
+	if destGUID ~= K.GUID then
 		return
 	end
 

@@ -1,9 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Skins")
 
-local table_wipe = _G.table.wipe
+local table_wipe = table.wipe
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsAddOnLoaded = IsAddOnLoaded
 
 -- Tables to store default themes, registered themes and other skins
 C.defaultThemes = {}

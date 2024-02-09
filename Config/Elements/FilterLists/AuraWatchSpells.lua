@@ -1,26 +1,24 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("AurasTable")
 
-local string_format = _G.string.format
-local table_wipe = _G.table.wipe
+local string_format = string.format
+local table_wipe = table.wipe
 
-local GetSpellInfo = _G.GetSpellInfo
-local UIParent = _G.UIParent
+local GetSpellInfo = GetSpellInfo
+local UIParent = UIParent
 
--- AuraWatch
 local AuraWatchList = {}
 local groups = {
-	-- groups name = direction, interval, mode, iconsize, position, barwidth
-	["Player Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
-	["Target Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 180, 468 } },
-	["Special Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },
-	["Focus Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "LEFT", 5, -230 } },
-	["Spell Cooldown"] = { "UP", 6, "BAR", 18, { "BOTTOMRIGHT", UIParent, "BOTTOM", -380, 140 }, 150 },
+	["Player Aura"] = { "LEFT", 6, "ICON", 30, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
+	["Target Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 468 } },
+	["Special Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },
+	["Focus Aura"] = { "RIGHT", 6, "ICON", 35, { "BOTTOMLEFT", UIParent, "LEFT", 5, -230 } },
+	["Spell Cooldown"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -380, 140 }, 150 },
 	["Enchant Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 510 } },
-	["Raid Buff"] = { "LEFT", 6, "ICON", 48, { "CENTER", UIParent, "CENTER", -220, 300 } },
-	["Raid Debuff"] = { "UP", 6, "ICON", 48, { "CENTER", UIParent, "CENTER", 220, 300 } },
+	["Raid Buff"] = { "LEFT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", -220, 300 } },
+	["Raid Debuff"] = { "RIGHT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", 220, 300 } },
 	["Warning"] = { "RIGHT", 6, "ICON", 42, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 510 } },
-	["InternalCD"] = { "UP", 6, "BAR", 18, { "BOTTOMRIGHT", UIParent, "BOTTOM", -425, 600 }, 150 },
+	["InternalCD"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -425, 600 }, 150 },
 }
 
 local function newAuraFormat(value)
@@ -50,8 +48,13 @@ function Module:AddNewAuraWatch(class, list)
 		end
 	end
 
-	if class ~= "ALL" and class ~= K.Class then return end
-	if not AuraWatchList[class] then AuraWatchList[class] = {} end
+	if class ~= "ALL" and class ~= K.Class then
+		return
+	end
+
+	if not AuraWatchList[class] then
+		AuraWatchList[class] = {}
+	end
 
 	for name, v in pairs(list) do
 		local direction, interval, mode, size, pos, width = unpack(groups[name])

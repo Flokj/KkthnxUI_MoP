@@ -1,7 +1,7 @@
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
-local DispelClasses = {
+local CanDispel = {
 	["DRUID"] = {
 		["Curse"] = true,
 		["Poison"] = true,
@@ -28,7 +28,7 @@ local DispelClasses = {
 	},
 }
 
-local dispellist = DispelClasses[K.Class] or {}
+local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
 
 local DevourMagic = {
@@ -87,7 +87,7 @@ local function Update(object, _, unit)
 
 	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
 	if debuffType then
-		local color = _G.DebuffTypeColor[debuffType]
+		local color = DebuffTypeColor[debuffType]
 		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(texture)
 		else
@@ -110,7 +110,7 @@ local function Enable(object)
 	end
 
 	-- If we're filtering highlights and we're not of the dispelling type, return
-	if object.DebuffHighlightFilter and not DispelClasses[K.Class] then
+	if object.DebuffHighlightFilter and not CanDispel[K.Class] then
 		return
 	end
 

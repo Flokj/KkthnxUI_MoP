@@ -9,14 +9,14 @@ if not _G.oUF_RaidDebuffs then
 	_G.oUF_RaidDebuffs = addon
 end
 
-local type = _G.type
-local pairs = _G.pairs
-local wipe = _G.wipe
+local type = type
+local pairs = pairs
+local wipe = wipe
 
-local GetSpellInfo = _G.GetSpellInfo
-local UnitAura = _G.UnitAura
-local UnitCanAttack = _G.UnitCanAttack
-local UnitIsCharmed = _G.UnitIsCharmed
+local GetSpellInfo = GetSpellInfo
+local UnitAura = UnitAura
+local UnitCanAttack = UnitCanAttack
+local UnitIsCharmed = UnitIsCharmed
 
 local debuff_data = {}
 addon.DebuffData = debuff_data
@@ -232,11 +232,11 @@ local function Enable(self)
 		self:RegisterEvent("UNIT_AURA", Update)
 
 		rd.BlackList = rd.BlackList or {
-				[105171] = true, -- Deep Corruption
-				[108220] = true, -- Deep Corruption
-				[116095] = true, -- Disable, Slow
-				[137637] = true, -- Warbringer, Slow
-			}
+			[105171] = true, -- Deep Corruption
+			[108220] = true, -- Deep Corruption
+			[116095] = true, -- Disable, Slow
+			[137637] = true, -- Warbringer, Slow
+		}
 
 		return true
 	end
