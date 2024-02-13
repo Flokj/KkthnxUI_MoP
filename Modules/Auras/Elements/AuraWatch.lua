@@ -1,36 +1,36 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
-local pairs = _G.pairs
-local select = _G.select
-local string_find = _G.string.find
-local table_insert = _G.table.insert
-local table_remove = _G.table.remove
-local table_wipe = _G.table.wipe
+local pairs = pairs
+local select = select
+local string_find = string.find
+local table_insert = table.insert
+local table_remove = table.remove
+local table_wipe = table.wipe
 
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local GetInventoryItemCooldown = _G.GetInventoryItemCooldown
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetItemCooldown = _G.GetItemCooldown
-local GetItemInfo = _G.GetItemInfo
-local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local GetSpellCharges = _G.GetSpellCharges
-local GetSpellCooldown = _G.GetSpellCooldown
-local GetSpellInfo = _G.GetSpellInfo
-local GetTime = _G.GetTime
-local GetTotemInfo = _G.GetTotemInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsPlayerSpell = _G.IsPlayerSpell
-local PlaySound = _G.PlaySound
-local SlashCmdList = _G.SlashCmdList
-local UnitAura = _G.UnitAura
-local UnitGUID = _G.UnitGUID
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
-local UnitName = _G.UnitName
+local CreateFrame = CreateFrame
+local GameTooltip = GameTooltip
+local GetInventoryItemCooldown = GetInventoryItemCooldown
+local GetInventoryItemLink = GetInventoryItemLink
+local GetItemCooldown = GetItemCooldown
+local GetItemInfo = GetItemInfo
+local GetPlayerInfoByGUID = GetPlayerInfoByGUID
+local GetSpellCharges = GetSpellCharges
+local GetSpellCooldown = GetSpellCooldown
+local GetSpellInfo = GetSpellInfo
+local GetTime = GetTime
+local GetTotemInfo = GetTotemInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsPlayerSpell = IsPlayerSpell
+local PlaySound = PlaySound
+local SlashCmdList = SlashCmdList
+local UnitAura = UnitAura
+local UnitGUID = UnitGUID
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local UnitName = UnitName
 
 local maxFrames = 12 -- Max Tracked Auras
 local hasCentralize
@@ -505,10 +505,6 @@ function Module:AuraWatch_UpdateCD()
 	end
 end
 
--- UpdateAura
-local replacedTexture = {
-	[336892] = 135130, -- 无懈警戒换成瞄准射击图标
-}
 function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count, duration, expires, spellID, flash)
 	if not KEY then
 		return
@@ -521,7 +517,7 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 	end
 
 	if frame.Icon then
-		frame.Icon:SetTexture(replacedTexture[spellID] or icon)
+		frame.Icon:SetTexture(icon)
 	end
 
 	if frame.Count then
@@ -704,7 +700,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 	end
 
 	if frame.Count then
-		frame.Count:SetText(nil)
+		frame.Count:SetText("")
 	end
 
 	if frame.Cooldown then
@@ -762,6 +758,12 @@ end
 
 local cache = {}
 local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
+local playSoundSpells = {
+	[396364] = true,
+	[396369] = true,
+	[240447] = true,
+}
+
 function Module:AuraWatch_UpdateInt(event, ...)
 	if not IntCD.List then
 		return
@@ -794,11 +796,12 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			end
 
 			Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, name)
-			if C["AuraWatch"].QuakeRing and spellID == 240447 then -- 'Ding' on quake
-				PlaySound(soundKitID, "Master")
-			end
 
 			cache[timestamp] = spellID
+		end
+
+		if C["AuraWatch"].QuakeRing and eventList[eventType] and playSoundSpells[spellID] then
+			PlaySound(soundKitID, "Master") -- 'Ding' on quake
 		end
 
 		if #cache > 666 then
@@ -826,14 +829,53 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 			end
 
 			if frame.Count then
-				frame.Count:SetText(nil)
+				frame.Count:SetText("")
 			end
 
 			if frame.Spellname then
-				frame.Spellname:SetText(nil)
+				frame.Spellname:SetText("")
+			end
+
+			if frame.glowFrame then
+				K.HideOverlayGlow(frame.glowFrame)
 			end
 		end
 		value.Index = 1
+	end
+end
+
+function Module:AuraWatch_PreCleanup()
+	for _, value in pairs(FrameList) do
+		value.Index = 1
+	end
+end
+
+function Module:AuraWatch_PostCleanup()
+	for _, value in pairs(FrameList) do
+		local currentIndex = value.Index == maxFrames and maxFrames + 1 or value.Index
+		for i = currentIndex, maxFrames do
+			local frame = value[i]
+			if not frame:IsShown() then
+				break
+			end
+
+			if frame then
+				frame:Hide()
+				frame:SetScript("OnUpdate", nil)
+			end
+
+			if frame.Icon then
+				frame.Icon:SetTexture(nil)
+			end
+
+			if frame.Count then
+				frame.Count:SetText("")
+			end
+
+			if frame.Spellname then
+				frame.Spellname:SetText("")
+			end
+		end
 	end
 end
 
@@ -883,7 +925,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 	if self.elapsed > 0.1 then
 		self.elapsed = 0
 
-		Module:AuraWatch_Cleanup()
+		Module:AuraWatch_PreCleanup()
 		Module:AuraWatch_UpdateCD()
 
 		local inCombat = InCombatLockdown()
@@ -891,6 +933,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 			Module:UpdateAuraWatch(value, inCombat)
 		end
 
+		Module:AuraWatch_PostCleanup()
 		Module:AuraWatch_Centralize()
 	end
 end
@@ -928,7 +971,7 @@ SlashCmdList.AuraWatch = function(msg)
 				end
 
 				if value[i].glowFrame then
-					K.HideOverlayGlow(value[i].glowFrame)
+					K.LibCustomGlow.ButtonGlow_Stop(value[i].glowFrame)
 				end
 			end
 			Module:AuraWatch_Centralize(true)

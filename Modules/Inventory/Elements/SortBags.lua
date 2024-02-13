@@ -2,7 +2,6 @@
 -- SortBags, shirsig
 -- https://github.com/shirsig/SortBags
 -----------------------------------------
-
 local _G, _M = getfenv(0), {}
 setfenv(1, setmetatable(_M, {__index=_G}))
 
@@ -207,12 +206,12 @@ end
 
 function Move(src, dst)
 	if InCombatLockdown() then return end -- might block in combat, needs review
-	local texture, srcLocked, dstLocked, _
-		local srcInfo = GetContainerItemInfo(src.container, src.position)
-		texture = srcInfo and srcInfo.iconFileID
-		srcLocked = srcInfo and srcInfo.isLocked
-		local dstInfo = GetContainerItemInfo(dst.container, dst.position)
-		dstLocked = dstInfo and dstInfo.isLocked
+
+	local srcInfo = GetContainerItemInfo(src.container, src.position)
+	local texture = srcInfo and srcInfo.iconFileID
+	local srcLocked = srcInfo and srcInfo.isLocked
+	local dstInfo = GetContainerItemInfo(dst.container, dst.position)
+	local dstLocked = dstInfo and dstInfo.isLocked
 
 	if texture and not srcLocked and not dstLocked then
 		ClearCursor()
@@ -381,10 +380,10 @@ do
 				local slot = {container=container, position=position, class=class}
 				local item = Item(container, position)
 				if item then
-					local _, count, locked
-						local info = GetContainerItemInfo(container, position)
-						count = info and info.stackCount
-						locked = info and info.isLocked
+					local info = GetContainerItemInfo(container, position)
+					local count = info and info.stackCount
+					local locked = info and info.isLocked
+
 					if locked then
 						return false
 					end

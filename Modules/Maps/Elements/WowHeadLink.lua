@@ -1,13 +1,14 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("WorldMap")
 
-local GetLocale = _G.GetLocale
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local hooksecurefunc = _G.hooksecurefunc
-local setmetatable = _G.setmetatable
+local GameTooltip = GameTooltip
+local GetAchievementLink = GetAchievementLink
+local GetQuestLink = GetQuestLink
+local IsAddOnLoaded = IsAddOnLoaded
+local hooksecurefunc = hooksecurefunc
+local setmetatable = setmetatable
 
 -- Wowhead Links
-local GameLocale = GetLocale()
 function Module:CreateWowHeadLinks()
 	if not C["Misc"].ShowWowHeadLinks or IsAddOnLoaded("Leatrix_Maps") then
 		return
@@ -30,39 +31,34 @@ function Module:CreateWowHeadLinks()
 		__index = function(t, v)
 			return "www"
 		end,
-	}))[GameLocale]
+	}))[K.Locale]
 
 	local wowheadLoc = subDomain .. ".wowhead.com"
 	local urlQuestIcon = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]]
 
 	-- Create editbox
-	local mEB = CreateFrame("EditBox", nil, QuestLogFrame)
-	mEB:ClearAllPoints()
-	mEB:SetPoint("TOPLEFT", 70, 4)
-	mEB:SetHeight(16)
-	mEB:SetFontObject("GameFontNormal")
-	mEB:SetBlinkSpeed(0)
-	mEB:SetAutoFocus(false)
-	mEB:EnableKeyboard(false)
-	mEB:SetHitRectInsets(0, 90, 0, 0)
-	mEB:SetScript("OnKeyDown", function() end)
-	mEB:SetScript("OnMouseUp", function()
-		if mEB:IsMouseOver() then
-			mEB:HighlightText()
+	local WorldMapEditBox = CreateFrame("EditBox", nil, QuestLogFrame)
+	WorldMapEditBox:SetFrameLevel(999)
+	WorldMapEditBox:ClearAllPoints()
+	WorldMapEditBox:SetPoint("TOPLEFT", 70, 4)
+	WorldMapEditBox:SetHeight(16)
+	WorldMapEditBox:SetFontObject("GameFontNormal")
+	WorldMapEditBox:SetBlinkSpeed(0)
+	WorldMapEditBox:SetAutoFocus(false)
+	WorldMapEditBox:EnableKeyboard(false)
+	WorldMapEditBox:SetHitRectInsets(0, 90, 0, 0)
+	WorldMapEditBox:SetScript("OnKeyDown", function() end)
+	WorldMapEditBox:SetScript("OnMouseUp", function()
+		if WorldMapEditBox:IsMouseOver() then
+			WorldMapEditBox:HighlightText()
 		else
-			mEB:HighlightText(0, 0)
+			WorldMapEditBox:HighlightText(0, 0)
 		end
 	end)
 
-	-- Set the background color
-	mEB.t = mEB:CreateTexture(nil, "BACKGROUND")
-	mEB.t:SetPoint(mEB:GetPoint())
-	mEB.t:SetSize(mEB:GetSize())
-	mEB.t:SetColorTexture(0.05, 0.05, 0.05, 1.0)
-
 	-- Create hidden font string (used for setting width of editbox)
-	mEB.z = mEB:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	mEB.z:Hide()
+	WorldMapEditBox.FakeText = WorldMapEditBox:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	WorldMapEditBox.FakeText:Hide()
 
 	-- Function to set editbox value
 	local function SetQuestInBox(questListID)
@@ -70,25 +66,22 @@ function Module:CreateWowHeadLinks()
 		if questID and not isHeader then
 			-- Hide editbox if quest ID is invalid
 			if questID == 0 then
-				mEB:Hide()
+				WorldMapEditBox:Hide()
 			else
-				mEB:Show()
+				WorldMapEditBox:Show()
 			end
-
 			-- Set editbox text
-			mEB:SetText(urlQuestIcon .. "https://" .. wowheadLoc .. "/quest=" .. questID)
-
+			WorldMapEditBox:SetText("https://" .. wowheadLoc .. "/quest=" .. questID)
 			-- Set hidden fontstring then resize editbox to match
-			mEB.z:SetText(mEB:GetText())
-			mEB:SetWidth(mEB.z:GetStringWidth() + 90)
-			mEB.t:SetWidth(mEB.z:GetStringWidth())
-
+			WorldMapEditBox.FakeText:SetText(WorldMapEditBox:GetText())
+			WorldMapEditBox:SetWidth(WorldMapEditBox.FakeText:GetStringWidth() + 90)
 			-- Get quest title for tooltip
-			if questTitle then
-				mEB.tiptext = questTitle .. "|n" .. L["Press To Copy"]
+			local questLink = GetQuestLink(questID) or nil
+			if questLink then
+				WorldMapEditBox.tiptext = questLink:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
 			else
-				mEB.tiptext = ""
-				if mEB:IsMouseOver() and GameTooltip:IsShown() then
+				WorldMapEditBox.tiptext = ""
+				if WorldMapEditBox:IsMouseOver() and GameTooltip:IsShown() then
 					GameTooltip:Hide()
 				end
 			end
@@ -101,17 +94,17 @@ function Module:CreateWowHeadLinks()
 	end)
 
 	-- Create tooltip
-	mEB:HookScript("OnEnter", function()
-		mEB:HighlightText()
-		mEB:SetFocus()
-		GameTooltip:SetOwner(mEB, "ANCHOR_BOTTOM", 0, -10)
-		GameTooltip:SetText(mEB.tiptext, nil, nil, nil, nil, true)
+	WorldMapEditBox:HookScript("OnEnter", function()
+		WorldMapEditBox:HighlightText()
+		WorldMapEditBox:SetFocus()
+		GameTooltip:SetOwner(WorldMapEditBox, "ANCHOR_BOTTOM", 0, -10)
+		GameTooltip:SetText(WorldMapEditBox.tiptext, nil, nil, nil, nil, true)
 		GameTooltip:Show()
 	end)
 
-	mEB:HookScript("OnLeave", function()
-		mEB:HighlightText(0, 0)
-		mEB:ClearFocus()
+	WorldMapEditBox:HookScript("OnLeave", function()
+		WorldMapEditBox:HighlightText(0, 0)
+		WorldMapEditBox:ClearFocus()
 		GameTooltip:Hide()
 	end)
 end

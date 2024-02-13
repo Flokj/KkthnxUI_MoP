@@ -1,24 +1,12 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
-local next = _G.next
-local pairs = _G.pairs
-local table_insert = _G.table.insert
-
-local CreateFrame = _G.CreateFrame
-local GetSpellTexture = _G.GetSpellTexture
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsInInstance = _G.IsInInstance
-local IsPlayerSpell = _G.IsPlayerSpell
-local UIParent = _G.UIParent
-local UnitBuff = _G.UnitBuff
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = 36
-local frames = {}
-local parentFrame
+local frames, parentFrame = {}
+local InCombatLockdown, GetZonePVPInfo, UnitIsDeadOrGhost = InCombatLockdown, GetZonePVPInfo, UnitIsDeadOrGhost
+local IsInInstance, IsPlayerSpell, UnitBuff, GetSpellTexture = IsInInstance, IsPlayerSpell, UnitBuff, GetSpellTexture
+local pairs, tinsert, next = pairs, table.insert, next
 
 function Module:Reminder_ConvertToName(cfg)
 	local cache = {}
@@ -55,50 +43,26 @@ function Module:Reminder_Update(cfg)
 	local combat = cfg.combat
 	local instance = cfg.instance
 	local pvp = cfg.pvp
-	local isPlayerSpell = true
-	local isInCombat
-	local isInInst
-	local isInPVP
+	local isPlayerSpell, isInCombat, isInInst, isInPVP = true
 	local inInst, instType = IsInInstance()
 
-	if depend and not IsPlayerSpell(depend) then
-		isPlayerSpell = false
-	end
-
-	if depends and not cfg.dependsKnown then
-		isPlayerSpell = false
-	end
-
-	if combat and InCombatLockdown() then
-		isInCombat = true
-	end
-
-	if instance and inInst and (instType == "scenario" or instType == "party" or instType == "raid") then
-		isInInst = true
-	end
-
-	if pvp and (instType == "arena" or instType == "pvp" or GetZonePVPInfo() == "combat") then
-		isInPVP = true
-	end
-
-	if not combat and not instance and not pvp then
-		isInCombat, isInInst, isInPVP = true, true, true
-	end
+	if depend and not IsPlayerSpell(depend) then isPlayerSpell = false end
+	if depends and not cfg.dependsKnown then isPlayerSpell = false end
+	if combat and InCombatLockdown() then isInCombat = true end
+	if instance and inInst and (instType == "scenario" or instType == "party" or instType == "raid") then isInInst = true end
+	if pvp and (instType == "arena" or instType == "pvp" or GetZonePVPInfo() == "combat") then isInPVP = true end
+	if not combat and not instance and not pvp then isInCombat, isInInst, isInPVP = true, true, true end
 
 	frame:Hide()
 	if isPlayerSpell and (isInCombat or isInInst or isInPVP) and not UnitIsDeadOrGhost("player") then
 		for i = 1, 32 do
 			local name, _, _, _, _, _, caster = UnitBuff("player", i)
-			if not name then
-				break
-			end
-
+			if not name then break end
 			if name and (cfg.spells[name] or cfg.gemini and cfg.gemini[name] and caster == "player") then
 				frame:Hide()
 				return
 			end
 		end
-
 		frame:Show()
 	end
 end
@@ -129,7 +93,7 @@ function Module:Reminder_Create(cfg)
 	frame:Hide()
 	cfg.frame = frame
 
-	table_insert(frames, frame)
+	tinsert(frames, frame)
 end
 
 function Module:Reminder_UpdateAnchor()
@@ -141,7 +105,6 @@ function Module:Reminder_UpdateAnchor()
 			index = index + 1
 		end
 	end
-
 	parentFrame:SetWidth(offset * index)
 end
 
@@ -158,9 +121,7 @@ function Module:Reminder_OnEvent()
 end
 
 function Module:CreateReminder()
-	if not groups then
-		return
-	end
+	if not groups then return end
 
 	if C["Auras"].Reminder then
 		if not parentFrame then

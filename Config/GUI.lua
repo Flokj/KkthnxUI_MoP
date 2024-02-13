@@ -790,6 +790,14 @@ local Misc = function(self)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 
 	-- Misc Section
+	Window:CreateSection("Threat Bar")
+	Window:CreateSwitch("Misc", "ThreatEnable", "Show Threat Bar")
+	Window:CreateEditBox("Misc", "ThreatHeight", "Bars height")
+	Window:CreateEditBox("Misc", "ThreatWidth", "Bars width")
+	Window:CreateEditBox("Misc", "ThreatBarRows", "Number of bars")
+	Window:CreateSwitch("Misc", "ThreatHideSolo", "Show only in party/raid")
+
+	-- Misc Section
 	Window:CreateSection("Misc")
 	if K.Class == "HUNTER" then
 		Window:CreateSwitch("Misc", "PetHappiness", newFeatureIcon .. "Print Your Pet Happiness Status")
@@ -837,6 +845,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "PlateAuras", "Target Nameplate Auras", nil, refreshNameplates)
 	Window:CreateSwitch("Nameplate", "QuestIndicator", L["Quest Progress Indicator"])
 	Window:CreateSwitch("Nameplate", "Smooth", L["Smooth Bars Transition"])
+	Window:CreateSwitch("Nameplate", "TarName", "Show target name")
 
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, refreshNameplates)

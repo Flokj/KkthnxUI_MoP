@@ -418,6 +418,11 @@ C["Misc"] = {
 		},
 		Value = 4,
 	},
+	ThreatEnable = true,
+	ThreatHeight = 17,
+	ThreatWidth = 220,
+	ThreatBarRows = 5,
+	ThreatHideSolo = false,
 }
 
 C["Nameplate"] = {
@@ -464,6 +469,7 @@ C["Nameplate"] = {
 	SelectedScale = 1.2,
 	ShowPlayerPlate = false,
 	Smooth = false,
+	TarName = false,
 	TankMode = false,
 	TargetColor = { 0, 0.6, 1 },
 	TargetIndicatorColor = { 1, 1, 1 },

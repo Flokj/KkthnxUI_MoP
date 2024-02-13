@@ -108,7 +108,7 @@ end
 
 	-- Mover
 	local height = (#buttonList - 1) * (padding + height) + height
-	local mover = K.Mover(Chatbar, "Chatbar", "Chatbar", {"TOPLEFT", UIParent, "TOPLEFT", 3, 0}, width + 8, height + 8)
+	local mover = K.Mover(Chatbar, "Chatbar", "Chatbar", {"TOPLEFT", UIParent, "BOTTOMLEFT", 440, 215}, width + 8, height + 8)
 	Chatbar:ClearAllPoints()
 	Chatbar:SetPoint("TOPLEFT", mover, 5, -5)
 end

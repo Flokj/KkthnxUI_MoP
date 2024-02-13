@@ -971,6 +971,8 @@ function Module:PostUpdatePlates(event, unit)
 		Module.UpdateUnitClassify(self, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
+
+		self.tarName:SetShown(self.plateType ~= "NameOnly" and C["Nameplate"].TarName)
 	end
 end
 
