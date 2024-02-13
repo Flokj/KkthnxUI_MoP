@@ -456,8 +456,8 @@ end
 local freeSlotContainer = {
 	["Bag"] = 0,
 	["Bank"] = 0,
-	["AmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
-	["BankAmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
+	--["AmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
+	--["BankAmmoItem"] = K.Class == "WARLOCK" and 1 or K.Class == "HUNTER" and -1,
 }
 
 function Module:CreateFreeSlots()
