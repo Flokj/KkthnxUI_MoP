@@ -19,7 +19,7 @@ function Module:TotemBar_Init()
 	totemBar:SetSize(width, height)
 
 	if not totemBar.mover then
-		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", { "BOTTOM", UIParent, "BOTTOM", 0, 378 })
+		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", { "BOTTOM", UIParent, "TOP", -370, -440 })
 	end
 	totemBar.mover:SetSize(width, height)
 

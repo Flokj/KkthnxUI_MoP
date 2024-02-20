@@ -535,7 +535,7 @@ function Module:CreateVehicleSeatMover()
 
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
 	frame:SetSize(125, 125)
-	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOMRIGHT", UIParent, -400, 30})
+	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOMRIGHT", UIParent, -530, 120})
 
 	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
 		if parent ~= frame then

@@ -7,7 +7,7 @@ local isCheckButtonCreated
 local function SetupAutoQuestCheckButton()
 	if isCheckButtonCreated then return end
 
-	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame, "OptionsCheckButtonTemplate")
+	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
 	AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
 	AutoQuestCheckButton:SetSize(24, 24)
 

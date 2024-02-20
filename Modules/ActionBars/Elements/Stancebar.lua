@@ -59,7 +59,7 @@ function Module:CreateStancebar()
 
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
+	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar5, "TOPLEFT", -50, margin })
 	Module.movers[11] = frame.mover
 
 	-- StanceBar

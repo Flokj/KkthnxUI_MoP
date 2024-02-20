@@ -21,7 +21,7 @@ C["ActionBar"] = {
 	Cooldown = true,
 	MmssTH = 60,
 	TenthTH = 3,
-	OverrideWA = false,
+	OverrideWA = true,
 	MicroMenu = true,
 	FadeMicroMenu = false,
 	ShowStance = true,
@@ -156,12 +156,12 @@ C["Automation"] = {
 C["Inventory"] = {
 	AutoSell = true,
 	BagBar = true,
-	BagBarMouseover = true,
+	BagBarMouseover = false,
 	BagBarSize = 32,
 	BagsItemLevel = true,
-	BagsPerRow = 6,
+	BagsPerRow = 8,
 	BagsWidth = 12,
-	BankPerRow = 10,
+	BankPerRow = 12,
 	BankWidth = 12,
 	DeleteButton = true,
 	Enable = true,
@@ -209,7 +209,7 @@ C["Inventory"] = {
 
 -- Buffs & Debuffs
 C["Auras"] = {
-	BuffSize = 32,
+	BuffSize = 34,
 	BuffsPerRow = 12,
 	DebuffSize = 36,
 	DebuffsPerRow = 12,
@@ -219,7 +219,7 @@ C["Auras"] = {
 	ReverseBuffs = false,
 	ReverseDebuffs = false,
 	TotemSize = 32,
-	Totems = true,
+	Totems = false,
 	VerticalTotems = false,
 }
 
@@ -235,7 +235,7 @@ C["Chat"] = {
 	ChatMenu = true,
 	Emojis = false,
 	Enable = true,
-	EnableFilter = true,
+	EnableFilter = false,
 	Fading = true,
 	FadingTimeVisible = 100,
 	FilterMatches = 1,
@@ -255,28 +255,28 @@ C["Chat"] = {
 			["15:27"] = 4,
 			["15:27:32"] = 5,
 		},
-		Value = 1,
+		Value = 4,
 	},
 }
 
 -- Datatext
 C["DataText"] = {
 	Coords = false,
-	Friends = true,
+	Friends = false,
 	Gold = true,
-	Guild = true,
+	Guild = false,
 	GuildSortBy = 1,
 	GuildSortOrder = true,
 	HideText = false,
 	IconColor = { 102 / 255, 157 / 255, 255 / 255 },
 	Latency = true,
-	Location = true,
+	Location = false,
 	System = true,
 	Time = true,
 }
 
 C["AuraWatch"] = {
-	Enable = true,
+	Enable = false,
 	ClickThrough = false,
 	IconScale = 1,
 	WatchSpellRank = false,
@@ -290,16 +290,16 @@ C["AuraWatch"] = {
 -- General
 C["General"] = {
 	AutoScale = true,
-	ColorTextures = false,
+	ColorTextures = true,
 	MinimapIcon = false,
-	MoveBlizzardFrames = false,
+	MoveBlizzardFrames = true,
 	NoErrorFrame = true,
 	NoTutorialButtons = false,
 	TexturesColor = { 1, 1, 1 },
 	UIScale = 0.71111,
 	UseGlobal = false,
-	VersionCheck = true,
-	Texture = "KkthnxUI",
+	VersionCheck = false,
+	Texture = "Flat",
 	SmoothAmount = 0.25,
 	BorderStyle = {
 		Options = {
@@ -379,14 +379,14 @@ C["Minimap"] = {
 C["Misc"] = {
 	AFKCamera = true,
 	AutoBubbles = false,
-	ColorPicker = false,
-	Focuser = true,
+	ColorPicker = true,
+	Focuser = false,
 	EnhancedFriends = true,
-	HelmCloakToggle = false,
+	HelmCloakToggle = true,
 	EnhancedMail = true,
 	ExpRep = true,
 	GemEnchantInfo = false,
-	HideBossEmote = false,
+	HideBossEmote = true,
 	ImprovedStats = true,
 	StatOrder = "12345",
 	ItemLevel = true,
@@ -440,7 +440,7 @@ C["Nameplate"] = {
 	Enable = true,
 	ExecuteRatio = 0,
 	FriendlyCC = false,
-	FullHealth = false,
+	FullHealth = true,
 	HealthTextSize = 15,
 	HostileCC = true,
 	InsecureColor = { 1, 0, 0 },
@@ -575,13 +575,13 @@ C["Unitframe"] = {
 	AllTextScale = 1, -- Testing
 	AdditionalPower = false,
 	AutoAttack = true,
-	CastClassColor = false,
+	CastClassColor = true,
 	CastReactionColor = false,
 	CastbarLatency = true,
 	ClassResources = false,
 	CombatFade = false,
 	CombatText = false,
-	DebuffHighlight = true,
+	DebuffHighlight = false,
 	Enable = true,
 	Range = false,
 	FCTOverHealing = false,
@@ -602,7 +602,7 @@ C["Unitframe"] = {
 	PlayerHealthWidth = 190,
 	PlayerPowerHeight = 16,
 
-	PvPIndicator = true,
+	PvPIndicator = false,
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
@@ -628,7 +628,7 @@ C["Unitframe"] = {
 
 	-- Focus
 	FocusBuffs = true,
-	FocusCastbar = true,
+	FocusCastbar = false,
 	FocusCastbarHeight = 20,
 	FocusCastbarIcon = true,
 	FocusCastbarWidth = 180,
@@ -659,7 +659,7 @@ C["Unitframe"] = {
 	FocusTargetPowerHeight = 12,
 	HideFocusTargetLevel = true,
 	HideFocusTargetName = false,
-	HideFocusTarget = false,
+	HideFocusTarget = true,
 
 	HealthbarColor = {
 		Options = {
@@ -709,7 +709,7 @@ C["Party"] = {
 
 C["Boss"] = {
 	Castbars = true,
-	Enable = false,
+	Enable = true,
 	Smooth = false,
 	HealthHeight = 20,
 	HealthWidth = 134,
@@ -805,8 +805,11 @@ C["Raid"] = {
 
 -- Worldmap
 C["WorldMap"] = {
+	SmallWorldMap = true,
 	AlphaWhenMoving = 0.2,
 	Coordinates = true,
 	FadeWhenMoving = true,
 	MapRevealGlow = true,
+	MaxMapScale = 0.8,
+	MapScale = 0.9,
 }

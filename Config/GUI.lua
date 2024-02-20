@@ -1161,6 +1161,7 @@ local WorldMap = function(self)
 	local Window = self:CreateWindow(L["WorldMap"])
 
 	Window:CreateSection(GENERAL)
+	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])
 	Window:CreateSwitch("WorldMap", "Coordinates", L["Show Player/Mouse Coordinates"])
 
 	Window:CreateSection("WorldMap Reveal")
@@ -1169,6 +1170,8 @@ local WorldMap = function(self)
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.01)
+	Window:CreateSlider("WorldMap", "MaxMapScale", "Maximized Map Scale", 0.1, 1, 0.1)
+	Window:CreateSlider("WorldMap", "MapScale", "Map Scale", 0.1, 1, 0.1)
 end
 
 GUI:AddWidgets(ActionBar)

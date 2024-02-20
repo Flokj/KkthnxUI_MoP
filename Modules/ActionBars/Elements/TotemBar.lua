@@ -43,7 +43,7 @@ function Bar:CreateTotemBar()
 	local margin = 6
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(iconSize * 6 + margin * 5, iconSize)
-	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", 0, 164 })
+	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", _G.KKUI_ActionBar5, "TOP", 0, margin })
 	frame:SetPoint("TOPLEFT", frame.Mover, -5, -6)
 	frame.Mover:HookScript("OnSizeChanged", function()
 		MultiCastSummonSpellButton_Update(MultiCastSummonSpellButton) -- fix mover anchor

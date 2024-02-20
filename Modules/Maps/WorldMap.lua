@@ -103,13 +103,11 @@ function Module:SetupCoords()
 	CoordsUpdater:SetScript("OnUpdate", Module.UpdateCoords)
 end
 
-local setMapScale = 0.8
-local MaxMapScale = 0.8
 function Module:UpdateMapScale()
-	if self.isMaximized and self:GetScale() ~= MaxMapScale then
-		self:SetScale(MaxMapScale)
-	elseif not self.isMaximized and self:GetScale() ~= setMapScale then
-		self:SetScale(setMapScale)
+	if self.isMaximized and self:GetScale() ~= C["WorldMap"].MaxMapScale then
+		self:SetScale(C["WorldMap"].MaxMapScale)
+	elseif not self.isMaximized and self:GetScale() ~= C["WorldMap"].MapScale then
+		self:SetScale(C["WorldMap"].MapScale)
 	end
 end
 
@@ -269,8 +267,7 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 end
 
 function Module:OnEnable()
-
-	if IsAddOnLoaded("Leatrix_Maps") then return end
+	if not C["WorldMap"].SmallWorldMap then return end
 	if IsAddOnLoaded("Mapster") then return end
 
 	-- Fix worldmap cursor when scaling
@@ -298,7 +295,7 @@ function Module:OnEnable()
 	K.CreateMoverFrame(WorldMapFrame, nil, true)
 	self.UpdateMapScale(WorldMapFrame)
 	WorldMapFrame:HookScript("OnShow", self.UpdateMapAnchor)
-	-- WorldMapFrame:HookScript(WorldMapFrame, "SynchronizeDisplayState", self.UpdateMapAnchor) 
+	hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", self.UpdateMapAnchor)
 
 	-- Default elements
 	WorldMapFrame.BlackoutFrame:SetAlpha(0)

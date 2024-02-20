@@ -238,5 +238,5 @@ function Module:CreateSystemDataText()
 	SystemDataText:SetScript("OnLeave", OnLeave)
 	SystemDataText:SetScript("OnMouseUp", OnMouseUp)
 
-	K.Mover(SystemDataText, "KKUI_SystemDataText", "KKUI_SystemDataText", { "TOPLEFT", UIParent, "TOPLEFT", 0, 0 })
+	K.Mover(SystemDataText, "KKUI_SystemDataText", "KKUI_SystemDataText", { "TOPLEFT", UIParent, "BOTTOMRIGHT", -180, 100 })
 end

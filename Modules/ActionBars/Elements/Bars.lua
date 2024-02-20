@@ -320,11 +320,11 @@ function Module:CreateBars()
 			bindName = "MULTIACTIONBAR2BUTTON",
 			anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin },
 		},
-		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "RIGHT", UIParent, "RIGHT", -4, 0 } },
+		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "LEFT", _G.KKUI_ActionBar2, "RIGHT", 15, 0 } },
 		[5] = {
 			page = 4,
 			bindName = "MULTIACTIONBAR4BUTTON",
-			anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 },
+			anchor = { "RIGHT", _G.KKUI_ActionBar2, "LEFT", -15, 0 },
 		},
 		[6] = { page = 13, bindName = "MULTIACTIONBAR5BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 0 } },
 		[7] = { page = 14, bindName = "MULTIACTIONBAR6BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 40 } },
