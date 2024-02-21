@@ -167,7 +167,7 @@ function Module:OnTooltipSetUnit()
     		
     		if not text[1] or text[1] == "" or not text[2] or text[2] == "" then return end
     		
-    		local localizedClass, class = UnitClass(unit)
+    		local _, class = UnitClass(unit)
     		local show_titles = true
     		
     		if not show_titles and string.find(text[1], name) then
@@ -193,25 +193,25 @@ function Module:OnTooltipSetUnit()
     		    if active == 2 then
 				    if spec2 then
 				        tinsert(linesToAdd, {
-				            string.format("%s:|cFFFFFFFF %s [%d/%d/%d]|r", "M", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
+				            string.format("%s:|cFFFFFFFF [%d/%d/%d]|r", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
 				        })
 				    end
 				
 				    if spec1 then
 				        tinsert(linesToAdd, {
-				            string.format("%s:|cFF808080 %s [%d/%d/%d]|r", "O", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
+				            string.format("|cFF808080%s [%d/%d/%d]|r", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
 				        })
 				    end
 				elseif active == 1 then
 				    if spec1 then
 				        tinsert(linesToAdd, {
-				            string.format("%s:|cFFFFFFFF %s [%d/%d/%d]|r", "M", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
+				            string.format("%s:|cFFFFFFFF [%d/%d/%d]|r", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
 				        })
 				    end
 				
 				    if spec2 then
 				        tinsert(linesToAdd, {
-				            string.format("%s:|cFF808080 %s [%d/%d/%d]|r", "O", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
+				            string.format("|cFF808080%s [%d/%d/%d]|r", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
 				        })
 				    end
 				end
