@@ -1,19 +1,22 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 tinsert(C.defaultThemes, function()
+	--local WorldMapFrame = WorldMapFrame
 
-	local WorldMapFrame = WorldMapFrame
+	--WorldMapFrame:StripTextures()
+	--WorldMapFrame:CreateBackdrop()
 
-	WorldMapFrame.BorderFrame:Hide()
-	WorldMapZoneDropDown:Hide()
-	WorldMapContinentDropDown:Hide()
-	WorldMapZoneMinimapDropDown:Hide()
-	WorldMapZoomOutButton:Hide()
-	WorldMapMagnifyingGlassButton:SetAlpha(0)
+	--WorldMapZoneDropDown:SetPoint("LEFT", WorldMapContinentDropDown, "RIGHT", -24, 0)
+	--WorldMapZoomOutButton:SetPoint("LEFT", WorldMapZoneDropDown, "RIGHT", -4, 3)
 
-	WorldMapFrame:SetHitRectInsets(1, 1, 1, 1)
-	WorldMapFrame:SetClampedToScreen(false)
+	--local border = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
+	--border:SetPoint("TOPLEFT", 5, -5)
+	--border:SetPoint("BOTTOMRIGHT", -7, 7)
+	--border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 20 or nil, nil, nil, nil, "", nil, nil, nil, false)
 
-	MiniWorldMapTitle:SetAlpha(0)
+	--WorldMapMagnifyingGlassButton:SetAlpha(0)
+	--MiniWorldMapTitle:SetAlpha(0)
 
+	--if MiniBorderLeft then MiniBorderLeft:Hide() end
+	--if MiniBorderRight then MiniBorderRight:Hide() end
 end)

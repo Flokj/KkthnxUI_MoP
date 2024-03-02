@@ -342,7 +342,7 @@ function Module:CreatePlayer()
 
 		local bar = CreateFrame("Frame", nil, self)
 		bar:SetSize(width, height)
-		bar.mover = K.Mover(bar, "UFs SwingBar", "Swing", { "BOTTOM", UIParent, "BOTTOM", 0, 176 })
+		bar.mover = K.Mover(bar, "UFs SwingBar", "Swing", { "BOTTOM", UIParent, "BOTTOM", 0, 360 })
 		bar:ClearAllPoints()
 		bar:SetPoint("CENTER", bar.mover)
 

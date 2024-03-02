@@ -572,7 +572,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	AllTextScale = 1, -- Testing
+	AllTextScale = 1.1, -- Testing
 	AdditionalPower = false,
 	AutoAttack = true,
 	CastClassColor = true,
@@ -608,9 +608,9 @@ C["Unitframe"] = {
 	Smooth = false,
 
 	SwingBar = false,
-	SwingWidth = 274,
-	SwingHeight = 14,
-	SwingTimer = true,
+	SwingWidth = 320,
+	SwingHeight = 10,
+	SwingTimer = false,
 	OffOnTop = false,
 
 	-- Target
@@ -810,6 +810,6 @@ C["WorldMap"] = {
 	Coordinates = true,
 	FadeWhenMoving = true,
 	MapRevealGlow = true,
-	MaxMapScale = 0.8,
+	MaxMapScale = 0.7,
 	MapScale = 0.9,
 }
