@@ -3,16 +3,14 @@ local Module = K:GetModule("Blizzard")
 
 local function StyleMirrorBar(bar)
 	local statusbar = bar.StatusBar or _G[bar:GetName() .. "StatusBar"]
-	if statusbar then
-		statusbar:SetAllPoints()
-	elseif bar.SetStatusBarTexture then
-		bar:SetStatusBarTexture()
-	end
-	
 	local text = _G[bar:GetName() .. "Text"]
+	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
+
+	statusbar:SetAllPoints()
+	statusbar:SetStatusBarTexture(texture)
 
 	text:ClearAllPoints()
 	text:SetFontObject(K.UIFont)

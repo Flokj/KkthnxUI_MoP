@@ -122,8 +122,8 @@ local function renameChatStrings()
 	_G.ACHIEVEMENT_BROADCAST = "%s achieved \"%s\"!"
 	_G.CHAT_YOU_CHANGED_NOTICE = "|Hchannel:%d|h[%s]|h"
 	_G.ERR_SKILL_UP_SI = "|3-6(%s) |cff1eff00%d|r"
-	_G.FACTION_STANDING_DECREASED = "|3-7(%s) -%d"
-	_G.FACTION_STANDING_INCREASED = "|3-7(%s) +%d"
+	_G.FACTION_STANDING_DECREASED = "Отношение |3-7(%s) - %d!"
+	_G.FACTION_STANDING_INCREASED = "Отношение |3-7(%s) + %d!"
 
 	-- Chat colours
 	_G.NORMAL_QUEST_DISPLAY = "|cffffffff%s|r"
