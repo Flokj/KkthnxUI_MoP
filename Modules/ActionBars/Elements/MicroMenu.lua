@@ -103,6 +103,7 @@ function MicroButtonCreate(parent, data)
 
 	if type(method) == "string" then
 		local button = _G[method]
+		if not button then print(method) return end
 		button:SetHitRectInsets(0, 0, 0, 0)
 		button:SetParent(buttonFrame)
 		button.__owner = buttonFrame
@@ -149,8 +150,9 @@ function Module:MicroMenu()
 		{ "TalentMicroButton", "TalentMicroButton", MicroButtonTooltipText(TALENTS, "TOGGLETALENTS") },
 		{ "AchievementMicroButton", "AchievementMicroButton", MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT") },
 		{ "QuestLogMicroButton", "QuestLogMicroButton", MicroButtonTooltipText(QUESTLOG_BUTTON, "TOGGLEQUESTLOG") },
-		{ "GuildMicroButton", "SocialsMicroButton", MicroButtonTooltipText(SOCIAL_BUTTON, "TOGGLESOCIAL") },
-		{ "LFDMicroButton", "PVPMicroButton", MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4") },
+		{ "GuildMicroButton", "GuildMicroButton", MicroButtonTooltipText(GUILD_AND_COMMUNITIES, "TOGGLEGUILDTAB") },
+		--{ "LFDMicroButton", "PVPMicroButton", MicroButtonTooltipText(PLAYER_V_PLAYER, "TOGGLECHARACTER4") },
+		{ "EJMicroButton", "EJMicroButton", MicroButtonTooltipText(ENCOUNTER_JOURNAL, "TOGGLEENCOUNTERJOURNAL") },
 		{ "LFDMicroButton", "LFGMicroButton", MicroButtonTooltipText(LFG_BUTTON, "TOGGLELFG") },
 		{ "CollectionsMicroButton", "CollectionsMicroButton", MicroButtonTooltipText(COLLECTIONS, "TOGGLECOLLECTIONS") },
 		{ "StoreMicroButton", function() ToggleStoreUI() end, BLIZZARD_STORE},

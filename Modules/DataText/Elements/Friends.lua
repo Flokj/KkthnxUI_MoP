@@ -209,7 +209,8 @@ local function FriendsPanel_UpdateButton(button)
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
 		button.zone:SetText(string_format("%s%s", zoneColor, area))
-		button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+		C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
+		--button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
 		button.data = friendTable[index]
@@ -228,11 +229,13 @@ local function FriendsPanel_UpdateButton(button)
 		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 		if client == CLIENT_WOW_DIFF then
-			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+			C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
+			--button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 		elseif client == BNET_CLIENT_WOW then
-			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-" .. factionName)
+			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-"..factionName)
 		else
-			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
+			C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium)
+			--button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
 		end
 
 		button.isBNet = true
@@ -480,12 +483,12 @@ local function FriendsPanel_CreateButton(parent, index)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
+	--button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
 
-	local gameIconBorder = CreateFrame("Frame", nil, button)
-	gameIconBorder:SetFrameLevel(button:GetFrameLevel())
-	gameIconBorder:SetAllPoints(button.gameIcon)
-	gameIconBorder:CreateBorder()
+	--local gameIconBorder = CreateFrame("Frame", nil, button)
+	--gameIconBorder:SetFrameLevel(button:GetFrameLevel())
+	--gameIconBorder:SetAllPoints(button.gameIcon)
+	--gameIconBorder:CreateBorder()
 
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", buttonOnClick)

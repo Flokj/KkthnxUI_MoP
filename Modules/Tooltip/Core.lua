@@ -16,7 +16,7 @@ local UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel = Unit
 local GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild = GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild
 local GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet = GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet
 
-local CI = LibStub("LibClassicInspector")
+--local CI = LibStub("LibClassicInspector")
 
 local classification = {
 	worldboss = format("|cffAF5050 %s|r", BOSS),
@@ -150,7 +150,7 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
-		if C["Tooltip"].ShowTalents then
+		--[[if C["Tooltip"].ShowTalents then
     		local name, unit = self:GetUnit()
     		
     		if not unit then return end
@@ -228,7 +228,7 @@ function Module:OnTooltipSetUnit()
     		for _, v in ipairs(linesToAdd) do
     			self:AddLine(unpack(v))
     		end
-    	end
+    	end]]
 
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()

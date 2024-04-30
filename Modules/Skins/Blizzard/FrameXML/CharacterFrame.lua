@@ -62,13 +62,4 @@ tinsert(C.defaultThemes, function()
 		popout:HookScript("OnEnter", clearPopout)
 		popout:HookScript("OnLeave", colourPopout)
 	end
-
-	CharacterAmmoSlot:StripTextures()
-	CharacterAmmoSlotIconTexture:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-	CharacterAmmoSlot:CreateBorder()
-
-	 --hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-	 --	local icon = button.icon
-	 --	if icon then icon:SetShown(button.hasItem) end
-	 --end)
 end)

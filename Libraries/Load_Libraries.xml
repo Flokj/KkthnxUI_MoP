@@ -7,8 +7,8 @@
    <Script file="LibDeflate\LibDeflate.lua"/>
    <Script file="LibSerialize\LibSerialize.lua"/>
 
-   <Script file="LibDetours-1.0\LibDetours-1.0.lua"/>
-   <Script file="LibClassicInspector\LibClassicInspector.lua"/>   
+   <!--Script file="LibDetours-1.0\LibDetours-1.0.lua"/-->
+   <!--Script file="LibClassicInspector\LibClassicInspector.lua"/-->   
 	
    <Script file="LibRangeCheck-3.0\LibRangeCheck-3.0.lua"/>
    <Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/>

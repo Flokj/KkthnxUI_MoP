@@ -807,10 +807,6 @@ local Misc = function(self)
 	end
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
 	Window:CreateSwitch("Misc", "HelmCloakToggle", newFeatureIcon.."Add Helm/Cloak Toggle Buttons To Character Frame")
-
-	Window:CreateSection("Character Stat Panel")
-	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
-	Window:CreateEditBox("Misc", "StatOrder", "Sorting Order Of Stats")
 end
 
 local Nameplate = function(self)
@@ -932,7 +928,7 @@ local Tooltip = function(self)
 	Window:CreateSection("Appearance")
 	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "FactionIcon", L["Show Faction Icon"])
-	Window:CreateSwitch("Tooltip", "ShowTalents", "Show Talents in tooltip")
+	--Window:CreateSwitch("Tooltip", "ShowTalents", "Show Talents in tooltip")
 	Window:CreateSwitch("Tooltip", "HideRank", L["Hide Guild Rank"])
 	Window:CreateSwitch("Tooltip", "HideRealm", L["Show realm name by SHIFT"])
 	Window:CreateSwitch("Tooltip", "HideTitle", L["Hide Player Title"])

@@ -495,6 +495,29 @@ end
 
 -- Get Naked
 function Module:NakedIcon()
+	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
+	bu:SetSize(33, 35)
+	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 0)
+	bu.bg:SetPoint("TOPLEFT", 2, -3)
+	bu.bg:SetPoint("BOTTOMRIGHT", 0, -2)
+	K.AddTooltip(bu, "ANCHOR_RIGHT", "Get Naked")
+
+	local function UnequipItemInSlot(i)
+		local action = EquipmentManager_UnequipItemInSlot(i)
+		EquipmentManager_RunAction(action)
+	end
+
+	bu:SetScript("OnDoubleClick", function()
+		for i = 1, 18 do
+			local texture = GetInventoryItemTexture("player", i)
+			if texture then
+				UnequipItemInSlot(i)
+			end
+		end
+	end)
+
+	else
+
 	GearManagerToggleButton:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:ClearLines()

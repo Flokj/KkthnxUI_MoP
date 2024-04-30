@@ -52,7 +52,7 @@ function Module:CompareStrDiff(string_A, string_B)
 end
 
 C.BadBoys = {} -- debug
-local chatLines, prevLineID, filterResult = {}, 0, false or nil
+local chatLines, prevLineID, filterResult = {}, 0, false
 
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
