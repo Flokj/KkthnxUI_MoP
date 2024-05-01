@@ -114,19 +114,23 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
-local function NewSetLevelFunction()
-	local class = UnitClass("player")
-	CharacterLevelText:SetFormattedText(K.Name .. " " .. K.Level .. " " .. K.MyClassColor .. class .. "|r")
-end
-
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then return end
 
-	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
-	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
+	if CharacterFrameTitleText then
+		CharacterFrameTitleText:Hide()
+	end
+
+	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
-	DurabilityDataText:Disable()
+
+	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
+	DurabilityDataText.Text:SetPoint("TOP", PaperDollFrame, "TOP", 3, -27)
+	DurabilityDataText.Text:SetFontObject(K.UIFont)
+	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 11, select(3, DurabilityDataText.Text:GetFont()))
+
+	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
