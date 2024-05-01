@@ -496,10 +496,14 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(33, 35)
+	bu:SetSize(28, 28)
 	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 0)
-	bu.bg:SetPoint("TOPLEFT", 2, -3)
-	bu.bg:SetPoint("BOTTOMRIGHT", 0, -2)
+	bu:SkinButton()
+
+	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+	bu.Icon:SetTexture("Interface\\ICONS\\SPELL_SHADOW_TWISTEDFAITH")
+	bu.Icon:SetAllPoints()
+	bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	K.AddTooltip(bu, "ANCHOR_RIGHT", "Get Naked")
 
 	local function UnequipItemInSlot(i)
@@ -513,41 +517,6 @@ function Module:NakedIcon()
 			if texture then
 				UnequipItemInSlot(i)
 			end
-		end
-	end)
-
-	else
-
-	GearManagerToggleButton:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:ClearLines()
-		GameTooltip:AddLine(EQUIPMENT_MANAGER, 1,1,1)
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_EQUIPMENT_MANAGER, 1,.8,0, 1)
-		GameTooltip:AddLine("Get Naked", .6,.8,1, 1)
-		GameTooltip:Show()
-	end)
-
-	local function UnequipItemInSlot(i)
-		local action = EquipmentManager_UnequipItemInSlot(i)
-		EquipmentManager_RunAction(action)
-	end
-
-	GearManagerToggleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-	GearManagerToggleButton:SetScript("OnDoubleClick", function(_, btn)
-		if btn ~= "RightButton" then return end
-		for i = 1, 18 do
-			local link = GetInventoryItemLink("player", i)
-			if link then
-				UnequipItemInSlot(i)
-			end
-		end
-	end)
-	GearManagerToggleButton:SetScript("OnClick", function(_, btn)
-		if btn ~= "LeftButton" then return end
-		if GearManagerDialog:IsShown() then
-			GearManagerDialog:Hide()
-		else
-			GearManagerDialog:Show()
 		end
 	end)
 end

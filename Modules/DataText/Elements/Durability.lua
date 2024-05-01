@@ -121,20 +121,12 @@ end
 
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then return end
-	if CharacterNameFrame then CharacterNameFrame:Hide() end
 
-	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction) -- Replace this function as we set our own style so we can set our durr stat
-
-	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
+	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
+	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
-
-	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("CENTER", CharacterNameFrame, 0, 2)
-	DurabilityDataText.Text:SetFontObject(K.UIFont)
-	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 11, select(3, DurabilityDataText.Text:GetFont()))
-
-	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
+	DurabilityDataText:Disable()
 
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
