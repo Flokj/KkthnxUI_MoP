@@ -91,6 +91,7 @@
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
+   <Script file="Tooltip\Elements\ItemLevel.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
