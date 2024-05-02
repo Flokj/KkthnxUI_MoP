@@ -422,7 +422,7 @@ function Module:OnEnable()
 		"UpdateBarVisibility",
 		"UpdateAllSize",
 		"HideBlizz",
-		"CreateAspectBar",
+		--"CreateAspectBar",
 		"CreateTotemBar",
 	}
 

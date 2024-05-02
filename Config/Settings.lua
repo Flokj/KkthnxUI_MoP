@@ -390,7 +390,6 @@ C["Misc"] = {
 	ItemLevel = true,
 	MaxCameraZoom = 2.6,
 	MuteSounds = true,
-	PetHappiness = false,
 	QueueTimers = false,
 	ShowWowHeadLinks = false,
 	SlotDurability = true,

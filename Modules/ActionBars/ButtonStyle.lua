@@ -167,7 +167,7 @@ function Module:ReskinBars()
 		local i = 1
 		local button = _G["SpellFlyoutButton"..i]
 		while button and button:IsShown() do
-			Bar:StyleActionButton(button)
+			Module:StyleActionButton(button)
 			i = i + 1
 			button = _G["SpellFlyoutButton"..i]
 		end

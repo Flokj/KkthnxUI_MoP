@@ -54,7 +54,6 @@ function Module:OnEnable()
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
 		"CreateQuestSizeUpdate",
-		"CreatePetHappiness",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
@@ -122,40 +121,6 @@ function Module:OnEnable()
 		end
 	end
 	fixPartyGuidePromote()
-end
-
--- Hunter pet happiness
-local lastHappiness
-local petHappinessStr = {
-	[1] = "%sYour pet [%s] is about to run away.",
-	[2] = "%sYour pet [%s] is not in a good mood.",
-	[3] = "%sYour pet [%s] feels happy now.",
-}
-
-local function CheckPetHappiness(_, unit)
-	if unit ~= "pet" then return end
-
-	local happiness = GetPetHappiness()
-	if not lastHappiness or lastHappiness ~= happiness then
-		local str = petHappinessStr[happiness]
-		if str then
-			local petName = UnitName(unit)
-			UIErrorsFrame:AddMessage(string.format(str, K.InfoColor, petName))
-			K.Print(string.format(str, K.InfoColor, petName))
-		end
-
-		lastHappiness = happiness
-	end
-end
-
-function Module:CreatePetHappiness()
-	if K.Class ~= "HUNTER" then return end
-
-	if C["Misc"].PetHappiness then
-		K:RegisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
-	else
-		K:UnregisterEvent("UNIT_HAPPINESS", CheckPetHappiness)
-	end
 end
 
 local function KKUI_UpdateDragCursor(self)
@@ -496,15 +461,15 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(28, 28)
-	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 0)
+	bu:SetSize(24, 24)
+	bu:SetPoint("LEFT", PaperDollSidebarTab1, "RIGHT", -4, 0)
 	bu:SkinButton()
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetTexture("Interface\\ICONS\\SPELL_SHADOW_TWISTEDFAITH")
 	bu.Icon:SetAllPoints()
 	bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	K.AddTooltip(bu, "ANCHOR_RIGHT", "Get Naked")
+	K.AddTooltip(bu, "ANCHOR_RIGHT", "Double click to unequip all items.")
 
 	local function UnequipItemInSlot(i)
 		local action = EquipmentManager_UnequipItemInSlot(i)

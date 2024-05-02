@@ -41,7 +41,7 @@ local UNKNOWN = UNKNOWN
 
 local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
 local WOW_PROJECT_ID = WOW_PROJECT_ID or 1
-local WOW_PROJECT_WRATH = 11
+local WOW_PROJECT_MAINLINE = 14
 local CLIENT_WOW_DIFF = "WoV" -- for sorting
 
 local r, g, b = K.r, K.g, K.b
@@ -164,7 +164,7 @@ local function buildBNetTable(num)
 
 				if wowProjectID == WOW_PROJECT_60 then
 					gameText = EXPANSION_NAME0
-				elseif wowProjectID == WOW_PROJECT_WRATH then
+				elseif wowProjectID == WOW_PROJECT_MAINLINE then
 					gameText = EXPANSION_NAME2
 				end
 
@@ -404,7 +404,7 @@ local function buttonOnEnter(self)
 					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
 
 					-- Get TBC realm name from richPresence
-					if wowProjectID == WOW_PROJECT_WRATH then
+					if wowProjectID == WOW_PROJECT_MAINLINE then
 						local realm, count = gsub(gameText, "^.-%-%s", "")
 						if count > 0 then
 							realmName = "-" .. realm

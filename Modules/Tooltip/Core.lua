@@ -16,8 +16,6 @@ local UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel = Unit
 local GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild = GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild
 local GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet = GameTooltip_ClearMoney, GameTooltip_ClearStatusBars, GameTooltip_ClearProgressBars, GameTooltip_ClearWidgetSet
 
---local CI = LibStub("LibClassicInspector")
-
 local classification = {
 	worldboss = format("|cffAF5050 %s|r", BOSS),
 	rareelite = format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
@@ -150,86 +148,6 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
-		--[[if C["Tooltip"].ShowTalents then
-    		local name, unit = self:GetUnit()
-    		
-    		if not unit then return end
-    		
-    		local guid = UnitGUID(unit)
-    		local text = {}
-    		local linesToAdd = {}
-    		
-    		local numLines = GameTooltip:NumLines()
-    		
-    		for i = 1, numLines do
-    		    text[i] = _G["GameTooltipTextLeft" .. i]:GetText()
-    		end
-    		
-    		if not text[1] or text[1] == "" or not text[2] or text[2] == "" then return end
-    		
-    		local _, class = UnitClass(unit)
-    		local show_titles = true
-    		
-    		if not show_titles and string.find(text[1], name) then
-    		    text[1] = name
-    		end
-    		
-    		if not InCombatLockdown() then
-    		    local x1, x2, x3 = 0, 0, 0
-    		    local y1, y2, y3 = 0, 0, 0
-    		    local spec1 = CI:GetSpecialization(guid, 1)
-    		    local spec2 = CI:GetSpecialization(guid, 2)
-    		    
-    		    if spec1 then
-    		        x1, x2, x3 = CI:GetTalentPoints(guid, 1)
-    		    end
-    		    
-    		    if spec2 then
-    		        y1, y2, y3 = CI:GetTalentPoints(guid, 2)
-    		    end
-    		    
-    		    local active = CI:GetActiveTalentGroup(guid)
-    		    
-    		    if active == 2 then
-				    if spec2 then
-				        tinsert(linesToAdd, {
-				            string.format("%s:|cFFFFFFFF [%d/%d/%d]|r", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
-				        })
-				    end
-				
-				    if spec1 then
-				        tinsert(linesToAdd, {
-				            string.format("|cFF808080%s [%d/%d/%d]|r", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
-				        })
-				    end
-				elseif active == 1 then
-				    if spec1 then
-				        tinsert(linesToAdd, {
-				            string.format("%s:|cFFFFFFFF [%d/%d/%d]|r", CI:GetSpecializationName(class, spec1, true), x1, x2, x3)
-				        })
-				    end
-				
-				    if spec2 then
-				        tinsert(linesToAdd, {
-				            string.format("|cFF808080%s [%d/%d/%d]|r", CI:GetSpecializationName(class, spec2, true), y1, y2, y3)
-				        })
-				    end
-				end
-    		end
-    		
-    		local n = 0
-    		for i = 1, numLines do
-    		    if text[i] and text[i] ~= "" then
-    		        n = n + 1
-    		        _G["GameTooltipTextLeft" .. n]:SetText(text[i])
-    		    end
-    		end
-    		    
-    		for _, v in ipairs(linesToAdd) do
-    			self:AddLine(unpack(v))
-    		end
-    	end]]
-
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()
 		if guildName and hasText then
@@ -278,9 +196,13 @@ function Module:OnTooltipSetUnit()
 		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
+			local reaction = UnitReaction(unit, "player")
+			local standingText = not isPlayer and reaction and hexColor.._G["FACTION_STANDING_LABEL"..reaction].."|r " or ""
+
 			local pvpFlag = isPlayer and UnitIsPVP(unit) and format(" |cffff0000%s|r", PVP) or ""
-			local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
-			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
+			local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor..(UnitClass(unit) or "").."|r") or UnitCreatureType(unit) or ""
+
+			tiptextLevel:SetFormattedText(("%s%s %s %s"), textLevel, pvpFlag, standingText..unitClass, (not alive and "|cffCCCCCC"..DEAD.."|r" or ""))
 		end
 	end
 
@@ -297,10 +219,12 @@ function Module:OnTooltipSetUnit()
 		local guid = UnitGUID(unit)
 		local npcID = guid and K.GetNPCID(guid)
 		if npcID then
-			local reaction = UnitReaction(unit, "player")
-			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
-			self:AddDoubleLine(format(npcIDstring, standingText or "", npcID))
+			self:AddLine(format(npcIDstring, "NpcID:", npcID))
 		end
+	end
+
+	if isPlayer then
+	--	Module.InspectUnitItemLevel(self, unit)
 	end
 
 	self.StatusBar:SetStatusBarColor(r, g, b)

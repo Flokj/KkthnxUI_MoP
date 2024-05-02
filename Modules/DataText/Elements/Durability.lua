@@ -117,9 +117,7 @@ end
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then return end
 
-	if CharacterFrameTitleText then
-		CharacterFrameTitleText:Hide()
-	end
+	--if CharacterFrameTitleText then CharacterFrameTitleText:Hide() end
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)

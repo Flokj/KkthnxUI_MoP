@@ -428,12 +428,12 @@ local ActionBar = function(self)
 	Window:CreateSlider("ActionBar", "BarStancePerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBarStance)
 	Window:CreateSlider("ActionBar", "BarStanceFont", "Button FontSize", 8, 20, 1, nil, UpdateActionBarStance)
 
-	if K.Class == "HUNTER" then
+	--[[if K.Class == "HUNTER" then
 		Window:CreateSection(newFeatureIcon .. "AspectBar")
 		Window:CreateSwitch("ActionBar", "AspectBar", enableTextColor .. "Enable AspectBar", nil, ToggleAspectBar)
 		Window:CreateSlider("ActionBar", "AspectSize", "Aspect Bar Size", 20, 80, 1, nil, UpdateAspectBar)
 		Window:CreateSwitch("ActionBar", "VerticleAspect", "Verticle Aspect Bar", nil, VerticalAspectBar)
-	end
+	end]]
 
 	if K.Class == "SHAMAN" then
 		Window:CreateSection(newFeatureIcon .. "TotemBar")
@@ -799,9 +799,6 @@ local Misc = function(self)
 
 	-- Misc Section
 	Window:CreateSection("Misc")
-	if K.Class == "HUNTER" then
-		Window:CreateSwitch("Misc", "PetHappiness", newFeatureIcon .. "Print Your Pet Happiness Status")
-	end
 	if C["Misc"].ItemLevel then
 		Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
 	end
