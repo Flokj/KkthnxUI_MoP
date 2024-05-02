@@ -1,7 +1,16 @@
-local K = KkthnxUI[1]
+local K = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-if K.Class ~= "SHAMAN" then return end
+if K.Class ~= "SHAMAN" then
+	return
+end
+
+local _G = _G
+
+local GetSpecialization = _G.GetSpecialization
+local IsPlayerSpell = _G.IsPlayerSpell
+local IsUsableSpell = _G.IsUsableSpell
+local GetSpellTexture = _G.GetSpellTexture
 
 local function GetUnitAura(unit, spell, filter)
 	return Module:GetUnitAura(unit, spell, filter)
@@ -58,18 +67,7 @@ function Module:ChantLumos(self)
 			end
 		end
 
-		do
-			local button = self.lumos[5]
-			if IsPlayerSpell(192249) then
-				if IsPlayerSpell(117013) then
-					UpdateCooldown(button, 192249, true)
-				else
-					UpdateTotemAura(button, 1020304, 192249)
-				end
-			else
-				UpdateTotemAura(button, 135790, 198067)
-			end
-		end
+		UpdateTotemAura(self.lumos[5], 135790, 198067)
 	elseif spec == 2 then
 		UpdateCooldown(self.lumos[1], 17364, true)
 

@@ -1,4 +1,4 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
 function Module:GetUnitAura(unit, spell, filter)
@@ -53,12 +53,13 @@ end
 
 function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow)
 	button.Icon:SetTexture(GetSpellTexture(spellID))
-	local name, count, duration, expire, caster = self:GetUnitAura(unit, auraID, filter)
+	local name, count, duration, expire, caster = Module:GetUnitAura(unit, auraID, filter)
 	if name and caster == "player" then
 		if button.Count then
 			if count == 0 then count = "" end
 			button.Count:SetText(count)
 		end
+
 		button.CD:SetCooldown(expire - duration, duration)
 		button.CD:Show()
 		button.Icon:SetDesaturated(false)
@@ -72,7 +73,7 @@ function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow
 		end
 	else
 		if cooldown then
-			self:UpdateCooldown(button, spellID)
+			Module:UpdateCooldown(button, spellID)
 		else
 			if button.Count then
 				button.Count:SetText("")
@@ -80,6 +81,7 @@ function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow
 			button.CD:Hide()
 			button.Icon:SetDesaturated(true)
 		end
+
 		if glow then
 			button:SetScript("OnUpdate", nil)
 			K.HideOverlayGlow(button.glowFrame)
@@ -97,6 +99,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 			button.CD:Show()
 			button.Icon:SetDesaturated(false)
 			button.Count:SetText("")
+
 			if glow then
 				if glow == "END" then
 					button.expire = start + dur
@@ -109,13 +112,15 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 			break
 		end
 	end
+
 	if not found then
 		if spellID then
-			self:UpdateCooldown(button, spellID)
+			Module:UpdateCooldown(button, spellID)
 		else
 			button.CD:Hide()
 			button.Icon:SetDesaturated(true)
 		end
+
 		if glow then
 			button:SetScript("OnUpdate", nil)
 			K.HideOverlayGlow(button.glowFrame)
@@ -142,10 +147,12 @@ local lumosUnits = {
 	["player"] = true,
 	["target"] = true,
 }
+
 local function UpdateIcons(self, event, unit)
 	if event == "UNIT_AURA" and not lumosUnits[unit] then
 		return
 	end
+
 	Module:ChantLumos(self)
 	UpdateVisibility(self)
 end
@@ -179,9 +186,8 @@ function Module:CreateLumos(self)
 
 	self.lumos = {}
 	self.lumos.onFire = C["Nameplate"].PPOnFire
-
-	-- local iconSize = (C["Nameplate"].PPWidth + 2 * K.Mult - 3 * 4) / 5
 	local iconSize = self.iconSize
+
 	for i = 1, 5 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize)
@@ -195,12 +201,17 @@ function Module:CreateLumos(self)
 		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		bu:CreateShadow(true)
 
-		bu.glowFrame = K.CreateGlowFrame(bu, iconSize, 4)
+		bu.glowFrame = CreateFrame("Frame", nil, bu)
+		bu.glowFrame:SetPoint("TOPLEFT", bu, -4, 4)
+		bu.glowFrame:SetPoint("BOTTOMRIGHT", bu, 4, -4)
+		bu.glowFrame:SetSize(iconSize, iconSize)
+		bu.glowFrame:SetFrameLevel(bu:GetFrameLevel())
 
 		local fontParent = CreateFrame("Frame", nil, bu)
 		fontParent:SetAllPoints()
-		fontParent:SetFrameLevel(bu:GetFrameLevel() + 6)
-		bu.Count = K.CreateFontString(fontParent, 16, "", "", false, "BOTTOM", 0, -10)
+		fontParent:SetFrameLevel(bu:GetFrameLevel() + 5)
+		bu.Count = K.CreateFontString(fontParent, 14, "", "OUTLINE", false, "BOTTOM", 0, -8)
+
 		if i == 1 then
 			bu:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -5)
 		else

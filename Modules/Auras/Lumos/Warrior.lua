@@ -1,7 +1,16 @@
-local K = KkthnxUI[1]
+local K = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-if K.Class ~= "WARRIOR" then return end
+if K.Class ~= "WARRIOR" then
+	return
+end
+
+local _G = _G
+
+local GetSpellTexture = _G.GetSpellTexture
+local IsUsableSpell = _G.IsUsableSpell
+local GetSpecialization = _G.GetSpecialization
+local IsPlayerSpell = _G.IsPlayerSpell
 
 local function GetUnitAura(unit, spell, filter)
 	return Module:GetUnitAura(unit, spell, filter)
