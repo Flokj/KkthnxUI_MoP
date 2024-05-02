@@ -1,11 +1,7 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local Module = K:GetModule("Auras")
 
-if K.Class ~= "PRIEST" then
-	return
-end
-
-local GetSpecialization = _G.GetSpecialization
+if K.Class ~= "PRIEST" then return end
 
 local function UpdateCooldown(button, spellID, texture)
 	return Module:UpdateCooldown(button, spellID, texture)

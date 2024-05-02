@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local Module = K:GetModule("Auras")
 
 if K.Class ~= "DRUID" then return end
@@ -32,20 +32,20 @@ function Module:ChantLumos(self)
 			local button = self.lumos[1]
 			local count = GetSpellCount(190984)
 			UpdateBuff(button, 190984, 48517)
-			button.Count:SetText(count > 0 and count)
+			button.Count:SetText(count > 0 and count or "")
 		end
 
 		do
 			local button = self.lumos[2]
 			local count = GetSpellCount(194153)
 			UpdateBuff(button, 194153, 48518)
-			button.Count:SetText(count > 0 and count)
+			button.Count:SetText(count > 0 and count or "")
 		end
 
 		do
 			local button = self.lumos[3]
 			UpdateSpellStatus(button, 78674)
-			button.Count:SetText(math_floor(currentPower / 30))
+			button.Count:SetText(floor(currentPower / 30))
 		end
 
 		do

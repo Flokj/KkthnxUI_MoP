@@ -29,6 +29,4 @@
    <Button name="KKUI_AuraTemplate38" inherits="KKUI_AuraTemplate" virtual="true"><Size x="38" y="38" /></Button>
    <Button name="KKUI_AuraTemplate39" inherits="KKUI_AuraTemplate" virtual="true"><Size x="39" y="39" /></Button>
    <Button name="KKUI_AuraTemplate40" inherits="KKUI_AuraTemplate" virtual="true"><Size x="40" y="40" /></Button>
-
-   <Include file="Lumos\Lumos.xml"/>
 </Ui>

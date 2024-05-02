@@ -1,15 +1,7 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
-if K.Class ~= "ROGUE" then
-	return
-end
-
-local _G = _G
-
-local CreateFrame = _G.CreateFrame
-local GetSpecialization = _G.GetSpecialization
-local IsPlayerSpell = _G.IsPlayerSpell
+if K.Class ~= "ROGUE" then return end
 
 local diceSpells = {
 	[1] = { id = 193356, text = L["Combo"] },
@@ -27,10 +19,12 @@ function Module:PostCreateLumos(self)
 
 	local iconSize = (self:GetWidth() - 10) / 6
 	local buttons = {}
-	local offset = C["Nameplate"].NameplateClassPower and 8 or (8 * 2 + C["Nameplate"].PPHeight)
+	local parent = C["Nameplate"].NameplateClassPower and self.Health or self.ClassPowerBar
 	for i = 1, 6 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize / 2)
+		bu:CreateShadow(true)
+
 		bu.Text = K.CreateFontString(bu, 12, diceSpells[i].text, "", false, "TOP", 1, 12)
 
 		bu.CD = CreateFrame("Cooldown", nil, bu, "CooldownFrameTemplate")
@@ -40,10 +34,8 @@ function Module:PostCreateLumos(self)
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
 		bu.Icon:SetTexCoord(left, right, top, bottom)
-		bu:CreateShadow()
-
 		if i == 1 then
-			bu:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, offset)
+			bu:SetPoint("BOTTOMLEFT", parent, "TOPLEFT", 0, 6)
 		else
 			bu:SetPoint("LEFT", buttons[i - 1], "RIGHT", 2, 0)
 		end
