@@ -128,6 +128,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
 		Module:CreateClassPower(self)
+		Module:CreateEclipseBar(self)
 	end
 
 	if C["Unitframe"].PlayerDebuffs then -- and C["Unitframe"].TargetDebuffsTop

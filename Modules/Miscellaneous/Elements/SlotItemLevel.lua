@@ -474,6 +474,19 @@ function Module:CreateSlotItemLevel()
 	CharacterFrame:HookScript("OnShow", Module.ItemLevel_UpdatePlayer)
 	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.ItemLevel_UpdatePlayer)
 
+	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)
+		if unit ~= "player" then return end
+
+		local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
+		avgItemLevel = format("%.1f", avgItemLevel)
+		avgItemLevelEquipped = format("%.1f", avgItemLevelEquipped)
+
+		local text = _G[statFrame:GetName().."StatText"]
+		if text then
+			text:SetText(avgItemLevelEquipped.."/"..avgItemLevel)
+		end
+	end)
+
 	-- iLvl on InspectFrame
 	K:RegisterEvent("INSPECT_READY", Module.ItemLevel_UpdateInspect)
 

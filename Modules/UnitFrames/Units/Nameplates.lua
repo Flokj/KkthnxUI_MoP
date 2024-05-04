@@ -1017,6 +1017,7 @@ function Module:CreatePlayerPlate()
 	self.Power.frequentUpdates = true
 
 	Module:CreateClassPower(self)
+	Module:CreateEclipseBar(self)
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()

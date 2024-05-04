@@ -428,6 +428,46 @@ function Module:CreateClassPower(self)
 	self.ClassPowerBar = bar
 end
 
+function Module:CreateEclipseBar(self)
+	if K.Class ~= "DRUID" then return end
+
+	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth-56, 10
+	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
+	if self.mystyle == "PlayerPlate" then
+		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+		barPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 6}
+	end
+
+	local bar = CreateFrame("StatusBar", nil, self.Health)
+	bar:SetSize(barWidth, barHeight)
+	bar:SetPoint(unpack(barPoint))
+	bar:SetFrameLevel(self:GetFrameLevel() + 5)
+	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	bar:SetStatusBarColor(0.25, 0.75, 1)
+	bar:CreateBorder()
+	K:SmoothBar(bar)
+
+	local spark = bar:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(C["Media"].Textures.Spark16Texture)
+	spark:SetHeight(bar:GetHeight())
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetAlpha(0.8)
+
+	local bg = bar:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetTexture(K.GetTexture(C["General"].Texture))
+	bg:SetVertexColor(1, 1, 0)
+	bg.multiplier = 0.25
+
+	local text = K.CreateFontString(bar, 14)
+	text:SetPoint("CENTER", bar, "TOP")
+	self:Tag(text, "[cureclipse]")
+
+	self.EclipseBar = bar
+	self.EclipseBar.bg = bg
+end
+
 local textScaleFrames = {
 	["player"] = true,
 	["target"] = true,
