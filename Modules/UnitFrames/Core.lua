@@ -431,7 +431,7 @@ end
 function Module:CreateEclipseBar(self)
 	if K.Class ~= "DRUID" then return end
 
-	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth-56, 10
+	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth-56, 8
 	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	if self.mystyle == "PlayerPlate" then
 		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
@@ -460,7 +460,7 @@ function Module:CreateEclipseBar(self)
 	bg:SetVertexColor(1, 1, 0)
 	bg.multiplier = 0.25
 
-	local text = K.CreateFontString(bar, 14)
+	local text = K.CreateFontString(bar, 12)
 	text:SetPoint("CENTER", bar, "TOP")
 	self:Tag(text, "[cureclipse]")
 

@@ -5,7 +5,7 @@ https://www.wowace.com/projects/libbuttonglow-1-0
 
 -- luacheck: globals CreateFromMixins ObjectPoolMixin CreateTexturePool CreateFramePool
 
-local MAJOR_VERSION = "LibCustomGlow-1.0-KkthnxUI"
+local MAJOR_VERSION = "LibCustomGlow-1.0"
 local MINOR_VERSION = 16
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
