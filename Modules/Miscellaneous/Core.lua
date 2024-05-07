@@ -342,6 +342,61 @@ function Module:CreateTradeTargetInfo()
 	TradeFrame:HookScript("OnShow", updateColor)
 end
 
+-- Archaeology counts
+do
+	local function DisplayArchaeologyCounts(tooltip, anchor)
+		tooltip:SetOwner(anchor, "ANCHOR_BOTTOMRIGHT")
+		tooltip:ClearLines()
+		tooltip:AddLine("|c0000FF00Arch Count:")
+		tooltip:AddLine(" ")
+
+		local totalArtifacts = 0
+		for raceIndex = 1, GetNumArchaeologyRaces() do
+			local numArtifacts = GetNumArtifactsByRace(raceIndex)
+			local raceArtifactCount = 0
+			for artifactIndex = 1, numArtifacts do
+				local completionCount = select(10, GetArtifactInfoByRace(raceIndex, artifactIndex))
+				raceArtifactCount = raceArtifactCount + completionCount
+			end
+			if numArtifacts > 1 then
+				local raceName = GetArchaeologyRaceInfo(raceIndex)
+				tooltip:AddDoubleLine(raceName .. ":", K.InfoColor .. raceArtifactCount)
+				totalArtifacts = totalArtifacts + raceArtifactCount
+			end
+		end
+
+		tooltip:AddLine(" ")
+		tooltip:AddDoubleLine("|c0000ff00" .. TOTAL .. ":", "|cffff0000" .. totalArtifacts)
+		tooltip:Show()
+	end
+
+	local function CreateArchaeologyCalculateButton()
+		local button = CreateFrame("Button", nil, ArchaeologyFrameCompletedPage)
+		button:SetPoint("TOPRIGHT", -45, -45)
+		button:SetSize(35, 35)
+		button.Icon = button:CreateTexture(nil, "ARTWORK")
+		button.Icon:SetAllPoints()
+		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.Icon:SetTexture("Interface\\ICONS\\TRADE_ARCHAEOLOGY_HIGHBORNE_SCROLL")
+		button:CreateBorder()
+		button:StyleButton()
+
+		button:SetScript("OnEnter", function()
+			DisplayArchaeologyCounts(GameTooltip, button)
+		end)
+		button:SetScript("OnLeave", K.HideTooltip)
+	end
+
+	local function InitializeArchaeologyUI(event, addon)
+		if addon == "Blizzard_ArchaeologyUI" then
+			CreateArchaeologyCalculateButton()
+
+			K:UnregisterEvent(event, InitializeArchaeologyUI)
+		end
+	end
+	K:RegisterEvent("ADDON_LOADED", InitializeArchaeologyUI)
+end
+
 -- ALT+RightClick to buy a stack
 do
 	local cache = {}
@@ -461,8 +516,8 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(24, 24)
-	bu:SetPoint("LEFT", PaperDollSidebarTab1, "RIGHT", -4, 0)
+	bu:SetSize(22, 22)
+	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 4, -2)
 	bu:SkinButton()
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")

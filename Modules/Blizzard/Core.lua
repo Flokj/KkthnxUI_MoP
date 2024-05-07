@@ -4,8 +4,11 @@ local Module = K:NewModule("Blizzard")
 function Module:OnEnable()
 	local loadBlizzardModules = {
 		"CreateAlertFrames",
+		"CreateAltPowerbar",
 		"CreateColorPicker",
 		"CreateMirrorBars",
+		"CreateTimerTracker",
+		"CreateUIWidgets",
 	}
 
 	for _, funcName in ipairs(loadBlizzardModules) do
