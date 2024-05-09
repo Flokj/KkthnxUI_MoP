@@ -643,11 +643,12 @@ function Module:RaidTool_WorldMarker()
 		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
 		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
 		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
+		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
+		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
 		"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
 	}
+	local maxButtons = #iconTexture
 
 	local frame = CreateFrame("Frame", "KKUI_WorldMarkers", UIParent)
 	frame:SetPoint("RIGHT", -100, 0)
@@ -656,7 +657,7 @@ function Module:RaidTool_WorldMarker()
 	frame:CreateBorder()
 	frame.buttons = {}
 
-	for i = 1, 9 do
+	for i = 1, maxButtons do
 		local button = CreateFrame("Button", nil, frame, "SecureActionButtonTemplate")
 		button:SetSize(24, 24)
 		button.Icon = button:CreateTexture(nil, "ARTWORK")
@@ -666,7 +667,7 @@ function Module:RaidTool_WorldMarker()
 		button:SetHighlightTexture(iconTexture[i])
 		button:SetPushedTexture(iconTexture[i])
 
-		if i ~= 9 then
+		if i ~= maxButtons then
 			button:RegisterForClicks("AnyDown")
 			button:SetAttribute("type", "macro")
 			button:SetAttribute("macrotext1", format("/wm %d", i))
@@ -694,7 +695,7 @@ function Module:RaidTool_UpdateGrid()
 	local showType = C["Misc"].ShowMarkerBar.Value
 	local perRow = markerTypeToRow[showType]
 
-	for i = 1, 9 do
+	for i = 1, maxButtons do
 		local button = frame.buttons[i]
 		button:SetSize(size, size)
 		button:ClearAllPoints()
@@ -707,8 +708,8 @@ function Module:RaidTool_UpdateGrid()
 		end
 	end
 
-	local column = min(9, perRow)
-	local rows = ceil(9 / perRow)
+	local column = min(maxButtons, perRow)
+	local rows = ceil(maxButtons / perRow)
 	frame:SetWidth(column * size + (column - 1) * margin + 2 * margin)
 	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * margin)
 	frame:SetShown(showType ~= 4)
