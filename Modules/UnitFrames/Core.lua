@@ -431,7 +431,7 @@ end
 function Module:CreateEclipseBar(self)
 	if K.Class ~= "DRUID" then return end
 
-	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth-56, 8
+	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, 8
 	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	if self.mystyle == "PlayerPlate" then
 		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
@@ -440,7 +440,8 @@ function Module:CreateEclipseBar(self)
 
 	local bar = CreateFrame("StatusBar", nil, self.Health)
 	bar:SetSize(barWidth, barHeight)
-	bar:SetPoint(unpack(barPoint))
+	bar:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 6)
+	bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6)
 	bar:SetFrameLevel(self:GetFrameLevel() + 5)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	bar:SetStatusBarColor(0.25, 0.75, 1)

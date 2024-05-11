@@ -392,8 +392,9 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SetAlpha(0.25)
 
 	kkuiconfig.Texture = kkuiconfig:CreateTexture(nil, "ARTWORK")
-	kkuiconfig.Texture:SetAllPoints()
-	kkuiconfig.Texture:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+	kkuiconfig.Texture:SetPoint("CENTER", kkuiconfig, "CENTER", 0, 0)
+	kkuiconfig.Texture:SetSize(14, 14)
+	kkuiconfig.Texture:SetTexture(C["Media"].Textures.LogoSmallTexture)
 	kkuiconfig:RegisterForClicks("AnyUp")
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
