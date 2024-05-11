@@ -188,9 +188,9 @@ function LibChangelog:ShowChangelog(addonName)
 		frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 10, 13)
 		frame.CheckButton:SkinCheckBox()
 
-		--frame.CheckButton.text:ClearAllPoints()
-		--frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
-		--frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE)
+		frame.CheckButton.Text:ClearAllPoints()
+		frame.CheckButton.Text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
+		frame.CheckButton.Text:SetText(addonData.texts.onlyShowWhenNewVersion or localization.HIDE_UNTIL_NEXT_UPDATE)
 
 		addonData.frame = frame
 	end

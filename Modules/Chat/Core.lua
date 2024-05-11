@@ -235,6 +235,11 @@ function Module:SkinChat()
 	charCount:SetWidth(40)
 	eb.characterCount = charCount
 
+	local minimize = _G[name.."MinimizeButton"]
+	if minimize then
+		minimize:Kill()
+	end
+
 	self.buttonFrame:Kill()
 	--self.ScrollBar:Kill()
 	self.ScrollToBottomButton:Kill()
