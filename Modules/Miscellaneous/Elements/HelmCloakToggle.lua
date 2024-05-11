@@ -7,7 +7,7 @@ function Module:CreateHelmCloakToggle()
 
 	local function CreateCheckbox(parent, text, showFunc, toggleFunc, pointY)
 	    local checkbox = CreateFrame("CheckButton", nil, parent, "ChatConfigCheckButtonTemplate")
-	    checkbox:SetPoint("BOTTOMLEFT", 72, 270 - pointY)
+	    checkbox:SetPoint("BOTTOMLEFT", 60, 330 - pointY)
 	    checkbox:SetSize(16, 16)
 	    checkbox:SetFrameStrata("HIGH")
 	    checkbox:SkinCheckBox()
@@ -57,7 +57,7 @@ function Module:CreateHelmCloakToggle()
 	
 	local checkboxes = {}
 	checkboxes[1] = CreateCheckbox(PaperDollFrame, "Helm", ShowingHelm, UpdateHelm, 0)
-	checkboxes[2] = CreateCheckbox(PaperDollFrame, "Cloak", ShowingCloak, UpdateCloak, 22)
+	checkboxes[2] = CreateCheckbox(PaperDollFrame, "Cloak", ShowingCloak, UpdateCloak, 120)
 end
 
 Module:RegisterMisc("HelmCloakToggle", Module.CreateHelmCloakToggle)
