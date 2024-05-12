@@ -23,7 +23,7 @@ end
 -- Function to create the auto confirm feature
 function Module:CreateAutoConfirm()
 	-- Check if the auto confirm loot feature is enabled in the config
-	if not C["Loot"].AutoConfirmLoot then return end
+	if not C["Loot"].AutoConfirm then return end
 
 	-- Register the  CONFIRM_LOOT_ROLL, and LOOT_BIND_CONFIRM events
 	-- and call the SetupAutoConfirm function when any of them triggers
