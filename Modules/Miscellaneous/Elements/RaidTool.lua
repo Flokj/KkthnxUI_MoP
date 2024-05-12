@@ -636,19 +636,20 @@ function Module:RaidTool_EasyMarker()
 	end)
 end
 
+local iconTexture = {
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_6",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_4",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+	"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
+}
+local maxButtons = #iconTexture
+
 function Module:RaidTool_WorldMarker()
-	local iconTexture = {
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_6",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_4",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
-		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
-		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
-		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
-		--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
-		"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
-	}
-	local maxButtons = #iconTexture
 
 	local frame = CreateFrame("Frame", "KKUI_WorldMarkers", UIParent)
 	frame:SetPoint("RIGHT", -100, 0)
