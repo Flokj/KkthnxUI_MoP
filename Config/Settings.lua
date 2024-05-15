@@ -279,7 +279,6 @@ C["AuraWatch"] = {
 	Enable = false,
 	ClickThrough = false,
 	IconScale = 1,
-	WatchSpellRank = false,
 	InternalCD = {},
 	AuraList = {
 		["Switcher"] = {},

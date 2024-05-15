@@ -375,7 +375,7 @@ function Module:CreateClassPower(self)
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 
 	bar:SetSize(barWidth, barHeight)
-	bar:SetPoint(unpack(barPoint))
+	K.Mover(bar, "ClassPower", "ClassPower", { unpack(barPoint) })
 
 	if not bar.chargeParent then
 		bar.chargeParent = CreateFrame("Frame", nil, bar)
@@ -533,7 +533,7 @@ function Module:CreateUnits()
 		oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
 	end
 
-	do -- Playerplate-like PlayerFrame
+	if C["Nameplate"].ShowPlayerPlate then
 		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
 		oUF:SetActiveStyle("PlayerPlate")
 		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
