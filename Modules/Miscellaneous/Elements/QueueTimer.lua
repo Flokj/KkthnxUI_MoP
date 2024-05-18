@@ -1,132 +1,51 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
--- Sourced: syndenbock (JustInTime)
--- Edited: Kkthnx (KkthnxUI)
+function Module:CreateQueueTimer()
+	if not C["Misc"].QueueTimers then return end
 
--- local RESETS_IN = _G.RESETS_IN
--- local LFGDungeonReadyDialog = _G.LFGDungeonReadyDialog
+	local frame = CreateFrame("Frame", nil, LFGDungeonReadyDialog)
+	frame:SetPoint("TOP", LFGDungeonReadyDialog, "BOTTOM", 0, -10)
+	frame:SetSize(280, 10)
+	frame.t = frame:CreateTexture(nil, "OVERLAY")
+	frame.t:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border")
+	frame.t:SetSize(375, 64)
+	frame.t:SetPoint("TOP", 0, 28)
+	
+	frame.bar = CreateFrame("StatusBar", nil, frame)
+	frame.bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	frame.bar:SetAllPoints()
+	frame.bar:SetFrameLevel(LFGDungeonReadyDialog:GetFrameLevel() + 1)
+	frame.bar:SetStatusBarColor(1, 0.7, 0)
+	
+	LFGDungeonReadyDialog.nextUpdate = 0
+	
+	local function UpdateBar()
+		local obj = LFGDungeonReadyDialog
+		local oldTime = GetTime()
+		local flag = 0
+		local duration = 40
+		local interval = 0.1
+		obj:SetScript("OnUpdate", function(_, elapsed)
+			obj.nextUpdate = obj.nextUpdate + elapsed
+			if obj.nextUpdate > interval then
+				local newTime = GetTime()
+				if (newTime - oldTime) < duration then
+					local width = frame:GetWidth() * (newTime - oldTime) / duration
+					frame.bar:SetPoint("BOTTOMRIGHT", frame, 0 - width, 0)
+					flag = flag + 1
+					if flag >= 10 then
+						flag = 0
+					end
+				else
+					obj:SetScript("OnUpdate", nil)
+				end
+				obj.nextUpdate = 0
+			end
+		end)
+	end
 
--- local function ColorQueueTimer(value)
--- 	local r, g, b
-
--- 	if value < 10 then
--- 		r, g, b = 1, 0, 0
--- 	elseif value < 15 then
--- 		r, g, b = 1, 0.65, 0
--- 	elseif value < 25 then
--- 		r, g, b = 1, 0.96, 0
--- 	elseif value < 35 then
--- 		r, g, b = 0.17, 0.73, 0
--- 	else
--- 		r, g, b = 0.17, 0.73, 0
--- 	end
-
--- 	return K.RGBToHex(r, g, b) .. SecondsToTime(value)
--- end
-
--- -- PvE
--- function Module:SetupPvEQueueTimer()
--- 	local pveUpdateFrame = CreateFrame("Frame", "KKUI_PvEUpdateFrame")
--- 	local pveUpdateInterval = 0.2
--- 	local pveRemaining = 0
--- 	local pveUpdateTimeStamp
-
--- 	-- The text of the LFG dialog label randomly changes back, so we override the function to prevent that
--- 	local pveUpdateLFGDialogLabel = _G.LFGDungeonReadyDialog.label.SetText
--- 	LFGDungeonReadyDialog.label.SetText = K.Noop
-
--- 	LFGDungeonReadyDialog.label:SetPoint("TOP", 0, -22)
--- 	LFGDungeonReadyDialog.label:SetFontObject(K.UIFont)
--- 	LFGDungeonReadyDialog.label:SetFont(select(1, LFGDungeonReadyDialog.label:GetFont()), 13, select(3, LFGDungeonReadyDialog.label:GetFont()))
-
--- 	local function OnShowPvETimer()
--- 		-- I didn't find a function to check if the dialog is still displayed, so we stop updating after the time is over
--- 		if pveRemaining > 0 then
--- 			pveUpdateLFGDialogLabel(LFGDungeonReadyDialog.label, RESETS_IN .. ": " .. ColorQueueTimer(pveRemaining))
--- 		else
--- 			pveUpdateFrame:SetScript("OnUpdate", nil)
--- 			pveUpdateTimeStamp = nil
--- 		end
--- 	end
-
--- 	local function OnUpdatePvETimer(_, elapsed)
--- 		pveUpdateTimeStamp = pveUpdateTimeStamp + elapsed
-
--- 		if pveUpdateTimeStamp < pveUpdateInterval then
--- 			return
--- 		end
-
--- 		pveRemaining = pveRemaining - pveUpdateTimeStamp
--- 		pveUpdateTimeStamp = 0
--- 		OnShowPvETimer()
--- 	end
-
--- 	K:RegisterEvent("LFG_PROPOSAL_SHOW", function()
--- 		pveRemaining = 40
--- 		pveUpdateTimeStamp = 0
--- 		pveUpdateFrame:SetScript("OnUpdate", OnUpdatePvETimer)
--- 	end)
--- end
-
--- -- PvP
--- function Module:SetupPvPQueueTimer()
--- 	local pvpUpdateFrame = CreateFrame("Frame", "KKUI_PvPUpdateFrame")
--- 	local pvpUpdateInterval = 0.2
--- 	local pvpupdateTimeStamp
--- 	local pvpQueue
-
--- 	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
--- 	PVPReadyDialog.label:SetFontObject(K.UIFont)
--- 	PVPReadyDialog.label:SetFont(select(1, PVPReadyDialog.label:GetFont()), 13, select(3, PVPReadyDialog.label:GetFont()))
-
--- 	local function OnShowPVPTimer()
--- 		if PVPReadyDialog_Showing(pvpQueue) then
--- 			local seconds = GetBattlefieldPortExpiration(pvpQueue)
-
--- 			if seconds and seconds > 0 then
--- 				PVPReadyDialog.label:SetText(RESETS_IN .. ": " .. ColorQueueTimer(seconds))
--- 			end
--- 		else
--- 			pvpQueue = nil
--- 			pvpupdateTimeStamp = nil
--- 			pvpUpdateFrame:SetScript("OnUpdate", nil)
--- 		end
--- 	end
-
--- 	local function OnUpdatePvPTimer(_, elapsed)
--- 		pvpupdateTimeStamp = pvpupdateTimeStamp + elapsed
-
--- 		if pvpupdateTimeStamp < pvpUpdateInterval then
--- 			return
--- 		end
-
--- 		pvpupdateTimeStamp = 0
--- 		OnShowPVPTimer()
--- 	end
-
--- 	local function HandlePVPQueuePop(index)
--- 		pvpQueue = index
-
--- 		OnShowPVPTimer()
--- 		pvpupdateTimeStamp = 0
--- 		pvpUpdateFrame:SetScript("OnUpdate", OnUpdatePvPTimer)
--- 	end
-
--- 	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function(_, index)
--- 		if GetBattlefieldStatus(index) == "confirm" then
--- 			HandlePVPQueuePop(index)
--- 		end
--- 	end)
--- end
-
--- function Module:CreateQueueTimers()
--- 	if not C["Misc"].QueueTimers then
--- 		return
--- 	end
-
--- 	Module:SetupPvEQueueTimer() -- PvE
--- 	Module:SetupPvPQueueTimer() -- PvP
--- end
-
--- Module:RegisterMisc("QueueTimer", Module.CreateQueueTimers)
+	frame:RegisterEvent("LFG_PROPOSAL_SHOW")
+	frame:SetScript("OnEvent", function()
+	if LFGDungeonReadyDialog:IsShown() then UpdateBar() end end)
+end

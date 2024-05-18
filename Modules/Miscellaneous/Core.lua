@@ -58,6 +58,7 @@ function Module:OnEnable()
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
 		"CreateThreatbar",
+		"CreateQueueTimer",
 	}
 	
 	C_Timer_After(0, Module.UpdateMaxCameraZoom)

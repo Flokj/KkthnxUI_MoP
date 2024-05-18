@@ -5,7 +5,7 @@ local Module = K:GetModule("Automation")
 
 local GetContainerItemInfo = C_Container.GetContainerItemInfo
 local GetContainerItemLink = C_Container.GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
+local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local UseContainerItem = C_Container.UseContainerItem
 local OPENING = OPENING
 

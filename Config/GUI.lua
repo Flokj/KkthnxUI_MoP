@@ -192,10 +192,6 @@ local function UpdateInterruptAlert()
 	K:GetModule("Announcements"):CreateInterruptAnnounce()
 end
 
-local function UpdateMaxZoomLevel()
-	K:GetModule("Miscellaneous"):UpdateMaxCameraZoom()
-end
-
 local function UpdateUnitPlayerSize()
 	local width = C["Unitframe"].PlayerHealthWidth
 	local healthHeight = C["Unitframe"].PlayerHealthHeight
