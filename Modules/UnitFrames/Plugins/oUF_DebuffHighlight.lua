@@ -3,11 +3,12 @@ local oUF = K.oUF
 
 local CanDispel = {
 	["DRUID"] = {
+		["Magic"] = false,
 		["Curse"] = true,
 		["Poison"] = true,
 	},
 	["PALADIN"] = {
-		["Magic"] = true,
+		["Magic"] = false,
 		["Poison"] = true,
 		["Disease"] = true,
 	},
@@ -16,9 +17,8 @@ local CanDispel = {
 		["Disease"] = true,
 	},
 	["SHAMAN"] = {
-		["Poison"] = true,
-		["Disease"] = true,
-		["Curse"] = IsSpellKnown(51886),
+		["Magic"] = false,
+		["Curse"] = true,
 	},
 	["MAGE"] = {
 		["Curse"] = true,
@@ -30,15 +30,6 @@ local CanDispel = {
 
 local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
-
-local DevourMagic = {
-	[19505] = "Rank 1",
-	[19731] = "Rank 2",
-	[19734] = "Rank 3",
-	[19736] = "Rank 4",
-	[27276] = "Rank 5",
-	[27277] = "Rank 6",
-}
 
 local function GetDebuffType(unit, filter)
 	if not UnitCanAssist("player", unit) then
@@ -60,10 +51,8 @@ local function GetDebuffType(unit, filter)
 	end
 end
 local function CheckPetSpells()
-	for spellID in next, DevourMagic do
-		if IsSpellKnown(spellID, true) then
-			return true
-		end
+	if IsSpellKnown(19505, true) then
+		return true
 	end
 end
 
@@ -75,8 +64,6 @@ local function CheckDispel(_, event, arg1)
 		end
 	elseif event == "CHARACTER_POINTS_CHANGED" and arg1 > 0 then
 		return -- Not interested in gained points from leveling
-	elseif K.Class == "SHAMAN" then
-		dispellist.Curse = IsSpellKnown(51886)
 	end
 end
 
