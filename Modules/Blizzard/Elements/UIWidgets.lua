@@ -6,7 +6,7 @@ local hooksecurefunc = hooksecurefunc
 local UIParent = UIParent
 
 local function topCenterPosition(self, _, b)
-	local holder = TopCenterContainerHolder
+	local holder = _G.TopCenterContainerHolder
 	if b and (b ~= holder) then
 		self:ClearAllPoints()
 		self:SetPoint("CENTER", holder)
@@ -15,7 +15,7 @@ local function topCenterPosition(self, _, b)
 end
 
 local function belowMinimapPosition(self, _, b)
-	local holder = BelowMinimapContainerHolder
+	local holder = _G.BelowMinimapContainerHolder
 	if b and (b ~= holder) then
 		self:ClearAllPoints()
 		self:SetPoint("CENTER", holder, "CENTER")
@@ -25,19 +25,6 @@ end
 
 -- Reanchor UIWidgets
 function Module:CreateUIWidgets()
-	-- Create a frame to move the UIWidgetFrame to a more desirable location
-	local frame = CreateFrame("Frame", "KKUI_WidgetMover", UIParent)
-	frame:SetSize(200, 50)
-	K.Mover(frame, "UIWidgetFrame", "UIWidgetFrame", { "TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -28 })
-
-	-- Hook the SetPoint method of UIWidgetBelowMinimapContainerFrame to make sure it's always positioned correctly
-	hooksecurefunc(UIWidgetBelowMinimapContainerFrame, "SetPoint", function(self, _, parent)
-		if parent == "MinimapCluster" or parent == MinimapCluster then
-			self:ClearAllPoints()
-			self:SetPoint("TOPRIGHT", frame)
-		end
-	end)
-
 	local topCenterContainer = _G.UIWidgetTopCenterContainerFrame
 	local belowMiniMapcontainer = _G.UIWidgetBelowMinimapContainerFrame
 
