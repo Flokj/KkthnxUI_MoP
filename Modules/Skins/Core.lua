@@ -82,6 +82,7 @@ function Module:OnEnable()
 		"ReskinDeadlyBossMods",
 		"ReskinDominos",
 		"ReskinRareScanner",
+		"TradeSkillSkin"
 	}
 
 	for _, funcName in ipairs(loadSkinModules) do

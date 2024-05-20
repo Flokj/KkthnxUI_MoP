@@ -529,6 +529,7 @@ C["Skins"] = {
 	TellMeWhen = false,
 	TitanPanel = false,
 	WeakAuras = false,
+	TradeSkills = true,
 	ObjectiveFontSize = 12,
 	QuestFontSize = 12,
 }

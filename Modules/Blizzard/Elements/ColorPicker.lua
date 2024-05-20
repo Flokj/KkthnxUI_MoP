@@ -141,6 +141,12 @@ function Module:CreateColorPicker()
 	--pickerFrame.Border:Hide()
 
 	pickerFrame:CreateBorder()
+
+	_G.ColorPickerFrameHeader:SetAlpha(0)
+	_G.ColorPickerFrameHeader:ClearAllPoints()
+	_G.ColorPickerFrameHeader:SetPoint("TOP", ColorPickerFrame, 0, 10)
+	_G.ColorPickerFrame:SetBackdrop(nil)
+	
 	_G.ColorPickerOkayButton:SkinButton()
 	_G.ColorPickerCancelButton:SkinButton()
 
