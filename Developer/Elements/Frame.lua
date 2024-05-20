@@ -147,7 +147,9 @@ do
 
 	SlashCmdList["KKTHNXUI_VER_CHECK"] = function(msg)
 		local channel
-		if IsInRaid() then
+		if IsPartyLFG() then
+			channel = "INSTANCE_CHAT"
+		elseif IsInRaid() then
 			channel = "RAID"
 		elseif IsInGuild() and not IsInGroup() then
 			channel = "GUILD"

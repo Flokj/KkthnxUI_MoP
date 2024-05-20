@@ -1,47 +1,66 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local AURA_TYPE_BUFF = _G.AURA_TYPE_BUFF
-local GetInstanceInfo = _G.GetInstanceInfo
-local GetSpellLink = _G.GetSpellLink
-local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
-local IsArenaSkirmish = _G.IsArenaSkirmish
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
+local AURA_TYPE_BUFF = AURA_TYPE_BUFF
+local GetInstanceInfo = GetInstanceInfo
+local GetSpellLink = GetSpellLink
+local IsActiveBattlefieldArena = IsActiveBattlefieldArena
+local IsArenaSkirmish = IsArenaSkirmish
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local IsPartyLFG = IsPartyLFG
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
 
 local infoType = {}
 
 local spellBlackList = {
-	[102359] = true, -- group entanglement
-	[105421] = true, -- Blind Light
-	[115191] = true, -- sneak
-	[122] = true, -- Frost Nova
-	[157997] = true, -- Ice Nova
-	[1776] = true, -- gouge
-	[1784] = true, -- sneak
-	[197214] = true, -- Earthshatter
-	[198121] = true, -- Frost Bite
-	[207167] = true, -- blinding freezing rain
-	[207685] = true, -- Sorrow Charm
-	[226943] = true, -- mind bomb
-	[228600] = true, -- Glacial Spike
-	[31661] = true, -- Dragon Breath
-	[331866] = true, -- Chaos Agent
-	[33395] = true, -- Freeze
-	[5246] = true, -- Intimidating Roar
-	[64695] = true, -- sink
-	[8122] = true, -- mind scream
-	[82691] = true, -- Ring of Frost
-	[91807] = true, -- Stagger charge
-	[99] = true, -- Reaper Roar
+	[15752] = true, -- Linken's Boomerang Disarm
+	[19647] = true, -- Spell Lock - Rank 2 (Warlock)
+	[13491] = true, -- Iron Knuckles
+	[16979] = true, -- Feral Charge (Druid)
+	[2139] = true, -- Counterspell (Mage)
+	[1766] = true, -- Kick (Rogue)
+	[26679] = true, -- Deadly Throw
+	[6552] = true, -- Pummel
+	[22570] = true, -- Maim
+	[29443] = true, -- Clutch of Foresight
+	[47528] = true, -- Mind Freeze
+	[57994] = true, -- Wind Shear
+	[26090] = true, -- Pummel (Pet)
 }
 
-local function msgChannel()
-	return UnitInBattleground("player") and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
+local function getAlertChannel()
+	local inRaid = IsInRaid()
+	local inPartyLFG = IsPartyLFG()
+
+	local _, instanceType = GetInstanceInfo()
+	if instanceType == "arena" then
+		local isSkirmish = IsArenaSkirmish()
+		local _, isRegistered = IsActiveBattlefieldArena()
+		if isSkirmish or not isRegistered then
+			inPartyLFG = true
+		end
+		inRaid = false -- IsInRaid() returns true for arenas and they should not be considered a raid
+	end
+
+	local alertChannel = C["Announcements"].AlertChannel.Value
+	local channel = "EMOTE"
+	if alertChannel == 1 then
+		channel = inPartyLFG and "INSTANCE_CHAT" or "PARTY"
+	elseif alertChannel == 2 then
+		channel = inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY")
+	elseif alertChannel == 3 and inRaid then
+		channel = inPartyLFG and "INSTANCE_CHAT" or "RAID"
+	elseif alertChannel == 4 and instanceType ~= "none" then
+		channel = "SAY"
+	elseif alertChannel == 5 and instanceType ~= "none" then
+		channel = "YELL"
+	end
+
+	return channel
 end
 
 function Module:InterruptAlert_Toggle()
@@ -58,12 +77,18 @@ function Module:InterruptAlert_IsEnabled()
 end
 
 function Module:IsAllyPet(sourceFlags)
-	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then return true end
+	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
+		return true
+	else
+		return false
+	end
 end
 
 function Module:InterruptAlert_Update(...)
 	local _, eventType, _, sourceGUID, sourceName, sourceFlags, _, _, destName, _, _, spellID, _, _, extraskillID, _, _, auraType = ...
 	if not sourceGUID or sourceName == destName then return end
+
+	local isPlayerOrAllyPet = sourceName == K.Name or Module:IsAllyPet(sourceFlags)
 
 	if UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
 		local infoText = infoType[eventType]
@@ -73,18 +98,18 @@ function Module:InterruptAlert_Update(...)
 				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then return end
 				sourceSpellID, destSpellID = extraskillID, spellID
 			elseif infoText == L["Interrupt"] then
-				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then return end
+				if C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet then return end
 				sourceSpellID, destSpellID = spellID, extraskillID
 			else
-				if C["Announcements"].OwnDispell and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then return end
+				if C["Announcements"].OwnDispell and not isPlayerOrAllyPet then return end
 				sourceSpellID, destSpellID = spellID, extraskillID
 			end
 
 			if sourceSpellID and destSpellID then
 				if infoText == L["BrokenSpell"] then
-					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), msgChannel())
+					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), getAlertChannel())
 				else
-					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), msgChannel())
+					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), getAlertChannel())
 				end
 			end
 		end
@@ -92,7 +117,7 @@ function Module:InterruptAlert_Update(...)
 end
 
 function Module:InterruptAlert_CheckGroup()
-	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance())) then
+	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsPartyLFG())) then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	else
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
@@ -103,14 +128,14 @@ function Module:CreateInterruptAnnounce()
 	Module:InterruptAlert_Toggle()
 
 	if Module:InterruptAlert_IsEnabled() then
-		self:InterruptAlert_CheckGroup()
-		K:RegisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
-		K:RegisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", self.InterruptAlert_CheckGroup)
+		Module:InterruptAlert_CheckGroup()
+		K:RegisterEvent("GROUP_LEFT", Module.InterruptAlert_CheckGroup)
+		K:RegisterEvent("GROUP_JOINED", Module.InterruptAlert_CheckGroup)
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.InterruptAlert_CheckGroup)
 	else
-		K:UnregisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
-		K:UnregisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("GROUP_LEFT", Module.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("GROUP_JOINED", Module.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.InterruptAlert_CheckGroup)
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	end
 end
