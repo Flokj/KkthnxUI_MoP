@@ -335,6 +335,10 @@ Module.LOOT_ROLLS_COMPLETE = Module.LOOT_HISTORY_ROLL_COMPLETE
 function Module:CreateGroupLoot()
 	if not C["Loot"].GroupLoot then return end
 
+	parentFrame = CreateFrame("Frame", nil, UIParent)
+	parentFrame:SetSize(RollWidth, RollHeight)
+	K.Mover(parentFrame, "GroupLootMover", "GroupLootMover", { "TOP", UIParent, 0, -30 })
+
 	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
 	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)	
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.LOOT_ROLLS_COMPLETE)
