@@ -448,7 +448,7 @@ function Module:RaidTool_BuffChecker(parent)
 					end
 					reset = not reset
 				else
-					UIErrorsFrame:AddMessage(K.InfoColor .. L["DBM Required"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. "DBM Required")
 				end
 			else
 				UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
