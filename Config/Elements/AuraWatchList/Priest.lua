@@ -7,23 +7,27 @@ end
 
 local list = {
 	["Player Aura"] = {
-		{ AuraID = 47585, UnitID = "player" },	-- Dispersion
+		{ AuraID = 586, UnitID = "player" },
 	},
 	["Target Aura"] = { 
-		{ AuraID = 34914, UnitID = "target", Caster = "player" },	-- Vampiric Touch
-		{ AuraID = 2944, UnitID = "target", Caster = "player" },	-- Devouring Plague
-		{ AuraID = 589, UnitID = "target", Caster = "player" }, 	-- Shadow Word: Pain
+		{ AuraID = 25218, UnitID = "target", Caster = "player" },
+		{ AuraID = 25222, UnitID = "target", Caster = "player" },
+		{ AuraID = 41635, UnitID = "target", Caster = "player" },
+		{ AuraID = 25384, UnitID = "target", Caster = "player" },
+		{ AuraID = 15487, UnitID = "target", Caster = "player" },
+		{ AuraID = 25368, UnitID = "target", Caster = "player" },
+		{ AuraID = 25467, UnitID = "target", Caster = "player" },
+		{ AuraID = 10890, UnitID = "target", Caster = "player" },
+		{ AuraID = 34914, UnitID = "target", Caster = "player" },
 	},
 	["Special Aura"] = {
-		{ AuraID = 33151, UnitID = "player" },	-- Surge of Light
-		{ AuraID = 63734, UnitID = "player" }, 	-- Serendipity
-		{ AuraID = 60234, UnitID = "player" }, 	-- Greatness
-		{ AuraID = 60062, UnitID = "player" }, 	-- Essence of Life
-		{ AuraID = 67696, UnitID = "player" }, 	-- Energized
-		{ AuraID = 65007, UnitID = "player" }, 	-- Eye of the Broodmother
-		{ AuraID = 75473, UnitID = "player" }, 	-- Twilight Flames (861 SPD)
-		{ AuraID = 71636, UnitID = "player" }, 	-- Siphoned Power (TBL)
-		{ AuraID = 71643, UnitID = "player" }, 	-- Surging Power (object)
+		{ AuraID = 6346,  UnitID = "player" },
+		{ AuraID = 10060, UnitID = "player" },
+		{ AuraID = 27827, UnitID = "player" },
+		{ AuraID = 25218, UnitID = "player" },
+		{ AuraID = 25222, UnitID = "player" },
+		{ AuraID = 25429, UnitID = "player" },
+		{ AuraID = 41635, UnitID = "player" },
 	},
 	["Focus Aura"] = {
 	},

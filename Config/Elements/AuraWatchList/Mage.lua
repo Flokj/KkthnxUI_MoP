@@ -7,25 +7,24 @@ end
 
 local list = {
 	["Player Aura"] = {
-		{ AuraID = 71572, UnitID = "player" },	-- Cultivated Power (Muradin's Spyglass)
-		{ AuraID = 44448, UnitID = "player" },	-- Hot Streak
-		{ AuraID = 64343, UnitID = "player" },	-- Impact
-		{ AuraID = 57761, UnitID = "player" },	-- Fireball!
-		{ AuraID = 44544, UnitID = "player" },	-- Fingers of Frost
+		{AuraID = 130, UnitID = "player"},
 	},
 	["Target Aura"] = {
-		{ AuraID = 22959, UnitID = "target" },	-- Improved Scorch
-		{ AuraID = 55360, UnitID = "target", Caster = "player" },	-- Ignite
-		{ AuraID = 12848, UnitID = "target", Caster = "player" },	-- Living Bomb
+		{ AuraID = 116,   UnitID = "target", Caster = "player" },
+		{ AuraID = 118,   UnitID = "target", Caster = "player" },
+		{ AuraID = 122,   UnitID = "target", Caster = "player" },
+		{ AuraID = 12654, UnitID = "target", Caster = "player" },
+		{ AuraID = 11366, UnitID = "target", Caster = "player" },
 	},
 	["Special Aura"] = {
-		{ AuraID = 71636, UnitID = "player" },	-- Siphoned Power (Phylactery)
-		{ AuraID = 75473, UnitID = "player" },	-- Twilight Flames
-		{ AuraID = 71643, UnitID = "player" },	-- Surging Power
-		{ AuraID = 60234, UnitID = "player" },	-- Greatness
-		{ AuraID = 60062, UnitID = "player" },	-- Essence of Life
-		{ AuraID = 12536, UnitID = "player" },	-- Clearcasting
-		{ AuraID = 54741, UnitID = "player" },	-- Firestarter
+		{ AuraID = 66, 	UnitID = "player" },
+		{ AuraID = 27131, UnitID = "player" },
+		{ AuraID = 27128, UnitID = "player" },
+		{ AuraID = 32796, UnitID = "player" },
+		{ AuraID = 45438, UnitID = "player" },
+		{ AuraID = 11129, UnitID = "player" },
+		{ AuraID = 12042, UnitID = "player" },
+		{ AuraID = 12472, UnitID = "player" },
 	},
 	["Focus Aura"] = {
 	},
