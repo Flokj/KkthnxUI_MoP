@@ -371,49 +371,48 @@ function Module:CreateClassPower(self)
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
-	local maxBar = isDK and 6 or 7
-	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
+	local bar = CreateFrame("Frame", "$parentClassPowerBar", self)
 
 	bar:SetSize(barWidth, barHeight)
 	K.Mover(bar, "ClassPower", "ClassPower", { unpack(barPoint) })
 
-	if not bar.chargeParent then
-		bar.chargeParent = CreateFrame("Frame", nil, bar)
-		bar.chargeParent:SetAllPoints()
-		bar.chargeParent:SetFrameLevel(8)
-	end
-
-	for i = 1, maxBar do
-		local statusbar = CreateFrame("StatusBar", nil, bar)
-		statusbar:SetHeight(barHeight)
-		statusbar:SetWidth((barWidth - (maxBar - 1) * 6) / maxBar)
-		statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		statusbar:SetFrameLevel(self:GetFrameLevel() + 5)
+	local bars = {}
+	for i = 1, 6 do
+		bars[i] = CreateFrame("StatusBar", nil, bar)
+		bars[i]:SetHeight(barHeight)
+		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
+		bars[i]:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
 		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
-			statusbar:CreateShadow(true)
+			bars[i]:CreateShadow(true)
 		else
-			statusbar:CreateBorder()
+			bars[i]:CreateBorder()
 		end
 
 		if i == 1 then
-			statusbar:SetPoint("BOTTOMLEFT")
+			bars[i]:SetPoint("BOTTOMLEFT")
 		else
-			statusbar:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
 
 		if isDK then
-			statusbar.timer = K.CreateFontString(statusbar, 10, "")
-		else
+			bars[i].timer = K.CreateFontString(bars[i], 10, "")
+		elseif K.Class == "ROGUE" then
+			if not bar.chargeParent then
+				bar.chargeParent = CreateFrame("Frame", nil, bar)
+				bar.chargeParent:SetAllPoints()
+				bar.chargeParent:SetFrameLevel(8)
+			end
+
 			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
-			chargeStar:SetPoint("CENTER", statusbar)
+			chargeStar:SetPoint("CENTER", bars[i])
 			chargeStar:Hide()
-			statusbar.chargeStar = chargeStar
-		end
 
-		bars[i] = statusbar
+			bars[i].chargeStar = chargeStar
+		end
 	end
 
 	if isDK then
