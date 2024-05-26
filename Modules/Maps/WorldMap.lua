@@ -311,7 +311,9 @@ function Module:OnEnable()
 	tinsert(UISpecialFrames, "WorldMapFrame")
 
 	self:MapPartyDots()
-	self:SetupCoords()
+	if C["WorldMap"].Coordinates then
+		self:SetupCoords()
+	end
 	self:MapFader()
 
 	self:CreateWowHeadLinks()

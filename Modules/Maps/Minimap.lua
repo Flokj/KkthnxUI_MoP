@@ -136,15 +136,16 @@ function Module:ReskinRegions()
 	end
 
 	-- Difficulty Flags
-	local difficultyFlags = {
-		"MiniMapInstanceDifficulty",
-	}
-
-	for _, v in pairs(difficultyFlags) do
-		local difficultyFlag = _G[v]
-		difficultyFlag:ClearAllPoints()
-		difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		difficultyFlag:SetScale(1.1)
+	local function handleFlag(diff)
+		diff:ClearAllPoints()
+		diff:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		diff:SetScale(1.1)
+	end
+	if MiniMapInstanceDifficulty then
+		handleFlag(MiniMapInstanceDifficulty)
+	end
+	if GuildInstanceDifficulty then
+		handleFlag(GuildInstanceDifficulty)
 	end
 
 	-- Tracking icon

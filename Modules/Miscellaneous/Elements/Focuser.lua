@@ -7,7 +7,7 @@ local _G = getfenv(0)
 local next, strmatch = next, string.match
 local InCombatLockdown = InCombatLockdown
 
-local modifier = "ctrl" -- shift, alt or ctrl
+local modifier = "alt" -- shift, alt or ctrl
 local mouseButton = "1" -- 1 = left, 2 = right, 3 = middle, 4 and 5 = thumb buttons if there are any
 local pending = {}
 

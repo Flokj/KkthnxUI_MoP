@@ -88,18 +88,16 @@ function Module:EnhancedTradeSkill()
 	TradeSkillCreateButton:ClearAllPoints()
 	TradeSkillCreateButton:SetPoint("RIGHT", TradeSkillCancelButton, "LEFT", -1, 0)
 	TradeSkillInvSlotDropDown:ClearAllPoints()
-	TradeSkillInvSlotDropDown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -40)
-	TradeSkillFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", 550, -70)
-
+	TradeSkillInvSlotDropDown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -60)
+	TradeSkillFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", 530, -30)
+	TradeSkillRankFrame:ClearAllPoints()
+	TradeSkillRankFrame:SetPoint("TOP", TradeSkillFrame, 0, -36)
+	TradeSkillFrameEditBox:ClearAllPoints()
+	TradeSkillFrameEditBox:SetPoint("TOP", TradeSkillFrame, -80, -70)
 	TradeSkillDetailScrollFrame:SetPoint("TOPRIGHT", -65, -105)
 
 	if C["Skins"].BlizzardFrames then
 		TradeSkillFrame:SetHeight(512)
 		TradeSkillCancelButton:SetPoint("BOTTOMRIGHT", TradeSkillFrame, "BOTTOMRIGHT", -42, 78)
-	else
-		TradeSkillFrameBottomLeftTexture:Hide()
-		TradeSkillFrameBottomRightTexture:Hide()
-		TradeSkillFrameCloseButton:ClearAllPoints()
-		TradeSkillFrameCloseButton:SetPoint("TOPRIGHT", TradeSkillFrame, "TOPRIGHT", -30, -8)
 	end
 end

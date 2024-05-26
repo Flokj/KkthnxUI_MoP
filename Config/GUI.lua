@@ -752,7 +752,7 @@ local Misc = function(self)
 	-- General Section
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
-	Window:CreateSwitch("Misc", "Focuser", "EasyFocus")	
+	Window:CreateSwitch("Misc", "Focuser", "Mouseover focus by alt")	
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide Boss Emotes"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 
