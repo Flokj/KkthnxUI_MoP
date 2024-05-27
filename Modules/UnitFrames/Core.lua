@@ -320,21 +320,18 @@ local function SetStatusBarColor(element, r, g, b)
 end
 
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
-	local prevColor = element.prevColor
-	local thisColor
-
 	if not cur or cur == 0 then
-		thisColor = nil
+		element.prevColor = nil
 	else
-		thisColor = cur == max and 1 or 2
-		if not prevColor or prevColor ~= thisColor then
+		element.thisColor = cur == max and 1 or 2
+		if not element.prevColor or element.prevColor ~= element.thisColor then
 			local r, g, b = 1, 0, 0
-			if thisColor == 2 then
+			if element.thisColor == 2 then
 				local color = element.__owner.colors.power[powerType]
 				r, g, b = color[1], color[2], color[3]
 			end
 			SetStatusBarColor(element, r, g, b)
-			element.prevColor = thisColor
+			element.prevColor = element.thisColor
 		end
 	end
 
@@ -346,7 +343,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 		end
 	end
 
-	for i = 1, 7 do
+	for i = 1, 6 do
 		local bar = element[i]
 		if not bar.chargeStar then
 			break
