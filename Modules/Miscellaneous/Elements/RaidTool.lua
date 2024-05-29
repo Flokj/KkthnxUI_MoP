@@ -14,9 +14,9 @@ local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKe
 local UnitExists, UninviteUnit = UnitExists, UninviteUnit
 local DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus = DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus
 local C_Timer_After = C_Timer.After
-local LeaveParty = C_PartyInfo.LeaveParty
-local ConvertToRaid = C_PartyInfo.ConvertToRaid
-local ConvertToParty = C_PartyInfo.ConvertToParty
+local LeaveParty = LeaveParty
+local ConvertToRaid = ConvertToRaid
+local ConvertToParty = ConvertToParty
 local EnableAddOn = EnableAddOn
 local LoadAddOn = LoadAddOn
 
