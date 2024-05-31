@@ -3,13 +3,13 @@ local C = KkthnxUI[2]
 -- Reminder Buffs Checklist
 C.SpellReminderBuffs = {
 	MAGE = {
-		{
-			spells = { -- 奥术智慧
+		{	spells = {
 				[1459] = true,
-				[8096] = true, -- 智力卷轴
-				[79058] = true, -- 奥术光辉
-				[61316] = true, -- 达拉然光辉
-				--[46302] = true, -- 基鲁的胜利之歌
+				[8096] = true,
+				[79058] = true,
+				[61024] = true,
+				[61316] = true,
+				--[46302] = true,
 			},
 			texture = GetSpellTexture(1459),
 			depend = 1459,
@@ -17,34 +17,33 @@ C.SpellReminderBuffs = {
 			instance = true,
 			pvp = true,
 		},
-		{
-			spells = {
-				[168] = true, -- 霜甲术
-				[7302] = true, -- 冰甲术
-				[6117] = true, -- 法师护甲
-				[30482] = true, -- 熔岩护甲
+		{	spells = {
+				[7302] = true,
+				[6117] = true,
+				[30482] = true,
 			},
-			depend = 168,
+			depend = 7302,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
 	},
 	PRIEST = {
-		{
-			spells = { -- 真言术耐
-				[1243] = true,
-				[8099] = true, -- 耐力卷轴
-				[21562] = true, -- 坚韧祷言
-				--[46302] = true, -- 基鲁的胜利之歌
+		{	spells = {
+				[21562] = true,
+				[8099] = true,
+				[469] = true,
+				[6307] = true,
+				[90364] = true,
+				[72590] = true,
 			},
+			texture = GetSpellTexture(21562),
 			depend = 1243,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
-		{
-			spells = { -- 心灵之火
+		{	spells = {
 				[48168] = true,
 			},
 			depend = 48168,
@@ -54,18 +53,15 @@ C.SpellReminderBuffs = {
 		},
 	},
 	DRUID = {
-		{
-			spells = { -- 野性印记
+		{	spells = {
 				[1126] = true,
-				[21849] = true, -- 野性赐福
 			},
 			depend = 1126,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
-		{
-			spells = { --- 荆棘术
+		{	spells = {
 				[467] = true,
 			},
 			depend = 467,
@@ -73,26 +69,32 @@ C.SpellReminderBuffs = {
 		},
 	},
 	WARRIOR = {
-		{
-			spells = {
-				[6673] = true, -- 战斗怒吼
-				[19740] = true, -- 力量祝福
+		{	spells = {
+				[6673] = true,
+				[8076] = true,
+				[57330] = true,
+				[93435] = true,	
 			},
-			depends = { 6673, 5242, 6192, 11549, 11550, 11551, 25289, 2048, 47436 },
+			texture = GetSpellTexture(6673),
+			depend = 6673,
 			gemini = {
-				[GetSpellInfo(469)] = true, -- 命令怒吼
+				[GetSpellInfo(469)] = true,
 			},
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
-		{
-			spells = { -- 命令怒吼
+		{	spells = {
 				[469] = true,
+				[6307] = true,
+				[90364] = true,
+				[72590] = true,
+				[21562] = true,
 			},
+			texture = GetSpellTexture(469),
 			depend = 469,
 			gemini = {
-				[GetSpellInfo(6673)] = true, -- 战斗怒吼
+				[GetSpellInfo(6673)] = true,
 			},
 			combat = true,
 			instance = true,
@@ -100,18 +102,16 @@ C.SpellReminderBuffs = {
 		},
 	},
 	HUNTER = {
-		{
-			spells = { -- 雄鹰守护
+		{	spells = {
 				[13165] = true,
-				[61846] = true, -- 龙鹰
+				[61846] = true,
 			},
 			depend = 13165,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
-		{
-			spells = { --- 强击光环
+		{	spells = {
 				[19506] = true,
 			},
 			depend = 19506,
@@ -121,24 +121,30 @@ C.SpellReminderBuffs = {
 		},
 	},
 	WARLOCK = {
-		{
-			spells = {
-				[28176] = true, -- 邪甲术
-				[706] = true, -- 魔甲术
-				[687] = true, -- 恶魔皮肤
+		{	spells = {
+				[28176] = true,
+				[687] = true,
 			},
 			depend = 28176,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
+		{	spells = {
+				[85759] = true,
+			},
+			depend = 85759,
+			instance = true,
+		},
 	},
 	DEATHKNIGHT = {
-		{
-			spells = {
-				[57330] = true, -- 寒冬号角
-				[25527] = true, -- 大地之力图腾
+		{	spells = {
+				[57330] = true,
+				[8076] = true,
+				[6673] = true,
+				[93435] = true,
 			},
+			texture = GetSpellTexture(57330),
 			depend = 57330,
 			combat = true,
 			instance = true,
@@ -146,11 +152,19 @@ C.SpellReminderBuffs = {
 		},
 	},
 	PALADIN = {
-		{
-			spells = { -- 正义之怒
+		{	spells = {
 				[25780] = true,
 			},
 			depend = 20925,
+			instance = true,
+		},
+	},
+	SHAMAN = {
+		{	spells = {
+				[52127] = true,
+				[324] = true,
+			},
+			depend = 52127,
 			instance = true,
 		},
 	},

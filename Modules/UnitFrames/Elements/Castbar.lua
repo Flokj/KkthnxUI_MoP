@@ -13,50 +13,46 @@ local UnitName = UnitName
 local YOU = YOU
 
 local channelingTicks = {
-	-- Death Knight
-	[42650]	= 8, 	-- Army of the Dead
-	--Druid
-	[740]		= 4, 	-- Tranquility
-	[16914]	= 10,	-- Hurricane
-	-- Mage
-	[10]		= 8, 	-- Blizzard
-	[5143]	= 3, 	-- Arcane Missiles	
-	[12051]	= 4, 	-- Evocation
-	-- Priest
-	[15407]	= 3, 	-- Mind Flay
-	[64843]	= 4, 	-- Divine Hymn
-	[64901]	= 4, 	-- Hymn of Hope
-	[48045]	= 5, 	-- Mind Sear
-	[47540]	= 2, 	-- Penance (Dummy)
-	[47750]	= 2, 	-- Penance (Heal A)
-	[47757]	= 2, 	-- Penance (Heal B)
-	[47666]	= 2, 	-- Penance (DPS A)
-	[47758]	= 2, 	-- Penance (DPS B)	
 	-- Warlock
-	[1120]	= 5, 	-- Drain Soul
+	[1120]	= 5,  -- Drain Soul
+	[689]		= 5,  -- Drain Life
+	[5740]	= 4,  -- Rain of Fire
 	[755]		= 10, -- Health Funnel
-	[689]		= 5, 	-- Drain Life
-	[5740]	= 4, 	-- Rain of Fire	
-	[1949]	= 15,	-- Hellfire
-	[79268] 	= 3, 	-- Soul Harvest
+	[79268]	= 3,  -- Soul Harvest
+	[1949]	= 15, -- Hellfire
+	-- Druid
+	[740]		= 4,  -- Tranquility
+	[16914]	= 10, -- Hurricane
+	-- Priest
+	[15407]	= 3, -- Mind Flay
+	[48045]	= 5, -- Mind Sear
+	[47540]	= 3, -- Penance
+	[64901]	= 4, -- Hymn of Hope
+	[64843]	= 4, -- Divine Hymn
+	-- Mage
+	[5143]	= 5, -- Arcane Missiles
+	[10]		= 8, -- Blizzard
+	[12051]	= 4, -- Evocation
+	-- Death Knight
+	[42650]	= 8, -- Army of the Dead
 	-- First Aid
-	[45544]	= 8, 	-- Heavy Frostweave Bandage
-	[45543]	= 8, 	-- Frostweave Bandage
-	[27031]	= 8, 	-- Heavy Netherweave Bandage
-	[27030]	= 8, 	-- Netherweave Bandage
-	[23567]	= 8, 	-- Warsong Gulch Runecloth Bandage
-	[23696]	= 8, 	-- Alterac Heavy Runecloth Bandage
-	[24414]	= 8, 	-- Arathi Basin Runecloth Bandage
-	[18610]	= 8, 	-- Heavy Runecloth Bandage
-	[18608]	= 8, 	-- Runecloth Bandage
-	[10839]	= 8, 	-- Heavy Mageweave Bandage
-	[10838]	= 8, 	-- Mageweave Bandage
-	[7927]	= 8, 	-- Heavy Silk Bandage
-	[7926]	= 8, 	-- Silk Bandage
-	[3268]	= 7, 	-- Heavy Wool Bandage
-	[3267]	= 7, 	-- Wool Bandage
-	[1159]	= 6, 	-- Heavy Linen Bandage
-	[746]		= 6, 	-- Linen Bandage
+	[45544]	= 8, -- Heavy Frostweave Bandage
+	[45543]	= 8, -- Frostweave Bandage
+	[27031]	= 8, -- Heavy Netherweave Bandage
+	[27030]	= 8, -- Netherweave Bandage
+	[23567]	= 8, -- Warsong Gulch Runecloth Bandage
+	[23696]	= 8, -- Alterac Heavy Runecloth Bandage
+	[24414]	= 8, -- Arathi Basin Runecloth Bandage
+	[18610]	= 8, -- Heavy Runecloth Bandage
+	[18608]	= 8, -- Runecloth Bandage
+	[10839]	= 8, -- Heavy Mageweave Bandage
+	[10838]	= 8, -- Mageweave Bandage
+	[7927]	= 8, -- Heavy Silk Bandage
+	[7926]	= 8, -- Silk Bandage
+	[3268]	= 7, -- Heavy Wool Bandage
+	[3267]	= 7, -- Wool Bandage
+	[1159]	= 6, -- Heavy Linen Bandage
+	[746]		= 6  -- Linen Bandage
 }
 
 local function CreateAndUpdateBarTicks(bar, ticks, numTicks)

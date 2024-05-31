@@ -1,59 +1,54 @@
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
--- By Tukz, for Tukui
-
 local Tracker = {
 	-- PRIEST
-	[21562] = { 1, 1, 0.66 }, -- Prayer of Fortitude
-	[27683] = { 0.7, 0.7, 0.7 }, -- Prayer of Shadow Protection
-	[17] = { 0.00, 0.00, 1.00 }, -- Power Word: Shield
-	[139] = { 0.33, 0.73, 0.75 }, -- Renew
+	[17]    = { 0.00, 0.00, 1.00 }, -- Power Word: Shield
+	[139]	  = { 0.33, 0.73, 0.75 }, -- Renew
+	[6788]  = { 0.89, 0.1, 0.1 },   -- Weakened Soul
+	[41635] = { 0.2, 0.7, 0.2 },    -- Prayer of Mending
+	[10060] = { 0.17, 1.00, 0.45 }, -- Power Infusion
+	[47788] = { 0.17, 1.00, 0.45 }, -- Guardian Spirit
+	[33206] = { 0.17, 1.00, 0.45 }, -- Pain Suppression
 
 	-- HUNTER
-	[19506] = { 0.89, 0.09, 0.05 }, -- Trueshot Aura 
-	[13159] = { 0.00, 0.00, 0.85 }, -- Aspect of the Pack
-	[20043] = { 0.33, 0.93, 0.79 }, -- Aspect of the Wild 
+	[34477] = { 0.17, 1.00, 0.45 }, -- Misdirection
 
 	-- MAGE
-	[1459] = { 0.89, 0.09, 0.05 }, -- Arcane Intellect
-	[130] = { 0.00, 0.00, 0.50 }, -- Slow Fall
+	[130]	  = { 0.00, 0.00, 0.50 }, -- Slow Fall
+	[54646] = { 0.17, 1.00, 0.45 }, -- Focus Magic
 
 	-- PALADIN
-	[1044] = { 0.89, 0.45, 0 }, -- Blessing of Freedom
-	[6940] = { 0.89, 0.1, 0.1 }, -- Blessing Sacrifice
-	[19740] = { 0.2, 0.8, 0.2 }, -- Blessing of Might
-	[465] = { 0.58, 1.00, 0.50 }, -- Devotion Aura
-	[1022] = { 0.17, 1.00, 0.75 }, -- Blessing of Protection
-	[19746] = { 0.83, 1.00, 0.07 }, -- Concentration Aura
-	[32223] = { 0.83, 1.00, 0.07 }, -- Crusader Aura
+	[1044]	= { 0.89, 0.45, 0 }, 	-- Hand of Freedom
+	[1038]	= { 0.11, 1.00, 0.45 }, -- Hand of Salvation
+	[6940]	= { 0.89, 0.1, 0.1 }, 	-- Hand of Sacrifice
+	[1022]	= { 0.17, 1.00, 0.75 }, -- Hand of Protection
+	[53563]	= { 0.7, 0.3, 0.7 }, 	-- Beacon of Light
 
 	-- DRUID
-	[1126] = { 0.2, 0.8, 0.8 }, -- Mark of the Wild
-	[467] = { 0.4, 0.2, 0.8 }, -- Thorns
-	[774] = { 0.83, 1.00, 0.25 }, -- Rejuvenation
-	[8936] = { 0.33, 0.73, 0.75 }, -- Regrowth
-	[29166] = { 0.49, 0.60, 0.55 }, -- Innervate
-	[33763] = { 0.33, 0.37, 0.47 }, -- Lifebloom
+	[467]		= { 0.4, 0.2, 0.8 }, 	-- Thorns
+	[774]		= { 0.83, 1.00, 0.25 }, -- Rejuvenation
+	[8936]	= { 0.33, 0.73, 0.75 }, -- Regrowth
+	[29166]	= { 0.49, 0.60, 0.55 }, -- Innervate
+	[33763]	= { 0.33, 0.37, 0.47 }, -- Lifebloom
+	[48438]	= { 0.8, 0.4, 0 }, 		-- Wild Growth
 
 	-- SHAMAN
-	[974] = { 0.2, 0.2, 1 }, -- Earth Shield
-	[8185] = { 0.05, 1.00, 0.50 }, -- Fire Resistance Totem
-	[5672] = { 0.67, 1.00, 0.50 }, -- Healing Stream Totem
-	[5677] = { 0.67, 1.00, 0.80 }, -- Mana Spring Totem
-	[8072] = { 0.00, 0.00, 0.26 }, -- Stoneskin Totem
-	[8076] = { 0.78, 0.61, 0.43 }, -- Strength of Earth Totem
-	[2895] = { 1.00, 1.00, 1.00 }, -- Wrath of Air Totem
+	[16177] = { 0.2, 0.2, 1 }, 		-- Ancestral Fortitude
+	[974]	  = { 0.08, 0.21, 0.43 },  -- Earth Shield
+	[61295] = { 0.7, 0.3, 0.7 },  	-- Riptide
+	[51945] = { 0.7, 0.3, 0.7 },  	-- Earthliving
 
 	-- WARLOCK
-	[5597] = { 0.89, 0.09, 0.05 }, -- Unending Breath
-	[6512] = { 0.2, 0.8, 0.2 }, -- Detect Lesser Invisibility
-	[6307] = { 0.89, 0.09, 0.05 }, -- Blood Pact
-	[24604] = { 0.08, 0.59, 0.41 }, -- Furious Howl
+	[5697]	= { 0.89, 0.09, 0.05 }, -- Unending Breath
+	[20707]	= { 0.00, 0.00, 0.85 }, -- Soulstone
 
 	-- WARRIOR
-	[6673] = { 0.2, 0.2, 1 }, -- Battle Shout
-	[469] = { 0.4, 0.2, 0.8 }, -- Commanding Shout
+	[3411]	= { 0.2, 0.2, 1 }, 	-- Intervene
+	[50720]	= { 0.4, 0.2, 0.8 }, -- Vigilance
+
+	-- Hunter Pets
+	[136]	= { 0.08, 0.59, 0.41 }, -- Mend Pet
 }
 
 -- Declare a local function to handle the OnUpdate event

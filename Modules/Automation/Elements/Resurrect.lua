@@ -66,12 +66,9 @@ local function SetupAutoResurrect(_, arg1)
 end
 
 function Module:CreateAutoResurrect()
-	-- Check if the player is in a battleground or arena and if player is dead or ghost
-	if IsActiveBattlefieldArena() and UnitIsDeadOrGhost("player") then
-		-- Check the value of AutoResurrect
-		if C["Automation"].AutoResurrect then
-			-- Register the event
-			K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
-		end
+	-- Check the value of AutoResurrect
+	if C["Automation"].AutoResurrect then
+		-- Register the event
+		K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
 	end
 end
