@@ -224,7 +224,7 @@ function Module:OnTooltipSetUnit()
 	end
 
 	if isPlayer then
-	--	Module.InspectUnitItemLevel(self, unit)
+		Module.InspectUnitItemLevel(self, unit)
 	end
 
 	self.StatusBar:SetStatusBarColor(r, g, b)

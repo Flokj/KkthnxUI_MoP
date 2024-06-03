@@ -319,45 +319,10 @@ local function ToggleBackpacks(self)
 	if parent.BagBar:IsShown() then
 		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-		if parent.keyring and parent.keyring:IsShown() then
-			parent.keyToggle:Click()
-		end
 	else
 		K.SetBorderColor(self.KKUI_Border)
 		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 	end
-end
-
-function Module:CreateKeyToggle()
-	local KeyRingButton = CreateFrame("Button", nil, self)
-	KeyRingButton:SetSize(18, 18)
-	KeyRingButton:CreateBorder()
-	KeyRingButton:StyleButton()
-
-	KeyRingButton.Icon = KeyRingButton:CreateTexture(nil, "ARTWORK")
-	KeyRingButton.Icon:SetAllPoints()
-	KeyRingButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	KeyRingButton.Icon:SetTexture("Interface\\ICONS\\INV_Misc_Key_12")
-
-	KeyRingButton:SetScript("OnClick", function()
-		ToggleFrame(self.keyring)
-		if self.keyring:IsShown() then
-			KeyRingButton.KKUI_Border:SetVertexColor(1, 0.8, 0)
-			PlaySound(SOUNDKIT.KEY_RING_OPEN)
-			if self.BagBar and self.BagBar:IsShown() then
-				self.bagToggle:Click()
-			end
-		else
-			K.SetBorderColor(KeyRingButton.KKUI_Border)
-			PlaySound(SOUNDKIT.KEY_RING_CLOSE)
-		end
-	end)
-
-	KeyRingButton.title = KEYRING
-	K.AddTooltip(KeyRingButton, "ANCHOR_TOP")
-	self.keyToggle = KeyRingButton
-
-	return KeyRingButton
 end
 
 function Module:CreateBagToggle()
@@ -942,12 +907,6 @@ function Module:OnEnable()
 		f.main:SetPoint(unpack(f.main.__anchor))
 		f.main:SetFilter(filters.onlyBags, true)
 
-		local keyring = MyContainer:New("Keyring", { BagType = "Bag", Parent = f.main })
-		keyring:SetFilter(filters.onlyKeyring, true)
-		keyring:SetPoint("TOPRIGHT", f.main, "BOTTOMRIGHT", 0, -5)
-		keyring:Hide()
-		f.main.keyring = keyring
-
 		for i = 1, 5 do
 			AddNewContainer("Bank", i, "BankCustom" .. i, filters["bankCustom" .. i])
 		end
@@ -1251,8 +1210,6 @@ function Module:OnEnable()
 			label = BAG_FILTER_JUNK
 		elseif string_match(name, "Collection") then
 			label = COLLECTIONS
-		elseif name == "Keyring" then
-			label = KEYRING
 		elseif string_match(name, "Goods") then
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
@@ -1274,11 +1231,10 @@ function Module:OnEnable()
 		if name == "Bag" then
 			Module.CreateBagBar(self, settings, 4)			
 			buttons[3] = Module.CreateBagToggle(self)
-			buttons[4] = Module.CreateKeyToggle(self)
-			buttons[5] = Module.CreateSplitButton(self)
-			buttons[6] = Module.CreateFavouriteButton(self)
-			buttons[7] = Module.CreateJunkButton(self)
-			buttons[8] = Module.CreateDeleteButton(self)
+			buttons[4] = Module.CreateSplitButton(self)
+			buttons[5] = Module.CreateFavouriteButton(self)
+			buttons[6] = Module.CreateJunkButton(self)
+			buttons[7] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
 			Module.CreateBagBar(self, settings, 7)
 			buttons[3] = Module.CreateBagToggle(self)
@@ -1394,4 +1350,21 @@ function Module:OnEnable()
 	-- Fixes
 	BankFrame.GetRight = function() return f.bank:GetRight() end
 	BankFrameItemButton_Update = K.Noop
+
+	SetCVar("professionToolSlotsExampleShown", 1)
+	SetCVar("professionAccessorySlotsExampleShown", 1)
+
+	-- Shift Key Alert
+	local function CheckShiftKey(self, elapsed)
+		if IsShiftKeyDown() then
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if self.elapsed > 5 then
+				UIErrorsFrame:AddMessage(K.InfoColor .. "Please check if your SHIFT key is pressed or stuck.")
+				self.elapsed = 0
+			end
+		end
+	end
+
+	local shiftKeyUpdater = CreateFrame("Frame", nil, f.main)
+	shiftKeyUpdater:SetScript("OnUpdate", CheckShiftKey)
 end

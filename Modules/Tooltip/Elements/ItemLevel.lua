@@ -194,7 +194,8 @@ function Module:InspectUnit(unit, forced)
 end
 
 function Module:InspectUnitItemLevel(unit)
-	if C["Tooltip"].SpecLevelByShift and not IsShiftKeyDown() then return end
+	if not C["Tooltip"].SpecLevelByShift then return end
+	if not IsShiftKeyDown() then return end
 
 	if not unit or not CanInspect(unit) then return end
 	currentUNIT, currentGUID = unit, UnitGUID(unit)

@@ -5,18 +5,18 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local UIParent = UIParent
 
-local function topCenterPosition(self, _, b)
+local function topCenterPosition(self, _, anchor)
 	local holder = _G.TopCenterContainerHolder
-	if b and (b ~= holder) then
+	if anchor and (anchor ~= holder) then
 		self:ClearAllPoints()
 		self:SetPoint("CENTER", holder)
 		self:SetParent(holder)
 	end
 end
 
-local function belowMinimapPosition(self, _, b)
+local function belowMinimapPosition(self, _, anchor)
 	local holder = _G.BelowMinimapContainerHolder
-	if b and (b ~= holder) then
+	if anchor and (anchor ~= holder) then
 		self:ClearAllPoints()
 		self:SetPoint("CENTER", holder, "CENTER")
 		self:SetParent(holder)

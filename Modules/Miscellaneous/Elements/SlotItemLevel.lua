@@ -233,13 +233,13 @@ local function GetItemSlotLevel(unit, index)
 end
 
 local function GetILvlTextColor(level)
-	if level >= 368 then
+	if level >= 372 then
 		return 1, .5, 0
-	elseif level >= 354 then
+	elseif level >= 359 then
 		return .63, .2, .93
-	elseif level >= 341 then
+	elseif level >= 346 then
 		return 0, .43, .87
-	elseif level >= 321 then
+	elseif level >= 272 then
 		return .12, 1, 0
 	else
 		return 1, 1, 1
