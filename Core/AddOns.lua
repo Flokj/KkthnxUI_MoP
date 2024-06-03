@@ -3,49 +3,10 @@ local Module = K:GetModule("Installer")
 
 local table_wipe = table.wipe
 
---[[ local function ForceZygorOptions()
--- 	if not IsAddOnLoaded("Zygor") then
--- 		return
--- 	end
-
--- 	if Zygor then
--- 		table_wipe(Zygor)
--- 	end
--- end
-
-local function ForceMaxDPSOptions()
-	if not IsAddOnLoaded("MaxDps") then
-		return
-	end
-
-	if MaxDpsOptions then
-		table_wipe(MaxDpsOptions)
-	end
-
-	MaxDpsOptions = {
-		["global"] = {
-			["customRotations"] = {},
-			["customTexture"] = "Interface\\BUTTONS\\CheckButtonHilight-Blue",
-			["debugMode"] = false,
-			["disableButtonGlow"] = true,
-			["disabledInfo"] = true,
-			["sizeMult"] = 1.8,
-			["texture"] = "Interface\\Cooldown\\star4",
-		},
-	}
-
-	KkthnxUIDB.Variables["MaxDpsRequest"] = false
-end
-
 -- DBM bars
 local function ForceDBMOptions()
-	if not IsAddOnLoaded("DBM-Core") then
-		return
-	end
-
-	if DBT_AllPersistentOptions then
-		table_wipe(DBT_AllPersistentOptions)
-	end
+	if not IsAddOnLoaded("DBM-Core") then return end
+	if DBT_AllPersistentOptions then table_wipe(DBT_AllPersistentOptions) end
 
 	DBT_AllPersistentOptions = {
 		["Default"] = {
@@ -79,9 +40,7 @@ local function ForceDBMOptions()
 		},
 	}
 
-	if not _DBM_AllSavedOptions["Default"] then
-		_DBM_AllSavedOptions["Default"] = {}
-	end
+	if not DBM_AllSavedOptions["Default"] then DBM_AllSavedOptions["Default"] = {} end
 	DBM_AllSavedOptions["Default"]["WarningY"] = -170
 	DBM_AllSavedOptions["Default"]["WarningX"] = 0
 	DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
@@ -92,86 +51,12 @@ local function ForceDBMOptions()
 	DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
 	DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
 
-	KkthnxUIDB.Variables["DBMRequest"] = false
-end
-
--- Skada
-local function ForceSkadaOptions()
-	if not IsAddOnLoaded("Skada") then
-		return
-	end
-
-	if SkadaDB then
-		table_wipe(SkadaDB)
-	end
-
-	SkadaDB = {
-		["hasUpgraded"] = true,
-		["profiles"] = {
-			["Default"] = {
-				["windows"] = {
-					{
-						["barheight"] = 18,
-						["classicons"] = false,
-						["barslocked"] = true,
-						["y"] = 28,
-						["x"] = -3,
-						["title"] = {
-							["color"] = {
-								["a"] = 0.3,
-								["b"] = 0,
-								["g"] = 0,
-								["r"] = 0,
-							},
-							["font"] = "",
-							["borderthickness"] = 0,
-							["fontflags"] = "OUTLINE",
-							["fontsize"] = 14,
-							["texture"] = "normTex",
-						},
-						["barfontflags"] = "OUTLINE",
-						["point"] = "BOTTOMRIGHT",
-						["mode"] = "",
-						["barwidth"] = 300,
-						["barbgcolor"] = {
-							["a"] = 0,
-							["b"] = 0,
-							["g"] = 0,
-							["r"] = 0,
-						},
-						["barfontsize"] = 14,
-						["background"] = {
-							["height"] = 180,
-							["texture"] = "None",
-							["bordercolor"] = {
-								["a"] = 0,
-							},
-						},
-						["bartexture"] = "KKUI_Statusbar",
-					}, -- [1]
-				},
-				["tooltiprows"] = 10,
-				["setstokeep"] = 30,
-				["tooltippos"] = "topleft",
-				["reset"] = {
-					["instance"] = 3,
-					["join"] = 1,
-				},
-			},
-		},
-	}
-
-	KkthnxUIDB.Variables["SkadaRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = false
 end
 
 local function ForceCursorTrail()
-	if not IsAddOnLoaded("CursorTrail") then
-		return
-	end
-
-	if CursorTrail_PlayerConfig then
-		table_wipe(CursorTrail_PlayerConfig)
-	end
+	if not IsAddOnLoaded("CursorTrail") then return end
+	if CursorTrail_PlayerConfig then table_wipe(CursorTrail_PlayerConfig) end
 
 	CursorTrail_PlayerConfig = {
 		["FadeOut"] = false,
@@ -186,20 +71,14 @@ local function ForceCursorTrail()
 		["Strata"] = "HIGH",
 	}
 
-	KkthnxUIDB.Variables["CursorTrailRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = false
 end
 
 -- BigWigs
 local function ForceBigwigs()
-	if not IsAddOnLoaded("BigWigs") then
-		return
-	end
-
-	if BigWigs3DB then
-		table_wipe(BigWigs3DB)
-	end
-
-	BigWigs3DB = {
+	if not IsAddOnLoaded("BigWigs") then return end
+	if BigWigsClassicDB then table_wipe(BigWigsClassicDB) end
+	BigWigsClassicDB = {
 		["namespaces"] = {
 			["BigWigs_Plugins_Bars"] = {
 				["profiles"] = {
@@ -275,29 +154,11 @@ local function ForceBigwigs()
 			},
 		},
 	}
-
-	KkthnxUIDB.Variables["BWRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].BWRequest = false
 end
 
 function Module:ForceAddonSkins()
-	if KkthnxUIDB.Variables["DBMRequest"] then
-		ForceDBMOptions()
-	end
-
-	if KkthnxUIDB.Variables["SkadaRequest"] then
-		ForceSkadaOptions()
-	end
-
-	if KkthnxUIDB.Variables["BWRequest"] then
-		ForceBigwigs()
-	end
-
-	if KkthnxUIDB.Variables["MaxDpsRequest"] then
-		ForceMaxDPSOptions()
-	end
-
-	if KkthnxUIDB.Variables["CursorTrailRequest"] then
-		ForceCursorTrail()
-	end
+	if KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest then ForceDBMOptions() end
+	if KkthnxUIDB.Variables[K.Realm][K.Name].BWRequest then ForceBigwigs() end
+	if KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest then ForceCursorTrail() end
 end
-]]

@@ -525,8 +525,9 @@ local function YesTutor()
 		elseif currentPage == 4 then
 			StopSound(21968)
 			KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest or true
-			KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest or true
+			KkthnxUIDB.Variables[K.Realm][K.Name].BWRequest = KkthnxUIDB.Variables[K.Realm][K.Name].BWRequest or true
 			KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest or true
+			Module.ForceAddonSkins()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the relevant AddOn Settings.")
 			pass:Hide()
 			PlaySound(21968)
@@ -706,6 +707,7 @@ function Module:OnEnable()
 	print(K.Title .. " " .. K.GreyColor .. K.Version .. "|r " .. K.SystemColor .. K.Client .. "|r")
 
 	-- Tutorial and settings
+	Module.ForceAddonSkins()
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		HelloWorld()
 	else
