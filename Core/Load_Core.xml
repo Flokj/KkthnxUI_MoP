@@ -14,6 +14,6 @@
    <Script file="CheckVersion.lua"/>
    <Script file="GUI.lua"/>
    <Script file="Profiles.lua"/>
-   <!--Script file="AddOns.lua"/-->
+   <Script file="AddOns.lua"/>
    <Script file="StatusReport.lua"/>
 </Ui>

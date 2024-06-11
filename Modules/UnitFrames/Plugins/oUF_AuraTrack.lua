@@ -10,6 +10,7 @@ local Tracker = {
 	[10060] = { 0.17, 1.00, 0.45 }, -- Power Infusion
 	[47788] = { 0.17, 1.00, 0.45 }, -- Guardian Spirit
 	[33206] = { 0.17, 1.00, 0.45 }, -- Pain Suppression
+	[56161] = { 1.0, 1.0, 1.0 }, 	  -- Glyph of Prayer of Healing
 
 	-- HUNTER
 	[34477] = { 0.17, 1.00, 0.45 }, -- Misdirection
