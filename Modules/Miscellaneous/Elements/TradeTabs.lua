@@ -1,7 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
-local pairs, unpack, tinsert, select = pairs, unpack, tinsert, select
+local pairs, tinsert, select = pairs, tinsert, select
 local GetSpellCooldown, GetSpellInfo, GetItemCooldown = GetSpellCooldown, GetSpellInfo, GetItemCooldown
 local IsPassiveSpell = C_Spell and C_Spell.IsSpellPassive or IsPassiveSpell
 local GetSpellBookItemInfo = C_SpellBook and C_SpellBook.GetSpellBookItemInfo or GetSpellBookItemInfo
@@ -12,7 +12,7 @@ local C_TradeSkillUI_GetRecipeInfo, C_TradeSkillUI_GetTradeSkillLine = C_TradeSk
 local C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes, C_TradeSkillUI.SetOnlyShowSkillUpRecipes
 local C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes, C_TradeSkillUI.SetOnlyShowMakeableRecipes
 
-local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION or 0-- isWW
+local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION or 0
 local RUNEFORGING_ID = 53428
 local PICK_LOCK = 1804
 local CHEF_HAT = 134020
@@ -30,7 +30,7 @@ local onlyPrimary = {
 
 function Module:UpdateProfessions()
 	local prof1, prof2, _, _, cook, fistaid = GetProfessions()
-	local profs = {prof1, prof2, fistaid, cook}
+	local profs = { prof1, prof2, fistaid, cook }
 
 	if K.Class == "DEATHKNIGHT" then
 		Module:TradeTabs_Create(RUNEFORGING_ID)
@@ -104,8 +104,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	end
 	if not name then return end -- precaution
 
-	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SecureActionButtonTemplate")
-	tab:SetSize(32, 32)
+	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
 	tab.spellID = spellID
 	tab.itemID = toyID or itemID
@@ -113,13 +112,13 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab:RegisterForClicks("AnyDown")
 	if spellID == 818 then -- cooking fire
 		tab:SetAttribute("type", "macro")
-		tab:SetAttribute("macrotext", "/cast [@player]"..name)
+		tab:SetAttribute("macrotext", "/cast [@player]" .. name)
 	else
 		tab:SetAttribute("type", tab.type)
 		tab:SetAttribute(tab.type, spellID or name)
 	end
 	tab:SetNormalTexture(texture)
-	tab:GetHighlightTexture():SetVertexColor(1, 1, 1, .25)
+	tab:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 	tab:Show()
 
 	tab.CD = CreateFrame("Cooldown", nil, tab, "CooldownFrameTemplate")
@@ -129,25 +128,25 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.cover:SetAllPoints()
 	tab.cover:EnableMouse(true)
 
-	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -30, -index * 42)
+	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", 3, -index * 42)
 	tinsert(tabList, tab)
 	index = index + 1
 end
 
 function Module:TradeTabs_FilterIcons()
 	local buttonList = {
-		[1] = {"Atlas:bags-greenarrow", TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes},
-		[2] = {"Interface\\RAIDFRAME\\ReadyCheck-Ready", CRAFT_IS_MAKEABLE, C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes},
+		[1] = { "Atlas:bags-greenarrow", TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes },
+		[2] = { "Interface\\RAIDFRAME\\ReadyCheck-Ready", CRAFT_IS_MAKEABLE, C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes },
 	}
 
 	local function filterClick(self)
 		local value = self.__value
 		if value[3]() then
 			value[4](false)
-			self.KKUI_Background:SetVertexColor(38 / 255, 125 / 255, 206 / 255, 80 / 255)
+			self.KKUI_Border:SetVertexColor(1, 1, 1)
 		else
 			value[4](true)
-			self.KKUI_Background:SetBackdropBorderColor(1, .8, 0)
+			self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 		end
 	end
 
@@ -155,7 +154,17 @@ function Module:TradeTabs_FilterIcons()
 	for index, value in pairs(buttonList) do
 		local bu = CreateFrame("Button", nil, TradeSkillFrame, "BackdropTemplate")
 		bu:SetSize(22, 22)
-		bu:SetPoint("BOTTOMRIGHT", TradeSkillFrameCloseButton, "TOPRIGHT", -(index-1)*27, 10)
+		bu:SetPoint("BOTTOMRIGHT", TradeSkillFrameCloseButton, "TOPRIGHT", -(index - 1) * 27, 10)
+		bu:CreateBorder()
+		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+		local atlas = string.match(value[1], "Atlas:(.+)$")
+		if atlas then
+			bu.Icon:SetAtlas(atlas)
+		else
+			bu.Icon:SetTexture(value[1])
+		end
+		bu.Icon:SetAllPoints()
+		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		K.AddTooltip(bu, "ANCHOR_TOP", value[2])
 		bu.__value = value
 		bu:SetScript("OnClick", filterClick)
@@ -166,9 +175,9 @@ function Module:TradeTabs_FilterIcons()
 	local function updateFilterStatus()
 		for index, value in pairs(buttonList) do
 			if value[3]() then
-				buttons[index].KKUI_Background:SetBackdropBorderColor(1, .8, 0)
+				buttons[index].KKUI_Border:SetVertexColor(1, 0.8, 0)
 			else
-				buttons[index].KKUI_Background:SetVertexColor(38 / 255, 125 / 255, 206 / 255, 80 / 255)
+				buttons[index].KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 	end
