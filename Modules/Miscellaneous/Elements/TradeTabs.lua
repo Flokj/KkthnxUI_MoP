@@ -128,7 +128,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.cover:SetAllPoints()
 	tab.cover:EnableMouse(true)
 
-	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", 3, -index * 42)
+	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", -34, -index * 42)
 	tinsert(tabList, tab)
 	index = index + 1
 end
