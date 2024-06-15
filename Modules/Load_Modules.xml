@@ -174,7 +174,6 @@
    <Include file="Skins\Addons\TradeSkillFrame.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!--Include file="Skins\Addons\ChocolateBar.lua" />
-   <Include file="Skins\Addons\LortiTextures.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <Include file="Skins\Addons\Immersion.lua" />
    <Include file="Skins\Addons\OPie.lua" />

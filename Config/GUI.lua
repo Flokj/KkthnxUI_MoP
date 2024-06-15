@@ -771,6 +771,7 @@ local Misc = function(self)
 	-- Mail Section
 	Window:CreateSection("Mail")
 	Window:CreateSwitch("Misc", "EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox")
+	Window:CreateSwitch("Misc", "MailSaver", "Mail Saver (Save mail recipient)")
 
 	-- Questing Section
 	Window:CreateSection("Questing")

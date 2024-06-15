@@ -31,6 +31,7 @@ local function KKUI_VerifyDatabase()
 	charData.Mover = charData.Mover or {}
 	charData.RevealWorldMap = charData.RevealWorldMap or false
 	charData.SplitCount = charData.SplitCount or 1
+	charData.ContactList = charData.ContactList or {}
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
 
