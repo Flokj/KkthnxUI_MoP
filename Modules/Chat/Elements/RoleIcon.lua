@@ -21,9 +21,9 @@ local ChatMSG = {
 
 -- Role icon textures
 local IconTex = {
+	DAMAGER = "",
+	HEALER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
 	TANK = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Tank.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
-	HEALER	= "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
-	DAMAGER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Damager.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
 }
 
 -- Get colored name with role icon
@@ -32,19 +32,23 @@ local function GetChatRoleIcons(event, arg1, arg2, ...)
 	local ret = GetColoredName(event, arg1, arg2, ...)
 	if ChatMSG[event] then
 		local playerRole = UnitGroupRolesAssigned(arg2)
-		if playerRole == "NONE" and arg2:match(" *- *".. K.Realm .."$") then
-			playerRole = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$",""))
+		-- Check role for player on same realm
+		if playerRole == "NONE" and arg2:match(" *- *" .. K.Realm .. "$") then
+			playerRole = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$", ""))
 		end
-		if playerRole and playerRole ~= "NONE" then
-			ret = IconTex[playerRole]..""..ret
+
+		if playerRole and IconTex[playerRole] then
+			ret = { IconTex[playerRole], ret }
+			ret = table.concat(ret)
 		end
 	end
+
 	return ret
 end
 
 -- Create chat role icons
 function Module:CreateChatRoleIcon()
-	if not C["Chat"].RoleIcons then return	end
+	if not C["Chat"].RoleIcons then return end
 
 	_G.GetColoredName = GetChatRoleIcons
 end
