@@ -391,6 +391,29 @@ function Module:QuickMouseScroll(dir)
 end
 hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 
+--	Alt Click to Invite player
+function AltClickInvite(link)
+	if IsAltKeyDown() then
+		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
+		local player = link:match("^player:([^:]+)")
+		local bplayer = link:match("^BNplayer:([^:]+)")
+		if player then
+			C_PartyInfo.InviteUnit(player)
+		elseif bplayer then
+			local _, value = strmatch(link, "(%a+):(.+)")
+			local _, bnID = strmatch(value, "([^:]*):([^:]*):")
+			if not bnID then return end
+			local accountInfo = C_BattleNet.GetAccountInfoByID(bnID)
+			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
+				BNInviteFriend(accountInfo.gameAccountInfo.gameAccountID)
+			end
+		end
+		ChatEdit_OnEscapePressed(ChatFrameEditBox) -- Secure hook opens whisper, so closing it.
+	end
+end
+
+hooksecurefunc("SetItemRef", AltClickInvite)
+
 -- Sticky whisper
 function Module:ChatWhisperSticky()
 	if C["Chat"].Sticky then
@@ -511,6 +534,7 @@ function Module:OnEnable()
 		"CreateChatHistory",
 		"CreateChatItemLevels",
 		"CreateChatRename",
+		"CreateChatRoleIcon",
 		"CreateCopyChat",
 		"CreateCopyURL",
 		"CreateEmojis",

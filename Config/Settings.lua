@@ -244,6 +244,7 @@ C["Chat"] = {
 	Lock = true,
 	LogMax = 0,
 	OldChatNames = false,
+	RoleIcons = true,
 	Sticky = false,
 	WhisperColor = true,
 	Width = 400,
