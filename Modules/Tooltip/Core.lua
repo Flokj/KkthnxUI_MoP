@@ -148,6 +148,25 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
+		if C["Tooltip"].LFDRole then
+			local unitColor
+			local unitRole = UnitGroupRolesAssigned(unit)
+			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (unitRole ~= "NONE") then
+				if unitRole == "HEALER" then
+					unitRole = HEALER
+					unitColor = "|cff00ff96" -- RGB: 0, 255, 150
+				elseif unitRole == "TANK" then
+					unitRole = TANK
+					unitColor = "|cff2850a0" -- RGB: 40, 80, 160
+				elseif unitRole == "DAMAGER" then
+					unitRole = DAMAGE
+					unitColor = "|cffc41f3b" -- RGB: 196, 31, 59
+				end
+
+				self:AddLine(ROLE .. ": " .. unitColor .. unitRole .. "|r")
+			end
+		end
+
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()
 		if guildName and hasText then

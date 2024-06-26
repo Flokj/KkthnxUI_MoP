@@ -274,3 +274,15 @@ oUF.Tags.Methods["cureclipse"] = function(unit)
 	return format(textFormat, (max == 0 and 0) or math.abs(UnitPower("player", POWERTYPE_BALANCE)))
 end
 oUF.Tags.Events["cureclipse"] = "UNIT_POWER_FREQUENT ECLIPSE_DIRECTION_CHANGE"
+
+oUF.Tags.Methods["lfdrole"] = function(unit)
+	local role = UnitGroupRolesAssigned(unit)
+	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" or role ~= "DAMAGER") then
+		if role == "HEALER" then
+			return "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer.tga:12:12:0:0:64:64:5:59:5:59|t"
+		elseif role == "TANK" then
+			return "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank.tga:12:12:0:0:64:64:5:59:5:59|t"
+		end
+	end
+end
+oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

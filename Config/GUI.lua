@@ -923,7 +923,6 @@ local Tooltip = function(self)
 	Window:CreateSection("Appearance")
 	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "FactionIcon", L["Show Faction Icon"])
-	Window:CreateSwitch("Tooltip", "SpecLevelByShift", "Show iLvl by SHIFT")
 	Window:CreateSwitch("Tooltip", "HideRank", L["Hide Guild Rank"])
 	Window:CreateSwitch("Tooltip", "HideRealm", L["Show realm name by SHIFT"])
 	Window:CreateSwitch("Tooltip", "HideTitle", L["Hide Player Title"])
@@ -931,6 +930,8 @@ local Tooltip = function(self)
 
 	-- Advanced section
 	Window:CreateSection("Advanced")
+	Window:CreateSwitch("Tooltip", "LFDRole", L["Show Roles Assigned Icon"])
+	Window:CreateSwitch("Tooltip", "SpecLevelByShift", L["Show Spec/ItemLevel by SHIFT"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
 	Window:CreateDropdown("Tooltip", "CursorMode", L["Follow Cursor"])
 end
