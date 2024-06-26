@@ -22,8 +22,8 @@ local ChatMSG = {
 -- Role icon textures
 local IconTex = {
 	DAMAGER = "",
-	HEALER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
-	TANK = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Tank.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
+	HEALER = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer.tga:12:12:0:0:64:64:5:59:5:59|t",
+	TANK = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank.tga:12:12:0:0:64:64:5:59:5:59|t",
 }
 
 -- Get colored name with role icon
