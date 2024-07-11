@@ -517,8 +517,8 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(22, 22)
-	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 4, -2)
+	bu:SetSize(18, 18)
+	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 12, 5)
 	bu:SkinButton()
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")

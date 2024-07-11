@@ -111,7 +111,7 @@ C["Announcements"] = {
 	OnlyCompleteRing = false,
 	OwnDispell = false,
 	OwnInterrupt = false,
-	PullCountdown = false,
+	PullCountdown = true,
 	PvPEmote = false,
 	QuestNotifier = false,
 	QuestProgress = false,
@@ -533,6 +533,7 @@ C["Skins"] = {
 	TitanPanel = false,
 	WeakAuras = false,
 	TradeSkills = true,
+	Trainers = true,
 	ObjectiveFontSize = 12,
 	QuestFontSize = 12,
 }

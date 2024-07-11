@@ -60,7 +60,6 @@ C.NameplateWhiteList = {
     [24394] = true, -- Intimidation(pet)
     [50519] = true, -- Sonic Blast (Bat)
     [50541] = true, -- Snatch (Bird of Prey)
-    [50518] = true, -- Ravage (Ravager)
 
     --[35101] = true, -- Concussive Barrage(Himera shot(-50 move.speed/4s))
     --[5116]  = true, -- Concussive Shot(-50 move.speed/4s-6s)

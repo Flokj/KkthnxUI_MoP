@@ -894,6 +894,7 @@ local Skins = function(self)
 	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
 	Window:CreateSwitch("Skins", "Skada", L["Skada Skin"])
 	Window:CreateSwitch("Skins", "TradeSkills", "EnhancedTradeSkills")
+	Window:CreateSwitch("Skins", "Trainers", "EnhancedTrainers")
 	--Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
