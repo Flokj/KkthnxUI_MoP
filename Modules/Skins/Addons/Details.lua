@@ -2,9 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 local function SetupInstance(instance)
-	if instance.styled then
-		return
-	end
+	if instance.styled then return end
 
 	-- if window is hidden on init, show it and hide later
 	if not instance.baseframe then
@@ -30,9 +28,7 @@ local function SetupInstance(instance)
 end
 
 local function EmbedWindow(instance, x, y, width, height)
-	if not instance.baseframe then
-		return
-	end
+	if not instance.baseframe then return end
 
 	instance.baseframe:ClearAllPoints()
 	instance.baseframe:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", x, y)
@@ -48,9 +44,7 @@ end
 
 local function IsDefaultAnchor(instance)
 	local frame = instance and instance.baseframe
-	if not frame then
-		return
-	end
+	if not frame then return end
 
 	local relF, _, relT, x, y = frame:GetPoint()
 	return (relF == "CENTER" and relT == "CENTER" and isDefaultOffset(x) and isDefaultOffset(y))
@@ -58,9 +52,7 @@ end
 
 function Module:ResetDetailsAnchor(force)
 	local Details = _G.Details
-	if not Details then
-		return
-	end
+	if not Details then return end
 
 	local height = 126
 	local instance1 = Details:GetInstance(1)
@@ -77,9 +69,7 @@ function Module:ResetDetailsAnchor(force)
 end
 
 local function ReskinDetails()
-	if not C["Skins"].Details then
-		return
-	end
+	if not C["Skins"].Details then return end
 
 	local Details = _G.Details
 	-- instance table can be nil sometimes

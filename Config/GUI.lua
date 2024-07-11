@@ -883,7 +883,6 @@ local Skins = function(self)
 
 	Window:CreateSection("AddOn Skins")
 	Window:CreateSwitch("Skins", "AtlasLoot", "AtlasLoot Skin")
-	--Window:CreateSwitch("Skins", "LortiTextures", "LortiUI Textures")
 	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	Window:CreateSwitch("Skins", "ButtonForge", L["ButtonForge Skin"])
@@ -895,7 +894,6 @@ local Skins = function(self)
 	Window:CreateSwitch("Skins", "Skada", L["Skada Skin"])
 	Window:CreateSwitch("Skins", "TradeSkills", "EnhancedTradeSkills")
 	Window:CreateSwitch("Skins", "Trainers", "EnhancedTrainers")
-	--Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
 	Window:CreateSection("Font Tweaks")
@@ -903,11 +901,7 @@ local Skins = function(self)
 	--Window:CreateSlider("Skins", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
 
 	-- Disabled / Broken Skins
-	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
-	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
-	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
-	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
-	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])
+	--Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 end
 
 local Tooltip = function(self)

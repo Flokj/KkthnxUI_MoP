@@ -5,14 +5,10 @@ local Tooltip = K:GetModule("Tooltip")
 -- Function to skin the RareScanner addon
 function Module:ReskinRareScanner()
 	-- Check if RareScanner is loaded
-	if not IsAddOnLoaded("RareScanner") then
-		return
-	end
+	if not IsAddOnLoaded("RareScanner") then return end
 
 	-- Check if the RareScanner skin is enabled
-	if not C["Skins"].RareScanner then
-		return
-	end
+	if not C["Skins"].RareScanner then return end
 
 	-- Check if the scanner button exists and has a ModelView component
 	local scannerButton = _G["scanner_button"]

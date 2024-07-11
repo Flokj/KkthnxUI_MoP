@@ -2,15 +2,11 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinDominos()
-	if not C["Skins"].Dominos then
-		return
-	end
+	if not C["Skins"].Dominos then return end
 
 	local function StyleNormalDominosButton(self)
 		local name = self:GetName()
-		if name:match("ExtraActionButton") then
-			return
-		end
+		if name:match("ExtraActionButton") then return end
 
 		local button = self
 		local icon = _G[name .. "Icon"]
@@ -63,9 +59,7 @@ function Module:ReskinDominos()
 	end
 
 	local function StyleSmallDominosButton(button, icon, name, hotkey, pet)
-		if not button then
-			return
-		end
+		if not button then return end
 		local flash = _G[name .. "Flash"]
 		button:StyleButton()
 		button:SetNormalTexture(0)

@@ -2,9 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinBartender4()
-	if not C["Skins"].Bartender4 then
-		return
-	end
+	if not C["Skins"].Bartender4 then return end
 
 	local function StyleNormalBartender4Button(self)
 		local name = self:GetName()
@@ -63,9 +61,7 @@ function Module:ReskinBartender4()
 	end
 
 	local function StyleSmallBartender4Button(button, icon, name, hotkey, pet)
-		if not button then
-			return
-		end
+		if not button then return end
 
 		local flash = _G[name .. "Flash"]
 		button:StyleButton()

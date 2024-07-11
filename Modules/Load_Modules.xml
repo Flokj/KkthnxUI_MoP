@@ -160,7 +160,6 @@
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\TradeSkillFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\EnhanceTrainers.lua" />
-   <!--Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" /-->
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\AtlasLoot.lua" />
    <Include file="Skins\Addons\Bartender4.lua" />
@@ -171,16 +170,8 @@
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
-   <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\Skada.lua" />
-   <Include file="Skins\Addons\BugSack.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!--Include file="Skins\Addons\ChocolateBar.lua" />
-   <Include file="Skins\Addons\WeakAuras.lua" />
-   <Include file="Skins\Addons\Immersion.lua" />
-   <Include file="Skins\Addons\OPie.lua" />
-   <Include file="Skins\Addons\RaiderIO.lua" />
-   <Include file="Skins\Addons\Spy.lua" />
-   <Include file="Skins\Addons\TellMeWhen.lua" />
-   <Include file="Skins\Addons\TitanPanel.lua" /> -->
+   <!--Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Addons\BugSack.lua" /> -->
 </Ui>

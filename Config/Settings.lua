@@ -515,7 +515,6 @@ C["Nameplate"] = {
 -- Skins
 C["Skins"] = {
 	AtlasLoot = false,
-	LortiTextures = false,
 	Bartender4 = false,
 	BigWigs = false,
 	BlizzardFrames = true,
@@ -528,9 +527,6 @@ C["Skins"] = {
 	Dominos = false,
 	RareScanner = false,
 	Skada = true,
-	Spy = false,
-	TellMeWhen = false,
-	TitanPanel = false,
 	WeakAuras = false,
 	TradeSkills = true,
 	Trainers = true,

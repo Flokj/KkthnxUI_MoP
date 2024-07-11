@@ -14,9 +14,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local buttonsize = 24
 
 local function ReskinDBMIcon(icon, frame)
-	if not icon then
-		return
-	end
+	if not icon then return end
 
 	if not icon.styled then
 		icon:SetSize(buttonsize, buttonsize)
@@ -39,9 +37,7 @@ local function ReskinDBMIcon(icon, frame)
 end
 
 local function ReskinDBMBar(bar, frame)
-	if not bar then
-		return
-	end
+	if not bar then return end
 
 	if not bar.styled then
 		bar:StripTextures()
@@ -130,13 +126,8 @@ function Module:ReskinDeadlyBossMods()
 		return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo)
 	end
 
-	if not IsAddOnLoaded("DBM-Core") then
-		return
-	end
-
-	if not C["Skins"].DeadlyBossMods then
-		return
-	end
+	if not IsAddOnLoaded("DBM-Core") then return end
+	if not C["Skins"].DeadlyBossMods then return end
 
 	hooksecurefunc(DBT, "CreateBar", function(self)
 		for bar in self:GetBarIterator() do

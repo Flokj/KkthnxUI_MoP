@@ -2,13 +2,8 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinChocolateBar()
-	if not C["Skins"].ChocolateBar then
-		return
-	end
-
-	if not (K.CheckAddOnState("ChocolateBar")) then
-		return
-	end
+	if not C["Skins"].ChocolateBar then return end
+	if not (K.CheckAddOnState("ChocolateBar")) then return end
 
 	for i = 1, 20 do
 		local chocolateFrame = _G["ChocolateBar" .. i]

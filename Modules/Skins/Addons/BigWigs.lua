@@ -102,13 +102,8 @@ local styleData = {
 }
 
 function Module:RegisterBigWigs()
-	if not C["Skins"].BigWigs then
-		return
-	end
-
-	if not BigWigsAPI then
-		return
-	end
+	if not C["Skins"].BigWigs then return end
+	if not BigWigsAPI then return end
 
 	BigWigsAPI:RegisterBarStyle("KkthnxUI", styleData)
 
@@ -124,9 +119,7 @@ function Module:RegisterBigWigs()
 end
 
 function Module:ReskinBigWigs()
-	if not C["Skins"].BigWigs then
-		return
-	end
+	if not C["Skins"].BigWigs then return end
 
 	if BigWigsLoader then
 		BigWigsLoader.RegisterMessage("KkthnxUI", "BigWigs_FrameCreated", function(_, frame, name)
