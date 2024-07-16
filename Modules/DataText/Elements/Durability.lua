@@ -117,16 +117,13 @@ end
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then return end
 
-	--if CharacterFrameTitleText then CharacterFrameTitleText:Hide() end
-
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
-	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
-	DurabilityDataText:SetParent(PaperDollFrame)
+	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, { 102 / 255, 157 / 255, 255 / 255 })
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("TOP", PaperDollFrame, "TOP", 3, -27)
+	DurabilityDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 0, -280)
 	DurabilityDataText.Text:SetFontObject(K.UIFont)
-	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 11, select(3, DurabilityDataText.Text:GetFont()))
+	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 12, select(3, DurabilityDataText.Text:GetFont()))
 
 	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
@@ -137,4 +134,6 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetScript("OnEvent", OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
+
+	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end

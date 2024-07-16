@@ -30,7 +30,7 @@ function Module:TrainerSkin()
 end
 
 function Module:EnhancedTrainer()
-		-- Size the frame
+	-- Size the frame
 	_G["ClassTrainerFrame"]:SetSize(714, 487 + tall)
 
 	-- Lower title text slightly
@@ -181,6 +181,11 @@ function Module:EnhancedTrainer()
       	GameTooltip:Show()
    	end
    end)
+
+	-- Hide tooltip when the mouse leaves the button
+	trainAllButton:SetScript("OnLeave", function(self)
+		GameTooltip:Hide()
+	end)
 
    -- Button click handler
    trainAllButton:SetScript("OnClick", function(self)
