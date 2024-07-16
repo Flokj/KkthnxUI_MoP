@@ -650,6 +650,7 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
+	Window:CreateSwitch("DataText", "SlotDurability", L["Show Slot Durability %"])
 
 	-- Section: Icon Colors
 	Window:CreateSection("Icon Colors")
@@ -755,7 +756,6 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "Focuser", "Mouseover focus by alt")	
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide Boss Emotes"])
-	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 
 	Window:CreateSection("Camera")
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 3.4, 0.1, nil, UpdateMaxZoomLevel)

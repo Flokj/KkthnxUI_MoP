@@ -115,7 +115,7 @@ local function OnLeave()
 end
 
 function Module:CreateDurabilityDataText()
-	if not C["Misc"].SlotDurability then return end
+	if not C["DataText"].SlotDurability then return end
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, { 102 / 255, 157 / 255, 255 / 255 })
