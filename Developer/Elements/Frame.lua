@@ -73,15 +73,13 @@ _G.SLASH_KKTHNXUI_ENUMFRAME1 = "/getframe"
 SlashCmdList["KKTHNXUI_DUMPSPELL"] = function(arg)
 	local name, _, icon, _, _, _, spellID = GetSpellInfo(arg)
 	if not name then
-		print("Please enter a spell name --> /getspell SPELLNAME")
+		print("Please enter a spell ID --> /getspell ID")
 		return
 	end
 
-	local des = GetSpellDescription(spellID)
 	local link = GetSpellLink(spellID)
 	print(K.InfoColor .. "------------------------")
-	print(" \124T" .. GetSpellTexture(spellID) .. ":16:16:::64:64:5:59:5:59\124t", K.InfoColor .. (link or "nil"))
-	print(DESCRIPTION, K.InfoColor .. (des or "nil"))
+	print(" |T" .. GetSpellTexture(spellID) .. ":16:16:::64:64:5:59:5:59|t", K.InfoColor .. (link or "nil"))
 	print(K.InfoColor .. "------------------------")
 end
 _G.SLASH_KKTHNXUI_DUMPSPELL1 = "/getspell"
