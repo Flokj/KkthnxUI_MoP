@@ -149,7 +149,7 @@
    <!-- Skins Blizzard -->
    <Include file="Skins\Core.lua" />
    <Include file="Skins\Blizzard\InspectUI.lua" />
-   <Include file="Skins\Blizzard\WorldMap.lua" />
+   <!--Include file="Skins\Blizzard\WorldMap.lua" /-->
    <!-- Skins FrameXML -->
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />

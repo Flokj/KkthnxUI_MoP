@@ -159,12 +159,12 @@ function Module:CreateBoss()
 	self.Debuffs.initialAnchor = "RIGHT"
 	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.num = 5
-	self.Debuffs.iconsPerRow = 5
+	self.Debuffs.num = 4
+	self.Debuffs.iconsPerRow = 4
 
-	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(bossWidth - 24, self.Debuffs, self.Debuffs.num)
 
-	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs.onlyShowPlayer = true --C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateButton = Module.PostCreateButton
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 

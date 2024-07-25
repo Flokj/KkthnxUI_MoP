@@ -91,7 +91,7 @@ function Module:CreateTargetOfTarget()
 		elseif targetOfTargetPortraitStyle == "ThreeDPortraits" then
 			Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
-			Portrait:SetSize(Health:GetHeight()+6, Health:GetHeight()+6)-- + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
+			Portrait:SetSize(Health:GetHeight(), Health:GetHeight())-- + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
 		else
