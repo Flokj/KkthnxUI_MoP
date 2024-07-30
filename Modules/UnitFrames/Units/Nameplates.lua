@@ -55,9 +55,9 @@ function Module:UpdatePlateCVars()
 	if InCombatLockdown() then return end
 
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
-	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
+		SetCVar("nameplateOtherTopInset", 0.10)
+		SetCVar("nameplateOtherBottomInset", 0.12)
+	elseif GetCVar("nameplateOtherTopInset") == "0.10" and GetCVar("nameplateOtherBottomInset") == "0.12" then
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
 	end
@@ -83,11 +83,8 @@ function Module:UpdateClickableSize()
 	if InCombatLockdown() then return end
 
 	local uiScale = C["General"].UIScale
-	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
-	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
-
-	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
+	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
 end
 
 function Module:SetupCVars()
@@ -673,7 +670,7 @@ function Module:CreatePlates()
 	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
 	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
-	self.Castbar:SetHeight(self:GetHeight() + 6)
+	self.Castbar:SetHeight(self:GetHeight())
 	self.Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	self.Castbar:SetFrameLevel(10)
 	self.Castbar:CreateShadow(true)
@@ -840,7 +837,7 @@ end
 
 function Module:RefreshNameplats()
 	for nameplate in pairs(platesList) do
-		Module.UpdateNameplateSize(nameplate)
+		--Module.UpdateNameplateSize(nameplate)
 		Module.UpdateUnitClassify(nameplate)
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
@@ -920,7 +917,7 @@ function Module:UpdatePlateByType()
 		end
 	end
 	
-	Module.UpdateNameplateSize(self)
+	--Module.UpdateNameplateSize(self)
 	Module.UpdateTargetIndicator(self)
 	Module.ToggleNameplateAuras(self)
 end
