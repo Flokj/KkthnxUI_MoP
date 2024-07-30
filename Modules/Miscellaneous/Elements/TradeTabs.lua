@@ -143,7 +143,7 @@ function Module:TradeTabs_FilterIcons()
 		local value = self.__value
 		if value[3]() then
 			value[4](false)
-			self.KKUI_Border:SetVertexColor(1, 1, 1)
+			K.SetBorderColor(self.KKUI_Border)
 		else
 			value[4](true)
 			self.KKUI_Border:SetVertexColor(1, 0.8, 0)
@@ -177,7 +177,7 @@ function Module:TradeTabs_FilterIcons()
 			if value[3]() then
 				buttons[index].KKUI_Border:SetVertexColor(1, 0.8, 0)
 			else
-				buttons[index].KKUI_Border:SetVertexColor(1, 1, 1)
+				K.SetBorderColor(buttons[index].KKUI_Border)
 			end
 		end
 	end
@@ -209,7 +209,7 @@ local function LoadTradeTabs()
 	end
 end
 
-function Module:TradeTabs()
+function Module:CreateTradeTabs()
 	if not C["Misc"].TradeTabs then return end
 	if TradeSkillFrame then
 		TradeSkillFrame:HookScript("OnShow", LoadTradeTabs)
@@ -221,4 +221,4 @@ function Module:TradeTabs()
 		end)
 	end
 end
-Module:RegisterMisc("TradeTabs", Module.TradeTabs)
+Module:RegisterMisc("TradeTabs", Module.CreateTradeTabs)

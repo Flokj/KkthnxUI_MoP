@@ -20,6 +20,9 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
+local ButtonInventorySlot = ButtonInventorySlot
+local BANK_CONTAINER = BANK_CONTAINER or -1
+local REAGENTBANK_CONTAINER = REAGENTBANK_CONTAINER or -3
 local SplitContainerItem = C_Container.SplitContainerItem
 
 --[[!
@@ -35,8 +38,14 @@ local ItemButton = cargBags:NewClass("ItemButton", nil, "Button")
 ]]
 function ItemButton:GetTemplate(bagID)
 	bagID = bagID or self.bagId
-	return (bagID == -3 and "ReagentBankItemButtonGenericTemplate") or (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "ItemButtonTemplate",
-      (bagID == -3 and ReagentBankFrame) or (bagID == -1 and BankFrame) or (bagID and _G["ContainerFrame"..bagID + 1]) or ContainerFrame1;
+	return (bagID == REAGENTBANK_CONTAINER and "ReagentBankItemButtonGenericTemplate")
+		or (bagID == BANK_CONTAINER and "BankItemButtonGenericTemplate")
+		or (bagID and "ContainerFrameItemButtonTemplate")
+		or "ItemButtonTemplate",
+      (bagID == REAGENTBANK_CONTAINER and ReagentBankFrame)
+      or (bagID == BANK_CONTAINER and BankFrame)
+      or (bagID and _G["ContainerFrame"..bagID + 1])
+      or ContainerFrame1;
 end
 
 local mt_gen_key = {
@@ -131,5 +140,5 @@ end
 	@return item <table>
 ]]
 function ItemButton:GetInfo(item)
-	return self.implementation:GetItemInfo(self.bagId, self.slotId, item)
+	return self.implementation:GetCustomItemInfo(self.bagId, self.slotId, item)
 end

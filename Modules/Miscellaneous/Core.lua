@@ -47,7 +47,6 @@ function Module:OnEnable()
 	-- Second loop: Iterating over loadMiscModules
 	local loadMiscModules = {
 		"NakedIcon",
-		"CreateBlockStrangerInvites",
 		"CreateBossEmote",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
@@ -91,12 +90,40 @@ function Module:OnEnable()
 
 	-- Instant delete
 	local function modifyDeleteDialog()
-		local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
-		if deleteDialog.OnShow then
-			hooksecurefunc(deleteDialog, "OnShow", function(self)
-				self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-			end)
+		-- Modify DELETE_GOOD_ITEM text to get the confirmation type
+		local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
+		local _, confirmationType = strsplit("@", confirmationText, 2)
+
+		-- Add hyperlinks to regular item destroy
+		local function setHyperlinkHandlers(dialog)
+			dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
+			dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
 		end
+
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
+
+		-- Create frame to handle events
+		local deleteConfirmationFrame = CreateFrame("FRAME")
+		deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
+		deleteConfirmationFrame:SetScript("OnEvent", function()
+			local staticPopup = StaticPopup1
+			local editBox = StaticPopup1EditBox
+			local button = StaticPopup1Button1
+			local popupText = StaticPopup1Text
+
+			-- Check if edit box is shown
+			if editBox:IsShown() then
+				staticPopup:SetHeight(staticPopup:GetHeight() - 14)
+				editBox:Hide()
+				button:Enable()
+			else
+				staticPopup:SetHeight(staticPopup:GetHeight() + 40)
+				editBox:Hide()
+				button:Enable()
+			end
+		end)
 	end
 	modifyDeleteDialog()
 
@@ -246,13 +273,13 @@ local function Button_OnClick()
 end
 
 function Module:CreateGUIGameMenuButton()
-	local bu = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
-	bu:SetText(K.Title)
-	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -14)
-	bu:SetScript("OnClick", Button_OnClick)
-	bu:SkinButton()
+	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
+	gameMenuButton:SetText(K.Title)
+	gameMenuButton:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -14)
+	gameMenuButton:SetScript("OnClick", Button_OnClick)
+	gameMenuButton:SkinButton()
 
-	Module.GameMenuButton = bu
+	Module.GameMenuButton = gameMenuButton
 
 	_G.GameMenuFrame:HookScript("OnShow", MainMenu_OnShow)
 end
@@ -502,16 +529,6 @@ do
 	end
 
 	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
-end
-
-function Module:CreateBlockStrangerInvites()
-	K:RegisterEvent("PARTY_INVITE_REQUEST", function(a, b, c, d, e, f, g, guid)
-		if C["Automation"].AutoBlockStrangerInvites and not (BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
-			_G.DeclineGroup()
-			_G.StaticPopup_Hide("PARTY_INVITE")
-			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
-		end
-	end)
 end
 
 -- Get Naked

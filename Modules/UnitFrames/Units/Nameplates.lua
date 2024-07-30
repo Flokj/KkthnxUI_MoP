@@ -54,13 +54,13 @@ local NPClassifies = {
 function Module:UpdatePlateCVars()
 	if InCombatLockdown() then return end
 
-	local topInset, bottomInset = -1, -1
 	if C["Nameplate"].InsideView then
-		topInset, bottomInset = 0.10, 0.12
+		SetCVar("nameplateOtherTopInset", 0.05)
+		SetCVar("nameplateOtherBottomInset", 0.08)
+	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
+		SetCVar("nameplateOtherTopInset", -1)
+		SetCVar("nameplateOtherBottomInset", -1)
 	end
-
-	SetCVar("nameplateOtherTopInset", topInset)
-	SetCVar("nameplateOtherBottomInset", bottomInset)
 
 	local settings = {
 		namePlateMinScale = C["Nameplate"].MinScale,
@@ -83,8 +83,11 @@ function Module:UpdateClickableSize()
 	if InCombatLockdown() then return end
 
 	local uiScale = C["General"].UIScale
-	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
+	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
+	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
+
+	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
 end
 
 function Module:SetupCVars()
@@ -421,10 +424,10 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local questProgress
+	local startLooking, isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
 	local prevDiff = 0
-	local data = C_TooltipInfo.GetUnit(unit)
 
+	local data = C_TooltipInfo.GetUnit(unit)
 	if data then
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
@@ -440,8 +443,9 @@ function Module:UpdateQuestUnit(_, unit)
 							prevDiff = diff
 						end
 					elseif progress and prevDiff == 0 then
-						questProgress = progress .. "%"
-						break -- Exit loop if progress is found
+						if floor(100 - progress) > 0 then
+							questProgress = progress .. "%" -- lower priority on progress, keep looking
+						end
 					end
 				end
 			end
@@ -450,12 +454,12 @@ function Module:UpdateQuestUnit(_, unit)
 
 	if questProgress then
 		self.questCount:SetText(questProgress)
-		self.questIcon:SetAtlas("pvptalents-warmode-swords")
+		self.questIcon:SetAtlas("UI-HUD-MicroMenu-Questlog-Up")
 		self.questIcon:Show()
 	else
 		self.questCount:SetText("")
 		if isLootQuest then
-			self.questIcon:SetAtlas("QuestNormal")
+			self.questIcon:SetAtlas("adventureguide-microbutton-alert")
 			self.questIcon:Show()
 		else
 			self.questIcon:Hide()
@@ -467,15 +471,15 @@ function Module:AddQuestIcon(self)
 	if not C["Nameplate"].QuestIndicator then return end
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-	self.questIcon:SetSize(28, 25)
-	self.questIcon:SetAtlas("QuestNormal")
+	self.questIcon:SetPoint("LEFT", self, "RIGHT", -6, 0)
+	self.questIcon:SetSize(26, 32)
+	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
 	self.questIcon:Hide()
 
-	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
-	-- Fired whenever the quest log changes. (Frequently, but not as frequently as QUEST_LOG_UPDATE)
-	--self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", Module.UpdateQuestUnit, true)
+	self.questCount = K.CreateFontString(self, 14, "", nil, "LEFT", 0, 0)
+	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -3, 0)
+
+	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)
@@ -669,7 +673,7 @@ function Module:CreatePlates()
 	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
 	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
-	self.Castbar:SetHeight(self:GetHeight())
+	self.Castbar:SetHeight(self:GetHeight() + 6)
 	self.Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	self.Castbar:SetFrameLevel(10)
 	self.Castbar:CreateShadow(true)
@@ -811,10 +815,10 @@ function Module:UpdateNameplateSize()
 
 	-- self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
 	if self.plateType == "NameOnly" then
-		self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
+		self:Tag(self.nameText, "[nprare][color][name] [nplevel]")
 		self.npcTitle:UpdateTag()
 	else
-		self:Tag(self.nameText, "[name]")
+		self:Tag(self.nameText, "[nprare][name]")
 	end
 
 	-- self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
@@ -836,7 +840,7 @@ end
 
 function Module:RefreshNameplats()
 	for nameplate in pairs(platesList) do
-		--Module.UpdateNameplateSize(nameplate)
+		Module.UpdateNameplateSize(nameplate)
 		Module.UpdateUnitClassify(nameplate)
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
@@ -865,7 +869,7 @@ function Module:UpdatePlateByType()
 
 	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
-	self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
+	self:Tag(self.nameText, "[nprare][color][name] [nplevel]")
 	self.npcTitle:UpdateTag()
 	raidtarget:ClearAllPoints()
 
@@ -885,7 +889,7 @@ function Module:UpdatePlateByType()
 		raidtarget:SetPoint("BOTTOM", name, "TOP", 0, 5)
 		raidtarget:SetParent(self)
 
-		if questIcon then questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0) end
+		if questIcon then questIcon:SetPoint("LEFT", name, "RIGHT", -6, 0) end
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
@@ -916,7 +920,7 @@ function Module:UpdatePlateByType()
 		end
 	end
 	
-	--Module.UpdateNameplateSize(self)
+	Module.UpdateNameplateSize(self)
 	Module.UpdateTargetIndicator(self)
 	Module.ToggleNameplateAuras(self)
 end

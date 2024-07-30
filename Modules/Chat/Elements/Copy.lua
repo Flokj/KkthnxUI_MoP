@@ -36,20 +36,12 @@ local editBox
 local frame
 local menu
 
-local menuFrame = CreateFrame("Frame", "KKUI_QuickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
 local menuList = {
 	{ text = K.SystemColor .. OPTIONS_MENU .. "|r", isTitle = true, notCheckable = true },
 	{ text = "", notClickable = true, notCheckable = true },
-	{
-		text = STATUS,
-		notCheckable = true,
-		func = function()
-			K:ShowStatusReport()
-		end,
-	},
 
 	{
 		text = L["Install"],
@@ -399,7 +391,7 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
 			PlaySound(111)
-			_G.EasyMenu(menuList, menuFrame, kkuiconfig, 24, 290, "MENU", 2)
+			_G.EasyMenu(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.GUI:Toggle()
 		end

@@ -3,7 +3,7 @@ local Module = K:GetModule("Blizzard")
 
 local pairs = pairs
 
-local function StyleTimerBar(bar)
+local function SetupTimerTracker(bar)
 	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
@@ -25,7 +25,7 @@ function Module:CreateTimerTracker()
 	local function UpdateTimerTracker()
 		for _, timer in pairs(_G.TimerTracker.timerList) do
 			if timer.bar and not timer.bar.styled then -- only apply style if not styled before
-				StyleTimerBar(timer.bar)
+				SetupTimerTracker(timer.bar)
 			end
 		end
 	end

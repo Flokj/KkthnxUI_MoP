@@ -467,12 +467,12 @@ function Module:AuraWatch_UpdateCD()
 
 					if charges and maxCharges and maxCharges > 1 and charges < maxCharges then
 						Module:AuraWatch_SetupCD(KEY, name, icon, chargeStart, chargeDuration, true, 1, value.SpellID, charges)
-					elseif start and duration > 3 then
+					elseif start and duration > C["AuraWatch"].MinCD then
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, true, 1, value.SpellID)
 					end
 				elseif value.ItemID then
-					local start, duration = GetItemCooldown(value.ItemID)
-					if start and duration > 3 then
+					local start, duration = GetItemCooldown(value.ItemID) 
+					if start and duration > C["AuraWatch"].MinCD then
 						local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then
 							name = nil
@@ -542,9 +542,9 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 
 	if frame.glowFrame then
 		if flash then
-			K.LibCustomGlow.ButtonGlow_Start(frame.glowFrame)
+			K.ShowOverlayGlow(frame.glowFrame)
 		else
-			K.LibCustomGlow.ButtonGlow_Stop(frame.glowFrame)
+			K.HideOverlayGlow(frame.glowFrame)
 		end
 	end
 
@@ -971,7 +971,7 @@ SlashCmdList.AuraWatch = function(msg)
 				end
 
 				if value[i].glowFrame then
-					K.LibCustomGlow.ButtonGlow_Stop(value[i].glowFrame)
+					K.HideOverlayGlow(value[i].glowFrame)
 				end
 			end
 			Module:AuraWatch_Centralize(true)

@@ -407,7 +407,7 @@ end
 
 function Module:OnEnable()
 	Module.buttons = {}
-	Module:MicroMenu()
+	Module:CreateMicroMenu()
 
 	if not C["ActionBar"]["Enable"] then return end
 

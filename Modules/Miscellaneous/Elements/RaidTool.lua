@@ -111,7 +111,7 @@ function Module:RaidTool_RoleCount(parent)
 	for i = 1, 3 do
 		role[i] = frame:CreateTexture(nil, "OVERLAY")
 		role[i]:SetPoint("LEFT", 36 * i - 27, 0)
-		role[i]:SetSize(12, 12)
+		role[i]:SetSize(14, 14)
 		role[i]:SetTexture("Interface\\LFGFrame\\LFGROLE")
 		role[i]:SetTexCoord(unpack(roleTexCoord[i]))
 		role[i].text = K.CreateFontString(frame, 13, "0", "")
@@ -570,6 +570,7 @@ function Module:RaidTool_CreateMenu(parent)
 end
 
 function Module:RaidTool_EasyMarker()
+	if not C["Misc"].EasyMarking then return end
 	local menuList = {}
 
 	local function GetMenuTitle(color, text)

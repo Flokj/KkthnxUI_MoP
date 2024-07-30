@@ -28,7 +28,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
-local MAJOR_VERSION = "LibActionButton-1.0"
+local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
 local MINOR_VERSION = 109
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -2001,13 +2001,13 @@ end
 
 function ShowOverlayGlow(self)
 	if LCG then
-		LCG.ButtonGlow_Start(self)
+		LCG.ShowOverlayGlow(self)
 	end
 end
 
 function HideOverlayGlow(self)
 	if LCG then
-		LCG.ButtonGlow_Stop(self)
+		LCG.HideOverlayGlow(self)
 	end
 end
 

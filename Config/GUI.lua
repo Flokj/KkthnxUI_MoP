@@ -489,10 +489,8 @@ local Automation = function(self)
 
 	-- Invite Management sub-section
 	Window:CreateSection("Invite Management")
-	Window:CreateSwitch("Automation", "AutoBlockStrangerInvites", L["Block Invites From Strangers"])
-	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])	
-	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])	
-	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])	
+	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
+	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
 	Window:CreateSwitch("Automation", "AutoLoggingCombat", "Auto enables Combat Log in raid instances")
 	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 
@@ -513,6 +511,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
 	Window:CreateSwitch("Automation", "AutoScreenshot", L["Auto Screenshot Achievements"])
 	Window:CreateSwitch("Automation", "AutoSkipCinematic", L["Auto Skip All Cinematics/Movies"])
+	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
 end
 
@@ -593,6 +592,7 @@ local AuraWatch = function(self)
 	Window:CreateSwitch("AuraWatch", "Enable", enableTextColor .. L["Enable AuraWatch"])
 	Window:CreateSwitch("AuraWatch", "ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.")
 	Window:CreateSlider("AuraWatch", "IconScale", L["AuraWatch IconScale"], 0.8, 2, 0.1)
+	Window:CreateSlider("AuraWatch", "MinCD", L["AuraWatch MinCD"], 1, 60, 1, L["MinCDTip"])
 end
 
 local Chat = function(self)
@@ -609,7 +609,6 @@ local Chat = function(self)
 	Window:CreateSection("Appearance")
 	Window:CreateSwitch("Chat", "Chatbar", "Show Chat Bars")
 	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExampleIcon)
-	Window:CreateSwitch("Chat", "RoleIcons", L["Show Role Icons In Chat"])
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateDropdown("Chat", "TimestampFormat", L["Custom Chat Timestamps"])
 
@@ -628,14 +627,6 @@ local Chat = function(self)
 	Window:CreateSection(L["Fading"])
 	Window:CreateSwitch("Chat", "Fading", L["Fade Chat Text"])
 	Window:CreateSlider("Chat", "FadingTimeVisible", L["Fading Chat Visible Time"], 5, 120, 1)
-
-	Window:CreateSection(FILTERS)
-	Window:CreateSwitch("Chat", "EnableFilter", enableTextColor .. L["Enable Chat Filter"])
-	Window:CreateSwitch("Chat", "BlockSpammer", L["Block Repeated Spammer Messages"])
-	Window:CreateSwitch("Chat", "BlockStranger", L["Block Whispers From Strangers"])
-	Window:CreateSlider("Chat", "FilterMatches", L["Filter Matches Number"], 1, 3, 1)
-	Window:CreateEditBox("Chat", "ChatFilterList", L["ChatFilter BlackList"], "Enter words you want blacklisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterList)
-	Window:CreateEditBox("Chat", "ChatFilterWhiteList", L["ChatFilter WhiteList"], "Enter words you want whitelisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterWhiteList)
 end
 
 local DataText = function(self)
@@ -676,6 +667,8 @@ local General = function(self)
 	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
+
+	Window:CreateDropdown("General", "GlowMode", "Button Glow Mode")
 
 	-- Border Style
 	Window:CreateDropdown("General", "BorderStyle", L["Border Style"])
@@ -910,9 +903,9 @@ local Tooltip = function(self)
 	-- General section
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Tooltip", "Enable", enableTextColor .. "Enable Tooltip")
-	Window:CreateSwitch("Tooltip", "CombatHide", L["Hide Tooltip in Combat"])
 	Window:CreateSwitch("Tooltip", "Icons", L["Item Icons"])
 	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
+	Window:CreateDropdown("Tooltip","HideInCombat", L["Hide Tooltip in Combat"])
 
 	-- Appearance section
 	Window:CreateSection("Appearance")
@@ -1157,8 +1150,8 @@ local WorldMap = function(self)
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.01)
-	Window:CreateSlider("WorldMap", "MaxMapScale", "Maximized Map Scale", 0.1, 1, 0.1)
-	Window:CreateSlider("WorldMap", "MapScale", "Map Scale", 0.1, 1, 0.1)
+	Window:CreateSlider("WorldMap", "MaxMapScale", "Fullscreen map scale", 0.1, 1, 0.1)
+	Window:CreateSlider("WorldMap", "MapScale", "Window map scale", 0.1, 1, 0.1)
 end
 
 GUI:AddWidgets(ActionBar)

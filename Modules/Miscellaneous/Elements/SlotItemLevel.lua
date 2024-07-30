@@ -298,7 +298,7 @@ local function AnchorInspectRotate()
 	InspectModelFrameRotateRightButton:ClearAllPoints()
 	InspectModelFrameRotateRightButton:SetPoint("BOTTOMLEFT", InspectFrameTab1, "TOPLEFT", 0, 2)
 
-	Module.InspectILvl = K.CreateFontString(InspectPaperDollFrame, 12, "", "")
+	Module.InspectILvl = K.CreateFontString(InspectPaperDollFrame, 14, "", "")
 	Module.InspectILvl:ClearAllPoints()
 	Module.InspectILvl:SetPoint("TOP", InspectLevelText, "BOTTOM", 0, -8)
 

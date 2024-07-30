@@ -25,7 +25,7 @@ C["ActionBar"] = {
 	MicroMenu = true,
 	FadeMicroMenu = false,
 	ShowStance = true,
-	EquipColor = false,
+	EquipColor = true,
 	TotemBar = true,
 	AspectBar = false,
 	AspectSize = 25,
@@ -133,7 +133,6 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	AutoBlockStrangerInvites = false,
 	AutoCollapse = false,
 	AutoDeclineDuels = false,
 	AutoGoodbye = false,
@@ -149,7 +148,7 @@ C["Automation"] = {
 	AutoSummon = false,
 	NoBadBuffs = false,
 	AutoLoggingCombat = false,
-	WhisperInviteGuildFriends = false,
+	WhisperInviteRestriction = false,
 	WhisperInvite = "inv+",
 }
 
@@ -225,26 +224,19 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	BlockSpammer = true,
 	Background = true,
 	Chatbar = true,
-	BlockStranger = false,
-	ChatFilterList = "%*",
-	ChatFilterWhiteList = "",
 	ChatItemLevel = true,
 	ChatMenu = true,
 	Emojis = false,
 	Enable = true,
-	EnableFilter = false,
 	Fading = true,
 	FadingTimeVisible = 100,
-	FilterMatches = 1,
 	Freedom = true,
 	Height = 200,
 	Lock = true,
 	LogMax = 0,
 	OldChatNames = false,
-	RoleIcons = false,
 	Sticky = false,
 	WhisperColor = true,
 	Width = 400,
@@ -281,6 +273,7 @@ C["AuraWatch"] = {
 	Enable = false,
 	ClickThrough = false,
 	IconScale = 1,
+	MinCD = 3,
 	InternalCD = {},
 	AuraList = {
 		["Switcher"] = {},
@@ -321,6 +314,15 @@ C["General"] = {
 	},
 	Profiles = {
 		Options = {},
+	},
+	GlowMode = {
+		Options = {
+			["Pixel"] = 1,
+			["Autocast"] = 2,
+			["Action Button"] = 3,
+			["Proc Glow"] = 4,
+		},
+		Value = 3,
 	},
 }
 
@@ -398,6 +400,7 @@ C["Misc"] = {
 	TradeTabs = true,
 	RaidTool = true,
 	DBMCount = "10",
+	EasyMarking = false,
 	MarkerBarSize = 22,
 	EasyMarkKey = {
 		Options = {
@@ -452,6 +455,10 @@ C["Nameplate"] = {
 	NameplateClassPower = false,
 	OffTankColor = { 0.2, 0.7, 0.5 },
 	PPGCDTicker = true,
+	HarmWidth = 182,
+	HarmHeight = 60,
+	HelpWidth = 182,
+	HelpHeight = 60,
 	PPHeight = 8,
 	PPHideOOC = true,
 	PPIconSize = 32,
@@ -537,7 +544,6 @@ C["Skins"] = {
 -- Tooltip
 C["Tooltip"] = {
 	ClassColor = false,
-	CombatHide = false,
 	Enable = true,
 	FactionIcon = true,
 	HideRank = true,
@@ -566,6 +572,16 @@ C["Tooltip"] = {
 		},
 		Value = 4,
 	},
+	HideInCombat = {
+		Options = {
+			["DISABLE"] = 1,
+			["ALT"] = 2,
+			["SHIFT"] = 3,
+			["CTRL"] = 4,
+			["ALWAYS"] = 5,
+		},
+		Value = 1,
+	},	
 }
 
 -- Unitframe

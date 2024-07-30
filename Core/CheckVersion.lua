@@ -16,28 +16,24 @@ local GetTime = GetTime
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
 
-local lastVCTime = 0
-local isVCInit
-local UIUpdateNotice
+local lastVCTime, isVCInit = 0
+local tn = tonumber
 
-local function HandleVersionTag(version)
-	local major, minor = string_split(".", version)
-	major, minor = tonumber(major), tonumber(minor)
-
+local function HandleVersonTag(version)
+	local major, minor = strsplit(".", version)
+	major, minor = tn(major), tn(minor)
 	if K.LibBase64:CV(major) then
 		major, minor = 0, 0
-
 		if K.isDeveloper and author then
 			print("Moron: " .. author)
 		end
 	end
-
 	return major, minor
 end
 
 function Module:VersionCheck_Compare(new, old, author)
-	local new1, new2 = HandleVersionTag(new, author)
-	local old1, old2 = HandleVersionTag(old)
+	local new1, new2 = HandleVersonTag(new, author)
+	local old1, old2 = HandleVersonTag(old)
 	if new1 > old1 or (new1 == old1 and new2 > old2) then
 		return "IsNew"
 	elseif new1 < old1 or (new1 == old1 and new2 < old2) then
@@ -45,68 +41,70 @@ function Module:VersionCheck_Compare(new, old, author)
 	end
 end
 
-function Module:VersionCheck_Create(text)
-	if not C["General"].VersionCheck then return end
+function Module:CreateUpdateNoticeFrame()
+	local frame = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
+	frame:SetSize(420, 150)
+	frame:SetPoint("CENTER", UIParent, "CENTER")
+	frame:CreateBorder()
 
-	UIUpdateNotice = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
-	UIUpdateNotice:SetSize(420, 150)
-	UIUpdateNotice:SetPoint("CENTER", UIParent, "CENTER")
-	UIUpdateNotice:CreateBorder()
+	frame.Texture = frame:CreateTexture(nil, "OVERLAY")
+	frame.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-ReportAbuse")
+	frame.Texture:SetPoint("TOP", frame, "TOP", 0, 8)
 
-	UIUpdateNotice.Texture = UIUpdateNotice:CreateTexture(nil, "OVERLAY")
-	UIUpdateNotice.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-ReportAbuse")
-	UIUpdateNotice.Texture:SetPoint("TOP", UIUpdateNotice, "TOP", 0, 8)
+	frame.Text = frame:CreateFontString(nil, "OVERLAY")
+	frame.Text:SetWidth(400)
+	frame.Text:SetFontObject(K.UIFont)
+	frame.Text:SetFont(select(1, frame.Text:GetFont()), 15, select(3, frame.Text:GetFont()))
+	frame.Text:SetPoint("CENTER", frame, "CENTER")
 
-	UIUpdateNotice.Text = UIUpdateNotice:CreateFontString(nil, "OVERLAY")
-	UIUpdateNotice.Text:SetWidth(400)
-	UIUpdateNotice.Text:SetFontObject(K.UIFont)
-	UIUpdateNotice.Text:SetText(text)
-	UIUpdateNotice.Text:SetFont(select(1, UIUpdateNotice.Text:GetFont()), 15, select(3, UIUpdateNotice.Text:GetFont()))
-	UIUpdateNotice.Text:SetPoint("CENTER", UIUpdateNotice, "CENTER")
+	frame.EditBox = CreateFrame("EditBox", nil, frame)
+	frame.EditBox:SetPoint("BOTTOM", frame, "BOTTOM", 0, 8)
+	frame.EditBox:SetWidth(330)
+	frame.EditBox:SetHeight(19)
+	frame.EditBox:SetMultiLine(false)
+	frame.EditBox:SetAutoFocus(false)
+	frame.EditBox:SetFontObject(K.UIFont)
+	frame.EditBox:CreateBorder()
 
-	UIUpdateNotice.EditBox = CreateFrame("EditBox", nil, UIUpdateNotice)
-	UIUpdateNotice.EditBox:SetPoint("BOTTOM", UIUpdateNotice, "BOTTOM", 0, 8)
-	UIUpdateNotice.EditBox:SetText("https://www.curseforge.com/wow/addons/kkthnxui")
-	UIUpdateNotice.EditBox:SetWidth(330)
-	UIUpdateNotice.EditBox:SetHeight(19)
-	UIUpdateNotice.EditBox:SetMultiLine(false)
-	UIUpdateNotice.EditBox:SetAutoFocus(false)
-	UIUpdateNotice.EditBox:SetFontObject(K.UIFont)
-	UIUpdateNotice.EditBox:CreateBorder()
+	frame.EditBox.Text = frame.EditBox:CreateFontString(nil, "OVERLAY")
+	frame.EditBox.Text:SetFontObject(K.UIFont)
+	frame.EditBox.Text:SetPoint("BOTTOM", frame.EditBox, "TOP", 0, 2)
 
-	UIUpdateNotice.EditBox.Text = UIUpdateNotice.EditBox:CreateFontString(nil, "OVERLAY")
-	UIUpdateNotice.EditBox.Text:SetFontObject(K.UIFont)
-	UIUpdateNotice.EditBox.Text:SetText(K.SystemColor .. "Download Latest Release|r")
-	UIUpdateNotice.EditBox.Text:SetPoint("BOTTOM", UIUpdateNotice.EditBox, "TOP", 0, 2)
-
-	UIUpdateNotice.OkayButton = CreateFrame("Button", nil, UIUpdateNotice)
-	UIUpdateNotice.OkayButton:SetPoint("TOP", UIUpdateNotice, "BOTTOM", 0, -6)
-	UIUpdateNotice.OkayButton:RegisterForClicks("AnyUp")
-	UIUpdateNotice.OkayButton:SetSize(420, 24)
-	UIUpdateNotice.OkayButton:SkinButton()
-	UIUpdateNotice.OkayButton:SetScript("OnClick", function()
-		if UIUpdateNotice:IsShown() then
-			UIUpdateNotice:Hide()
+	frame.OkayButton = CreateFrame("Button", nil, frame)
+	frame.OkayButton:SetPoint("TOP", frame, "BOTTOM", 0, -6)
+	frame.OkayButton:SetSize(420, 24)
+	frame.OkayButton:SkinButton()
+	frame.OkayButton:SetScript("OnClick", function()
+		if frame:IsShown() then
+			frame:Hide()
 		end
 	end)
 
-	UIUpdateNotice.OkayButton.Text = UIUpdateNotice.OkayButton:CreateFontString(nil, "ARTWORK")
-	UIUpdateNotice.OkayButton.Text:SetFontObject(K.UIFont)
-	UIUpdateNotice.OkayButton.Text:SetFont(select(1, UIUpdateNotice.OkayButton.Text:GetFont()), 13, select(3, UIUpdateNotice.OkayButton.Text:GetFont()))
-	UIUpdateNotice.OkayButton.Text:SetText("I am going to update right now")
-	UIUpdateNotice.OkayButton.Text:SetTextColor(0, 1, 0)
-	UIUpdateNotice.OkayButton.Text:SetPoint("CENTER", UIUpdateNotice.OkayButton, "CENTER", 0, 0)
-	K.AddTooltip(UIUpdateNotice.OkayButton, "ANCHOR_BOTTOM", K.SystemColor .. "Obviously |cff669dffKkthnx|r is trusting you to go update and not complain about a missing feature or a bug because you are out of date |CFFFF0000<3|r")
+	frame.OkayButton.Text = frame.OkayButton:CreateFontString(nil, "ARTWORK")
+	frame.OkayButton.Text:SetFontObject(K.UIFont)
+	frame.OkayButton.Text:SetFont(select(1, frame.OkayButton.Text:GetFont()), 13, select(3, frame.OkayButton.Text:GetFont()))
+	frame.OkayButton.Text:SetText("I am going to update right now")
+	frame.OkayButton.Text:SetTextColor(0, 1, 0)
+	frame.OkayButton.Text:SetPoint("CENTER", frame.OkayButton, "CENTER", 0, 0)
+	K.AddTooltip(frame.OkayButton, "ANCHOR_BOTTOM", K.SystemColor .. "Obviously |cff669dffKkthnx|r is trusting you to go update and not complain about a missing feature or a bug because you are out of date |CFFFF0000<3|r")
 
-	return UIUpdateNotice
+	return frame
+end
+
+function Module:VersionCheck_Create(text)
+	if not C["General"].VersionCheck then return end
+
+	local frame = Module:CreateUpdateNoticeFrame()
+	frame.Text:SetText(text)
+	frame:Show()
 end
 
 function Module:VersionCheck_Init()
 	if not isVCInit then
 		local status = Module:VersionCheck_Compare(KkthnxUIDB.DetectVersion, K.Version)
 		if status == "IsNew" then
-			local release = string_gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
-			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
+			local release = gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
+			Module:VersionCheck_Create(format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
 		elseif status == "IsOld" then
 			KkthnxUIDB.DetectVersion = K.Version
 		end
@@ -139,17 +137,9 @@ function Module:VersionCheck_Update(...)
 end
 
 function Module:VersionCheck_UpdateGroup()
-	if not IsInGroup() then
-		--print("Not in a group")
-		return
-	end
+	if not IsInGroup() then return end
 
-	-- Check if the player has changed groups
-	if not Module.lastGroup or Module.lastGroup ~= K.CheckChat() then
-		Module.lastGroup = K.CheckChat()
-		Module:VersionCheck_Send(Module.lastGroup)
-		-- print("Sent version check to group: " .. Module.lastGroup)
-	end
+	Module:VersionCheck_Send(IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY")
 end
 
 function Module:OnEnable()
@@ -163,13 +153,4 @@ function Module:OnEnable()
 	end
 	Module:VersionCheck_UpdateGroup()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
-end
-
--- Register a slash command
-SLASH_KKUIVERSIONCHECK1 = "/kkvc"
-
--- Slash command handler
-SlashCmdList["KKUIVERSIONCHECK"] = function(msg)
-	print("Version check command triggered")
-	Module:VersionCheck_Init()
 end

@@ -41,7 +41,7 @@ local UNKNOWN = UNKNOWN
 
 local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
 local WOW_PROJECT_ID = WOW_PROJECT_ID or 1
-local WOW_PROJECT_MAINLINE = 14
+local WOW_PROJECT_WRATH = 11
 local CLIENT_WOW_DIFF = "WoV" -- for sorting
 
 local r, g, b = K.r, K.g, K.b
@@ -164,7 +164,7 @@ local function buildBNetTable(num)
 
 				if wowProjectID == WOW_PROJECT_60 then
 					gameText = EXPANSION_NAME0
-				elseif wowProjectID == WOW_PROJECT_MAINLINE then
+				elseif wowProjectID == WOW_PROJECT_WRATH then
 					gameText = EXPANSION_NAME2
 				end
 
@@ -209,8 +209,9 @@ local function FriendsPanel_UpdateButton(button)
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
 		button.zone:SetText(string_format("%s%s", zoneColor, area))
-		C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
-		--button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+		-- button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+		-- C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
+		button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
 		button.data = friendTable[index]
@@ -229,13 +230,13 @@ local function FriendsPanel_UpdateButton(button)
 		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 		if client == CLIENT_WOW_DIFF then
-			C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
-			--button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+			-- C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
 		elseif client == BNET_CLIENT_WOW then
-			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-"..factionName)
+			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-" .. factionName)
 		else
-			C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium)
-			--button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
+			-- C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium)
 		end
 
 		button.isBNet = true
@@ -287,6 +288,9 @@ local inviteTypeToButtonText = {
 	["INVITE"] = TRAVEL_PASS_INVITE,
 	["SUGGEST_INVITE"] = SUGGEST_INVITE,
 	["REQUEST_INVITE"] = REQUEST_INVITE,
+	["INVITE_CROSS_FACTION"] = TRAVEL_PASS_INVITE_CROSS_FACTION,
+	["SUGGEST_INVITE_CROSS_FACTION"] = SUGGEST_INVITE_CROSS_FACTION,
+	["REQUEST_INVITE_CROSS_FACTION"] = REQUEST_INVITE_CROSS_FACTION,
 }
 
 local function GetButtonTexFromInviteType(guid, factionName)
@@ -301,8 +305,8 @@ local function GetNameAndInviteType(class, charName, guid, factionName)
 	return format("%s%s|r %s", K.RGBToHex(K.ColorClass(K.ClassList[class])), charName, GetButtonTexFromInviteType(guid, factionName))
 end
 
-local function buttonOnClick(self, btn)
-	if btn == "LeftButton" then
+local function buttonOnClick(self, button)
+	if button == "LeftButton" then
 		if IsAltKeyDown() then
 			if self.isBNet then
 				local index = 2
@@ -376,7 +380,7 @@ local function buttonOnClick(self, btn)
 end
 
 local function buttonOnEnter(self)
-	GameTooltip:SetOwner(FriendsDataText.Texture, "ANCHOR_NONE")
+	GameTooltip:SetOwner(FriendsDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint("TOPLEFT", infoFrame, "TOPRIGHT", 5, 0)
 	GameTooltip:ClearLines()
 
@@ -397,14 +401,14 @@ local function buttonOnEnter(self)
 			local level = gameAccountInfo.characterLevel
 			local gameText = gameAccountInfo.richPresence or ""
 			local wowProjectID = gameAccountInfo.wowProjectID
-			local clientString = BNet_GetClientEmbeddedAtlas(client, 16)
+			local clientString = BNet_GetClientEmbeddedAtlas(client, 16) or BNet_GetClientEmbeddedTexture(client, 16)
 
 			if client == BNET_CLIENT_WOW then
 				if charName ~= "" then -- fix for weird account
 					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
 
 					-- Get TBC realm name from richPresence
-					if wowProjectID == WOW_PROJECT_MAINLINE then
+					if wowProjectID == WOW_PROJECT_WRATH then
 						local realm, count = gsub(gameText, "^.-%-%s", "")
 						if count > 0 then
 							realmName = "-" .. realm
@@ -461,7 +465,7 @@ end
 local function FriendsPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(370, 20)
-	button:SetPoint("TOPLEFT", 0, -(index - 1) * 20)
+	button:SetPoint("TOPLEFT", 0, -(index - 1) * 22)
 
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
@@ -483,12 +487,12 @@ local function FriendsPanel_CreateButton(parent, index)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	--button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
+	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
 
-	--local gameIconBorder = CreateFrame("Frame", nil, button)
-	--gameIconBorder:SetFrameLevel(button:GetFrameLevel())
-	--gameIconBorder:SetAllPoints(button.gameIcon)
-	--gameIconBorder:CreateBorder()
+	button.gameIcon.border = CreateFrame("Frame", nil, button)
+	button.gameIcon.border:SetFrameLevel(button:GetFrameLevel())
+	button.gameIcon.border:SetAllPoints(button.gameIcon)
+	button.gameIcon.border:CreateBorder()
 
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", buttonOnClick)
@@ -582,12 +586,12 @@ local function OnEnter()
 	local totalFriends = Module.totalFriends
 
 	if totalOnline == 0 then
-		GameTooltip:SetOwner(FriendsDataText.Texture, "ANCHOR_NONE")
-		GameTooltip:SetPoint(K.GetAnchors(FriendsDataText.Texture))
+		GameTooltip:SetOwner(FriendsDataText, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(FriendsDataText.Text))
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0.4, 0.6, 1, 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L["No Online"], 1, 1, 1)
+		GameTooltip:AddLine("Guess it's time to talk to the voices in my head.", 1, 1, 1) -- Display the random funny quote about having no friends online
 		GameTooltip:Show()
 		return
 	end
@@ -621,7 +625,7 @@ local eventList = {
 	"PLAYER_ENTERING_WORLD",
 }
 
-local function OnEvent(_, event, arg1)
+local function OnEvent(event, arg1)
 	if event == "CHAT_MSG_SYSTEM" then
 		if not string_find(arg1, onlineString) and not string_find(arg1, offlineString) then
 			return
@@ -677,28 +681,33 @@ function Module:CreateSocialDataText()
 		return
 	end
 
-	FriendsDataText = FriendsDataText or CreateFrame("Button", nil, UIParent)
-	FriendsDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
-	FriendsDataText:SetSize(24, 24)
+	FriendsDataText = CreateFrame("Frame", nil, UIParent)
+	FriendsDataText:SetHitRectInsets(-16, 0, -10, -10)
 
-	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "BACKGROUND")
-	FriendsDataText.Texture:SetPoint("LEFT", FriendsDataText, "LEFT", 0, 0)
+	FriendsDataText.Text = K.CreateFontString(FriendsDataText, 12)
+	FriendsDataText.Text:ClearAllPoints()
+	FriendsDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -270)
+
+	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "ARTWORK")
+	FriendsDataText.Texture:SetPoint("RIGHT", FriendsDataText.Text, "LEFT", 0, 2)
 	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
 	FriendsDataText.Texture:SetSize(24, 24)
 	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	FriendsDataText.Text = FriendsDataText:CreateFontString(nil, "ARTWORK")
-	FriendsDataText.Text:SetFontObject(K.UIFont)
-	FriendsDataText.Text:SetPoint("LEFT", FriendsDataText.Texture, "RIGHT", 0, 0)
+	FriendsDataText:SetAllPoints(FriendsDataText.Text)
+
+	local function _OnEvent(...)
+		OnEvent(...)
+	end
 
 	for _, event in pairs(eventList) do
 		FriendsDataText:RegisterEvent(event)
 	end
 
-	FriendsDataText:SetScript("OnEvent", OnEvent)
-	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
+	FriendsDataText:SetScript("OnEvent", _OnEvent)
 	FriendsDataText:SetScript("OnEnter", OnEnter)
 	FriendsDataText:SetScript("OnLeave", OnLeave)
+	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
 
-	K.Mover(FriendsDataText, "FriendsDataText", "FriendsDataText", { "LEFT", UIParent, "LEFT", 4, -270 })
+	K.Mover(FriendsDataText.Text, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 24, -270 }, 56, 12)
 end

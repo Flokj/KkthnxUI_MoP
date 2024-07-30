@@ -417,7 +417,7 @@ local tagStrings = {
 	end]],
 
 	['threatcolor'] = [[function(u)
-		return Hex(GetThreatStatusColor(UnitThreatSituation(u)))
+		return Hex(GetThreatStatusColor(UnitThreatSituation(u) or 0))
 	end]],
 }
 

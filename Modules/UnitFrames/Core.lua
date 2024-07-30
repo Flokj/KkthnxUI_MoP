@@ -152,8 +152,39 @@ function Module:ToggleCastBarLatency(frame)
 	end
 end
 
+--function Module.auraIconSize(w, n, s)
+--	return (w - (n - 1) * s) / n
+--end
+--
+--function Module:UpdateAuraContainer(width, element, maxAuras)
+--	local iconsPerRow = element.iconsPerRow
+--	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
+--	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
+--
+--	element.size = size
+--	element:SetWidth(width)
+--	element:SetHeight((size + element.spacing) * maxLines)
+--end
+--
+--function Module:UpdateIconTexCoord(width, height)
+--	local ratio = height / width
+--	local mult = (1 - ratio) / 2
+--	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+--end
+
+-- Cache the result of auraIconSize calculation
+local auraIconSizeCache = {}
+
 function Module.auraIconSize(w, n, s)
-	return (w - (n - 1) * s) / n
+	if not auraIconSizeCache[w] then
+		auraIconSizeCache[w] = {}
+	end
+
+	if not auraIconSizeCache[w][n] then
+		auraIconSizeCache[w][n] = (w - (n - 1) * s) / n
+	end
+
+	return auraIconSizeCache[w][n]
 end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
@@ -161,9 +192,11 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
 
-	element.size = size
-	element:SetWidth(width)
-	element:SetHeight((size + element.spacing) * maxLines)
+	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= ((size + element.spacing) * maxLines) then
+		element.size = size
+		element:SetWidth(width)
+		element:SetHeight((size + element.spacing) * maxLines)
+	end
 end
 
 function Module:UpdateIconTexCoord(width, height)
@@ -209,18 +242,16 @@ end
 
 function Module.PostUpdateButton(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
-	if style == "nameplate" then
-		button:SetSize(element.size, element.size * 1)
-	else
-		button:SetSize(element.size, element.size)
-	end
+	button:SetSize(style == "nameplate" and element.size or element.size, style == "nameplate" and element.size * 1 or element.size)
 
+	-- Update appearance based on harmful status and style
 	if button.isDebuff and filteredStyle[style] and not button.isPlayer then
 		button.icon:SetDesaturated(true)
 	else
 		button.icon:SetDesaturated(false)
 	end
 
+	-- Update border color based on debuff type
 	if button.isDebuff then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
 		if style == "nameplate" and button.Shadow then
@@ -236,6 +267,7 @@ function Module.PostUpdateButton(element, _, button, _, _, duration, expiration,
 		end
 	end
 
+	-- Handle cooldown and timer display
 	if duration and duration > 0 then
 		button.expiration = expiration
 		button:SetScript("OnUpdate", K.CooldownOnUpdate)

@@ -36,7 +36,7 @@ end
 
 function Module:HideLines()
 	for i = 3, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft" .. i]
+		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
@@ -63,7 +63,7 @@ end
 
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft" .. i]
+		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
 		local linetext = tiptext:GetText()
 		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
@@ -82,14 +82,14 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", 0, -4)
+		f:SetPoint("TOPRIGHT", -10, -10)
 		f:SetBlendMode("ADD")
-		f:SetScale(.3)
+		-- f:SetScale(0.9)
+		-- f:SetAlpha(0.7)
 		self.factionFrame = f
 	end
-
-	self.factionFrame:SetTexture("Interface\\Timer\\" .. faction .. "-Logo")
-	self.factionFrame:SetAlpha(.5)
+	self.factionFrame:SetAtlas("MountJournalIcons-" .. faction, true) --  charcreatetest-logo-horde
+	self.factionFrame:Show()
 end
 
 function Module:OnTooltipCleared()
@@ -105,10 +105,28 @@ function Module:OnTooltipCleared()
 	GameTooltip_ClearWidgetSet(self)
 end
 
+local function ShouldHideInCombat()
+	local index = C["Tooltip"].HideInCombat.Value
+	if index == 1 then
+		return true
+	elseif index == 2 then
+		return IsAltKeyDown()
+	elseif index == 3 then
+		return IsShiftKeyDown()
+	elseif index == 4 then
+		return IsControlKeyDown()
+	elseif index == 5 then
+		return false
+	end
+end
+
 function Module:OnTooltipSetUnit()
 	if self:IsForbidden() then return end
 
-	if C["Tooltip"].CombatHide and InCombatLockdown() then self:Hide() return end
+	if (not ShouldHideInCombat()) and InCombatLockdown() then
+		self:Hide()
+		return
+	end
 
 	Module.HideLines(self)
 

@@ -156,8 +156,8 @@ function Module:UpdateChatSize()
 	end
 
 	if ChatFrame1.FontStringContainer then
-		ChatFrame1.FontStringContainer:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -1, 1)
-		ChatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 1, -1)
+		ChatFrame1.FontStringContainer:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -2, 2)
+		ChatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 2, -6)
 	end
 
 	ChatFrame1:ClearAllPoints()
@@ -530,15 +530,12 @@ function Module:OnEnable()
 	-- Add Elements
 	local loadChatModules = {
 		"ChatWhisperSticky",
-		"CreateChatFilter",
 		"CreateChatHistory",
 		"CreateChatItemLevels",
 		"CreateChatRename",
-		"CreateChatRoleIcon",
 		"CreateCopyChat",
 		"CreateCopyURL",
 		"CreateEmojis",
-		"CreateVoiceActivity",
 		"CreateChatbar",
 		"ToggleLanguageFilter",
 	}

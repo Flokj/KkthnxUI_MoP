@@ -70,11 +70,11 @@ local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
-K.LibActionButton = LibStub("LibActionButton-1.0")
+K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
 K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
 K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
 K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-K.LibRangeCheck = LibStub("LibRangeCheck-3.0")
+K.LibRangeCheck = LibStub("LibRangeCheck-3.0-KkthnxUI")
 K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
 K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
 K.cargBags = Engine.cargBags
@@ -260,12 +260,12 @@ function K:GetModule(name)
 	return module
 end
 
-local function GetBestScale()
-	-- Constants
-	local PIXEL_RATIO = 768
-	local MAX_SCALE = 1.15
-	local MIN_SCALE = 0.4
+-- Constants
+local PIXEL_RATIO = 768
+local MAX_SCALE = 1.15
+local MIN_SCALE = 0.4
 
+local function GetBestScale()
 	-- Calculate the best scale based on the current screen height
 	return K.Round(math.max(MIN_SCALE, math.min(MAX_SCALE, PIXEL_RATIO / K.ScreenHeight)), 2)
 end
@@ -321,6 +321,11 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	-- Set smoothing amount
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
+	if K.LibCustomGlow then
+		K.ShowOverlayGlow = K.LibCustomGlow.ShowOverlayGlow
+		K.HideOverlayGlow = K.LibCustomGlow.HideOverlayGlow
+	end
+
 	-- Enable modules
 	for _, module in ipairs(modulesQueue) do
 		assert(module.OnEnable, "Module has no OnEnable function.")
@@ -339,38 +344,11 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	end
 end)
 
--- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP
+-- https://wowpedia.fandom.com/wiki/PLAYER_LEVEL_UP
 K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	if not K.Level then return end
 	K.Level = level
 end)
-
--- Save original Chat_DisplayTimePlayed function
-local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
--- Override ChatFrame_DisplayTimePlayed function
-ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
-	-- Get player's money as string
-	local money = GetMoneyString(GetMoney())
-
-	-- Get player's class
-	local localizedClass, englishClass = UnitClass("player")
-	local colorClass = K.ClassColors[englishClass]
-	local colorString = colorClass.colorStr
-
-	-- Create messages using string formatting
-	local totalTimeMessage = string.format("%sTotal time played: %s", K.SystemColor, K.GreyColor .. SecondsToTime(totalTime))
-	local levelTimeMessage = string.format("%sTime played this level: %s", K.SystemColor, K.GreyColor .. SecondsToTime(levelTime))
-	local moneyMessage = string.format("%sMoney: %s", K.SystemColor, K.GreyColor .. money)
-
-	-- Create player info message using string concatenation
-	local playerInfo = string.format("%s %sLevel %d|r |c%s%s|r", K.Name, K.SystemColor, K.Level, colorString, localizedClass)
-
-	-- Print each message on its own line
-	print(playerInfo)
-	print(totalTimeMessage)
-	print(levelTimeMessage)
-	print(moneyMessage)
-end
 
 for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)

@@ -3,9 +3,9 @@ local Module = K:GetModule("Miscellaneous")
 --[[
 local pairs, strfind = pairs, strfind
 local UnitGUID, GetItemCount = UnitGUID, GetItemCount
-local GetActionInfo, GetSpellInfo, GetOverrideBarIndex = GetActionInfo, GetSpellInfo, GetOverrideBarIndex
-local GetQuestLogIndexByID = GetQuestLogIndexByID
-local SelectGossipOption, GetNumGossipOptions = SelectGossipOption, GetNumGossipOptions
+local GetActionInfo, GetSpellInfo, GetOverrideBarSkin = GetActionInfo, GetSpellInfo, GetOverrideBarSkin
+local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
+local C_GossipInfo_SelectOption, C_GossipInfo_GetNumOptions = C_GossipInfo.SelectOption, C_GossipInfo.GetNumOptions
 
 local watchQuests = {
 	-- check npc
@@ -24,7 +24,7 @@ local questNPCs = {
 
 function Module:QuestTool_Init()
 	for questID, value in pairs(watchQuests) do
-		if GetQuestLogIndexByID(questID) then
+		if C_QuestLog_GetLogIndexForQuestID(questID) then
 			activeQuests[questID] = value
 		end
 	end
@@ -46,21 +46,20 @@ local fixedStrings = {
 	["Sweep"] = "Lunge",
 	["Assault"] = "Assault",
 }
-
 local function isActionMatch(msg, text)
 	return text and strfind(msg, text)
 end
 
 function Module:QuestTool_SetGlow(msg)
-	if GetOverrideBarIndex() and (activeQuests[59585] or activeQuests[64271]) then
+	if GetOverrideBarSkin() and (activeQuests[59585] or activeQuests[64271]) then
 		for i = 1, 3 do
 			local button = _G["ActionButton" .. i]
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
-				K.LibCustomGlow.ButtonGlow_Start(button)
+				K.ShowOverlayGlow(button)
 			else
-				K.LibCustomGlow.ButtonGlow_Stop(button)
+				K.HideOverlayGlow(button)
 			end
 		end
 		Module.isGlowing = true
@@ -73,7 +72,7 @@ function Module:QuestTool_ClearGlow()
 	if Module.isGlowing then
 		Module.isGlowing = nil
 		for i = 1, 3 do
-			K.LibCustomGlow.ButtonGlow_Stop(_G["ActionButton" .. i])
+			K.HideOverlayGlow(_G["ActionButton" .. i])
 		end
 	end
 end
@@ -108,39 +107,31 @@ function Module:QuestTool()
 
 	-- Check existing quests
 	Module:QuestTool_Init()
-	K:RegisterEvent("QUEST_ACCEPTED", function(_, questID) Module:QuestTool_Accept(questID) end)
-	K:RegisterEvent("QUEST_REMOVED", function(_, questID) Module:QuestTool_Remove(questID) end)
+	K:RegisterEvent("QUEST_ACCEPTED", Module.QuestTool_Accept)
+	K:RegisterEvent("QUEST_REMOVED", Module.QuestTool_Remove)
 
 	-- Override button quests
 	if C["ActionBar"].Enable then
-		K:RegisterEvent("CHAT_MSG_MONSTER_SAY", function(_, msg) Module:QuestTool_SetGlow(msg) end)
-		K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", function() Module:QuestTool_ClearGlow() end)
+		K:RegisterEvent("CHAT_MSG_MONSTER_SAY", Module.QuestTool_SetGlow)
+		K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.QuestTool_ClearGlow)
 	end
 
 	-- Check npc in quests
-	GameTooltip:HookScript("OnTooltipSetUnit", function() Module:QuestTool_SetQuestUnit() end)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.QuestTool_SetQuestUnit)
 
 	-- Auto gossip
 	local firstStep
 	K:RegisterEvent("GOSSIP_SHOW", function()
 		local guid = UnitGUID("npc")
-		local npcID = guid and K.GetNPCID(guid)
-		if npcID == 174498 then
-			SelectGossipOption(3)
-		elseif npcID == 174371 then
-			if GetItemCount(183961) == 0 then
-				return
-			end
-
-			if GetNumGossipOptions() ~= 5 then
-				return
-			end
-
-			if firstStep then
-				SelectGossipOption(2)
-			else
-				SelectGossipOption(5)
-				firstStep = true
+		if guid then
+			local npcID = K.GetNPCID(guid)
+			if npcID == 174498 then
+				C_GossipInfo_SelectOption(3)
+			elseif npcID == 174371 then
+				if GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
+					C_GossipInfo_SelectOption(firstStep and 2 or 5)
+					firstStep = not firstStep
+				end
 			end
 		end
 	end)

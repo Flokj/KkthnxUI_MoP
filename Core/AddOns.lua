@@ -56,6 +56,7 @@ end
 
 local function ForceCursorTrail()
 	if not IsAddOnLoaded("CursorTrail") then return end
+	print(IsAddOnLoaded("CursorTrail"))
 	if CursorTrail_PlayerConfig then table_wipe(CursorTrail_PlayerConfig) end
 
 	CursorTrail_PlayerConfig = {

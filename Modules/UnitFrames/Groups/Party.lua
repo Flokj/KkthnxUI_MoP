@@ -17,8 +17,10 @@ function Module:CreateParty()
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	Overlay:SetAllPoints()
+	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(6)
+	Overlay:SetAllPoints()
+	Overlay:EnableMouse(false)
 
 	Module.CreateHeader(self)
 
@@ -80,15 +82,15 @@ function Module:CreateParty()
 	Name:SetFontObject(K.UIFont)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(Name, "[name] [nplevel]")
+			self:Tag(Name, "[lfdrole][name] [nplevel]")
 		else
-			self:Tag(Name, "[color][name] [nplevel]")
+			self:Tag(Name, "[lfdrole][color][name] [nplevel]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(Name, "[name]")
+			self:Tag(Name, "[lfdrole][name]")
 		else
-			self:Tag(Name, "[color][name]")
+			self:Tag(Name, "[lfdrole][color][name]")
 		end
 	end
 
@@ -166,7 +168,7 @@ function Module:CreateParty()
 	Debuffs.num = 5
 	Debuffs.iconsPerRow = 5
 
-	Module:UpdateAuraContainer(partyWidth - 10, Debuffs, Debuffs.num)
+	Module:UpdateAuraContainer(partyWidth - 14, Debuffs, Debuffs.num)
 
 	Debuffs.PostCreateButton = Module.PostCreateButton
 	Debuffs.PostUpdateButton = Module.PostUpdateButton
@@ -266,15 +268,15 @@ function Module:CreateParty()
 	end
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	LeaderIndicator:SetSize(12, 12)
+	LeaderIndicator:SetSize(15, 15)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
-		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
+		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 10)
 	else
-		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 10)
 	end
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	AssistantIndicator:SetSize(12, 12)
+	AssistantIndicator:SetSize(15, 15)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
 		AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	else
@@ -292,7 +294,7 @@ function Module:CreateParty()
 	PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
 	local SummonIndicator = Health:CreateTexture(nil, "OVERLAY")
-	SummonIndicator:SetSize(20, 20)
+	SummonIndicator:SetSize(30, 30)
 	SummonIndicator:SetPoint("LEFT", 2, 0)
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")

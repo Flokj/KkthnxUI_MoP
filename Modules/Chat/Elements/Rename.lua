@@ -32,7 +32,7 @@ function Module:SetupChannelNames(text, ...)
 
 	local r, g, b = ...
 	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
-		r, g, b = r * 0.7, g * 0.7, b * 0.7
+		r, g, b = 0.6274, 0.3231, 0.6274
 	end
 
 	if C["Chat"].TimestampFormat.Value > 1 then
