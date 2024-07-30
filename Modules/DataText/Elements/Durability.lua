@@ -58,14 +58,27 @@ local function getDurabilityColor(cur, max)
 	return r, g, b
 end
 
+local function NewSetLevelFunction()
+	local total, equipped = GetAverageItemLevel()
+	local r, g, b = K.GetILvlTextColor(equipped)
+	CharacterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	CharacterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
+end
+
 local eventList = {
 	"UPDATE_INVENTORY_DURABILITY",
 	"PLAYER_ENTERING_WORLD",
+	"PLAYER_EQUIPMENT_CHANGED",
+	"PLAYER_AVG_ITEM_LEVEL_UPDATE",
 }
 
-local function OnEvent(event)
+local function OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		DurabilityDataText:UnregisterEvent(event)
+	end
+
+	if event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
+		NewSetLevelFunction()
 	end
 
 	local numSlots = UpdateAllSlots()
@@ -117,13 +130,6 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
-local function NewSetLevelFunction()
-	local total, equipped = GetAverageItemLevel()
-	local r, g, b = K.GetILvlTextColor(equipped)
-	CharacterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
-	CharacterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
-end
-
 function Module:CreateDurabilityDataText()
 	if not C["DataText"].SlotDurability then return end
 
@@ -140,15 +146,14 @@ function Module:CreateDurabilityDataText()
 
 	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
-	local function _OnEvent(...)
-		OnEvent(...)
-	end
-
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
 	end
 
-	DurabilityDataText:SetScript("OnEvent", _OnEvent)
+	DurabilityDataText:SetScript("OnEvent", OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
+
+	-- Initial update
+	NewSetLevelFunction()
 end
