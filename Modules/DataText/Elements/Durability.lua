@@ -3,6 +3,7 @@ local Module = K:GetModule("DataText")
 
 local math_floor = math.floor
 local string_gsub = string.gsub
+local string_format = string.format
 local table_sort = table.sort
 
 local GetInventoryItemLink = GetInventoryItemLink
@@ -43,7 +44,6 @@ local function UpdateAllSlots()
 				localSlots[i][3] = current / max
 				numSlots = numSlots + 1
 			end
-
 			local iconTexture = GetInventoryItemTexture("player", index) or 134400
 			localSlots[i][4] = ("|T" .. iconTexture .. ":13:15:0:0:50:50:4:46:4:46|t ") or ""
 		end
@@ -63,7 +63,7 @@ local eventList = {
 	"PLAYER_ENTERING_WORLD",
 }
 
-local function OnEvent(_, event)
+local function OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		DurabilityDataText:UnregisterEvent(event)
 	end
@@ -76,7 +76,9 @@ local function OnEvent(_, event)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			DurabilityDataText.Text:SetFormattedText("%s%%|r" .. " " .. DURABILITY, K.RGBToHex(r, g, b) .. math_floor(localSlots[1][3] * 100))
+			local yellowColor = "|cFFF0C500" -- Hexadecimal color code for yellow, the closest I could find/get to match other tabs
+			-- Set the text color to yellow and format the durability text
+			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), yellowColor .. DURABILITY)
 		else
 			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
@@ -84,9 +86,10 @@ local function OnEvent(_, event)
 end
 
 local function OnEnter()
+	local total, equipped = GetAverageItemLevel()
 	GameTooltip:SetOwner(DurabilityDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataText, "TOPRIGHT", 0, 0)
-	GameTooltip:AddDoubleLine(DURABILITY, " ", 0.4, 0.6, 1, 0.4, 0.6, 1)
+	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local totalCost = 0
@@ -118,22 +121,25 @@ function Module:CreateDurabilityDataText()
 	if not C["DataText"].SlotDurability then return end
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
-	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, { 102 / 255, 157 / 255, 255 / 255 })
+	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
+	DurabilityDataText:SetParent(PaperDollFrame)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 0, -280)
+	DurabilityDataText.Text:SetPoint("TOP", CharacterFrameExpandButton, "LEFT", -230, 6)
 	DurabilityDataText.Text:SetFontObject(K.UIFont)
 	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 12, select(3, DurabilityDataText.Text:GetFont()))
 
 	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
+	local function _OnEvent(...)
+		OnEvent(...)
+	end
+
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
 	end
 
-	DurabilityDataText:SetScript("OnEvent", OnEvent)
+	DurabilityDataText:SetScript("OnEvent", _OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
-
-	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end
