@@ -89,7 +89,7 @@ local function OnEnter()
 	local total, equipped = GetAverageItemLevel()
 	GameTooltip:SetOwner(DurabilityDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataText, "TOPRIGHT", 0, 0)
-	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
+	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", "iLvl", equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local totalCost = 0
@@ -117,8 +117,17 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
+local function NewSetLevelFunction()
+	local total, equipped = GetAverageItemLevel()
+	local r, g, b = K.GetILvlTextColor(equipped)
+	CharacterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	CharacterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
+end
+
 function Module:CreateDurabilityDataText()
 	if not C["DataText"].SlotDurability then return end
+
+	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)

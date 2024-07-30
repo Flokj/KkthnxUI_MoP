@@ -232,7 +232,7 @@ local function GetItemSlotLevel(unit, index)
 	return tonumber(level) or 0
 end
 
-local function GetILvlTextColor(level)
+function K.GetILvlTextColor(level)
 	if level >= 372 then
 		return 1, .5, 0
 	elseif level >= 359 then
@@ -278,7 +278,7 @@ function Module:UpdateUnitILvl(unit, text)
 
 	local average = K.Round(total / 16, 1)
 	text:SetText(average)
-	text:SetTextColor(GetILvlTextColor(average))
+	text:SetTextColor(K.GetILvlTextColor(average))
 end
 
 function Module:ItemLevel_UpdatePlayer()
