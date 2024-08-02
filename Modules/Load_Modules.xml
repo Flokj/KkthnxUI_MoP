@@ -158,7 +158,6 @@
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\TradeSkillFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\EnhanceTrainers.lua" />
-   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\AtlasLoot.lua" />
    <Include file="Skins\Addons\Bartender4.lua" />
@@ -172,5 +171,6 @@
    <Include file="Skins\Addons\Skada.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!--Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <Include file="Skins\Addons\BugSack.lua" /> -->
 </Ui>
