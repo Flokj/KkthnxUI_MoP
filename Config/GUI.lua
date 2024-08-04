@@ -505,7 +505,6 @@ local Automation = function(self)
 
 	-- Miscellaneous Options sub-section
 	Window:CreateSection("Miscellaneous Options")
-	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion"])
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
@@ -641,7 +640,6 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
-	Window:CreateSwitch("DataText", "SlotDurability", L["Show Slot Durability %"])
 
 	-- Section: Icon Colors
 	Window:CreateSection("Icon Colors")
@@ -747,8 +745,10 @@ local Misc = function(self)
 	-- General Section
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
-	Window:CreateSwitch("Misc", "Focuser", "Mouseover focus by alt")	
+	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
+	Window:CreateSwitch("Misc", "Focuser", "Mouseover focus by Alt + LeftClick")	
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide Boss Emotes"])
+	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 
 	Window:CreateSection("Camera")
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 3.4, 0.1, nil, UpdateMaxZoomLevel)
@@ -909,7 +909,7 @@ local Tooltip = function(self)
 
 	-- Appearance section
 	Window:CreateSection("Appearance")
-	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
+	Window:CreateSwitch("Tooltip", "ItemQuality", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "FactionIcon", L["Show Faction Icon"])
 	Window:CreateSwitch("Tooltip", "HideRank", L["Hide Guild Rank"])
 	Window:CreateSwitch("Tooltip", "HideRealm", L["Show realm name by SHIFT"])

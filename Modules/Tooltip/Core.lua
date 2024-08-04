@@ -386,9 +386,7 @@ function Module:ReskinTooltip()
 		end
 		return
 	end
-	if self:IsForbidden() then
-		return
-	end
+	if self:IsForbidden() then return end
 	self:SetScale(1)
 
 	if not self.tipStyled then
@@ -408,10 +406,7 @@ function Module:ReskinTooltip()
 	end
 
 	K.SetBorderColor(self.bg.KKUI_Border)
-
-	if not C["Tooltip"].ClassColor then return end
-
-	if C["Tooltip"].ClassColor and self.GetItem then
+	if C["Tooltip"].ItemQuality and self.GetItem then
 		local _, item = self:GetItem()
 		if item then
 			local quality = select(3, GetItemInfo(item))

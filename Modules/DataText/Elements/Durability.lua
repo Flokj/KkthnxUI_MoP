@@ -131,7 +131,7 @@ local function OnLeave()
 end
 
 function Module:CreateDurabilityDataText()
-	if not C["DataText"].SlotDurability then return end
+	if not C["Misc"].SlotDurability then return end
 
 	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
 

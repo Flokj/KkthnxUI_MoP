@@ -133,7 +133,6 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	AutoCollapse = false,
 	AutoDeclineDuels = false,
 	AutoGoodbye = false,
 	AutoInvite = false,
@@ -260,7 +259,6 @@ C["DataText"] = {
 	Guild = false,
 	GuildSortBy = 1,
 	GuildSortOrder = true,
-	SlotDurability = true,
 	HideText = false,
 	IconColor = { 102 / 255, 157 / 255, 255 / 255 },
 	Latency = true,
@@ -397,6 +395,7 @@ C["Misc"] = {
 	MuteSounds = true,
 	QueueTimers = true,
 	ShowWowHeadLinks = false,
+	SlotDurability = true,
 	TradeTabs = true,
 	RaidTool = true,
 	DBMCount = "10",
@@ -539,7 +538,7 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	ClassColor = false,
+	ItemQuality = false,
 	Enable = true,
 	FactionIcon = true,
 	HideRank = true,
