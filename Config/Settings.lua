@@ -538,7 +538,7 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	ItemQuality = false,
+	ItemQuality = true,
 	Enable = true,
 	FactionIcon = true,
 	HideRank = true,
@@ -548,7 +548,7 @@ C["Tooltip"] = {
 	LFDRole = false,
 	ShowIDs = true,
 	TargetBy = true,
-	SpecLevelByShift = true,
+	SpecLevelByShift = false,
 	CursorMode = {
 		Options = {
 			["DISABLE"] = 1,

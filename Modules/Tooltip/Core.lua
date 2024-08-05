@@ -36,22 +36,22 @@ end
 
 function Module:HideLines()
 	for i = 3, self:NumLines() do
-		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
+		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
-				tiptext:SetText(nil)
+				tiptext:SetText("")
 				tiptext:Hide()
 			elseif linetext == FACTION_HORDE then
 				if C["Tooltip"].FactionIcon then
-					tiptext:SetText(nil)
+					tiptext:SetText("")
 					tiptext:Hide()
 				else
 					tiptext:SetText("|cffff5040" .. linetext .. "|r")
 				end
 			elseif linetext == FACTION_ALLIANCE then
 				if C["Tooltip"].FactionIcon then
-					tiptext:SetText(nil)
+					tiptext:SetText("")
 					tiptext:Hide()
 				else
 					tiptext:SetText("|cff4080ff" .. linetext .. "|r")
@@ -63,7 +63,7 @@ end
 
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
-		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
+		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
 		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
@@ -82,14 +82,13 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", -10, -10)
+		f:SetPoint("TOPRIGHT", 0, -5)
 		f:SetBlendMode("ADD")
-		-- f:SetScale(0.9)
-		-- f:SetAlpha(0.7)
+		f:SetScale(0.3)
 		self.factionFrame = f
 	end
-	self.factionFrame:SetAtlas("MountJournalIcons-" .. faction, true) --  charcreatetest-logo-horde
-	self.factionFrame:Show()
+	self.factionFrame:SetTexture("Interface\\Timer\\"..faction.."-Logo")
+	self.factionFrame:SetAlpha(0.5)
 end
 
 function Module:OnTooltipCleared()
