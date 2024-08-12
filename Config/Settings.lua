@@ -430,7 +430,6 @@ C["Nameplate"] = {
 	AKSProgress = false,
 	AuraSize = 30,
 	CastTarget = false,
-	CastbarGlow = true,
 	ClassIcon = false,
 	ColoredTarget = false,
 	CustomColor = { 0, 0.8, 0.3 },

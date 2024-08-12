@@ -818,7 +818,6 @@ local Nameplate = function(self)
 
 	Window:CreateSection("Castbar")
 	Window:CreateSwitch("Nameplate", "CastTarget", "Show Nameplate Target Of Casting Spell")
-	Window:CreateSwitch("Nameplate", "CastbarGlow", "Force Crucial Spells To Glow")
 
 	Window:CreateSection("Threat")
 	Window:CreateSwitch("Nameplate", "DPSRevertThreat", L["Revert Threat Color If Not Tank"])

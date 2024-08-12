@@ -395,7 +395,7 @@ function Module:CreateClassPower(self)
 		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight - 2
 		barPoint = { "CENTER", self }
 	else
-		barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, 14
+		barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerPowerHeight - 4
 		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	end
 
@@ -459,17 +459,17 @@ end
 function Module:CreateEclipseBar(self)
 	if K.Class ~= "DRUID" then return end
 
-	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, 8
+	local barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerPowerHeight - 4
 	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	if self.mystyle == "PlayerPlate" then
 		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
 		barPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 6}
 	end
 
-	local bar = CreateFrame("StatusBar", nil, self.Health)
+	local bar = CreateFrame("StatusBar", nil, self)
 	bar:SetSize(barWidth, barHeight)
-	bar:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 6)
-	bar:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6)
+	K.Mover(bar, "EclipseBar", "EclipseBar", { unpack(barPoint) })
+
 	bar:SetFrameLevel(self:GetFrameLevel() + 5)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	bar:SetStatusBarColor(0.25, 0.75, 1)
@@ -489,7 +489,7 @@ function Module:CreateEclipseBar(self)
 	bg:SetVertexColor(1, 1, 0)
 	bg.multiplier = 0.25
 
-	local text = K.CreateFontString(bar, 12)
+	local text = K.CreateFontString(bar, 14)
 	text:SetPoint("CENTER", bar, "TOP")
 	self:Tag(text, "[cureclipse]")
 
