@@ -101,7 +101,7 @@ end
 local function GetNumFreeSlots(name)
 	if name == "Bag" then
 		local totalFree, freeSlots, bagFamily = 0
-		for i = 0, 4 do -- reagent bank excluded
+		for i = 0, 4 do
 			freeSlots, bagFamily = GetContainerNumFreeSlots(i)
 			if bagFamily == 0 then
 				totalFree = totalFree + freeSlots
@@ -110,7 +110,7 @@ local function GetNumFreeSlots(name)
 		return totalFree
 	elseif name == "Bank" then
 		local numFreeSlots = GetContainerNumFreeSlots(-1)
-		for bagID = 6, 12 do
+		for bagID = 5, 11 do
 			numFreeSlots = numFreeSlots + GetContainerNumFreeSlots(bagID)
 		end
 		return numFreeSlots
@@ -147,7 +147,7 @@ tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
 	local str
-	for i = 1, 6 do -- Limit to 6 tracked
+	for i = 1, GetNumWatchedTokens() do
 		local curr = self.tags["currency"](self, i)
 		if curr then
 			str = (str and str .. " " or "") .. curr
