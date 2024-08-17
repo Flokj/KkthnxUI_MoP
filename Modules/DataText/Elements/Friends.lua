@@ -18,7 +18,7 @@ local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
 local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
 local C_Timer_After = C_Timer.After
 local EXPANSION_NAME0 = EXPANSION_NAME0
-local EXPANSION_NAME2 = EXPANSION_NAME2
+local EXPANSION_NAME3 = EXPANSION_NAME3
 local GameTooltip = GameTooltip
 local GetDisplayedInviteType = GetDisplayedInviteType
 local GetQuestDifficultyColor = GetQuestDifficultyColor
@@ -29,6 +29,7 @@ local InviteToGroup = C_PartyInfo.InviteUnit
 local IsAltKeyDown = IsAltKeyDown
 local IsShiftKeyDown = IsShiftKeyDown
 local MouseIsOver = MouseIsOver
+local WOW_PROJECT_CATA = WOW_PROJECT_CATACLYSM_CLASSIC or 14
 
 local BNET_CLIENT_WOW = BNET_CLIENT_WOW
 local FRIENDS_TEXTURE_AFK = FRIENDS_TEXTURE_AFK
@@ -41,7 +42,6 @@ local UNKNOWN = UNKNOWN
 
 local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
 local WOW_PROJECT_ID = WOW_PROJECT_ID or 1
-local WOW_PROJECT_WRATH = 11
 local CLIENT_WOW_DIFF = "WoV" -- for sorting
 
 local r, g, b = K.r, K.g, K.b
@@ -164,8 +164,8 @@ local function buildBNetTable(num)
 
 				if wowProjectID == WOW_PROJECT_60 then
 					gameText = EXPANSION_NAME0
-				elseif wowProjectID == WOW_PROJECT_WRATH then
-					gameText = EXPANSION_NAME2
+				elseif wowProjectID == WOW_PROJECT_CATA then
+					gameText = EXPANSION_NAME3
 				end
 
 				local infoText = GetOnlineInfoText(client, isMobile, rafLinkType, gameText)
@@ -209,9 +209,8 @@ local function FriendsPanel_UpdateButton(button)
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
 		button.zone:SetText(string_format("%s%s", zoneColor, area))
-		-- button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
-		-- C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
-		button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+		C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
+		-- button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
 		button.data = friendTable[index]
@@ -230,13 +229,13 @@ local function FriendsPanel_UpdateButton(button)
 		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 		if client == CLIENT_WOW_DIFF then
-			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
-			-- C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
+			-- button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
+			C_Texture.SetTitleIconTexture(button.gameIcon, BNET_CLIENT_WOW, Enum.TitleIconVersion.Medium)
 		elseif client == BNET_CLIENT_WOW then
 			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-" .. factionName)
 		else
-			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
-			-- C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium)
+			-- button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
+			C_Texture.SetTitleIconTexture(button.gameIcon, client, Enum.TitleIconVersion.Medium)
 		end
 
 		button.isBNet = true
@@ -408,7 +407,7 @@ local function buttonOnEnter(self)
 					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
 
 					-- Get TBC realm name from richPresence
-					if wowProjectID == WOW_PROJECT_WRATH then
+					if wowProjectID == WOW_PROJECT_CATA then
 						local realm, count = gsub(gameText, "^.-%-%s", "")
 						if count > 0 then
 							realmName = "-" .. realm
@@ -487,7 +486,7 @@ local function FriendsPanel_CreateButton(parent, index)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
+	-- button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
 
 	button.gameIcon.border = CreateFrame("Frame", nil, button)
 	button.gameIcon.border:SetFrameLevel(button:GetFrameLevel())

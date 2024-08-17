@@ -88,6 +88,7 @@ function Module:StyleActionButton(button)
 	if petShine then petShine:SetAllPoints() end
 	if autoCastable then
 		autoCastable:SetTexCoord(0.217, 0.765, 0.217, 0.765)
+		autoCastable:SetDrawLayer("OVERLAY", 3)
 		autoCastable:SetAllPoints()
 	end
 	
