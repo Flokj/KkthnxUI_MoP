@@ -1,8 +1,5 @@
 local AddOnName, Engine = ...
 
-GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
-GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
-
 local bit_band = bit.band
 local bit_bor = bit.bor
 local next = next
@@ -72,6 +69,7 @@ Engine[3] = {} -- L, Locale
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
+K.LibEasyMenu = LibStub("LibEasyMenu-1.0")
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
 K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
@@ -357,24 +355,6 @@ for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
-end
-
-local function EasyMenu_Initialize( frame, level, menuList )
-	for index = 1, #menuList do
-		local value = menuList[index]
-		if (value.text) then
-			value.index = index
-			UIDropDownMenu_AddButton( value, level )
-		end
-	end
-end
-    
-function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay )
-	if ( displayMode == "MENU" ) then
-		menuFrame.displayMode = displayMode
-	end
-	UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList)
-	ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay)
 end
 
 _G.KkthnxUI = Engine

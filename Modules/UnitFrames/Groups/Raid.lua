@@ -321,7 +321,9 @@ function Module:CreateRaid()
 		Override = UpdateRaidThreat,
 	}
 
-	self.Range = Module.CreateRangeIndicator(self)
+	self.Range = {
+		Override = Module.UpdateRange,
+	}
 
 	self.Health = Health
 	self.Name = Name

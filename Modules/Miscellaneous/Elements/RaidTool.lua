@@ -17,8 +17,6 @@ local C_Timer_After = C_Timer.After
 local LeaveParty = LeaveParty
 local ConvertToRaid = ConvertToRaid
 local ConvertToParty = ConvertToParty
-local EnableAddOn = EnableAddOn
-local LoadAddOn = LoadAddOn
 
 function Module:RaidTool_Visibility(frame)
 	if IsInGroup() then
@@ -423,23 +421,16 @@ function Module:RaidTool_BuffChecker(parent)
 			end
 		else
 			if IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
-				if C["Announcements"].PullCountdown then
-					if reset then
-						SlashCmdList["PULLCOUNTDOWN"]("5")
-					else
-						SlashCmdList["PULLCOUNTDOWN"]("0")
-					end
-					reset = not reset
-				elseif IsAddOnLoaded("DBM-Core") and not C["Announcements"].PullCountdown then
+				if IsAddOnLoaded("DBM-Core") then
 					if reset then
 						SlashCmdList["DEADLYBOSSMODS"]("pull " .. C["Misc"].DBMCount)
 					else
 						SlashCmdList["DEADLYBOSSMODS"]("pull 0")
 					end
 					reset = not reset
-				elseif IsAddOnLoaded("BigWigs") and not C["Announcements"].PullCountdown then
+				elseif IsAddOnLoaded("BigWigs") then
 					if not SlashCmdList["BIGWIGSPULL"] then
-						C_AddOns_LoadAddOn("BigWigs_Plugins")
+						LoadAddOn("BigWigs_Plugins")
 					end
 					if reset then
 						SlashCmdList["BIGWIGSPULL"](C["Misc"].DBMCount)
@@ -631,7 +622,7 @@ function Module:RaidTool_EasyMarker()
 						menu.checked = false
 					end
 				end
-				EasyMenu(menuList, K.EasyMenu, "cursor", 0, 0, "MENU", 1)
+				K.LibEasyMenu.Create(menuList, K.EasyMenu, "cursor", 0, 0, "MENU", 1)
 			end
 		end
 	end)

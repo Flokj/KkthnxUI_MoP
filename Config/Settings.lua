@@ -262,7 +262,7 @@ C["DataText"] = {
 	HideText = false,
 	IconColor = { 102 / 255, 157 / 255, 255 / 255 },
 	Latency = true,
-	Location = false,
+	Location = true,
 	System = true,
 	Time = true,
 }

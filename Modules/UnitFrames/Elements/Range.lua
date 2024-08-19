@@ -14,22 +14,8 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsUnit = UnitIsUnit
 local UnitInPhase = UnitInPhase
 
-function Module:CreateRangeIndicator()
-	if not C["Unitframe"].Range then return end
-
-	local Range = {
-		insideAlpha = 1,
-		outsideAlpha = 0.35,
-	}
-	Range.Override = Module.UpdateRange
-
-	return Range
-end
-
 local function GetGroupUnit(unit)
-	if UnitIsUnit(unit, "player") then
-		return
-	end
+	if UnitIsUnit(unit, "player") then return end
 
 	if string_find(unit, "party") or string_find(unit, "raid") then
 		return unit
@@ -68,6 +54,7 @@ local function friendlyIsInRange(realUnit)
 end
 
 function Module:UpdateRange()
+	if not C["Unitframe"].Range then return end
 	if not self.Range then return end
 
 	local alpha = self.Range.insideAlpha
