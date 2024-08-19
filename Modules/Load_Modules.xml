@@ -169,8 +169,8 @@
    <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\Skada.lua" />
+   <Include file="Skins\Addons\WeakAuras.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!--Include file="Skins\Addons\WeakAuras.lua" />
-   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
+   <!--Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <Include file="Skins\Addons\BugSack.lua" /> -->
 </Ui>

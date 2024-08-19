@@ -886,14 +886,12 @@ local Skins = function(self)
 	Window:CreateSwitch("Skins", "Dominos", L["Dominos Skin"])
 	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
 	Window:CreateSwitch("Skins", "Skada", L["Skada Skin"])
+	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
 	Window:CreateSection("Font Tweaks")
 	Window:CreateSlider("Skins", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
 	--Window:CreateSlider("Skins", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
-
-	-- Disabled / Broken Skins
-	--Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 end
 
 local Tooltip = function(self)
