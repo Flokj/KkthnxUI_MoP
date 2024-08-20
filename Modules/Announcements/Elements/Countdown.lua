@@ -1,34 +1,24 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
-local UnitName = UnitName
-local CreateFrame = CreateFrame
-local SendChatMessage = SendChatMessage
+local UnitName, CreateFrame, SendChatMessage, IsInGroup, IsInRaid, UnitAffectingCombat = UnitName, CreateFrame, SendChatMessage, IsInGroup, IsInRaid, UnitAffectingCombat
 
 function Module:CreatePullCountdown()
 	local PullCountdownHandler = CreateFrame("Frame")
-	local firstdone, delay, target
-	local interval = 1.5
-	local lastupdate = 0
+	local delay, target
+	local interval, lastupdate = 1.5, 0
 
 	local function reset()
 		PullCountdownHandler:SetScript("OnUpdate", nil)
-		firstdone, delay, target = nil, nil, nil
-		lastupdate = 0
+		delay, target, lastupdate = nil, nil, 0
 	end
 
 	local function pull(_, elapsed)
-		local tname = UnitName("target")
-		if tname then
-			target = tname
-		else
-			target = ""
-		end
+		target = UnitName("target") or ""
 
-		if not firstdone then
-			SendChatMessage((L["Pulling In"]):format(target, tostring(delay)), K.CheckChat())
-			firstdone = true
-			delay = delay - 1
+		if not delay then
+			SendChatMessage((L["Pulling In"]):format(target, 3), K.CheckChat())
+			delay = 2
 		end
 
 		lastupdate = lastupdate + elapsed
@@ -52,11 +42,11 @@ function Module:CreatePullCountdown()
 			return
 		end
 
-		delay = timer or 3
 		if PullCountdownHandler:GetScript("OnUpdate") then
 			reset()
 			SendChatMessage(L["Pull ABORTED!"], K.CheckChat())
 		else
+			delay = tonumber(timer) or 3
 			PullCountdownHandler:SetScript("OnUpdate", pull)
 		end
 	end
@@ -64,10 +54,6 @@ function Module:CreatePullCountdown()
 	_G.SLASH_KKUI_PULLCOUNTDOWN1 = "/jenkins"
 	_G.SLASH_KKUI_PULLCOUNTDOWN2 = "/pc"
 	_G.SlashCmdList["KKUI_PULLCOUNTDOWN"] = function(msg)
-		if tonumber(msg) ~= nil then
-			Module.Pull(msg)
-		else
-			Module.Pull()
-		end
+		Module.Pull(msg)
 	end
 end

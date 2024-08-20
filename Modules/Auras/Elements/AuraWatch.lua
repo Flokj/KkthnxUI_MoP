@@ -12,21 +12,16 @@ local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemCooldown = GetItemCooldown
 local GetItemInfo = GetItemInfo
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetSpellCharges = GetSpellCharges
-local GetSpellCooldown = GetSpellCooldown
-local GetSpellInfo = GetSpellInfo
 local GetTime = GetTime
 local GetTotemInfo = GetTotemInfo
 local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsPlayerSpell = IsPlayerSpell
-local PlaySound = PlaySound
 local SlashCmdList = SlashCmdList
-local UnitAura = UnitAura
 local UnitGUID = UnitGUID
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
@@ -149,17 +144,20 @@ local function BuildAuraList()
 end
 
 local function BuildUnitIDTable()
-	for _, VALUE in pairs(AuraList) do
-		for _, value in pairs(VALUE.List) do
-			local flag = true
-			for _, v in pairs(UnitIDTable) do
-				if value.UnitID == v then
-					flag = false
-				end
-			end
+	local existingUnits = {}
+	for _, v in pairs(UnitIDTable) do
+		if v then
+			existingUnits[v] = true
+		end
+	end
 
-			if flag then
-				table_insert(UnitIDTable, value.UnitID)
+	for _, VALUE in pairs(AuraList) do
+		if VALUE and VALUE.List then
+			for _, value in pairs(VALUE.List) do
+				if value and value.UnitID and not existingUnits[value.UnitID] then
+					existingUnits[value.UnitID] = true
+					table_insert(UnitIDTable, value.UnitID)
+				end
 			end
 		end
 	end
@@ -169,12 +167,14 @@ local function BuildCooldownTable()
 	table_wipe(cooldownTable)
 
 	for KEY, VALUE in pairs(AuraList) do
-		for spellID, value in pairs(VALUE.List) do
-			if value.SpellID and IsPlayerSpell(value.SpellID) or value.ItemID or value.SlotID or value.TotemID then
-				if not cooldownTable[KEY] then
-					cooldownTable[KEY] = {}
+		if VALUE and VALUE.List then
+			for spellID, value in pairs(VALUE.List) do
+				if value and (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
+					if not cooldownTable[KEY] then
+						cooldownTable[KEY] = {}
+					end
+					cooldownTable[KEY][spellID] = true
 				end
-				cooldownTable[KEY][spellID] = true
 			end
 		end
 	end
@@ -458,8 +458,9 @@ function Module:AuraWatch_UpdateCD()
 			local value = group.List[spellID]
 			if value then
 				if value.SpellID then
-					local name, _, icon = GetSpellInfo(value.SpellID)
-					local start, duration = GetSpellCooldown(value.SpellID)
+					local name, _, icon = GetSpellName(value.SpellID)
+					local start = GetSpellCooldown(value.SpellID).startTime
+					local duration = GetSpellCooldown(value.SpellID).duration
 					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
 					if group.Mode == "ICON" then
 						name = nil
@@ -471,7 +472,7 @@ function Module:AuraWatch_UpdateCD()
 						Module:AuraWatch_SetupCD(KEY, name, icon, start, duration, true, 1, value.SpellID)
 					end
 				elseif value.ItemID then
-					local start, duration = GetItemCooldown(value.ItemID) 
+					local start, duration = GetItemCooldown(value.ItemID)
 					if start and duration > C["AuraWatch"].MinCD then
 						local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(value.ItemID)
 						if group.Mode == "ICON" then
@@ -604,11 +605,8 @@ function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 
 	while true do
 		local name, icon, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, _, number = UnitAura(unit, index, filter)
-		if not name then
-			break
-		end
+		if not name then break end
 		Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, number, inCombat)
-
 		index = index + 1
 	end
 end
@@ -683,7 +681,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 		frame.type = 2
 		frame.spellID = itemID
 	else
-		name, _, icon = GetSpellInfo(intID)
+		name, _, icon = GetSpellName(intID)
 		frame.type = 1
 		frame.spellID = intID
 	end
@@ -757,12 +755,6 @@ function Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceF
 end
 
 local cache = {}
-local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
-local playSoundSpells = {
-	[396364] = true,
-	[396369] = true,
-	[240447] = true,
-}
 
 function Module:AuraWatch_UpdateInt(event, ...)
 	if not IntCD.List then
@@ -800,10 +792,6 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			cache[timestamp] = spellID
 		end
 
-		if C["AuraWatch"].QuakeRing and eventList[eventType] and playSoundSpells[spellID] then
-			PlaySound(soundKitID, "Master") -- 'Ding' on quake
-		end
-
 		if #cache > 666 then
 			table_wipe(cache)
 		end
@@ -811,7 +799,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 end
 
 -- CleanUp
-function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do this
+function Module:AuraWatch_Cleanup()
 	for _, value in pairs(FrameList) do
 		for i = 1, maxFrames do
 			local frame = value[i]
@@ -840,6 +828,7 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 				K.HideOverlayGlow(frame.glowFrame)
 			end
 		end
+
 		value.Index = 1
 	end
 end
@@ -874,6 +863,10 @@ function Module:AuraWatch_PostCleanup()
 
 			if frame.Spellname then
 				frame.Spellname:SetText("")
+			end
+
+			if frame.glowFrame then
+				K.HideOverlayGlow(frame.glowFrame)
 			end
 		end
 	end

@@ -1,35 +1,16 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Auras")
 
--- Sourced: NDui (Siweia)
-
-local math_floor = math.floor
-local select = select
-local string_format = string.format
-
-local CreateFrame = CreateFrame
-local DebuffTypeColor = DebuffTypeColor
-local GameTooltip = GameTooltip
-local GetInventoryItemQuality = GetInventoryItemQuality
-local GetInventoryItemTexture = GetInventoryItemTexture
-local GetTime = GetTime
-local GetWeaponEnchantInfo = GetWeaponEnchantInfo
-local RegisterAttributeDriver = RegisterAttributeDriver
-local RegisterStateDriver = RegisterStateDriver
-local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
-local UIParent = UIParent
-local UnitAura = UnitAura
+-- Cache WoW API and Lua functions
+local math_floor, select, string_format = math.floor, select, string.format
+local CreateFrame, GetTime, GetWeaponEnchantInfo = CreateFrame, GetTime, GetWeaponEnchantInfo
+local DebuffTypeColor, RegisterAttributeDriver, RegisterStateDriver = DebuffTypeColor, RegisterAttributeDriver, RegisterStateDriver
+local GameTooltip, GetInventoryItemQuality, GetInventoryItemTexture = GameTooltip, GetInventoryItemQuality, GetInventoryItemTexture
 
 local day, hour, minute = 86400, 3600, 60
 
 function Module:OnEnable()
-	local loadAuraModules = {
-		"HideBlizBuff",
-		"BuildBuffFrame",
-		"CreateTotems",
-		"CreateReminder",
-	}
-
+	local loadAuraModules = { "HideBlizBuff", "BuildBuffFrame", "CreateTotems", "CreateReminder" }
 	for _, funcName in ipairs(loadAuraModules) do
 		local func = self[funcName]
 		if type(func) == "function" then
@@ -48,7 +29,7 @@ function Module:HideBlizBuff()
 		if isLogin or isReload then
 			K.HideInterfaceOption(_G.BuffFrame)
 			K.HideInterfaceOption(_G.TemporaryEnchantFrame)
-			BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
+			BuffFrame.numHideableBuffs = 0 -- Prevent error in edit mode
 		end
 	end)
 end
@@ -56,42 +37,28 @@ end
 function Module:BuildBuffFrame()
 	if not C["Auras"].Enable then return end
 
-	-- Config
+	-- Buff and Debuff settings
 	Module.settings = {
-		Buffs = {
-			offset = 12,
-			size = C["Auras"].BuffSize,
-			wrapAfter = C["Auras"].BuffsPerRow,
-			maxWraps = 3,
-			reverseGrow = C["Auras"].ReverseBuffs,
-		},
-		Debuffs = {
-			offset = 12,
-			size = C["Auras"].DebuffSize,
-			wrapAfter = C["Auras"].DebuffsPerRow,
-			maxWraps = 1,
-			reverseGrow = C["Auras"].ReverseDebuffs,
-		},
+		Buffs = { offset = 12, size = C["Auras"].BuffSize, wrapAfter = C["Auras"].BuffsPerRow, maxWraps = 3, reverseGrow = C["Auras"].ReverseBuffs },
+		Debuffs = { offset = 12, size = C["Auras"].DebuffSize, wrapAfter = C["Auras"].DebuffsPerRow, maxWraps = 1, reverseGrow = C["Auras"].ReverseDebuffs },
 	}
 
 	-- Movers
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
 	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
-	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
 	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
 	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", { "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 })
-	Module.DebuffFrame:ClearAllPoints()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
 
 function Module:FormatAuraTime(s)
 	if s >= day then
 		return string_format("%d" .. K.MyClassColor .. "d", s / day), s % day
-	elseif s >= 2 * hour then
+	elseif s >= hour * 2 then
 		return string_format("%d" .. K.MyClassColor .. "h", s / hour), s % hour
-	elseif s >= 10 * minute then
+	elseif s >= minute * 10 then
 		return string_format("%d" .. K.MyClassColor .. "m", s / minute), s % minute
 	elseif s >= minute then
 		return string_format("%d:%.2d", s / minute, s % minute), s - math_floor(s)
@@ -106,7 +73,6 @@ end
 
 function Module:UpdateTimer(elapsed)
 	local onTooltip = GameTooltip:IsOwned(self)
-
 	if not (self.timeLeft or self.expiration or onTooltip) then
 		self:SetScript("OnUpdate", nil)
 		return
@@ -114,30 +80,27 @@ function Module:UpdateTimer(elapsed)
 
 	if self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
-	end
-
-	if self.nextUpdate > 0 then
-		self.nextUpdate = self.nextUpdate - elapsed
-		return
-	end
-
-	if self.expiration then
-		self.timeLeft = self.expiration / 1e3 - (GetTime() - self.oldTime)
+	elseif self.expiration then
+		self.timeLeft = (self.expiration / 1e3) - (GetTime() - self.oldTime)
 	end
 
 	if self.timeLeft and self.timeLeft >= 0 then
+		if self.nextUpdate > 0 then
+			self.nextUpdate = self.nextUpdate - elapsed
+			return
+		end
+
 		local timer, nextUpdate = Module:FormatAuraTime(self.timeLeft)
 		self.nextUpdate = nextUpdate
 		self.timer:SetText(timer)
+	else
+		self.timer:SetText("") -- Clear the timer if timeLeft is invalid
 	end
 
+	-- If the tooltip is showing, update it
 	if onTooltip then
 		Module:Button_SetTooltip(self)
 	end
-end
-
-function Module:GetSpellStat(arg16, arg17, arg18)
-	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
 end
 
 function Module:UpdateAuras(button, index)
@@ -176,11 +139,6 @@ function Module:UpdateAuras(button, index)
 		K.SetBorderColor(button.KKUI_Border)
 	end
 
-	-- Show spell stat for 'Soleahs Secret Technique'
-	if spellID == 368512 then
-		button.count:SetText(Module:GetSpellStat(arg16, arg17, arg18))
-	end
-
 	button.spellID = spellID
 	button.icon:SetTexture(texture)
 	button.offset = nil
@@ -190,19 +148,16 @@ function Module:UpdateTempEnchant(button, index)
 	local expirationTime = select(button.enchantOffset, GetWeaponEnchantInfo())
 	if expirationTime then
 		local quality = GetInventoryItemQuality("player", index)
-		local color = K.QualityColors[quality or 1]
-		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+		button.KKUI_Border:SetVertexColor(K.QualityColors[quality or 1].r, K.QualityColors[quality or 1].g, K.QualityColors[quality or 1].b)
 		button.icon:SetTexture(GetInventoryItemTexture("player", index))
-
 		button.expiration = expirationTime
 		button.oldTime = GetTime()
 		button:SetScript("OnUpdate", Module.UpdateTimer)
 		button.nextUpdate = -1
 		Module.UpdateTimer(button, 0)
 	else
-		button.expiration = nil
-		button.timeLeft = nil
 		button.timer:SetText("")
+		button.expiration, button.timeLeft = nil, nil
 	end
 end
 
@@ -301,9 +256,9 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:RemoveSpellFromIgnoreList()
-	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] then
+	if IsAltKeyDown() and IsControlKeyDown() and self.spellID then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = nil
-		K.Print(string.format(L["RemoveFromIgnoreList"], "", self.spellID))
+		K.Print(string_format(L["RemoveFromIgnoreList"], "", self.spellID))
 	end
 end
 
@@ -317,7 +272,6 @@ end
 
 function Module:Button_OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -5, -5)
-	-- Update tooltip
 	self.nextUpdate = -1
 	self:SetScript("OnUpdate", Module.UpdateTimer)
 end

@@ -1,22 +1,21 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
-local CancelDuel = CancelDuel
-local StaticPopup_Hide = StaticPopup_Hide
+local CancelDuel, StaticPopup_Hide = CancelDuel, StaticPopup_Hide
 local confirmationColor = "|cff00ff00"
 
--- Declines a pending duel request
+-- Decline a duel request and hide the popup
 function Module:DUEL_REQUESTED(name)
-	CancelDuel() -- Cancel the duel request
-	StaticPopup_Hide("DUEL_REQUESTED") -- Hide the pending duel popup
-	print("Declined a duel request from: " .. confirmationColor .. name .. "|r") -- Print confirmation message
+	CancelDuel()
+	StaticPopup_Hide("DUEL_REQUESTED")
+	K.Print(confirmationColor .. "Declined a duel request from: " .. name .. "|r")
 end
 
--- Registers or unregisters the event handlers for auto-declining duels
+-- Register or unregister events for auto-declining duels
 function Module:CreateAutoDeclineDuels()
 	if C["Automation"].AutoDeclineDuels then
-		K:RegisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED) -- Register the DUEL_REQUESTED event
+		K:RegisterEvent("DUEL_REQUESTED", self.DUEL_REQUESTED)
 	else
-		K:UnregisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED) -- Unregister the DUEL_REQUESTED event
+		K:UnregisterEvent("DUEL_REQUESTED", self.DUEL_REQUESTED)
 	end
 end
