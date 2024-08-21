@@ -10,7 +10,13 @@ local GameTooltip, GetInventoryItemQuality, GetInventoryItemTexture = GameToolti
 local day, hour, minute = 86400, 3600, 60
 
 function Module:OnEnable()
-	local loadAuraModules = { "HideBlizBuff", "BuildBuffFrame", "CreateTotems", "CreateReminder" }
+	local loadAuraModules = {
+		"HideBlizBuff",
+		"BuildBuffFrame",
+		"CreateTotems",
+		"CreateReminder",
+	}
+
 	for _, funcName in ipairs(loadAuraModules) do
 		local func = self[funcName]
 		if type(func) == "function" then
@@ -46,10 +52,12 @@ function Module:BuildBuffFrame()
 	-- Movers
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
 	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
+	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
 	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
 	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", { "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 })
+	Module.DebuffFrame:ClearAllPoints()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
 
@@ -73,6 +81,7 @@ end
 
 function Module:UpdateTimer(elapsed)
 	local onTooltip = GameTooltip:IsOwned(self)
+
 	if not (self.timeLeft or self.expiration or onTooltip) then
 		self:SetScript("OnUpdate", nil)
 		return
@@ -80,24 +89,23 @@ function Module:UpdateTimer(elapsed)
 
 	if self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
-	elseif self.expiration then
-		self.timeLeft = (self.expiration / 1e3) - (GetTime() - self.oldTime)
+	end
+
+	if self.nextUpdate > 0 then
+		self.nextUpdate = self.nextUpdate - elapsed
+		return
+	end
+
+	if self.expiration then
+		self.timeLeft = self.expiration / 1e3 - (GetTime() - self.oldTime)
 	end
 
 	if self.timeLeft and self.timeLeft >= 0 then
-		if self.nextUpdate > 0 then
-			self.nextUpdate = self.nextUpdate - elapsed
-			return
-		end
-
 		local timer, nextUpdate = Module:FormatAuraTime(self.timeLeft)
 		self.nextUpdate = nextUpdate
 		self.timer:SetText(timer)
-	else
-		self.timer:SetText("") -- Clear the timer if timeLeft is invalid
 	end
 
-	-- If the tooltip is showing, update it
 	if onTooltip then
 		Module:Button_SetTooltip(self)
 	end
