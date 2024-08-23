@@ -84,23 +84,21 @@ end
 local function ConvertTable()
 	for i = 1, 10 do
 		myTable[i] = {}
-		if i < 10 then
-			local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
-			if value and next(value) then
-				for spellID, v in pairs(value) do
-					myTable[i][spellID] = DataAnalyze(v)
-				end
-			end
-		else
-			if next(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) then
-				for spellID, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) do
-					myTable[i][spellID] = DataAnalyze(v)
-				end
+		local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
+		if value and next(value) then
+			for spellID, v in pairs(value) do
+				myTable[i][spellID] = DataAnalyze(v)
 			end
 		end
 	end
-
-	for _, v in pairs(C.AuraWatchList[K.Class]) do
+	local internalCD = KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD
+	if next(internalCD) then
+		for spellID, v in pairs(internalCD) do
+			myTable[10][spellID] = DataAnalyze(v)
+		end
+	end
+	local auraWatchList = C.AuraWatchList[K.Class]
+	for _, v in pairs(auraWatchList) do
 		if v.Name == "Player Aura" then
 			InsertData(1, v.List)
 		elseif v.Name == "Target Aura" then
@@ -113,8 +111,8 @@ local function ConvertTable()
 			InsertData(6, v.List)
 		end
 	end
-
-	for i, v in pairs(C.AuraWatchList["ALL"]) do
+	local allAuras = C.AuraWatchList["ALL"]
+	for i, v in pairs(allAuras) do
 		if v.Name == "Enchant Aura" then
 			InsertData(7, v.List)
 		elseif v.Name == "Raid Buff" then
@@ -126,19 +124,16 @@ local function ConvertTable()
 		elseif v.Name == "InternalCD" then
 			InsertData(10, v.List)
 			IntCD = v
-			table_remove(C.AuraWatchList["ALL"], i)
+			table_remove(allAuras, i)
 		end
 	end
 end
 
 local function BuildAuraList()
 	AuraList = C.AuraWatchList["ALL"] or {}
-	for class in pairs(C.AuraWatchList) do
-		if class == K.Class then
-			for _, value in pairs(C.AuraWatchList[class]) do
-				table_insert(AuraList, value)
-			end
-		end
+	local classAuras = C.AuraWatchList[K.Class]
+	for _, value in pairs(classAuras) do
+		table_insert(AuraList, value)
 	end
 	table_wipe(C.AuraWatchList)
 end
@@ -152,9 +147,9 @@ local function BuildUnitIDTable()
 	end
 
 	for _, VALUE in pairs(AuraList) do
-		if VALUE and VALUE.List then
+		if VALUE.List then
 			for _, value in pairs(VALUE.List) do
-				if value and value.UnitID and not existingUnits[value.UnitID] then
+				if value.UnitID and not existingUnits[value.UnitID] then
 					existingUnits[value.UnitID] = true
 					table_insert(UnitIDTable, value.UnitID)
 				end
@@ -165,11 +160,10 @@ end
 
 local function BuildCooldownTable()
 	table_wipe(cooldownTable)
-
 	for KEY, VALUE in pairs(AuraList) do
-		if VALUE and VALUE.List then
+		if VALUE.List then
 			for spellID, value in pairs(VALUE.List) do
-				if value and (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
+				if (value.SpellID and IsPlayerSpell(value.SpellID)) or value.ItemID or value.SlotID or value.TotemID then
 					if not cooldownTable[KEY] then
 						cooldownTable[KEY] = {}
 					end

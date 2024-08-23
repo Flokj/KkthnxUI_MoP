@@ -955,7 +955,7 @@ local function GetGlowType()
     if not C then
         return
     end
-    return LCG_GlowList[C["General"] and C["General"].GlowMode.Value or 3]
+    return LCG_GlowList[C["General"] and C["General"].GlowMode.Value or 4]
 end
 
 lib.ShowOverlayGlow = function(button)
