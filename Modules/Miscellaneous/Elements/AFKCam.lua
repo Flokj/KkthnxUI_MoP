@@ -1,8 +1,8 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
--- Sourced: ElvUI (Elv)
--- Edited: KkthnxUI (Kkthnx)
+-- Modified by KkthnxUI (Kkthnx) from ElvUI (Elv)
+
 local C_Timer_After = C_Timer.After
 local C_Timer_NewTicker = C_Timer.NewTicker
 local C_Timer_NewTimer = C_Timer.NewTimer
@@ -72,8 +72,6 @@ local daysAbr = {
 
 -- Source wowhead.com
 local stats = {
-	344, -- Bandages used
-	759, -- Average daily quests completed per day
 	60, -- Total deaths
 	94, -- Quests abandoned
 	97, -- Daily quests completed
@@ -119,16 +117,13 @@ local stats = {
 	1518, -- Fish caught
 	1776, -- Food eaten most
 	2277, -- Summons accepted
+	5692, -- Rated battlegrounds played
+	5693, -- Rated battleground played the most
+	5695, -- Rated battleground won the most
+	5694, -- Rated battlegrounds won
+	7399, -- Challenge mode dungeons completed
+	8278, -- Pet Battles won at max level
 }
-
-if K.Faction == "Alliance" then
-	table.insert(stats, 1466) -- Most Alliance factions at Exalted
-	table.insert(stats, 58) -- Deaths from Drek'Thar
-	table.insert(stats, 594) -- Deaths from Hogger
-elseif K.Faction == "Horde" then
-	table.insert(stats, 593) -- Deaths from Vanndar Stormpike
-	table.insert(stats, 926) -- Most Horde factions at Exalted
-end
 
 local function IsIn(val, ...)
 	for i = 1, select("#", ...) do
@@ -162,6 +157,7 @@ end
 local function createTime(self)
 	local color = C_Calendar.GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 	local hour, minute
+
 	if GetCVarBool("timeMgrUseLocalTime") then
 		hour, minute = tonumber(date("%H")), tonumber(date("%M"))
 	else
@@ -308,11 +304,6 @@ local function SetAFK(self, status)
 
 		self.chat:UnregisterAllEvents()
 		self.chat:Clear()
-
-		-- if PVEFrame:IsShown() then -- odd bug, frame is blank
-		-- 	PVEFrame_ToggleFrame()
-		-- 	PVEFrame_ToggleFrame()
-		-- end
 
 		self.isAFK = false
 	end
@@ -506,11 +497,6 @@ function Module:CreateAFKCam()
 	AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
 	AFKMode.top.wowlogo:SetSize(300, 150)
 	AFKMode.top.wowlogo.tex = AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
-	local currentExpansionLevel = GetClampedCurrentExpansionLevel()
-	-- local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel)
-	-- if expansionDisplayInfo then
-	-- 	AFKMode.top.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
-	-- end
 	AFKMode.top.wowlogo.tex:SetAllPoints()
 
 	-- Date text

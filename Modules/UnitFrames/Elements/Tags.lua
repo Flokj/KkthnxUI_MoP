@@ -262,7 +262,8 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
-	local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+	local textLine = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]
+	local title = textLine and textLine:GetText()
 	if title and not strfind(title, "^" .. LEVEL) then
 		return title
 	end

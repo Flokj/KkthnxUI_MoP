@@ -42,7 +42,6 @@ local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0
 local menuList = {
 	{ text = K.SystemColor .. OPTIONS_MENU .. "|r", isTitle = true, notCheckable = true },
 	{ text = "", notClickable = true, notCheckable = true },
-
 	{
 		text = L["Install"],
 		notCheckable = true,
@@ -86,109 +85,19 @@ local menuList = {
 	},
 
 	{
-		text = L["Discord"],
-		notCheckable = true,
-		func = function()
-			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
-		end,
-	},
-
-	{
 		text = "Roll",
 		notCheckable = true,
 		func = function()
 			RandomRoll(1, 100)
 		end,
 	},
+
 	{ text = "", notClickable = true, notCheckable = true },
+}
 
-	{
-		text = TASKS_COLON,
-		hasArrow = true,
-		notCheckable = true,
-		menuList = {
-			{
-				text = "Delete " .. QUESTS_LABEL .. " From Tracker",
-				notCheckable = true,
-				func = function()
-					if InCombatLockdown() then
-						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
-						return
-					end
-					SlashCmdList["KKUI_ABANDONQUESTS"]()
-				end,
-			},
-
-			{
-				text = "Delete |ccf00ccff" .. HEIRLOOMS .. "|r From Bags",
-				notCheckable = true,
-				func = function()
-					if InCombatLockdown() then
-						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
-						return
-					end
-					SlashCmdList["KKUI_DELETEHEIRLOOMS"]()
-				end,
-			},
-
-			{
-				text = "Delete |cffffd200" .. AUCTION_CATEGORY_QUEST_ITEMS .. "|r From Bags",
-				notCheckable = true,
-				func = function()
-					if InCombatLockdown() then
-						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
-						return
-					end
-					SlashCmdList["KKUI_DELETEQUESTITEMS"]()
-				end,
-			},
-		},
-	},
-
-	{
-		text = "Details",
-		hasArrow = true,
-		notCheckable = true,
-		menuList = {
-			{
-				text = "Reset Details",
-				notCheckable = true,
-				func = function()
-					if InCombatLockdown() then
-						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
-						return
-					end
-
-					if IsAddOnLoaded("Details") then
-						_G.KkthnxUIDB.Variables["ResetDetails"] = true
-						StaticPopup_Show("KKUI_CHANGES_RELOAD")
-					else
-						K.Print("Details is not loaded!")
-					end
-				end,
-			},
-
-			{
-				text = "Toggle Details",
-				notCheckable = true,
-				func = function()
-					if InCombatLockdown() then
-						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
-						return
-					end
-
-					if IsAddOnLoaded("Details") then
-						PlaySound(21968)
-						_G._detalhes:ToggleWindows()
-					else
-						K.Print("Details is not loaded!")
-					end
-				end,
-			},
-		},
-	},
-
-	{
+-- Only add the Skada menu if Skada is loaded
+if IsAddOnLoaded("Skada") then
+	table.insert(menuList, {
 		text = "Skada",
 		hasArrow = true,
 		notCheckable = true,
@@ -202,20 +111,68 @@ local menuList = {
 						return
 					end
 
-					if IsAddOnLoaded("Skada") then
-						PlaySound(21968)
-						_G.Skada:ToggleWindow()
-					else
-						K.Print("Skada is not loaded!")
-					end
+					PlaySound(21968)
+					_G.Skada:ToggleWindow()
 				end,
 			},
 		},
-	},
+	})
 
-	{ text = "", notClickable = true, notCheckable = true },
-	{ text = "|CFFFF3333" .. CLOSE .. "|r", notCheckable = true, func = function() end },
-}
+	table.insert(menuList, { text = "", notClickable = true, notCheckable = true })
+end
+
+if IsAddOnLoaded("Details") then
+	table.insert(menuList, {
+		text = "Details",
+		hasArrow = true,
+		notCheckable = true,
+		menuList = {
+			{
+				text = "Reset Details",
+				notCheckable = true,
+				func = function()
+					if InCombatLockdown() then
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						return
+					end
+
+					_G.KkthnxUIDB.Variables["ResetDetails"] = true
+					StaticPopup_Show("KKUI_CHANGES_RELOAD")
+				end,
+			},
+
+			{
+				text = "Toggle Details",
+				notCheckable = true,
+				func = function()
+					if InCombatLockdown() then
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						return
+					end
+
+					PlaySound(21968)
+					_G._detalhes:ToggleWindows()
+				end,
+			},
+		},
+	})
+
+	table.insert(menuList, { text = "", notClickable = true, notCheckable = true })
+end
+
+-- Only add the Discord menu if a certain addon is loaded (replace "YourAddon" with the actual addon)
+-- if IsAddOnLoaded("YourAddon") then
+-- 	table.insert(menuList, {
+-- 		text = L["Discord"],
+-- 		notCheckable = true,
+-- 		func = function()
+-- 			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
+-- 		end,
+-- 	})
+-- end
+
+-- Adding the close option at the end
+table.insert(menuList, { text = "|CFFFF3333" .. CLOSE .. "|r", notCheckable = true, func = function() end })
 
 local function canChangeMessage(arg1, id)
 	if id and arg1 == "" then return id end

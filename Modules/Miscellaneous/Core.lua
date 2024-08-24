@@ -1,27 +1,40 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K = KkthnxUI[1]
+local C = KkthnxUI[2]
+local L = KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
+-- Localizing Lua built-in functions
 local select = select
-local string_match = string.match
 local tonumber = tonumber
+local next = next
+local type = type
+local ipairs = ipairs
+local pcall = pcall
+local error = error
 
-local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = C_FriendList.IsFriend
-local C_Timer_After = C_Timer.After
+-- Localizing WoW API functions
 local CreateFrame = CreateFrame
-local GetItemInfo = GetItemInfo
-local GetItemQualityColor = GetItemQualityColor
+local PlaySound = PlaySound
+local StaticPopup_Show = StaticPopup_Show
+local hooksecurefunc = hooksecurefunc
+local UIParent = UIParent
+local UnitXP = UnitXP
+local UnitXPMax = UnitXPMax
+local UnitGUID = UnitGUID
 local GetMerchantItemLink = GetMerchantItemLink
 local GetMerchantItemMaxStack = GetMerchantItemMaxStack
-local InCombatLockdown = InCombatLockdown
+local GetRewardXP = GetRewardXP
+local GetQuestLogRewardXP = GetQuestLogRewardXP
 local IsAltKeyDown = IsAltKeyDown
-local IsGuildMember = IsGuildMember
-local PlaySound = PlaySound
+local InCombatLockdown = InCombatLockdown
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local C_QuestLog_GetSelectedQuest = C_QuestLog.GetSelectedQuest
+local C_QuestLog_ShouldShowQuestRewards = C_QuestLog.ShouldShowQuestRewards
+local GetItemInfo = GetItemInfo
+local GetItemQualityColor = GetItemQualityColor
 local StaticPopupDialogs = StaticPopupDialogs
-local StaticPopup_Show = StaticPopup_Show
-local UIParent = UIParent
-local UnitGUID = UnitGUID
-local hooksecurefunc = hooksecurefunc
+local IsGuildMember = IsGuildMember
 
 -- Localizing WoW UI constants
 local FRIEND = FRIEND
@@ -29,14 +42,91 @@ local GUILD = GUILD
 local NO = NO
 local YES = YES
 
+-- Miscellaneous Module Registry
 local KKUI_MISC_MODULE = {}
 
+-- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
 	if not KKUI_MISC_MODULE[name] then
 		KKUI_MISC_MODULE[name] = func
 	end
 end
 
+-- Enable Auto Chat Bubbles
+local function enableAutoBubbles()
+	if C["Misc"].AutoBubbles then
+		local function updateBubble()
+			local name, instType = GetInstanceInfo()
+			SetCVar("chatBubbles", (name and instType == "raid") and 1 or 0)
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+	end
+end
+
+-- Modify Delete Dialog
+local function modifyDeleteDialog()
+	local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
+	local _, confirmationType = strsplit("@", confirmationText, 2)
+
+	local function setHyperlinkHandlers(dialog)
+		dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
+		dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
+	end
+
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
+	setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
+
+	local deleteConfirmationFrame = CreateFrame("FRAME")
+	deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
+	deleteConfirmationFrame:SetScript("OnEvent", function()
+		local staticPopup = StaticPopup1
+		local editBox = StaticPopup1EditBox
+		local button = StaticPopup1Button1
+		local popupText = StaticPopup1Text
+
+		if editBox:IsShown() then
+			staticPopup:SetHeight(staticPopup:GetHeight() - 14)
+			editBox:Hide()
+			button:Enable()
+			local link = select(3, GetCursorInfo())
+
+			if link then
+				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+			end
+		else
+			staticPopup:SetHeight(staticPopup:GetHeight() + 40)
+			editBox:Hide()
+			button:Enable()
+			local link = select(3, GetCursorInfo())
+
+			if link then
+				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+			end
+		end
+	end)
+end
+
+-- Fix Addon Tooltip
+local function fixAddonTooltip()
+	local _AddonTooltip_Update = AddonTooltip_Update
+	function AddonTooltip_Update(owner)
+		if owner and owner:GetID() >= 1 then
+			_AddonTooltip_Update(owner)
+		end
+	end
+end
+
+-- Fix Party Guide Promote
+local function fixPartyGuidePromote()
+	if not PROMOTE_GUIDE then
+		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+	end
+end
+
+-- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
@@ -60,7 +150,7 @@ function Module:OnEnable()
 		"CreateQueueTimer",
 	}
 	
-	C_Timer_After(0, Module.UpdateMaxCameraZoom)
+	C_Timer.After(0, Module.UpdateMaxCameraZoom)
 
 	for _, funcName in ipairs(loadMiscModules) do
 		local func = self[funcName]
@@ -72,82 +162,9 @@ function Module:OnEnable()
 		end
 	end
 
-	-- Auto chatBubbles
-	local function enableAutoBubbles()
-		if C["Misc"].AutoBubbles then
-			local function updateBubble()
-				local name, instType = GetInstanceInfo()
-				if name and instType == "raid" then
-					SetCVar("chatBubbles", 1)
-				else
-					SetCVar("chatBubbles", 0)
-				end
-			end
-			K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
-		end
-	end
 	enableAutoBubbles()
-
-	-- Instant delete
-	local function modifyDeleteDialog()
-		-- Modify DELETE_GOOD_ITEM text to get the confirmation type
-		local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
-		local _, confirmationType = strsplit("@", confirmationText, 2)
-
-		-- Add hyperlinks to regular item destroy
-		local function setHyperlinkHandlers(dialog)
-			dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
-			dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
-		end
-
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
-		setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
-
-		-- Create frame to handle events
-		local deleteConfirmationFrame = CreateFrame("FRAME")
-		deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
-		deleteConfirmationFrame:SetScript("OnEvent", function()
-			local staticPopup = StaticPopup1
-			local editBox = StaticPopup1EditBox
-			local button = StaticPopup1Button1
-			local popupText = StaticPopup1Text
-
-			-- Check if edit box is shown
-			if editBox:IsShown() then
-				staticPopup:SetHeight(staticPopup:GetHeight() - 14)
-				editBox:Hide()
-				button:Enable()
-			else
-				staticPopup:SetHeight(staticPopup:GetHeight() + 40)
-				editBox:Hide()
-				button:Enable()
-			end
-		end)
-	end
 	modifyDeleteDialog()
-
-	-- Fix blizz bug in addon list
-	local function fixAddonTooltip()
-		local _AddonTooltip_Update = AddonTooltip_Update
-		function AddonTooltip_Update(owner)
-			if not owner then
-				return
-			end
-
-			if owner:GetID() < 1 then
-				return
-			end
-			_AddonTooltip_Update(owner)
-		end
-	end
 	fixAddonTooltip()
-
-	local function fixPartyGuidePromote()
-		if not PROMOTE_GUIDE then
-			PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
-		end
-	end
 	fixPartyGuidePromote()
 end
 
@@ -177,24 +194,22 @@ local function KKUI_UpdateDragCursor(self)
 	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
+-- Click Minimap Button Functionality
 local function KKUI_ClickMinimapButton(_, btn)
 	if btn == "LeftButton" then
-		-- Prevent options panel from showing if Blizzard options panel is showing
 		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
 			return
 		end
-
-		-- Check if the player is in combat before opening the options panel
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
-
 		K["GUI"]:Toggle()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+		PlaySound(SOUNDKIT_IG_MAINMENU_OPTION)
 	end
 end
 
+-- Create Minimap Button
 function Module:CreateMinimapButtonToggle()
 	local mmb = CreateFrame("Button", "KKUI_MinimapButton", Minimap)
 	mmb:SetPoint("BOTTOMLEFT", -15, 20)
@@ -209,12 +224,12 @@ function Module:CreateMinimapButtonToggle()
 
 	local overlay = mmb:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
-	overlay:SetTexture(136430) -- "Interface\\Minimap\\MiniMap-TrackingBorder"
+	overlay:SetTexture(136430)
 	overlay:SetPoint("TOPLEFT")
 
 	local background = mmb:CreateTexture(nil, "BACKGROUND")
 	background:SetSize(20, 20)
-	background:SetTexture(136467) -- "Interface\\Minimap\\UI-Minimap-Background"
+	background:SetTexture(136467)
 	background:SetPoint("TOPLEFT", 7, -5)
 
 	local icon = mmb:CreateTexture(nil, "ARTWORK")
@@ -223,16 +238,14 @@ function Module:CreateMinimapButtonToggle()
 	icon:SetTexture(C["Media"].Textures.LogoSmallTexture)
 
 	mmb:SetScript("OnEnter", function()
-		GameTooltip:ClearLines()
-		GameTooltip:Hide()
 		GameTooltip:SetOwner(mmb, "ANCHOR_LEFT")
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine("KkthnxUI", 1, 1, 1)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("LeftButton: Toggle Config", 0.6, 0.8, 1)
-		-- GameTooltip:AddLine("RightButton: Toggle MoveUI", 0.6, 0.8, 1)
 		GameTooltip:Show()
 	end)
+
 	mmb:SetScript("OnLeave", GameTooltip_Hide)
 	mmb:RegisterForClicks("AnyUp")
 	mmb:SetScript("OnClick", KKUI_ClickMinimapButton)
@@ -243,7 +256,6 @@ function Module:CreateMinimapButtonToggle()
 		self:SetScript("OnUpdate", nil)
 	end)
 
-	-- Function to toggle LibDBIcon
 	function Module:ToggleMinimapIcon()
 		if C["General"].MinimapIcon then mmb:Show() else mmb:Hide() end
 	end

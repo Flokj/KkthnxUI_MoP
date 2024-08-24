@@ -92,6 +92,17 @@ function Module:TradeTabs_Update()
 	end
 end
 
+function Module:TradeTabs_Reskin()
+	for _, tab in pairs(tabList) do
+		tab:CreateBorder()
+		tab:StyleButton()
+		local texture = tab:GetNormalTexture()
+		if texture then
+			texture:SetTexCoord(unpack(K.TexCoords))
+		end
+	end
+end
+
 local index = 1
 function Module:TradeTabs_Create(spellID, toyID, itemID)
 	local name, _, texture
@@ -190,6 +201,7 @@ function Module:TradeTabs_OnLoad()
 
 	Module:UpdateProfessions()
 
+	--Module:TradeTabs_Reskin()
 	Module:TradeTabs_Update()
 	K:RegisterEvent("TRADE_SKILL_SHOW", Module.TradeTabs_Update)
 	K:RegisterEvent("TRADE_SKILL_CLOSE", Module.TradeTabs_Update)
