@@ -302,8 +302,6 @@ function Module:Bind_CreateDialog()
 	button1.text:SetPoint("CENTER", button1)
 	button1.text:SetText(APPLY)
 
-	--- @class MyButton : Button
-	--- @field public text FontString
 	local button2 = CreateFrame("Button", nil, frame, "OptionsButtonTemplate")
 	button2:SetSize(118, 20)
 	button2:SkinButton()
@@ -330,7 +328,6 @@ function Module:Bind_CreateDialog()
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	checkBox.text:SetPoint("CENTER", 0, 0)
-	-- stylua: ignore
 	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r" or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 

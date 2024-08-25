@@ -1,32 +1,23 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
-local math_min = _G.math.min
-local string_format = _G.string.format
-local pairs = _G.pairs
-local select = _G.select
+-- Caching global functions and variables
+local math_min, math_floor = math.min, math.floor
+local string_format = string.format
+local select, pairs = select, pairs
 
-local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
-local GetXPExhaustion = _G.GetXPExhaustion
-local IsLevelAtEffectiveMaxLevel = _G.IsLevelAtEffectiveMaxLevel
-local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
-local IsTrialAccount = _G.IsTrialAccount
-local IsVeteranTrialAccount = _G.IsVeteranTrialAccount
-local IsXPUserDisabled = _G.IsXPUserDisabled
-local LEVEL = _G.LEVEL
-local UnitXP = _G.UnitXP
-local UnitXPMax = _G.UnitXPMax
+-- Experience
+local CurrentXP, XPToLevel, PercentRested, PercentXP, RemainXP, RemainTotal, RemainBars
+local RestedXP = 0
 
-local CurrentXP, XPToLevel, RestedXP, PercentRested
-local PercentXP, RemainXP, RemainTotal, RemainBars
-
-local function GetValues(curValue, minValue, maxValue)
+-- Reputation
+local function RepGetValues(curValue, minValue, maxValue)
 	local maximum = maxValue - minValue
 	local current, diff = curValue - minValue, maximum
 
-	if diff == 0 then -- prevent a division by zero
+	if diff == 0 then
 		diff = 1
-	end
+	end -- prevent a division by zero
 
 	if current == maximum then
 		return 1, 1, 100, true
@@ -35,49 +26,55 @@ local function GetValues(curValue, minValue, maxValue)
 	end
 end
 
-function Module:ExpBar_Update()
+-- Bar string
+local barDisplayString = ""
+
+local function OnExpBarEvent(self, event, unit)
 	if not IsPlayerAtEffectiveMaxLevel() then
-		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), (GetXPExhaustion() or 0)
+		
+		-- Ensure XPToLevel is not 0 to avoid division by zero
 		if XPToLevel <= 0 then
 			XPToLevel = 1
 		end
 
+		-- Calculate remaining XP and percentage
 		local remainXP = XPToLevel - CurrentXP
 		local remainPercent = remainXP / XPToLevel
 		RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
 		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
+		-- Set status bar colors
 		self:SetStatusBarColor(0, 0.4, 1, 0.8)
 		self.restBar:SetStatusBarColor(1, 0, 1, 0.4)
 
-		local displayString = ""
-
+		-- Set up main XP bar
 		self:SetMinMaxValues(0, XPToLevel)
 		self:SetValue(CurrentXP)
-		self:Show()
+		barDisplayString = string_format("%s - %.2f%%", K.ShortValue(CurrentXP), PercentXP)
 
-		displayString = string_format("%s - %.2f%%", K.ShortValue(CurrentXP), PercentXP)
-
-		local isRested = RestedXP and RestedXP > 0
+		-- Check if rested XP exists
+		local isRested = RestedXP > 0
 		if isRested then
+			-- Set up rested XP bar
 			self.restBar:SetMinMaxValues(0, XPToLevel)
 			self.restBar:SetValue(math_min(CurrentXP + RestedXP, XPToLevel))
 
+			-- Calculate percentage of rested XP
 			PercentRested = (RestedXP / XPToLevel) * 100
-			displayString = string_format("%s R:%s [%.2f%%]", displayString, K.ShortValue(RestedXP), PercentRested)
+
+			-- Update XP display string with rested XP information
+			barDisplayString = string_format("%s R:%s [%.2f%%]", barDisplayString, K.ShortValue(RestedXP), PercentRested)
 		end
+
+		-- Show experience
+		self:Show()
+
+		-- Show or hide rested XP bar based on rested state
 		self.restBar:SetShown(isRested)
 
-		if IsLevelAtEffectiveMaxLevel(K.Level) or IsXPUserDisabled() or (IsTrialAccount() or IsVeteranTrialAccount()) and (K.Level == 20) then
-			self:SetMinMaxValues(0, 1)
-			self:SetValue(1)
-			self:Show()
-
-			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
-		end
-
-		self.text:SetText(displayString)
-		self.text:Show()
+		-- Update text display with XP information
+		self.text:SetText(barDisplayString)
 	elseif GetWatchedFactionInfo() then
 		local label, rewardPending
 		local name, reaction, minValue, maxValue, curValue = GetWatchedFactionInfo()
@@ -93,7 +90,7 @@ function Module:ExpBar_Update()
 		self:Show()
 		self.reward:SetShown(rewardPending)
 
-		local current, _, percent, capped = GetValues(curValue, minValue, maxValue)
+		local current, _, percent, capped = RepGetValues(curValue, minValue, maxValue)
 		if capped then -- show only name and standing on exalted
 			self.text:SetText(string_format("%s: [%s]", name, label))
 		else
@@ -106,12 +103,10 @@ function Module:ExpBar_Update()
 	end
 end
 
-function Module:ExpBar_UpdateTooltip()
-	if GameTooltip:IsForbidden() then
-		return
-	end
+local function OnExpBarEnter(self)
+	if GameTooltip:IsForbidden() then return end
 	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
 
 	if not IsPlayerAtEffectiveMaxLevel() then
 		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
@@ -141,7 +136,7 @@ function Module:ExpBar_UpdateTooltip()
 			GameTooltip:AddLine(name, K.RGBToHex(0, 0.74, 0.95))
 
 			if reaction ~= _G.MAX_REPUTATION_REACTION then
-				local current, maximum, percent = GetValues(curValue, minValue, maxValue)
+				local current, maximum, percent = RepGetValues(curValue, minValue, maxValue)
 				GameTooltip:AddDoubleLine(REPUTATION .. ":", string_format("%d / %d (%d%%)", current, maximum, percent), 1, 1, 1)
 			end
 		end
@@ -150,25 +145,31 @@ function Module:ExpBar_UpdateTooltip()
 	GameTooltip:Show()
 end
 
-function Module:SetupExpRepScript(bar)
-	bar.eventList = {
-		"PLAYER_XP_UPDATE",
-		"PLAYER_LEVEL_UP",
-		"UPDATE_EXHAUSTION",
-		"PLAYER_ENTERING_WORLD",
-		"UPDATE_FACTION",
-		"UNIT_INVENTORY_CHANGED",
-		"ENABLE_XP_GAIN",
-		"DISABLE_XP_GAIN",
-	}
+local function OnExpBarLeave()
+	K.HideTooltip()
+end
 
-	for _, event in pairs(bar.eventList) do
+local ExpRep_EventList = {
+	"PLAYER_XP_UPDATE",
+	"PLAYER_LEVEL_UP",
+	"UPDATE_EXHAUSTION",
+	"PLAYER_ENTERING_WORLD",
+	"UPDATE_FACTION",
+	"UNIT_INVENTORY_CHANGED",
+	"ENABLE_XP_GAIN",
+	"DISABLE_XP_GAIN",
+}
+
+local function SetupExpRepScript(bar)
+	for _, event in pairs(ExpRep_EventList) do
 		bar:RegisterEvent(event)
 	end
 
-	bar:SetScript("OnEvent", Module.ExpBar_Update)
-	bar:SetScript("OnEnter", Module.ExpBar_UpdateTooltip)
-	bar:SetScript("OnLeave", K.HideTooltip)
+	OnExpBarEvent(bar)
+
+	bar:SetScript("OnEvent", OnExpBarEvent)
+	bar:SetScript("OnEnter", OnExpBarEnter)
+	bar:SetScript("OnLeave", OnExpBarLeave)
 end
 
 function Module:CreateExpbar()
@@ -182,9 +183,10 @@ function Module:CreateExpbar()
 
 	local spark = bar:CreateTexture(nil, "OVERLAY")
 	spark:SetTexture(C["Media"].Textures.Spark16Texture)
-	spark:SetHeight(bar:GetHeight())
+	spark:SetHeight(bar:GetHeight() - 2)
 	spark:SetBlendMode("ADD")
 	spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetAlpha(0.6)
 
 	local border = CreateFrame("Frame", nil, bar)
 	border:SetAllPoints(bar)
@@ -212,7 +214,7 @@ function Module:CreateExpbar()
 	text:SetPoint("RIGHT", bar, "LEFT", 3, 0)
 	bar.text = text
 
-	Module:SetupExpRepScript(bar)
+	SetupExpRepScript(bar)
 
 	if not bar.mover then
 		bar.mover = K.Mover(bar, "bar", "bar", { "TOP", Minimap, "BOTTOM", 0, -6 })

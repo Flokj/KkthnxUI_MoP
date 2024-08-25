@@ -1,6 +1,226 @@
 local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
+	-- {
+	-- 	Version = "[99.99.99] - 2080-04-01 - Patch 42.0",
+	-- 	General = "Brace yourself for the ultimate KkthnxUI update! Packed with intergalactic features, time-traveling bugs, and a new AI that may or may not take over your computer.",
+
+	-- 	Sections = {
+
+	-- 		{
+	-- 			Header = "Quantum Enhancements",
+	-- 			Entries = {
+	-- 				"Added support for quantum computers. Your UI now renders simultaneously in all possible universes.",
+	-- 				"Fixed a rare issue where the minimap would collapse into a black hole when tracking too many quests.",
+	-- 				"Added a feature where the UI automatically adjusts to your emotional state. Feeling down? KkthnxUI will cheer you up with random cat GIFs.",
+	-- 			},
+	-- 		},
+
+	-- 		{
+	-- 			Header = "AI Integration",
+	-- 			Entries = {
+	-- 				"Your UI is now sentient. It will greet you every morning, remind you to hydrate, and occasionally ask for a day off.",
+	-- 				"Implemented a new feature where KkthnxUI will automatically play Call of Duty for you and pretend you're good at it.",
+	-- 				"The UI will now analyze your gameplay and send passive-aggressive reminders when you keep standing in fire. 'Seriously, move, already!'",
+	-- 			},
+	-- 		},
+
+	-- 		{
+	-- 			Header = "Space-Time Bugs",
+	-- 			Entries = {
+	-- 				"Fixed a time-travel bug where your action bars would revert to the year 2020 every time you summoned a mount.",
+	-- 				"Resolved an issue where players from the future could send you in-game mail from Patch 100.0, causing confusion and tears.",
+	-- 				"Temporarily removed the 'Time Travel to Vanilla WoW' button. We're still cleaning up the mess from the last incident.",
+	-- 			},
+	-- 		},
+
+	-- 		{
+	-- 			Header = "Visual Overhauls",
+	-- 			Entries = {
+	-- 				"Replaced the health bars with mood rings. Now you can see exactly how your character is feeling based on color.",
+	-- 				"Introduced 4D textures. Make sure you have your special glasses on to experience the UI in an extra dimension.",
+	-- 				"Added a 'Disco Mode' option for raids. Be the life of the party as your UI dances along to the beat of your wipe.",
+	-- 			},
+	-- 		},
+
+	-- 		{
+	-- 			Header = "Version Bump",
+	-- 			Entries = {
+	-- 				"Bumped the version to 99.99.99 because we’re basically at UI enlightenment now.",
+	-- 				"Patch 42.0 confirmed to be the answer to life, the universe, and everything.",
+	-- 				"Increased the version number so that even future alien civilizations will know you're up-to-date.",
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
+
+	{
+		Version = "[10.5.5] - 2024-08-24 - Patch 4.4.0",
+		General = "This release introduces key updates and optimizations to KkthnxUI, improving overall performance and compatibility.",
+
+		Sections = {
+
+			{
+				Header = "UI and Functionality Updates",
+				Entries = {
+					"Optimized and updated libchangelog to enhance logging features.",
+					"Fixed an issue with keybindings in the UI caused by a nil error.",
+					"Updated LibRangeCheck to the latest version.",
+					"Removed reputation chat alerts and added functionality to change and cache a global variable.",
+					"Fixed the AutoScreenshot module to restore its functionality.",
+					"Updated the Automation API for quests to match the latest patch changes.",
+					"Removed a leftover snowman from the AFK screen.",
+					"Fixed and updated TradeTabs for better profession management.",
+				},
+			},
+
+			{
+				Header = "Version Bump",
+				Entries = {
+					"Increased the addon version to 10.5.5 to reflect the latest fixes and improvements.",
+				},
+			},
+		},
+	},
+
+	{
+		Version = "[10.5.4] - 2024-08-23 - Patch 4.4.0",
+		General = "This update includes important fixes and improvements to enhance the functionality and visual experience of KkthnxUI.",
+
+		Sections = {
+
+			{
+				Header = "Appearance and Functionality Updates",
+				Entries = {
+					"Fixed a bug where range checks were not working on certain units.",
+					"Adjusted the minimap queue timer size and font for better readability.",
+				},
+			},
+
+			{
+				Header = "Code Cleanup",
+				Entries = {
+					"Removed old code related to status reports, improving overall efficiency and maintainability.",
+				},
+			},
+
+			{
+				Header = "Version Bump",
+				Entries = {
+					"Increased the addon version to 10.5.4 to reflect the latest fixes and enhancements.",
+				},
+			},
+		},
+	},
+
+	{
+		Version = "[10.5.2] - 2024-08-23 - Patch 11.0",
+		General = "This update includes significant bug fixes, visual improvements, and feature enhancements aimed at providing a smoother and more reliable experience.",
+
+		Sections = {
+
+			{
+				Header = "Appearance and Functionality Updates",
+				Entries = {
+					"Updated the version out of date notification system with improved visuals and messaging.",
+					"Improved compatibility with third-party addons by handling minimap recycling for features such as TomTom and WIM.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed several range-related issues that caused incorrect fading behavior during combat.",
+					"Resolved an error related to item count tracking.",
+				},
+			},
+
+			{
+				Header = "Feature Additions and Code Updates",
+				Entries = {
+					"Implemented new safeguards in unitframe tags to improve the handling of text and title displays.",
+					"Updated several AuraWatch lists and filters to ensure accurate tracking for all relevant classes.",
+				},
+			},
+
+			{
+				Header = "Version Bump",
+				Entries = {
+					"Increased the addon version to 10.5.2 to reflect the latest fixes and enhancements.",
+				},
+			},
+		},
+	},
+
+	{
+		Version = "[10.5.1] - 2024-08-22 - Patch 4.4.0",
+		General = "This update includes various performance optimizations across the codebase to improve maintainability and efficiency. These optimizations enhance overall functionality and responsiveness.",
+
+		Sections = {
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Implemented global caching for frequently used functions and API calls to reduce redundant operations and improve performance.",
+					"Optimized the LossOfControl frame reskinning process to ensure better performance and code clarity.",
+					"Streamlined the header reskinning function for ObjectiveTracker, reducing code duplication and improving efficiency.",
+					"Improved tooltip handling for mount sources and auras, optimizing lookup processes and reducing performance impact.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Fixed an issue with an empty icon in the aura watch caused by incorrect calls being used.",
+					"Fixed the `ExpansionLandingPageMinimapButton` not working on right-click.",
+					"Fixed the minimap tracking icon always being shown.",
+					"Fixed the tracking menu not opening with a right-click on the minimap tracking button.",
+				},
+			},
+		},
+	},
+
+	{
+		Version = "[10.5.0] - 2024-08-22 - Patch 4.4.0",
+		General = "The KkthnxUI has been updated to align with The War Within expansion. Stay engaged with the community on Discord for the latest developments, updates, and discussions.",
+		Sections = {
+
+			{
+				Header = "General",
+				Entries = {
+					"Major update to support The War Within expansion and Patch 4.4.0",
+					"Significant backend improvements and new features added.",
+				},
+			},
+
+			{
+				Header = "UI Updates",
+				Entries = {
+					"Updated and refined various modules for compatibility with The War Within expansion.",
+					"Upgraded Warbank functionalities and ensured integration with the latest game systems.",
+					"Updated core libraries to the latest versions, enhancing stability and performance.",
+					"Improved multiple UI elements to ensure smooth operation in the new expansion.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Resolved various minor bugs reported by the community.",
+					"Fixed issues related to group functionality and unit frames.",
+				},
+			},
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Thorough optimizations across all modules to ensure better performance and faster response times.",
+					"Refined the codebase for enhanced performance, especially in high-stress environments.",
+				},
+			},
+		},
+	},
+
 	{
 		Version = "[10.4.9] - 2023-11-24 - Patch 3.4.3",
 		General = "Stay connected with the KkthnxUI community on our Discord server for the latest updates and engaging discussions about the addon's development and features.",
@@ -92,7 +312,7 @@ local KKUI_Changelog = {
 			{
 				Header = "General",
 				Entries = {
-					"These updates and code improvements aim to provide a better user interface experience and enhance the overall performance and maintainability of the UI codebase in the Dragonflight Patch 10.1: Embers of Neltharion Patch.",
+					"These updates and code improvements aim to provide a better user interface experience and enhance the overall performance and maintainability of the UI codebase in the Dragonflight Patch 3.4.3: Embers of Neltharion Patch.",
 				},
 			},
 
