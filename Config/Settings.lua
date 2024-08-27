@@ -27,9 +27,6 @@ C["ActionBar"] = {
 	ShowStance = true,
 	EquipColor = true,
 	TotemBar = true,
-	AspectBar = false,
-	AspectSize = 25,
-	VerticleAspect = false,
 	VehButtonSize = 34,
 
 	Bar1 = true,

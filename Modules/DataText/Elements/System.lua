@@ -252,6 +252,8 @@ function Module:CreateSystemDataText()
 	SystemDataText:SetScript("OnLeave", OnLeave)
 	SystemDataText:SetScript("OnMouseUp", OnMouseUp)
 	SystemDataText:SetScript("OnUpdate", OnUpdate)
+
+	K.Mover(SystemDataText.Text, "SystemDataText", "SystemDataText", { "TOPLEFT", UIParent, "BOTTOMRIGHT", -150, 95 }, 120, 16)
 end
 
 K.SystemDataText = SystemDataText

@@ -341,17 +341,6 @@ local function UpdateActionBarVehicleButton()
 	K:GetModule("ActionBar"):UpdateVehicleButton()
 end
 
-local function UpdateAspectBar()
-	K:GetModule("ActionBar"):UpdateAspectStatus()
-end
-
-local function VerticalAspectBar()
-	K:GetModule("ActionBar"):UpdateAspectAnchor()
-end
-
-local function ToggleAspectBar()
-	K:GetModule("ActionBar"):ToggleHunterAspectBar()
-end
 
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
@@ -423,13 +412,6 @@ local ActionBar = function(self)
 	Window:CreateSlider("ActionBar", "BarStanceSize", "Button Size", 20, 80, 1, nil, UpdateActionBarStance)
 	Window:CreateSlider("ActionBar", "BarStancePerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBarStance)
 	Window:CreateSlider("ActionBar", "BarStanceFont", "Button FontSize", 8, 20, 1, nil, UpdateActionBarStance)
-
-	--[[if K.Class == "HUNTER" then
-		Window:CreateSection(newFeatureIcon .. "AspectBar")
-		Window:CreateSwitch("ActionBar", "AspectBar", enableTextColor .. "Enable AspectBar", nil, ToggleAspectBar)
-		Window:CreateSlider("ActionBar", "AspectSize", "Aspect Bar Size", 20, 80, 1, nil, UpdateAspectBar)
-		Window:CreateSwitch("ActionBar", "VerticleAspect", "Verticle Aspect Bar", nil, VerticalAspectBar)
-	end]]
 
 	if K.Class == "SHAMAN" then
 		Window:CreateSection(newFeatureIcon .. "TotemBar")
