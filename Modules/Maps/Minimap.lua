@@ -317,9 +317,7 @@ local function GetCurrentVolume()
 end
 
 function Module:CreateSoundVolume()
-	if not C["Minimap"].EasyVolume then
-		return
-	end
+	if not C["Minimap"].EasyVolume then return end
 
 	local f = CreateFrame("Frame", nil, Minimap)
 	f:SetAllPoints()
@@ -382,7 +380,6 @@ function Module:Minimap_TrackingDropdown()
 end
 
 function Module:Minimap_OnMouseUp(btn)
-
 	if Module.TrackingDropdown then
 		_G.HideDropDownMenu(1, nil, Module.TrackingDropdown)
 	end
@@ -442,9 +439,7 @@ function Module:QueueStatusOnUpdate(elapsed)
 end
 
 function Module:SetFullQueueStatus(title, queuedTime, averageWait)
-	if not C["Minimap"].QueueStatusText then
-		return
-	end
+	if not C["Minimap"].QueueStatusText then return end
 
 	local display = Module.QueueStatusDisplay
 	if not display.title or display.title == title then
@@ -487,9 +482,7 @@ function Module:CreateQueueStatusText()
 end
 
 function Module:OnEnable()
-	if not C["Minimap"].Enable then
-		return
-	end
+	if not C["Minimap"].Enable then return end
 
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)

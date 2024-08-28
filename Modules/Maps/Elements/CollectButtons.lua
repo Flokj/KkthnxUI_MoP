@@ -85,6 +85,9 @@ function Module:CreateRecycleBin()
 	local ignoredButtons = {
 		["GatherMatePin"] = true,
 		["HandyNotes.-Pin"] = true,
+		["Guidelime"] = true,
+		["QuestieFrame"] = true,
+		["TTMinimapButton"] = true,
 	}
 
 	local function isButtonIgnored(name)
@@ -158,6 +161,10 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
 					--child:HookScript("OnMouseUp", clickFunc)
+				elseif name == "WIM3MinimapButton" then
+					child.SetParent = K.Noop
+					child:SetFrameStrata("DIALOG")
+					child.SetFrameStrata = K.Noop
 				end
 
 				child.styled = true
