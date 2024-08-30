@@ -24,7 +24,7 @@ local function startSelling()
 			local info = GetContainerItemInfo(bag, slot)
 			if info and not sellCache["b" .. bag .. "s" .. slot] and info.hyperlink and not info.hasNoValue and (info.quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[info.itemID]) then
 				sellCache["b" .. bag .. "s" .. slot] = true
-				_UseContainerItem(bag, slot)
+				UseContainerItem(bag, slot)
 				C_Timer_After(0.15, startSelling)
 				return
 			end

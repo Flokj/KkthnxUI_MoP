@@ -4,12 +4,10 @@ local Module = K:GetModule("ActionBar")
 local tinsert = tinsert
 
 local margin, padding = 6, 0
-local num = NUM_STANCE_SLOTS or 10
+local num = NUM_STANCE_SLOTS
 
 -- Update the stance bar's size, layout, and button positions
 function Module:UpdateStanceBar()
-	if InCombatLockdown() then return end
-
 	local frame = _G["KKUI_ActionBarStance"]
 	if not frame then return end
 
@@ -43,7 +41,7 @@ function Module:CreateStancebar()
 
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar5, "TOPLEFT", -50, margin })
+	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar5, "TOPLEFT", 0, margin })
 	Module.movers[11] = frame.mover
 
 	-- StanceBar
