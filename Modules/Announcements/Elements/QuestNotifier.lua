@@ -38,7 +38,7 @@ local function sendQuestMsg(msg)
 	-- If the player is in a group, send the message to the party chat
 	if debugMode and K.isDeveloper then
 		print(msg)
-	elseif IsPartyLFG() then
+	elseif IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 		SendChatMessage(msg, "INSTANCE_CHAT")
 	elseif IsInRaid() then
 		SendChatMessage(msg, "RAID")

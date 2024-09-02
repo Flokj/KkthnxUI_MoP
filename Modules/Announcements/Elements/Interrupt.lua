@@ -2,7 +2,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
 -- Localize API functions
-local string_format, GetInstanceInfo, C_Spell_GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid = string.format, GetInstanceInfo, GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid
+local string_format, GetInstanceInfo, C_Spell_GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, UnitInParty, UnitInRaid = string.format, GetInstanceInfo, GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, UnitInParty, UnitInRaid
 
 local AURA_TYPE_BUFF = AURA_TYPE_BUFF
 local infoType = {}
@@ -25,7 +25,7 @@ local spellBlackList = {
 
 local function getAlertChannel()
 	local _, instanceType = GetInstanceInfo()
-	local inPartyLFG = IsPartyLFG()
+	local inPartyLFG = IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
 	local inRaid = IsInRaid()
 
 	if instanceType == "arena" then
@@ -104,7 +104,7 @@ function Module:InterruptAlert_Update(...)
 end
 
 function Module:InterruptAlert_CheckGroup()
-	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsPartyLFG())) then
+	if IsInGroup() and (not C["Announcements"].InstAlertOnly or (IsInInstance() and not IsInGroup(LE_PARTY_CATEGORY_INSTANCE))) then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	else
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)

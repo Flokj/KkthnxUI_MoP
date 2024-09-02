@@ -70,7 +70,7 @@ end
 		end},
 		{.65, .65, 1, PARTY, function() ChatFrame_OpenChat("/p ", chatFrame) end},
 		{1, .5, 0, INSTANCE.."/"..RAID, function()
-			if IsPartyLFG() then
+			if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 				ChatFrame_OpenChat("/i ", chatFrame)
 			else
 				ChatFrame_OpenChat("/raid ", chatFrame)

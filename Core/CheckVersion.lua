@@ -14,7 +14,6 @@ local Ambiguate = Ambiguate
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
 local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
 local print = print
 
 local C_ChatInfo_RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
@@ -215,7 +214,7 @@ function Module:VersionCheck_UpdateGroup()
 		return
 	end
 
-	local channel = IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
+	local channel = IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 	Module:VersionCheck_Send(channel)
 end
 

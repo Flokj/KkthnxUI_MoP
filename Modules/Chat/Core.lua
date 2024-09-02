@@ -275,7 +275,7 @@ local cycles = {
 	{ chatType = "SAY", IsActive = function() return true end, },
 	{ chatType = "PARTY", IsActive = function() return IsInGroup(LE_PARTY_CATEGORY_HOME) end, },
 	{ chatType = "RAID", IsActive = function() return IsInRaid(LE_PARTY_CATEGORY_HOME) end, },
-	{ chatType = "INSTANCE_CHAT", IsActive = function() return IsPartyLFG() end, },
+	{ chatType = "INSTANCE_CHAT", IsActive = function() return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) end, },
 	{ chatType = "GUILD", IsActive = function() return IsInGuild() end, },
 	{ chatType = "OFFICER", IsActive = function() return C_GuildInfo_IsGuildOfficer() end, },
 	{ chatType = "CHANNEL", IsActive = function(_, editbox)
