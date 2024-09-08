@@ -78,22 +78,9 @@ end
 
 -- Register your custom media with LibSharedMedia if it's loaded
 if K.LibSharedMedia then
-	for name, path in pairs(C["Media"].Borders) do
-		K.LibSharedMedia:Register("border", name, path)
-	end
-
-	-- Register Statusbars
-	for name, path in pairs(C["Media"].Statusbars) do
-		K.LibSharedMedia:Register("statusbar", name, path)
-	end
-
-	-- Register Sounds
-	for name, path in pairs(C["Media"].Sounds) do
-		K.LibSharedMedia:Register("sound", name, path)
-	end
-
-	-- Register Fonts
-	for name, path in pairs(C["Media"].Fonts) do
-		K.LibSharedMedia:Register("font", name, path)
+	for mediaType, mediaTable in pairs(C["Media"]) do
+		for name, path in pairs(mediaTable) do
+			K.LibSharedMedia:Register(mediaType, name, path)
+		end
 	end
 end

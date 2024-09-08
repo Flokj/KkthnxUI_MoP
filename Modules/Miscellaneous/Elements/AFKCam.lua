@@ -90,10 +90,12 @@ local stats = {
 	333, -- Gold looted
 	334, -- Most gold ever owned
 	338, -- Vanity pets owned
+	344, -- Bandages used
 	345, -- Health potions consumed
 	349, -- Flight paths taken
 	353, -- Number of times hearthed
 	588, -- Total Honorable Kills
+	759, -- Average daily quests completed per day
 	812, -- Healthstones used
 	837, -- Arenas won
 	838, -- Arenas played
@@ -117,12 +119,6 @@ local stats = {
 	1518, -- Fish caught
 	1776, -- Food eaten most
 	2277, -- Summons accepted
-	5692, -- Rated battlegrounds played
-	5693, -- Rated battleground played the most
-	5695, -- Rated battleground won the most
-	5694, -- Rated battlegrounds won
-	7399, -- Challenge mode dungeons completed
-	8278, -- Pet Battles won at max level
 }
 
 local function IsIn(val, ...)

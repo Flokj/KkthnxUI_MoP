@@ -3,9 +3,6 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 K.Devs = {
 	["Неотжал-Пламегор"] = true,
-	["Нажал-Пламегор"] = true,
-	-- Fenox Temp
-	["Непожал-Пламегор"] = true,
 }
 
 local function isDeveloper()
