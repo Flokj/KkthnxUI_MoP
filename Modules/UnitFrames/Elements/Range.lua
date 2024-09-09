@@ -6,7 +6,6 @@ local string_find, UnitIsUnit, GetNumGroupMembers, IsInRaid, UnitIsPlayer, UnitI
 
 local function GetGroupUnit(unit)
 	if UnitIsUnit(unit, "player") then return nil end
-
 	if string_find(unit, "party") or string_find(unit, "raid") then
 		return unit
 	end
@@ -31,11 +30,6 @@ end
 
 local function friendlyIsInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
-
-	if UnitIsPlayer(unit) and (UnitInPhase(unit)) then
-		return false -- is not in same phase
-	end
-
 	local inRange, checkedRange = UnitInRange(unit)
 	if checkedRange and not inRange then
 		return false -- blizz checked and said the unit is out of range
@@ -49,7 +43,6 @@ function Module:UpdateRange()
 	if not self.Range then return end
 
 	local alpha
-
 	local unit = self.unit
 
 	if self.forceInRange or unit == "player" then
