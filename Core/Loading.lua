@@ -129,6 +129,7 @@ local function KKUI_LoadProfiles()
 		end
 	end
 end
+K.LoadProfiles = KKUI_LoadProfiles
 
 local function KKUI_LoadVariables()
 	KKUI_CreateDefaults()
@@ -145,8 +146,6 @@ local function KKUI_LoadAddon()
 end
 
 local function KKUI_OnEvent(_, event, addonName)
-	--KKUI_VerifyDatabase()
-
 	if event == "VARIABLES_LOADED" then
 		KKUI_VerifyDatabase()
 		KKUI_LoadVariables()

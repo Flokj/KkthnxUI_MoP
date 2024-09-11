@@ -159,6 +159,8 @@ local function ForceBigwigs()
 end
 
 function Module:ForceAddonSkins()
+	if not K.isDeveloper then return end -- This is personal for now.
+	
 	if KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest then ForceDBMOptions() end
 	if KkthnxUIDB.Variables[K.Realm][K.Name].BWRequest then ForceBigwigs() end
 	if KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest then ForceCursorTrail() end

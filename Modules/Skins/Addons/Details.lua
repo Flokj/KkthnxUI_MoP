@@ -11,7 +11,8 @@ local function SetupInstance(instance)
 	end
 
 	-- reset texture if using Details default texture
-	local needReset = instance.row_info.texture == "BantoBar"
+	-- print(instance.row_info.texture)
+	local needReset = instance.row_info.texture == "You Are the Best!"
 	instance:ChangeSkin("Minimalistic")
 	instance:InstanceWallpaper(false)
 	instance:DesaturateMenu(true)
@@ -19,9 +20,9 @@ local function SetupInstance(instance)
 	instance:SetBackdropTexture("None") -- if block window from resizing, then back to "Details Ground", needs review
 	instance:MenuAnchor(16, 3)
 	instance:ToolbarMenuButtonsSize(1)
-	instance:AttributeMenu(true, 0, 3, K.UIFont, 12, { 1, 1, 1 }, 1, false)
+	instance:AttributeMenu(true, 0, 3, needReset and K.UIFont, needReset and 13, { 1, 1, 1 }, 1, false)
 	instance:SetBarSettings(needReset and 20, needReset and "KkthnxUIStatusbar")
-	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0, 0, 0, 1 }, true, { 0, 0, 0, 1 })
+	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0.04, 0.04, 0.04, 0.9 }, true, { 0.04, 0.04, 0.04, 0.9 })
 	instance.baseframe:CreateBackdrop(-1, 18, 1, 0)
 
 	instance.styled = true
@@ -51,7 +52,7 @@ local function IsDefaultAnchor(instance)
 end
 
 function Module:ResetDetailsAnchor(force)
-	local Details = _G.Details
+	local Details = Details
 	if not Details then return end
 
 	local height = 126
@@ -60,9 +61,9 @@ function Module:ResetDetailsAnchor(force)
 	if instance1 and (force or IsDefaultAnchor(instance1)) then
 		if instance2 then
 			height = 112
-			EmbedWindow(instance2, -3, 140, 260, height)
+			EmbedWindow(instance2, -6, 140, 260, height)
 		end
-		EmbedWindow(instance1, -370, 4, 260, height)
+		EmbedWindow(instance1, -500, 4, 260, height)
 	end
 
 	return instance1
@@ -71,7 +72,7 @@ end
 local function ReskinDetails()
 	if not C["Skins"].Details then return end
 
-	local Details = _G.Details
+	local Details = Details
 	-- instance table can be nil sometimes
 	Details.tabela_instancias = Details.tabela_instancias or {}
 	Details.instances_amount = Details.instances_amount or 5
