@@ -450,6 +450,65 @@ function Module:CreatePlayer()
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
 
+	do
+		local RestingIndicator = CreateFrame("Frame", "KKUI_RestingFrame", Overlay)
+		RestingIndicator:SetSize(5, 5)
+		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+			RestingIndicator:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", -2, 4)
+		else
+			RestingIndicator:SetPoint("TOPLEFT", Health, "TOPLEFT", -2, 4)
+		end
+		RestingIndicator:Hide()
+
+		local textFrame = CreateFrame("Frame", nil, RestingIndicator)
+		textFrame:SetAllPoints()
+		textFrame:SetFrameLevel(6)
+
+		local texts = {}
+		local offsets = {
+			{ 4, -4 },
+			{ 0, 0 },
+			{ -5, 5 },
+		}
+
+		for i = 1, 3 do
+			texts[i] = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
+		end
+
+		local step, stepSpeed = 0, 0.33
+
+		local stepMaps = {
+			[1] = { true, false, false },
+			[2] = { true, true, false },
+			[3] = { true, true, true },
+			[4] = { false, true, true },
+			[5] = { false, false, true },
+			[6] = { false, false, false },
+		}
+
+		RestingIndicator:SetScript("OnUpdate", function(self, elapsed)
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if self.elapsed > stepSpeed then
+				step = step + 1
+				if step == 7 then
+					step = 1
+				end
+
+				for i = 1, 3 do
+					texts[i]:SetShown(stepMaps[step][i])
+				end
+
+				self.elapsed = 0
+			end
+		end)
+
+		RestingIndicator:SetScript("OnHide", function()
+			step = 6
+		end)
+
+		self.RestingIndicator = RestingIndicator
+	end
+
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
 		DebuffHighlight:SetAllPoints(Health)
