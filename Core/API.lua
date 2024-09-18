@@ -337,11 +337,7 @@ local function SkinButton(self, override, ...)
 	end
 
 	if self.SetHighlightTexture then
-		self:SetHighlightTexture([[interface\lfgframe\groupfinder]])
-		self:GetHighlightTexture():SetTexCoord(0.31103515625, 0.45947265625, 0.4208984375, 0.4521484375)
-		self:GetHighlightTexture():SetAlpha(0.5)
-		self:GetHighlightTexture():SetPoint("TOPLEFT", 6, -6)
-		self:GetHighlightTexture():SetPoint("BOTTOMRIGHT", -6, 6)
+		self:SetHighlightTexture(0)
 	end
 
 	if self.SetPushedTexture then
@@ -421,6 +417,31 @@ local function SkinCheckBox(self, forceSaturation)
 	self.bg = bg
 
 	self.forceSaturation = forceSaturation
+end
+
+local function SkinEditBox(frame, width, height)
+	frame:DisableDrawLayer("BACKGROUND")
+
+	frame:CreateBackdrop()
+
+	local frameName = frame.GetName and frame:GetName()
+	if frameName and (frameName:find("Gold") or frameName:find("Silver") or frameName:find("Copper")) then
+		if frameName:find("Gold") then
+			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
+			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -3, 0)
+		else
+			frame.KKUI_Backdrop:SetPoint("TOPLEFT", -3, 1)
+			frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -13, 0)
+		end
+	end
+
+	if width then
+		frame:SetWidth(width)
+	end
+
+	if height then
+		frame:SetHeight(height)
+	end
 end
 
 -- Hide Backdrop
@@ -513,6 +534,7 @@ local function addapi(object)
 	if not object.StyleButton then mt.StyleButton = StyleButton	end
 	if not object.SkinCloseButton then mt.SkinCloseButton = SkinCloseButton	end
 	if not object.SkinCheckBox then	mt.SkinCheckBox = SkinCheckBox end
+	if not object.SkinEditBox then mt.SkinEditBox = SkinEditBox end
 	if not object.SkinScrollBar then mt.SkinScrollBar = SkinScrollBar end
 	if not object.HideBackdrop then	mt.HideBackdrop = HideBackdrop end
 end

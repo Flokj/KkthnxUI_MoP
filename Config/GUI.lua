@@ -922,7 +922,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Unitframe", "Smooth", L["Smooth Bars"])
 
-	Window:CreateSlider("Unitframe", "AllTextScale", "(TEST) Scale All Unitframe Texts", 0.8, 1.5, 0.05, nil, updateUFTextScale) -- WIP
+	Window:CreateSlider("Unitframe", "AllTextScale", "Scale All Unitframe Texts", 0.8, 1.5, 0.05, nil, updateUFTextScale) -- WIP
 
 	Window:CreateSection("Combat Text")
 	Window:CreateSwitch("Unitframe", "CombatText", enableTextColor .. L["Enable Simple CombatText"])
