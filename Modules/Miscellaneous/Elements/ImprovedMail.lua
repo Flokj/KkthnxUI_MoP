@@ -202,33 +202,6 @@ function Module:ContactList_OnMouseWheel(delta)
 	Module:ContactList_Update()
 end
 
-local function updatePicker()
-	local swatch = ColorPickerFrame.__swatch
-	local r, g, b = ColorPickerFrame:GetColorRGB()
-	r = K.Round(r, 2)
-	g = K.Round(g, 2)
-	b = K.Round(b, 2)
-	swatch.tex:SetVertexColor(r, g, b)
-	swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
-end
-
-local function cancelPicker()
-	local swatch = ColorPickerFrame.__swatch
-	local r, g, b = ColorPickerFrame:GetPreviousValues()
-	swatch.tex:SetVertexColor(r, g, b)
-	swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
-end
-
-local function openColorPicker(self)
-	local r, g, b = self.color.r, self.color.g, self.color.b
-	ColorPickerFrame.__swatch = self
-	ColorPickerFrame.swatchFunc = updatePicker
-	ColorPickerFrame.previousValues = {r = r, g = g, b = b}
-	ColorPickerFrame.cancelFunc = cancelPicker
-	ColorPickerFrame:SetColorRGB(r, g, b)
-	ColorPickerFrame:Show()
-end
-
 function Module:MailBox_ContactList()
 	local bu = CreateFrame("Button", nil, SendMailFrame)
 	bu:SetSize(24, 24)
@@ -260,21 +233,8 @@ function Module:MailBox_ContactList()
 	editbox.title = L["Tips"]
 	K.AddTooltip(editbox, "ANCHOR_BOTTOMRIGHT", K.InfoColor..L["AddContactTip"])
 
-	local swatch = CreateFrame("Button", nil, editbox)
-	swatch:SetSize(16, 16)
+	local swatch = K.CreateColorSwatch(list, "")
 	swatch:SetPoint("LEFT", editbox, "RIGHT", 6, 0)
-	K.AddTooltip(swatch, "ANCHOR_TOPRIGHT", K.SystemColor.."Contact name color")
-
-	local color = {r = 1, g = 1, b = 1}
-	swatch.texture = swatch:CreateTexture(nil, "ARTWORK")
-	swatch.texture:SetAllPoints()
-	swatch.texture:SetTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
-	swatch.texture:SetVertexColor(color.r, color.g, color.b)
-	swatch:SetHighlightTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
-
-	swatch.tex = swatch.texture
-	swatch.color = color
-	swatch:SetScript("OnClick", openColorPicker)
 
 	local add = CreateFrame("Button", nil, list, "UIPanelButtonTemplate")
 	add:SetSize(54, 22)

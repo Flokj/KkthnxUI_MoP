@@ -1,31 +1,20 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
--- Cache global references
-local string_format = string.format
-local string_match = string.match
-local tonumber = tonumber
-local CreateFrame = CreateFrame
-local ColorPickerFrame = ColorPickerFrame
-local pairs = pairs
-local _G = _G
-
 -- Utility function to translate color
 local function translateColor(r)
-	if not r then
-		r = "ff"
-	end
+	if not r then r = "ff" end
 	return tonumber(r, 16) / 255
 end
 
 -- Enhanced ColorPickerFrame functions
 function Module:EnhancedPicker_UpdateColor()
-	local r, g, b = string_match(self.colorStr, "(%x%x)(%x%x)(%x%x)$")
+	local r, g, b = strmatch(self.colorStr, "(%x%x)(%x%x)(%x%x)$")
 	r = translateColor(r)
 	g = translateColor(g)
 	b = translateColor(b)
 
-	ColorPickerFrame:SetColorRGB(r, g, b)
+	_G.ColorPickerFrame:SetColorRGB(r, g, b)
 end
 
 local function GetBoxColor(box)
@@ -37,11 +26,11 @@ local function GetBoxColor(box)
 end
 
 local function updateColorRGB(self)
-	local r = GetBoxColor(ColorPickerFrame.__boxR)
-	local g = GetBoxColor(ColorPickerFrame.__boxG)
-	local b = GetBoxColor(ColorPickerFrame.__boxB)
+	local r = GetBoxColor(_G.ColorPickerFrame.__boxR)
+	local g = GetBoxColor(_G.ColorPickerFrame.__boxG)
+	local b = GetBoxColor(_G.ColorPickerFrame.__boxB)
 
-	self.colorStr = string_format("%02x%02x%02x", r, g, b)
+	self.colorStr = format("%02x%02x%02x", r, g, b)
 	Module.EnhancedPicker_UpdateColor(self)
 end
 
@@ -55,7 +44,7 @@ local function editBoxClearFocus(self)
 end
 
 local function createCodeBox(width, index, text)
-	local box = CreateFrame("EditBox", nil, ColorPickerFrame)
+	local box = CreateFrame("EditBox", nil, _G.ColorPickerFrame)
 	box:SetSize(width, 20)
 	box:SetAutoFocus(false)
 	box:SetTextInsets(5, 5, 0, 0)
@@ -87,7 +76,7 @@ function Module:CreateColorPicker()
 
 	local pickerFrame = ColorPickerFrame
 	pickerFrame:SetHeight(250)
-	--K.CreateMoverFrame(pickerFrame.Header, pickerFrame)
+	K.CreateMoverFrame(pickerFrame)
 	_G.OpacitySliderFrame:SetPoint("TOPLEFT", _G.ColorSwatch, "TOPRIGHT", 50, 0)
 
 	local colorBar = CreateFrame("Frame", nil, pickerFrame)
@@ -132,13 +121,8 @@ function Module:CreateColorPicker()
 		self.__boxR:SetText(r)
 		self.__boxG:SetText(g)
 		self.__boxB:SetText(b)
-		self.__boxH:SetText(string_format("%02x%02x%02x", r, g, b))
+		self.__boxH:SetText(format("%02x%02x%02x", r, g, b))
 	end)
-
-	--pickerFrame.Header:StripTextures()
-	--pickerFrame.Header:ClearAllPoints()
-	--pickerFrame.Header:SetPoint("TOP", pickerFrame, 0, 10)
-	--pickerFrame.Border:Hide()
 
 	pickerFrame:CreateBorder()
 

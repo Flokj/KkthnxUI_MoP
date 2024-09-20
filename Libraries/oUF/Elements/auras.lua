@@ -81,24 +81,17 @@ local min = math.min
 local tinsert = table.insert
 
 local function UpdateTooltip(self)
-	if(GameTooltip:IsForbidden()) then return end
-
 	GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
 end
 
 local function onEnter(self)
-	if(GameTooltip:IsForbidden() or not self:IsVisible()) then return end
+	if(not self:IsVisible()) then return end
 
-	-- Avoid parenting GameTooltip to frames with anchoring restrictions,
-	-- otherwise it'll inherit said restrictions which will cause issues with
-	-- its further positioning, clamping, etc
 	GameTooltip:SetOwner(self, self:GetParent().__restricted and 'ANCHOR_CURSOR' or self:GetParent().tooltipAnchor)
 	self:UpdateTooltip()
 end
 
 local function onLeave()
-	if(GameTooltip:IsForbidden()) then return end
-
 	GameTooltip:Hide()
 end
 

@@ -414,6 +414,73 @@ do
 	end
 end
 
+-- Color swatch function
+do
+	local function updatePicker()
+		local swatch = ColorPickerFrame.__swatch
+		local r, g, b = ColorPickerFrame:GetColorRGB()
+		r = K.Round(r, 2)
+		g = K.Round(g, 2)
+		b = K.Round(b, 2)
+		swatch.tex:SetVertexColor(r, g, b)
+		swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
+	end
+
+	local function cancelPicker()
+		local swatch = ColorPickerFrame.__swatch
+		local r, g, b = ColorPickerFrame:GetPreviousValues()
+		swatch.tex:SetVertexColor(r, g, b)
+		swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
+	end
+
+	local function openColorPicker(self)
+		local r, g, b = self.color.r, self.color.g, self.color.b
+		ColorPickerFrame.__swatch = self
+		ColorPickerFrame.swatchFunc = updatePicker
+		ColorPickerFrame.previousValues = {r = r, g = g, b = b}
+		ColorPickerFrame.cancelFunc = cancelPicker
+		ColorPickerFrame:SetColorRGB(r, g, b)
+		ColorPickerFrame:Show()
+	end
+
+	local function GetSwatchTexColor(tex)
+		local r, g, b = tex:GetVertexColor()
+		r = K.Round(r, 2)
+		g = K.Round(g, 2)
+		b = K.Round(b, 2)
+		return r, g, b
+	end
+
+	local function resetColorPicker(swatch)
+		local defaultColor = swatch.__default
+		if defaultColor then
+			ColorPickerFrame:SetColorRGB(defaultColor.r, defaultColor.g, defaultColor.b)
+		end
+	end
+
+	local whiteColor = { r = 1, g = 1, b = 1 }
+	function K:CreateColorSwatch(name, color)
+		color = color or whiteColor
+
+		local swatch = CreateFrame("Button", nil, self, editbox)
+		swatch:SetSize(18, 18)
+		swatch:SetHighlightTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
+		
+		local tex = swatch:CreateTexture()
+		tex:SetAllPoints()
+		tex:SetTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
+		tex:SetVertexColor(color.r, color.g, color.b)
+		tex.GetColor = GetSwatchTexColor
+
+		swatch.tex = tex
+		swatch.color = color
+		swatch:SetScript("OnClick", openColorPicker)
+		swatch:SetScript("OnDoubleClick", resetColorPicker)
+
+		return swatch
+	end
+end
+
 -- Tooltip Functions
 do
 	function K.GetAnchors(frame)
