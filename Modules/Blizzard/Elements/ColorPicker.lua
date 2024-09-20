@@ -76,7 +76,9 @@ function Module:CreateColorPicker()
 
 	local pickerFrame = ColorPickerFrame
 	pickerFrame:SetHeight(250)
-	K.CreateMoverFrame(pickerFrame)
+	local mover = CreateFrame("Frame", nil, pickerFrame)
+	mover:SetAllPoints(_G.ColorPickerFrameHeader)
+	K.CreateMoverFrame(mover, pickerFrame)
 	_G.OpacitySliderFrame:SetPoint("TOPLEFT", _G.ColorSwatch, "TOPRIGHT", 50, 0)
 
 	local colorBar = CreateFrame("Frame", nil, pickerFrame)
