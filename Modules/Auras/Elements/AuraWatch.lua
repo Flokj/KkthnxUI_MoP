@@ -452,7 +452,7 @@ function Module:AuraWatch_UpdateCD()
 			local value = group.List[spellID]
 			if value then
 				if value.SpellID then
-					local name, _, icon = GetSpellName(value.SpellID)
+					local name, _, icon = GetSpellInfo(value.SpellID)
 					local start = GetSpellCooldown(value.SpellID).startTime
 					local duration = GetSpellCooldown(value.SpellID).duration
 					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
@@ -675,7 +675,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 		frame.type = 2
 		frame.spellID = itemID
 	else
-		name, _, icon = GetSpellName(intID)
+		name, _, icon = GetSpellInfo(intID)
 		frame.type = 1
 		frame.spellID = intID
 	end

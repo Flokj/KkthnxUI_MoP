@@ -48,7 +48,7 @@ local function optOnClick(self)
 	end
 
 	self.__owner.Text:SetText(self.text)
-	self.__owner.__list:Hide() -- Hide the dropdown list after selection
+	self:GetParent():Hide()
 end
 
 local function optOnEnter(self)
