@@ -263,37 +263,44 @@ function Module:CreateMinimapButtonToggle()
 	Module:ToggleMinimapIcon()
 end
 
-local function MainMenu_OnShow(self)
-	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15)
+-- Game Menu Setup
+local function PositionGameMenuButton()
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 36)
+	if GameMenuFrame.KkthnxUI then
+		GameMenuFrame.KkthnxUI:SetFormattedText(K.Title)
+	end
 
-	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
-	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
-	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
-	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
+	GameMenuButtonLogout:SetPoint("TOP", GameMenuFrame.KkthnxUI, "BOTTOM", 0, -14)
+	GameMenuButtonStore:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -6)
+	GameMenuButtonMacros:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -6)
+	GameMenuButtonAddons:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -6)
+	GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -6)
 end
 
-local function Button_OnClick()
+local function ClickGameMenu()
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return
 	end
 
 	K["GUI"]:Toggle()
-	HideUIPanel(_G.GameMenuFrame)
-	PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
+	HideUIPanel(GameMenuFrame)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	if not InCombatLockdown() then
+		HideUIPanel(GameMenuFrame)
+	end
 end
 
 function Module:CreateGUIGameMenuButton()
-	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
-	gameMenuButton:SetText(K.Title)
-	gameMenuButton:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -14)
-	gameMenuButton:SetScript("OnClick", Button_OnClick)
-	gameMenuButton:SkinButton()
+	if GameMenuFrame.KkthnxUI then return end
 
-	Module.GameMenuButton = gameMenuButton
+	local button = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate")
+	button:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -14)
+	button:SetScript("OnClick", ClickGameMenu)
 
-	_G.GameMenuFrame:HookScript("OnShow", MainMenu_OnShow)
+	button:SkinButton()
+	GameMenuFrame.KkthnxUI = button
+	GameMenuFrame:HookScript("OnShow", PositionGameMenuButton)
 end
 
 -- Reanchor DurabilityFrame
@@ -546,12 +553,11 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(18, 18)
-	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 12, 5)
-	bu:SkinButton()
+	bu:SetSize(24, 24)
+	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 10, 4)
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-	bu.Icon:SetTexture("Interface\\ICONS\\SPELL_SHADOW_TWISTEDFAITH")
+	bu.Icon:SetAtlas("bags-icon-equipment")
 	bu.Icon:SetAllPoints()
 	bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	K.AddTooltip(bu, "ANCHOR_RIGHT", "Double click to unequip all items.")
