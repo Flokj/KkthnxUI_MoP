@@ -102,6 +102,22 @@ function Module:SetupCVars()
 		SetCVar(cvar, value)
 	end
 
+	if IsAddOnLoaded("Questie") and QuestieLoader then
+		_QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
+		_QuestieTooltips = QuestieLoader:ImportModule("QuestieTooltips")
+
+		local _QuestieEventHandler = QuestieLoader:ImportModule("QuestEventHandler")
+		if _QuestieEventHandler and _QuestieEventHandler.private then
+			hooksecurefunc(_QuestieEventHandler.private, "UpdateAllQuests", function()
+				for _, plate in pairs(C_NamePlate.GetNamePlates()) do
+					if plate.unitFrame then
+						Module.UpdateQuestIndicator(plate.unitFrame)
+					end
+				end
+			end)
+		end
+	end
+
 	Module:UpdateClickableSize()
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
@@ -404,8 +420,6 @@ local function CheckInstanceStatus()
 end
 
 function Module:QuestIconCheck()
-	if not C["Nameplate"].QuestIndicator then return end
-
 	CheckInstanceStatus()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
@@ -421,28 +435,37 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local startLooking, isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
-	local prevDiff = 0
+	local isLootQuest, questProgress
+	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	K.ScanTooltip:SetUnit(unit)
 
-	local data = C_TooltipInfo.GetUnit(unit)
-	if data then
-		for i = 1, #data.lines do
-			local lineData = data.lines[i]
-			if lineData.type == 8 then
-				local text = lineData.leftText
-				if text then
-					local current, goal = strmatch(text, "(%d+)/(%d+)")
-					local progress = strmatch(text, "(%d+)%%")
+	for i = 2, K.ScanTooltip:NumLines() do
+		local textLine = _G["KKUI_ScanTooltipTextLeft"..i]
+		local text = textLine:GetText()
+		if textLine and text then
+			local r, g, b = textLine:GetTextColor()
+			local unitName, progressText = strmatch(text, "^ ([^ ]-) ?%- (.+)$")
+			if r > 0.99 and g > 0.82 and b == 0 then
+				isLootQuest = true
+			elseif unitName and progressText then
+				isLootQuest = false
+				if unitName == "" or unitName == DB.MyName then
+					local current, goal = strmatch(progressText, "(%d+)/(%d+)")
+					local progress = strmatch(progressText, "([%d%.]+)%%")
 					if current and goal then
-						local diff = floor(goal - current)
-						if diff > prevDiff then
-							questProgress = diff
-							prevDiff = diff
+						if tonumber(current) < tonumber(goal) then
+							questProgress = goal - current
+							break
 						end
-					elseif progress and prevDiff == 0 then
-						if floor(100 - progress) > 0 then
-							questProgress = progress .. "%" -- lower priority on progress, keep looking
+					elseif progress then
+						progress = tonumber(progress)
+						if progress and progress < 100 then
+							questProgress = progress.."%"
+							break
 						end
+					else
+						isLootQuest = true
+						break
 					end
 				end
 			end
@@ -464,19 +487,115 @@ function Module:UpdateQuestUnit(_, unit)
 	end
 end
 
+function Module:UpdateForQuestie(npcID)
+	local data = _QuestieTooltips.lookupByKey and _QuestieTooltips.lookupByKey["m_"..npcID]
+	if data then
+		local foundObjective, progressText
+		for _, tooltip in pairs(data) do
+			if not tooltip.npc then
+				local questID = tooltip.questId
+				if questID then
+					if _QuestiePlayer.currentQuestlog[questID] then
+						foundObjective = true
+
+						if tooltip.objective and tooltip.objective.Needed then
+							progressText = tooltip.objective.Needed - tooltip.objective.Collected
+							if progressText == 0 then
+								foundObjective = nil
+							end
+							break
+						end
+					end
+				end
+			end
+		end
+
+		if foundObjective then
+			self.questIcon:Show()
+			self.questCount:SetText(progressText)
+		end
+	end
+end
+
+function Module:UpdateCodexQuestUnit(name)
+	if name and CodexMap.tooltips[name] then
+		for _, meta in pairs(CodexMap.tooltips[name]) do
+			local questData = meta["quest"]
+			local quests = CodexDB.quests.loc
+
+			if questData then
+				for questIndex = 1, GetNumQuestLogEntries() do
+					local _, _, _, header, _, _, _, questId = GetQuestLogTitle(questIndex)
+					if not header and quests[questId] and questData == quests[questId].T then
+						local objectives = GetNumQuestLeaderBoards(questIndex)
+						local foundObjective, progressText = nil
+						if objectives then
+							for i = 1, objectives do
+								local text, type = GetQuestLogLeaderBoard(i, questIndex)
+								if type == "monster" then
+									local _, _, monsterName, objNum, objNeeded = strfind(text, Codex:SanitizePattern(QUEST_MONSTERS_KILLED))
+									if meta["spawn"] == monsterName then
+										progressText = objNeeded - objNum
+										foundObjective = true
+										break
+									end
+								elseif table.getn(meta["item"]) > 0 and type == "item" and meta["dropRate"] then
+									local _, _, itemName, objNum, objNeeded = strfind(text, Codex:SanitizePattern(QUEST_OBJECTS_FOUND))
+									for _, item in pairs(meta["item"]) do
+										if item == itemName then
+											progressText = objNeeded - objNum
+											foundObjective = true
+											break
+										end
+									end
+								end
+							end
+						end
+
+						if foundObjective and progressText > 0 then
+							self.questIcon:Show()
+							self.questCount:SetText(progressText)
+						elseif not foundObjective then
+							self.questIcon:Show()
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function Module:UpdateQuestIndicator()
+	if not C["Nameplate"].QuestIndicator then return end
+
+	self.questIcon:Hide()
+	self.questCount:SetText("")
+	if isInInstance then return end
+
+	if CodexMap then
+		Module.UpdateCodexQuestUnit(self, self.unitName)
+	elseif _QuestieTooltips and _QuestiePlayer then
+		Module.UpdateForQuestie(self, self.npcID)
+	end
+end
+
 function Module:AddQuestIcon(self)
 	if not C["Nameplate"].QuestIndicator then return end
 
-	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", -6, 0)
-	self.questIcon:SetSize(26, 32)
-	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
-	self.questIcon:Hide()
+	local qicon = self:CreateTexture(nil, "OVERLAY", nil, 2)
+	qicon:SetPoint("LEFT", self, "RIGHT", 4, 0)
+	qicon:SetSize(32, 32)
+	qicon:SetAtlas("adventureguide-microbutton-alert")
+	qicon:Hide()
 
-	self.questCount = K.CreateFontString(self, 14, "", nil, "LEFT", 0, 0)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -3, 0)
+	local count = K.CreateFontString(self, 20, "", nil, "LEFT", 0, 0)
+	count:SetPoint("LEFT", qicon, "RIGHT", -4, 0)
+	count:SetTextColor(0.6, 0.8, 1)
 
-	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	self.questIcon = qicon
+	self.questCount = count
+	--self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestIndicator, true)
 end
 
 function Module:AddClassIcon(self)
@@ -974,6 +1093,7 @@ function Module:PostUpdatePlates(event, unit)
 		Module.UpdateUnitPower(self)
 		Module.UpdateTargetChange(self)
 		--Module.UpdateQuestUnit(self, event, unit)
+		Module.UpdateQuestIndicator(self)
 		Module.UpdateUnitClassify(self, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
