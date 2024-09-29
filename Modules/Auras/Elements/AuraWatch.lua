@@ -453,8 +453,7 @@ function Module:AuraWatch_UpdateCD()
 			if value then
 				if value.SpellID then
 					local name, _, icon = GetSpellInfo(value.SpellID)
-					local start = GetSpellCooldown(value.SpellID).startTime
-					local duration = GetSpellCooldown(value.SpellID).duration
+					local start, duration = GetSpellCooldown(value.SpellID)
 					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
 					if group.Mode == "ICON" then
 						name = nil

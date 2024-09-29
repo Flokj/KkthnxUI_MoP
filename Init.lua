@@ -288,8 +288,6 @@ local function UpdatePixelScale(event)
 	end
 	isScaling = true
 
-	print(event)
-
 	if event == "UI_SCALE_CHANGED" then
 		-- If the UI scale has changed, update the screen width and height
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()

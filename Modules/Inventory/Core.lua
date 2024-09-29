@@ -1376,17 +1376,21 @@ function Module:OnEnable()
 	SetCVar("professionToolSlotsExampleShown", 1)
 	SetCVar("professionAccessorySlotsExampleShown", 1)
 
-	-- Shift Key Alert
-	local function CheckShiftKey(self, elapsed)
-		if IsShiftKeyDown() then
-			self.elapsed = (self.elapsed or 0) + elapsed
-			if self.elapsed > 5 then
-				UIErrorsFrame:AddMessage(K.InfoColor .. "Please check if your SHIFT key is pressed or stuck.")
-				self.elapsed = 0
-			end
-		end
-	end
+	-- Delay updates for data jam
+	local updater = CreateFrame("Frame", nil, f.main)
+	updater:Hide()
 
-	local shiftKeyUpdater = CreateFrame("Frame", nil, f.main)
-	shiftKeyUpdater:SetScript("OnUpdate", CheckShiftKey)
+	updater:SetScript("OnUpdate", function(self, elapsed)
+		self.delay = self.delay - elapsed
+		if self.delay < 0 then
+			Module:UpdateAllBags()
+			self:Hide()
+		end
+	end)
+
+	-- Event listener for GET_ITEM_INFO_RECEIVED
+	K:RegisterEvent("GET_ITEM_INFO_RECEIVED", function()
+		updater.delay = 1.5
+		updater:Show()
+	end)
 end
