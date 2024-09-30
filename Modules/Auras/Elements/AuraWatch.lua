@@ -83,7 +83,11 @@ end
 
 local function ConvertTable()
 	for i = 1, 10 do
-		myTable[i] = {}
+		if myTable[i] then
+			table_wipe(myTable[i])
+		else
+			myTable[i] = {}
+		end
 		local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
 		if value and next(value) then
 			for spellID, v in pairs(value) do
@@ -130,6 +134,7 @@ local function ConvertTable()
 end
 
 local function BuildAuraList()
+	table_wipe(AuraList)
 	AuraList = C.AuraWatchList["ALL"] or {}
 	local classAuras = C.AuraWatchList[K.Class]
 	for _, value in pairs(classAuras) do

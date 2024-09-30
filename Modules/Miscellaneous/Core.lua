@@ -553,13 +553,21 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(24, 24)
-	bu:SetPoint("LEFT", PaperDollSidebarTab3, "RIGHT", 10, 4)
+	bu:SetSize(33, 35)
+	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 0)
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-	bu.Icon:SetAtlas("bags-icon-equipment")
+	bu.Icon:SetTexture("Interface\\ICONS\\SPELL_SHADOW_TWISTEDFAITH")
 	bu.Icon:SetAllPoints()
 	bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+	bu.bg = CreateFrame("Frame", nil, bu)
+	bu.bg:SetAllPoints()
+	bu.bg:SetFrameLevel(bu:GetFrameLevel())
+	bu.bg:CreateBorder()
+	bu.bg:SetPoint("TOPLEFT", 2, 1)
+	bu.bg:SetPoint("BOTTOMRIGHT", 0, 2)
+
 	K.AddTooltip(bu, "ANCHOR_RIGHT", "Double click to unequip all items.")
 
 	local function UnequipItemInSlot(i)

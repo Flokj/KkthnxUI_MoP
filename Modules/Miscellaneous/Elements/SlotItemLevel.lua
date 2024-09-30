@@ -86,9 +86,9 @@ function Module:CreateItemString(frame, strType)
 		slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
 		
 		local relF, x = Module:GetSlotAnchor(index)
-		slotFrame.enchantText = K.CreateFontString(slotFrame, 12, "", "OUTLINE")
+		slotFrame.enchantText = K.CreateFontString(slotFrame, 18, "", "OUTLINE")
 		slotFrame.enchantText:ClearAllPoints()
-		slotFrame.enchantText:SetPoint("TOPRIGHT", slotFrame, 1, 1)
+		slotFrame.enchantText:SetPoint("TOPRIGHT", slotFrame, 1, 3)
 		slotFrame.enchantText:SetTextColor(0, 1, 0)
 		for i = 1, 5 do
 			local offset = (i - 1) * 20 + 5
@@ -123,7 +123,7 @@ function Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
 	if C["Misc"].GemEnchantInfo then
 		local info = K.GetItemLevel(link, unit, index, true)
 		if info then
-			if not gemSlotBlackList[index] then
+			--[[if not gemSlotBlackList[index] then
 				local gemStep = 1
 				for i = 1, 5 do
 					local texture = slotFrame["textureIcon" .. i]
@@ -137,7 +137,7 @@ function Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
 						gemStep = gemStep + 1
 					end
 				end
-			end
+			end]]
 
 			local enchant = info.enchantText
 			if enchant then
