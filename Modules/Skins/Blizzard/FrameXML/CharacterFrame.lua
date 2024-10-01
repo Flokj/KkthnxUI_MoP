@@ -30,8 +30,7 @@ tinsert(C.defaultThemes, function()
 
 	local expandButton = CharacterFrameExpandButton
 	expandButton:ClearAllPoints()
-	expandButton:SetScale(1.2)
-	expandButton:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", 0, -6)
+	expandButton:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", 10, -5)
 	if expandButton then
 		K.ReskinArrow(expandButton, "right")
 
@@ -62,6 +61,14 @@ tinsert(C.defaultThemes, function()
 		"Hands", "Finger0", "Finger1", "Trinket0", "Trinket1", "Back", "MainHand",
 		"SecondaryHand", "Tabard", "Ranged",
 	}
+
+	local CharacterHeadSlot = _G.CharacterHeadSlot
+	CharacterHeadSlot:ClearAllPoints()
+	CharacterHeadSlot:SetPoint('TOPLEFT', _G.PaperDollItemsFrame, 'TOPLEFT', 16, -70)
+
+	local CharacterHandsSlot = _G.CharacterHandsSlot
+	CharacterHandsSlot:ClearAllPoints()
+	CharacterHandsSlot:SetPoint('LEFT', _G.CharacterHeadSlot, 'RIGHT', 230, 0)
 
 	for i = 1, #slots do
 		local slot = _G["Character" .. slots[i] .. "Slot"]

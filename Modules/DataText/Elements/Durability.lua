@@ -99,10 +99,9 @@ local function OnEvent(self, event, ...)
 end
 
 local function OnEnter()
-	local total, equipped = GetAverageItemLevel()
 	GameTooltip:SetOwner(DurabilityDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataText, "TOPRIGHT", 0, 0)
-	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", "iLvl", equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
+	GameTooltip:AddDoubleLine(DURABILITY, " ", 0.4, 0.6, 1, 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local totalCost = 0
@@ -136,11 +135,10 @@ function Module:CreateDurabilityDataText()
 	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
-	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
-	DurabilityDataText:SetParent(PaperDollFrame)
+	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, K.UnitColor)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("TOP", CharacterFrameExpandButton, "LEFT", -230, 6)
+	DurabilityDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 0, -280)
 	DurabilityDataText.Text:SetFontObject(K.UIFont)
 	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 12, select(3, DurabilityDataText.Text:GetFont()))
 
@@ -156,4 +154,6 @@ function Module:CreateDurabilityDataText()
 
 	-- Initial update
 	NewSetLevelFunction()
+
+	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end

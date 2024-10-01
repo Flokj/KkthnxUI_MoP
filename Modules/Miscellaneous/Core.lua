@@ -553,8 +553,9 @@ end
 -- Get Naked
 function Module:NakedIcon()
 	local bu = CreateFrame("Button", nil, CharacterFrameInsetRight)
-	bu:SetSize(33, 35)
-	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 0)
+	bu:SetSize(31, 34)
+	bu:SetPoint("RIGHT", PaperDollSidebarTab1, "LEFT", -4, 1)
+	bu:SetFrameLevel(PaperDollSidebarTab1:GetFrameLevel())
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetTexture("Interface\\ICONS\\SPELL_SHADOW_TWISTEDFAITH")
@@ -565,8 +566,6 @@ function Module:NakedIcon()
 	bu.bg:SetAllPoints()
 	bu.bg:SetFrameLevel(bu:GetFrameLevel())
 	bu.bg:CreateBorder()
-	bu.bg:SetPoint("TOPLEFT", 2, 1)
-	bu.bg:SetPoint("BOTTOMRIGHT", 0, 2)
 
 	K.AddTooltip(bu, "ANCHOR_RIGHT", "Double click to unequip all items.")
 
