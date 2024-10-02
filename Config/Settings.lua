@@ -760,6 +760,7 @@ C["Raid"] = {
 	Height = 44,
 	HorizonRaid = false,
 	MainTankFrames = false,
+	PowerBarShow = false,
 	ManabarShow = false,
 	NumGroups = 6,
 	ReverseRaid = false,
