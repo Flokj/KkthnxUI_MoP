@@ -377,7 +377,7 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
-	AFKCamera = true,
+	AFKCamera = false,
 	AutoBubbles = false,
 	ColorPicker = true,
 	Focuser = false,
@@ -538,7 +538,7 @@ C["Skins"] = {
 C["Tooltip"] = {
 	ItemQuality = true,
 	Enable = true,
-	FactionIcon = true,
+	FactionIcon = false,
 	HideRank = true,
 	HideRealm = true,
 	HideTitle = true,
