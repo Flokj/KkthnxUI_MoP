@@ -160,7 +160,7 @@ function Module:CreateTarget()
 		Buffs.initialAnchor = "TOPRIGHT"
 		Buffs["growth-x"] = "LEFT"
 		Buffs["growth-y"] = "DOWN"
-		Buffs.num = C["Unitframe"].TargetBuffsPerRow * 3  -- count row
+		Buffs.num = C["Unitframe"].TargetBuffsPerRow * 4  -- count row
 		Buffs.spacing = 6
 		Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		Buffs.onlyShowPlayer = false

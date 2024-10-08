@@ -579,8 +579,8 @@ local function HelloWorld()
 	K.CreateGF(lr, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
-	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v" .. K.SystemColor .. K.Version .. "|r!", "", false, "TOP", 0, -50)
-	K.CreateFontString(welcome, 13, "|cff669dffKkthnxUI|r is a simplistic user interface that holds", "", false, "TOP", 0, -86)
+	K.CreateFontString(welcome, 14, "Thank you for choosing |cff5C8BCFKkthnxUI|r, v" .. K.SystemColor .. K.Version .. "|r!", "", false, "TOP", 0, -50)
+	K.CreateFontString(welcome, 13, "|cff5C8BCFKkthnxUI|r is a simplistic user interface that holds", "", false, "TOP", 0, -86)
 	K.CreateFontString(welcome, 13, "onto the information and functionality, while still keeping", "", false, "TOP", 0, -106)
 	K.CreateFontString(welcome, 13, "most of the good looks. It can be used for any class or role.", "", false, "TOP", 0, -126)
 
@@ -602,7 +602,7 @@ local function HelloWorld()
 	K.CreateGF(lr, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
-	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
+	K.CreateFontString(welcome, 13, "If this is your first time using |cff5C8BCFKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
 	K.CreateFontString(welcome, 13, "please take a minute to go through the turtoral!", "", false, "BOTTOM", 0, 110)
 	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)
 
