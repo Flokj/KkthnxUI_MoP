@@ -1,4 +1,4 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Minimap")
 
 local math_floor = math.floor

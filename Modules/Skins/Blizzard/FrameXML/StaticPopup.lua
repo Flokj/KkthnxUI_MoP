@@ -67,7 +67,6 @@ tinsert(C.defaultThemes, function()
 
 		local frame = _G[popup]
 		frame:StripTextures()
-		--frame:CreateBorder()
 		frame:CreateBackdrop()
 		frame.KKUI_Backdrop:SetPoint("TOPLEFT", 2, -2)
 		frame.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -2, 2)

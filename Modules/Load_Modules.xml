@@ -154,7 +154,9 @@
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
+   <Include file="Skins\Blizzard\FrameXML\Menu.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
+   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\TradeSkillFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\EnhanceTrainers.lua" />
@@ -171,6 +173,5 @@
    <Include file="Skins\Addons\Skada.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!--Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
-   <Include file="Skins\Addons\BugSack.lua" /> -->
+   <!--Include file="Skins\Addons\BugSack.lua" /> -->
 </Ui>

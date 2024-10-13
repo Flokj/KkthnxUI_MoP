@@ -344,7 +344,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 			for index = 1, requiredItems do
 				local link = GetQuestItemLink("required", index)
 				if link then
-					local id = tonumber(string_match(link, "item:(%d+)"))
+					local id = tonumber(string.match(link, "item:(%d+)"))
 					for _, itemID in next, itemBlacklist do
 						if itemID == id then
 							return

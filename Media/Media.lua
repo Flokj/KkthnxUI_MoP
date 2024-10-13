@@ -83,4 +83,8 @@ if K.LibSharedMedia then
 			K.LibSharedMedia:Register(mediaType, name, path)
 		end
 	end
+
+	for name, path in pairs(C["Media"].Borders) do
+		K.LibSharedMedia:Register("border", name, path)
+	end
 end
