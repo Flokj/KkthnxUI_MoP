@@ -37,6 +37,7 @@ C["ActionBar"] = {
 	Bar1Font = 12,
 	Bar1Num = 12,
 	Bar1PerRow = 12,
+	Bar1Fade = false,
 
 	Bar2 = true,
 	Bar2Flyout = 1,
@@ -44,6 +45,7 @@ C["ActionBar"] = {
 	Bar2Font = 12,
 	Bar2Num = 12,
 	Bar2PerRow = 12,
+	Bar2Fade = false,
 
 	Bar3 = true,
 	Bar3Flyout = 1,
@@ -51,6 +53,7 @@ C["ActionBar"] = {
 	Bar3Font = 12,
 	Bar3Num = 12,
 	Bar3PerRow = 12,
+	Bar3Fade = false,
 
 	Bar4 = true,
 	Bar4Flyout = 3,
@@ -58,6 +61,7 @@ C["ActionBar"] = {
 	Bar4Font = 12,
 	Bar4Num = 12,
 	Bar4PerRow = 4,
+	Bar4Fade = false,
 
 	Bar5 = true,
 	Bar5Flyout = 3,
@@ -65,14 +69,17 @@ C["ActionBar"] = {
 	Bar5Font = 12,
 	Bar5Num = 12,
 	Bar5PerRow = 4,
+	Bar5Fade = false,
 
 	BarPetSize = 26,
 	BarPetFont = 12,
 	BarPetPerRow = 10,
+	BarPetFade = false,
 
 	BarStanceSize = 30,
 	BarStanceFont = 12,
 	BarStancePerRow = 10,
+	BarStanceFade = false,
 
 	Bar6 = false,
 	Bar6Flyout = 1,
@@ -80,6 +87,7 @@ C["ActionBar"] = {
 	Bar6Font = 12,
 	Bar6Num = 12,
 	Bar6PerRow = 12,
+	Bar6Fade = false,
 
 	Bar7 = false,
 	Bar7Flyout = 1,
@@ -87,6 +95,7 @@ C["ActionBar"] = {
 	Bar7Font = 12,
 	Bar7Num = 12,
 	Bar7PerRow = 12,
+	Bar7Fade = false,
 
 	Bar8 = false,
 	Bar8Flyout = 1,
@@ -94,6 +103,16 @@ C["ActionBar"] = {
 	Bar8Font = 12,
 	Bar8Num = 12,
 	Bar8PerRow = 12,
+	Bar8Fade = false,
+
+	BarFadeGlobal = true,
+	BarFadeAlpha = 0.1,
+	BarFadeDelay = 0,
+	BarFadeCombat = true,
+	BarFadeTarget = true,
+	BarFadeCasting = true,
+	BarFadeHealth = true,
+	BarFadeVehicle = true,
 }
 
 -- Announcements

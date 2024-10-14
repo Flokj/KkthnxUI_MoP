@@ -391,6 +391,7 @@ function Module:OnEnable()
 		"UpdateAllSize",
 		"HideBlizz",
 		"CreateTotemBar",
+		"CreateBarFadeGlobal",
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do

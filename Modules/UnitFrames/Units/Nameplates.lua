@@ -633,14 +633,10 @@ function Module:UpdateClassIcon(self, unit)
 end
 
 function Module:AddCreatureIcon(self)
-	local iconFrame = CreateFrame("Frame", nil, self)
-	iconFrame:SetAllPoints()
-	iconFrame:SetFrameLevel(self:GetFrameLevel() + 2)
-
-	local ClassifyIndicator = iconFrame:CreateTexture(nil, "ARTWORK")
+	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetTexture(K.MediaFolder .. "Nameplates\\star")
-	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT")
-	ClassifyIndicator:SetSize(14, 14)
+	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
+	ClassifyIndicator:SetSize(16, 16)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator

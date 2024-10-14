@@ -30,7 +30,7 @@ local function DebugLog(message)
 	end
 end
 
-local function HandleVersonTag(version, author)
+local function HandleVersonTag(version)
 	local major, minor = string_split(".", version)
 	major, minor = tn(major), tn(minor)
 
@@ -187,7 +187,8 @@ function Module:VersionCheck_Send(channel)
 	end
 end
 
-function Module:VersionCheck_Update(prefix, msg, distType, author)
+function Module:VersionCheck_Update(...)
+	local prefix, msg, distType, author = ...
 	if prefix ~= "KKUIVersionCheck" then return end
 
 	if Ambiguate(author, "none") == K.Name then
@@ -232,4 +233,23 @@ function Module:OnEnable()
 
 	Module:VersionCheck_UpdateGroup()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
+end
+
+-- Add this function to manually trigger a test of the version check frame
+function Module:VersionCheck_Test()
+	-- Fake version for testing purposes
+	local fakeVersion = "9.9.9"
+
+	-- Force the creation of the update notice frame with fake text
+	local fakeText = string_format("|cff5C8BCFKkthnxUI|r is out of date!|nPlease update to the latest version: |cff70C0F5%s|r.", fakeVersion)
+	Module:VersionCheck_Create(fakeText)
+
+	-- Print debug message for testing
+	DebugLog("Triggered VersionCheck test with version: " .. fakeVersion)
+end
+
+-- Add a slash command to manually trigger the test during runtime
+SLASH_KKUI_VERSIONCHECK1 = "/vctest"
+SlashCmdList["KKUI_VERSIONCHECK"] = function()
+	Module:VersionCheck_Test()
 end
