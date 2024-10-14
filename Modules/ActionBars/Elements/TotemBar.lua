@@ -1,13 +1,14 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Bar = K:GetModule("ActionBar")
-local iconSize = 32
+
+local buttons, margin, iconSize = {}, 6, 32
 
 local colorTable = {
-	summon = K.QualityColors[1],
+	summon                = K.QualityColors[1],
 	[_G.EARTH_TOTEM_SLOT] = K.QualityColors[2],
-	[_G.FIRE_TOTEM_SLOT] = K.QualityColors[5],
+	[_G.FIRE_TOTEM_SLOT]  = K.QualityColors[5],
 	[_G.WATER_TOTEM_SLOT] = K.QualityColors[3],
-	[_G.AIR_TOTEM_SLOT] = K.QualityColors[4],
+	[_G.AIR_TOTEM_SLOT]   = K.QualityColors[4],
 }
 
 local function reskinTotemButton(button, nobg, uncut)
@@ -27,10 +28,10 @@ end
 
 local function reskinTotemArrow(button, direction)
 	button:StripTextures(2)
-	button:SetWidth(iconSize * 6 + 6 * 5, iconSize)
+	button:SetWidth(iconSize + K.Mult * 2)
 
 	local tex = button:CreateTexture(nil, "ARTWORK")
-	tex:SetSize(20, 20)
+	tex:SetSize(22, 22)
 	tex:SetPoint("CENTER")
 	K.SetupArrow(tex, direction)
 	button.__texture = tex
@@ -40,11 +41,12 @@ function Bar:CreateTotemBar()
 	if K.Class ~= "SHAMAN" then return end
 	if not C["ActionBar"].TotemBar then return end
 
-	local margin = 6
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(iconSize * 6 + margin * 5, iconSize)
-	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", _G.KKUI_ActionBar5, "TOP", 0, margin })
-	frame:SetPoint("TOPLEFT", frame.Mover, -5, -6)
+	iconSize = C["ActionBar"].TotemBarSize
+
+	local frame = CreateFrame("Frame", "KKUI_ActionBarTotem", UIParents)
+	frame:SetSize(iconSize * 6 + margin * 7, iconSize + margin * 2)
+	frame:SetPoint("CENTER")
+	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", _G.KKUI_ActionBar5, "TOP", 0, 0 })
 	frame.Mover:HookScript("OnSizeChanged", function()
 		MultiCastSummonSpellButton_Update(MultiCastSummonSpellButton) -- fix mover anchor
 	end)
@@ -65,16 +67,15 @@ function Bar:CreateTotemBar()
 	MultiCastSummonSpellButton:SetSize(iconSize, iconSize)
 	MultiCastSummonSpellButton:ClearAllPoints()
 	MultiCastSummonSpellButton:SetPoint("RIGHT", _G.MultiCastSlotButton1, "LEFT", -margin, 0)
+	tinsert(buttons, MultiCastSummonSpellButton)
 
 	reskinTotemButton(MultiCastRecallSpellButton)
 	MultiCastRecallSpellButton:SetSize(iconSize, iconSize)
+	tinsert(buttons, MultiCastRecallSpellButton)
 
 	local old_update = MultiCastRecallSpellButton_Update
 	function MultiCastRecallSpellButton_Update(button)
-		if InCombatLockdown() then
-			return
-		end
-
+		if InCombatLockdown() then return end
 		old_update(button)
 		button:SetPoint("LEFT", _G.MultiCastSlotButton4, "RIGHT", margin, 0)
 	end
@@ -87,8 +88,8 @@ function Bar:CreateTotemBar()
 		if i ~= 1 then
 			button:SetPoint("LEFT", prevButton, "RIGHT", margin, 0)
 		end
-
 		prevButton = button
+		tinsert(buttons, button)
 	end
 
 	for i = 1, 12 do
@@ -105,11 +106,8 @@ function Bar:CreateTotemBar()
 		end
 	end)
 
-	hooksecurefunc("MultiCastActionButton_Update", function(button)
-		if InCombatLockdown() then
-			return
-		end
-
+	hooksecurefunc("MultiCastActionButton_Update", function(button, _, _, slot)
+		if InCombatLockdown() then return end
 		button:ClearAllPoints()
 		button:SetAllPoints(button.slotButton)
 	end)
@@ -118,10 +116,8 @@ function Bar:CreateTotemBar()
 	reskinTotemArrow(MultiCastFlyoutFrameOpenButton, "up")
 	reskinTotemArrow(MultiCastFlyoutFrameCloseButton, "down")
 
-	hooksecurefunc(MultiCastFlyoutFrame, "SetHeight", function(frame, _, force)
-		if force then
-			return
-		end
+	hooksecurefunc(MultiCastFlyoutFrame, "SetHeight", function(frame, height, force)
+		if force then return end
 
 		local buttons = frame.buttons
 		local count = 0
@@ -132,11 +128,9 @@ function Bar:CreateTotemBar()
 					button:ClearAllPoints()
 					button:SetPoint("BOTTOM", buttons[i - 1], "TOP", 0, margin)
 				end
-
 				count = count + 1
 			end
 		end
-
 		frame:SetHeight(count * (iconSize + margin) + 20, true)
 	end)
 
@@ -146,14 +140,26 @@ function Bar:CreateTotemBar()
 			if not button.bg then
 				reskinTotemButton(button, nil, true)
 				button:SetSize(iconSize, iconSize)
+				tinsert(buttons, button)
 			end
-
 			if not (type == "slot" and i == 1) then
 				button.icon:SetTexCoord(unpack(K.TexCoords))
 			end
-
 			local color = type == "page" and colorTable.summon or colorTable[parent:GetID()]
 			button.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		end
 	end)
+end
+
+function Bar:UpdateTotemSize()
+	iconSize = C["ActionBar"].TotemBarSize
+
+	KKUI_ActionBarTotem:SetSize(iconSize * 6 + margin * 7, iconSize + margin * 2)
+	KKUI_ActionBarTotem.Mover:SetSize(iconSize * 6 + margin * 7, iconSize + margin * 2)
+	MultiCastFlyoutFrameOpenButton:SetWidth(iconSize + K.Mult * 2)
+	MultiCastFlyoutFrameCloseButton:SetWidth(iconSize + K.Mult * 2)
+
+	for _, button in pairs(buttons) do
+		button:SetSize(iconSize, iconSize)
+	end
 end

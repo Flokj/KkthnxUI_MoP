@@ -345,6 +345,10 @@ local function UpdateActionBarVehicleButton()
 	K:GetModule("ActionBar"):UpdateVehicleButton()
 end
 
+local function UpdateTotemSize()
+	K:GetModule("ActionBar"):UpdateTotemSize()
+end
+
 
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
@@ -430,6 +434,7 @@ local ActionBar = function(self)
 	if K.Class == "SHAMAN" then
 		Window:CreateSection(newFeatureIcon .. "TotemBar")
 		Window:CreateSwitch("ActionBar", "TotemBar", enableTextColor .. "Enable TotemBar")
+		Window:CreateSlider("ActionBar", "TotemBarSize", "Button Totem Size", 24, 60, 1, nil, UpdateTotemSize)
 	end
 
 	Window:CreateSection("ActionBar Vehicle")
