@@ -106,7 +106,7 @@ C["ActionBar"] = {
 	Bar8PerRow = 12,
 	Bar8Fade = false,
 
-	BarFadeGlobal = true,
+	BarFadeGlobal = false,
 	BarFadeAlpha = 0.1,
 	BarFadeDelay = 0,
 	BarFadeCombat = true,

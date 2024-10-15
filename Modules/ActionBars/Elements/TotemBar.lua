@@ -43,7 +43,7 @@ function Bar:CreateTotemBar()
 
 	iconSize = C["ActionBar"].TotemBarSize
 
-	local frame = CreateFrame("Frame", "KKUI_ActionBarTotem", UIParents)
+	local frame = CreateFrame("Frame", "KKUI_ActionBarTotem", UIParent)
 	frame:SetSize(iconSize * 6 + margin * 7, iconSize + margin * 2)
 	frame:SetPoint("CENTER")
 	frame.Mover = K.Mover(frame, "TotemBar", "TotemBar", { "BOTTOM", _G.KKUI_ActionBar5, "TOP", 0, 0 })
