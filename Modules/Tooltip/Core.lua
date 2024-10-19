@@ -534,7 +534,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 	IMECandidatesFrame.selection:SetVertexColor(r, g, b)
 
 	-- Others
-	C_Timer.After(6, function()
+	K.Delay(6, function()
 		-- Lib minimap icon
 		if LibDBIconTooltip then
 			Module.ReskinTooltip(LibDBIconTooltip)

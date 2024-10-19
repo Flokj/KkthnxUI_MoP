@@ -150,7 +150,7 @@ function Module:OnEnable()
 		"CreateQueueTimer",
 	}
 	
-	C_Timer.After(0, Module.UpdateMaxCameraZoom)
+	K.Delay(0, Module.UpdateMaxCameraZoom)
 
 	for _, funcName in ipairs(loadMiscModules) do
 		local func = self[funcName]

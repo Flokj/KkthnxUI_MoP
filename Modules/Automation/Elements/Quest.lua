@@ -407,7 +407,7 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 end)
 
 local function AttemptAutoComplete(event)
-	C_Timer.After(1, AttemptAutoComplete)
+	K.Delay(1, AttemptAutoComplete)
 
 	if event == "PLAYER_REGEN_ENABLED" then
 		QuickQuest:UnregisterEvent("PLAYER_REGEN_ENABLED")

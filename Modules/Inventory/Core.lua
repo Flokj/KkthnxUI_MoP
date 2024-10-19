@@ -11,7 +11,6 @@ local unpack = unpack
 
 local C_NewItems_IsNewItem = C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
-local C_Timer_After = C_Timer.After
 local ClearCursor = ClearCursor
 local CreateFrame = CreateFrame
 local DeleteCursorItem = DeleteCursorItem
@@ -367,7 +366,7 @@ function Module:CreateSortButton(name)
 					SortBags()
 					table_wipe(sortCache)
 					Module.Bags.isSorting = true
-					C_Timer_After(0.5, Module.ReverseSort)
+					K.Delay(0.5, Module.ReverseSort)
 				end
 			else
 				SortBags()

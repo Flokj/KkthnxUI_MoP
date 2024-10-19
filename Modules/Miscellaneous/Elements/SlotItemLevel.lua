@@ -123,7 +123,7 @@ function Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
 	if C["Misc"].GemEnchantInfo then
 		local info = K.GetItemLevel(link, unit, index, true)
 		if info then
-			--[[if not gemSlotBlackList[index] then
+			if not gemSlotBlackList[index] and not C["Misc"].HelmCloakToggle then
 				local gemStep = 1
 				for i = 1, 5 do
 					local texture = slotFrame["textureIcon" .. i]
@@ -131,13 +131,13 @@ function Module:ItemLevel_UpdateGemInfo(link, unit, index, slotFrame)
 					local gem = info.gems and info.gems[gemStep]
 					if gem then
 						texture:SetTexture(gem)
-						bg.KKUI_Border:SetVertexColor(1, 1, 1)
+						bg.KKUI_Border:Hide()
 						bg:Show()
 
 						gemStep = gemStep + 1
 					end
 				end
-			end]]
+			end
 
 			local enchant = info.enchantText
 			if enchant then

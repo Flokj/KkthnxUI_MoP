@@ -112,61 +112,6 @@ SlashCmdList["KKTHNXUI_GETFONT"] = function(msg)
 end
 _G.SLASH_KKTHNXUI_GETFONT1 = "/getfont"
 
-do
-	local versionList = {}
-	C_ChatInfo_RegisterAddonMessagePrefix("KKUI_VersonCheck")
-
-	local function PrintVerCheck()
-		print("------------------------")
-		for name, version in pairs(versionList) do
-			print(name .. " " .. version)
-		end
-	end
-
-	local function SendVerCheck(channel)
-		table_wipe(versionList)
-		C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "VersionCheck", channel)
-		C_Timer.After(3, PrintVerCheck)
-	end
-
-	local function VerCheckListen(_, ...)
-		local prefix, msg, distType, sender = ...
-
-		if prefix == "KKUI_VersonCheck" then
-			if msg == "VersionCheck" then
-				C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "MyVer-" .. K.Version, distType)
-			elseif string_find(msg, "MyVer") then
-				local _, version = string_split("-", msg)
-				versionList[sender] = version .. " - " .. distType
-			end
-		end
-	end
-	K:RegisterEvent("CHAT_MSG_ADDON", VerCheckListen)
-
-	SlashCmdList["KKTHNXUI_VER_CHECK"] = function(msg)
-		local channel
-		if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-			channel = "INSTANCE_CHAT"
-		elseif IsInRaid() then
-			channel = "RAID"
-		elseif IsInGuild() and not IsInGroup() then
-			channel = "GUILD"
-		elseif IsInGroup() then
-			channel = "PARTY"
-		end
-
-		if msg ~= "" then
-			channel = msg
-		end
-
-		if channel then
-			SendVerCheck(channel)
-		end
-	end
-
-	_G.SLASH_KKTHNXUI_VER_CHECK1 = "/kkver"
-end
-
 SlashCmdList["KKTHNXUI_GET_ENCOUNTERS"] = function()
 	if not _G.EncounterJournal then
 		return

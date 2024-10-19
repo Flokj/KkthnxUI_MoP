@@ -6,7 +6,6 @@ local table_wipe = table.wipe
 local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local GetContainerItemInfo = C_Container.GetContainerItemInfo
 local UseContainerItem = C_Container and C_Container.UseContainerItem or UseContainerItem
-local C_Timer_After = C_Timer.After
 local C_TransmogCollection_GetItemInfo = C_TransmogCollection.GetItemInfo
 local IsShiftKeyDown = IsShiftKeyDown
 
@@ -25,7 +24,7 @@ local function startSelling()
 			if info and not sellCache["b" .. bag .. "s" .. slot] and info.hyperlink and not info.hasNoValue and (info.quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[info.itemID]) then
 				sellCache["b" .. bag .. "s" .. slot] = true
 				UseContainerItem(bag, slot)
-				C_Timer_After(0.15, startSelling)
+				K.Delay(0.15, startSelling)
 				return
 			end
 		end

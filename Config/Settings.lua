@@ -309,7 +309,6 @@ C["General"] = {
 	TexturesColor = { 1, 1, 1 },
 	UIScale = 0.71111,
 	UseGlobal = false,
-	VersionCheck = false,
 	Texture = "Flat",
 	SmoothAmount = 0.25,
 	BorderStyle = {

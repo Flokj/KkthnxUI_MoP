@@ -19,17 +19,17 @@ function Module:CreateHelmCloakToggle()
 	    checkbox:SetHitRectInsets(3, -checkboxText:GetStringWidth(), 0, 0)
 	
 	    checkbox:HookScript("OnEnter", function(self)
-	        UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+	        K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 	    end)
 	
 	    checkbox:HookScript("OnLeave", function(self)
-	        UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+	        K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 	    end)
 	
 	    checkbox:HookScript("OnClick", function(self)
 	        self:Disable()
 	        self:SetAlpha(1.0)
-	        C_Timer.After(0.5, function()
+	        K.Delay(0.5, function()
 	            toggleFunc()
 	            self:Enable()
 	            if not self:IsMouseOver() then
