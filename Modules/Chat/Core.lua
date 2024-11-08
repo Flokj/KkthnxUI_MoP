@@ -512,7 +512,6 @@ function Module:OnEnable()
 	end
 	SetCVar("chatStyle", "classic")
 	SetCVar("chatMouseScroll", 1) -- Enable mousescroll
-	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
 	-- Chat class color

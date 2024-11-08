@@ -1,23 +1,23 @@
 local C = KkthnxUI[2]
 
 C.NameplateWhiteList = {
-	--[[ Boss/Other
-    [24364] = true, -- Free Action 5s
-    [6615]  = true, -- Free Action 30s
-    [39965] = true, -- Frost Grenade
-    [55536] = true, -- Frostweave Net
-    [13099] = true, -- Net-o-Matic
-    [30217] = true, -- Adamantite Grenade
-    [67769] = true, -- Cobalt Frag Bomb
-    [30216] = true, -- Fel Iron Bomb
-    [20549] = true, -- War Stomp(Tauren/Stun/2s)
-    [25046] = true, -- Arcane Torrent(Blood Elph/Silence/2s)
-    [17116] = true, -- nature swiftness(Shaman/Druid)
-    [301091] = true, -- Alliance flag(warsong)
-    [301089] = true, -- Horde flag(warsong)
-    [34976] = true, -- Eyes flag
-    [70338] = true, -- Necrotic Plague
-    [72148] = true, -- Enrage (dublicate warrior enrage by spell name)]]
+	-- Boss/T12
+    [99497] = true, -- [Beth'tilac] Frenzy @Boss
+    [100634]  = true, -- [Beth'tilac] Consume @Add
+    [99296] = true, -- [Ragnaros] Meteor Knockable
+    [99362] = true, -- [Alysrazor] Voracious Hatchling Tantrum
+    [99361] = true, -- [Alysrazor] Voracious Hatchling Hungry
+    [99359] = true, -- [Alysrazor] Voracious Hatchling Satiated
+    [101304] = true, -- [Rhyolith] Buff - Superheated
+    [99352] = true, -- Baleroc Decimation Blade
+    [99350] = true, -- Baleroc Inferno Blade
+    [97238] = true, -- Majordomo Adrenaline
+    --[17116] = true, -- nature swiftness(Shaman/Druid)
+    --[301091] = true, -- Alliance flag(warsong)
+    --[301089] = true, -- Horde flag(warsong)
+    --[34976] = true, -- Eyes flag
+    --[70338] = true, -- Necrotic Plague
+    --[72148] = true, -- Enrage (dublicate warrior enrage by spell name)
 
     --[29703] = true, -- Dazed(-50% move.speed/%.s)
 

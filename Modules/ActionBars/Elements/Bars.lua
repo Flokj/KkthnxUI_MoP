@@ -367,10 +367,10 @@ function Module:CreateBars()
 			end
 			Module:UpdateBarConfig()
 		end
-	end)]]
+	end)
 	InterfaceOptionsActionBarsPanelLockActionBars:HookScript("OnClick", function()
 		Bar:UpdateBarConfig()
-	end)
+	end)]]
 end
 
 function Module:OnEnable()

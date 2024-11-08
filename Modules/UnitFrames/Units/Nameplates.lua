@@ -635,7 +635,7 @@ end
 function Module:AddCreatureIcon(self)
 	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetTexture(K.MediaFolder .. "Nameplates\\star")
-	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
+	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT")
 	ClassifyIndicator:SetSize(16, 16)
 	ClassifyIndicator:Hide()
 

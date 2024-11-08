@@ -66,8 +66,6 @@ function Module:HideBlizz()
 
 	-- Hide blizz options
 	SetCVar("multiBarRightVerticalLayout", 0)
-	InterfaceOptionsActionBarsPanelStackRightBars:EnableMouse(false)
-	InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
 	-- Update token panel
 	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
 end

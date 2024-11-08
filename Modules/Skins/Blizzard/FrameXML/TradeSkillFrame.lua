@@ -138,10 +138,10 @@ function Module:EnhancedTradeSkill()
 	_G["TradeSkillFrameCloseButton"]:SetPoint("TOPRIGHT", _G["TradeSkillFrame"], "TOPRIGHT", -30, -8)
 
 	-- Position dropdown menus
-	TradeSkillInvSlotDropDown:ClearAllPoints()
-	TradeSkillInvSlotDropDown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -40)
-	TradeSkillSubClassDropDown:ClearAllPoints()
-	TradeSkillSubClassDropDown:SetPoint("RIGHT", TradeSkillInvSlotDropDown, "LEFT", 0, 0)
+	TradeSkillInvSlotDropdown:ClearAllPoints()
+	TradeSkillInvSlotDropdown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -40)
+	TradeSkillSubClassDropdown:ClearAllPoints()
+	TradeSkillSubClassDropdown:SetPoint("RIGHT", TradeSkillInvSlotDropdown, "LEFT", 0, 0)
 
 	-- Move search box below rank frame
 	TradeSkillFrameEditBox:ClearAllPoints()

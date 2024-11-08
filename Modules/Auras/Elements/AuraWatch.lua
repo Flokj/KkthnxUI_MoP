@@ -13,6 +13,7 @@ local GameTooltip = GameTooltip
 local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
 local GetItemInfo = GetItemInfo
+local GetItemCooldown = C_Container.GetItemCooldown or GetItemCooldown
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetSpellCharges = GetSpellCharges
 local GetTime = GetTime

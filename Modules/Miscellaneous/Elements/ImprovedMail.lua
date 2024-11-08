@@ -390,7 +390,7 @@ function Module:CollectCurrentButton()
 end
 
 function Module:LastMailSaver()
-	local mailSaver = CreateFrame("CheckButton", nil, SendMailFrame, "OptionsCheckButtonTemplate")
+	local mailSaver = CreateFrame("CheckButton", nil, SendMailFrame, "OptionsBaseCheckButtonTemplate")
 	mailSaver:SetHitRectInsets(0, 0, 0, 0)
 	mailSaver:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 0, 0)
 	mailSaver:SetSize(24, 24)

@@ -227,5 +227,4 @@ function Module:OnEnable()
 
 	-- Hide default cooldown
 	SetCVar("countdownForCooldowns", 0)
-	K.HideInterfaceOption(InterfaceOptionsActionBarsPanelCountdownCooldowns)
 end

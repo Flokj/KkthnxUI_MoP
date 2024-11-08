@@ -3,7 +3,6 @@ local Module = K:GetModule("Tooltip")
 
 local strmatch, format, tonumber, select, strfind = string.match, string.format, tonumber, select, string.find
 local UnitAura, GetItemCount, GetItemInfo, GetUnitName = UnitAura, GetItemCount, GetItemInfo, GetUnitName
-local GetMouseFocus = GetMouseFocus
 local GetCurrencyListInfo = GetCurrencyListInfo
 local BAGSLOT, BANK = BAGSLOT, BANK
 local SELL_PRICE_TEXT = format("|cffffffff%s%s%%s|r", SELL_PRICE, HEADER_COLON)
@@ -43,7 +42,7 @@ local function setupMoneyString(money)
 end
 
 function Module:UpdateItemSellPrice()
-	local frame = GetMouseFocus()
+	local frame = Module:GetMouseFocus()
 	if not frame then return end
 
 	if frame:IsForbidden() then

@@ -317,7 +317,7 @@ function Module:Bind_CreateDialog()
 	button2.text:SetPoint("CENTER", button2)
 	button2.text:SetText(CANCEL)
 
-	local checkBox = CreateFrame("CheckButton", nil, frame, "OptionsCheckButtonTemplate")
+	local checkBox = CreateFrame("CheckButton", nil, frame, "OptionsBaseCheckButtonTemplate")
 	checkBox:SetSize(20, 20)
 	checkBox:SkinCheckBox()
 	checkBox:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].BindType == 2)
