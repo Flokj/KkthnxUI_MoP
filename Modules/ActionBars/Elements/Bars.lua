@@ -200,7 +200,7 @@ function Module:UpdateButtonConfig(i)
 	hideElements.equipped = not C["ActionBar"]["EquipColor"]
 
 	-- Update button attributes and configuration based on CVAR values and button config
-	local lockBars = C["ActionBar"].ButtonLock
+	local lockBars = C["ActionBar"]["ButtonLock"]
 	for _, button in next, self.buttons do
 		self.buttonConfig.keyBoundTarget = button.bindName
 		button.keyBoundTarget = self.buttonConfig.keyBoundTarget
@@ -236,7 +236,7 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
-	SetCVar("ActionButtonUseKeyDown", C["ActionBar"].KeyDown and 1 or 0)
+	SetCVar("ActionButtonUseKeyDown", C["ActionBar"]["KeyDown"] and 1 or 0)
 
 	for i = 1, 8 do
 		local frame = _G["KKUI_ActionBar" .. i]

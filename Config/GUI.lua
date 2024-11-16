@@ -180,15 +180,6 @@ local function UpdateTotemBar()
 	K:GetModule("Auras"):TotemBar_Init()
 end
 
-local function UIScaleUpdate()
-	if C["General"].AutoScale and not K.IsPrinted then
-		K.Print("Ensure AutoScale is disabled before adjusting the UIScale slider!")
-		K.IsPrinted = true
-	end
-
-	K.SetupUIScale()
-end
-
 local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
@@ -454,8 +445,8 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "Grid", "Actionbar Grid", nil, UpdateActionbarHotkeys)
 	Window:CreateSwitch("ActionBar", "Hotkeys", L["Enable Hotkey"], nil, UpdateActionbarHotkeys)
 	Window:CreateSwitch("ActionBar", "Macro", L["Enable Macro"], nil, UpdateActionbarHotkeys)
-	Window:CreateSwitch("ActionBar", "KeyDown", L["Key Down"], L["Key Down Tip"], UpdateActionbarHotkeys)
-	Window:CreateSwitch("ActionBar", "ButtonLock", L["Button Lock"], L["Button Lock Tip"], UpdateActionbarHotkeys)
+	Window:CreateSwitch("ActionBar", "KeyDown", newFeatureIcon .. "Cast on Key Press", "Cast spells and abilities on key press, not key release", UpdateActionbarHotkeys)
+	Window:CreateSwitch("ActionBar", "ButtonLock", newFeatureIcon .. "Lock Action Bars", "Keep your action bar layout locked in place to prevent accidental reordering. To move a spell or ability while locked, hold the Shift key.", UpdateActionbarHotkeys)
 	Window:CreateSwitch("ActionBar", "Cooldown", L["Show Cooldowns"])
 	Window:CreateSwitch("ActionBar", "MicroMenu", L["Enable MicroBar"])
 	Window:CreateSwitch("ActionBar", "FadeMicroMenu", L["Mouseover MicroBar"])
@@ -699,8 +690,8 @@ local General = function(self)
 
 	-- Scaling
 	Window:CreateSection(L["Scaling"])
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UIScaleUpdate)
-	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleUpdate)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
+	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"])
 
 	-- Colors
 	Window:CreateSection(COLORS)

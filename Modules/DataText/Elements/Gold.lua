@@ -61,21 +61,21 @@ local menuList = {
 }
 
 local function getClassIcon(class)
-	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
+	local coords = CLASS_ICON_TCOORDS[class] or { 0, 0, 0, 0 }
+	local c1, c2, c3, c4 = unpack(coords)
 	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
-	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
-	return classStr or ""
+	return "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
 end
 
+local factionIcons = {
+	["Horde"] = "pvpcurrency-conquest-horde",
+	["Alliance"] = "pvpcurrency-conquest-alliance",
+	["Unknown"] = "INV_Misc_QuestionMark",
+}
+
 local function getFactionIcon(faction)
-	local factionPath, trimIcon = "|TInterface\\ICONS\\", ":12:12:0:0:50:50:4:46:4:46|t "
-	if faction == "Horde" then
-		return factionPath .. "pvpcurrency-conquest-horde" .. trimIcon
-	elseif faction == "Alliance" then
-		return factionPath .. "pvpcurrency-conquest-alliance" .. trimIcon
-	else
-		return factionPath .. "INV_Misc_QuestionMark" .. trimIcon -- return ?? icon for unknown factions
-	end
+	local icon = factionIcons[faction] or "INV_Misc_QuestionMark"
+	return "|TInterface\\ICONS\\" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
 end
 
 local function getSlotString()
