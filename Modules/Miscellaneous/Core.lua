@@ -63,6 +63,11 @@ local function enableAutoBubbles()
 	end
 end
 
+-- Readycheck sound on master channel
+K:RegisterEvent("READY_CHECK", function()
+	PlaySound(SOUNDKIT.READY_CHECK, "master")
+end)
+
 -- Modify Delete Dialog
 local function modifyDeleteDialog()
 	local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
@@ -109,23 +114,6 @@ local function modifyDeleteDialog()
 	end)
 end
 
--- Fix Addon Tooltip
-local function fixAddonTooltip()
-	local _AddonTooltip_Update = AddonTooltip_Update
-	function AddonTooltip_Update(owner)
-		if owner and owner:GetID() >= 1 then
-			_AddonTooltip_Update(owner)
-		end
-	end
-end
-
--- Fix Party Guide Promote
-local function fixPartyGuidePromote()
-	if not PROMOTE_GUIDE then
-		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
-	end
-end
-
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
 	for name, func in next, KKUI_MISC_MODULE do
@@ -142,7 +130,7 @@ function Module:OnEnable()
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
-		"CreateQuestSizeUpdate",
+		--"CreateQuestSizeUpdate",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
@@ -164,10 +152,9 @@ function Module:OnEnable()
 
 	enableAutoBubbles()
 	modifyDeleteDialog()
-	fixAddonTooltip()
-	fixPartyGuidePromote()
 end
 
+-- Update Drag Cursor for Minimap
 local function KKUI_UpdateDragCursor(self)
 	local mx, my = Minimap:GetCenter()
 	local px, py = GetCursorPosition()
@@ -353,11 +340,11 @@ function Module:CreateErrorFrameToggle()
 	end
 end
 
-function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
-	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
-	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
-end
+--function Module:CreateQuestSizeUpdate()
+--	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
+--	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
+--	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
+--end
 
 -- TradeFrame hook
 function Module:CreateTradeTargetInfo()
@@ -490,64 +477,6 @@ do
 
 		_MerchantItemButton_OnModifiedClick(self, ...)
 	end
-end
-
--- Fix Drag Collections taint
-do
-	local done
-	local function fixCollectionTaint(event, addon)
-		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
-			CollectionsJournal:HookScript("OnShow", function()
-				if not done then
-					if InCombatLockdown() then
-						K:RegisterEvent("PLAYER_REGEN_ENABLED", fixCollectionTaint)
-					else
-						K.CreateMoverFrame(CollectionsJournal)
-					end
-					done = true
-				end
-			end)
-			K:UnregisterEvent(event, fixCollectionTaint)
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			K.CreateMoverFrame(CollectionsJournal)
-			K:UnregisterEvent(event, fixCollectionTaint)
-		end
-	end
-
-	K:RegisterEvent("ADDON_LOADED", fixCollectionTaint)
-end
-
--- Select target when click on raid units
-do
-	local function fixRaidGroupButton()
-		for i = 1, 40 do
-			local bu = _G["RaidGroupButton" .. i]
-			if bu and bu.unit and not bu.clickFixed then
-				bu:SetAttribute("type", "target")
-				bu:SetAttribute("unit", bu.unit)
-
-				bu.clickFixed = true
-			end
-		end
-	end
-
-	local function setupfixRaidGroup(event, addon)
-		if event == "ADDON_LOADED" and addon == "Blizzard_RaidUI" then
-			if not InCombatLockdown() then
-				fixRaidGroupButton()
-			else
-				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupfixRaidGroup)
-			end
-			K:UnregisterEvent(event, setupfixRaidGroup)
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			if RaidGroupButton1 and RaidGroupButton1:GetAttribute("type") ~= "target" then
-				fixRaidGroupButton()
-				K:UnregisterEvent(event, setupfixRaidGroup)
-			end
-		end
-	end
-
-	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
 end
 
 -- Get Naked
