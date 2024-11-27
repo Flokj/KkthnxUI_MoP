@@ -143,8 +143,8 @@ function Module:EnhancedTrainer()
 	_G["ClassTrainerFrameCloseButton"]:SetPoint("TOPRIGHT", _G["ClassTrainerFrame"], "TOPRIGHT", -30, -8)
 
 	-- Position dropdown menus
-	ClassTrainerFrameFilterDropDown:ClearAllPoints()
-	ClassTrainerFrameFilterDropDown:SetPoint("TOPLEFT", ClassTrainerFrame, "TOPLEFT", 501, -40)
+	ClassTrainerFrame.FilterDropdown:ClearAllPoints()
+	ClassTrainerFrame.FilterDropdown:SetPoint("TOPLEFT", ClassTrainerFrame, "TOPLEFT", 576, -44)
 
 	-- Position money frame
 	ClassTrainerMoneyFrame:ClearAllPoints()

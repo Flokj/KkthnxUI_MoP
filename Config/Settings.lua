@@ -344,7 +344,7 @@ C["General"] = {
 
 -- Loot
 C["Loot"] = {
-	AutoConfirm = false,
+	AutoConfirmLoot = false,
 	AutoGreed = false,
 	Enable = true,
 	FastLoot = true,

@@ -28,8 +28,8 @@ local UnitIsPVP = UnitIsPVP
 local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
-local oUF_RaidDebuffs = oUF_RaidDebuffs
 
+-- Custom variables
 local lastPvPSound = false
 local phaseIconTexCoords = {
 	[1] = { 1 / 128, 33 / 128, 1 / 64, 33 / 64 },

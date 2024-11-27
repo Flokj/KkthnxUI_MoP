@@ -27,10 +27,13 @@ local GetLocale = GetLocale
 local GetNumAddOns = GetNumAddOns
 local GetPhysicalScreenSize = GetPhysicalScreenSize
 local GetRealmName = GetRealmName
+local InCombatLockdown = InCombatLockdown
 local LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_FEMALE
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 local LibStub = LibStub
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local SetCVar = SetCVar
+local UIParent = UIParent
 local UnitClass = UnitClass
 local UnitFactionGroup = UnitFactionGroup
 local UnitGUID = UnitGUID
@@ -190,12 +193,16 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[LE_ITEM_QUALITY_POOR] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[LE_ITEM_QUALITY_COMMON] = { r = 1, g = 1, b = 1 }
 
+-- Update EventFrame Script for Reduced Taint Risk
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
-	for func in pairs(events[event]) do
-		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-			func(event, CombatLogGetCurrentEventInfo())
-		else
-			func(event, ...)
+	local eventFuncs = events[event]
+	if eventFuncs then
+		for func in pairs(eventFuncs) do
+			if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+				func(event, CombatLogGetCurrentEventInfo())
+			else
+				func(event, ...)
+			end
 		end
 	end
 end)
@@ -282,18 +289,17 @@ function K.SetupUIScale(init)
 end
 
 local function UpdatePixelScale(event)
-	if isScaling then
-		-- Do not update the pixel scale while it is already being updated
+	if isScaling or InCombatLockdown() then
+		-- Avoid taint during combat or recursive updates
 		return
 	end
+
 	isScaling = true
 
 	if event == "UI_SCALE_CHANGED" then
-		-- If the UI scale has changed, update the screen width and height
-		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
+		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize() -- Ensure globals are updated
 	end
 
-	-- Initialize and setup the UIScale
 	K.SetupUIScale(true)
 	K.SetupUIScale()
 

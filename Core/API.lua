@@ -12,7 +12,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local getmetatable, select, unpack = getmetatable, select, unpack
 local math_min, math_max, math_pi = math.min, math.max, math.pi
 local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
-local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver, UIParent = RegisterStateDriver, UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
@@ -24,7 +24,7 @@ end
 
 -- Frame Hiders
 do
-	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
+	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
 	K.UIFrameHider = CreateFrame("Frame")
 	K.UIFrameHider:Hide()
@@ -140,55 +140,71 @@ local function CreateBackdrop(bFrame, ...)
 	return bFrame
 end
 
--- The Famous Shadow?
+-- Create Shadow
 local function CreateShadow(frame, useBackdrop)
-	if frame.Shadow then return frame.Shadow end
+	-- Validate the frame
+	if not frame or type(frame) ~= "table" then
+		return nil, "Invalid frame provided"
+	end
 
+	-- Check if the shadow already exists; if so, return
+	if frame.Shadow then
+		return frame.Shadow
+	end
+
+	-- Get the parent frame if the passed object is a texture
 	local parentFrame = frame:IsObjectType("Texture") and frame:GetParent() or frame
 
+	-- Create the shadow frame using the BackdropTemplate
 	local shadow = CreateFrame("Frame", nil, parentFrame, "BackdropTemplate")
+
+	-- Set the position and size of the shadow frame
 	shadow:SetPoint("TOPLEFT", frame, -3, 3)
 	shadow:SetPoint("BOTTOMRIGHT", frame, 3, -3)
 
+	-- Define the backdrop of the shadow frame
 	local backdrop = {
 		edgeFile = C["Media"].Textures.GlowTexture,
 		edgeSize = 3,
 	}
 
+	-- Include additional backdrop settings if requested
 	if useBackdrop then
 		backdrop.bgFile = C["Media"].Textures.White8x8Texture
 		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
 	end
 
+	-- Set the backdrop of the shadow frame
 	shadow:SetBackdrop(backdrop)
+
+	-- Set the frame level of the shadow frame to be one lower than the parent frame
 	shadow:SetFrameLevel(max(parentFrame:GetFrameLevel() - 1, 0))
 
+	-- Set the background and border color of the shadow frame based on the 'useBackdrop' argument
 	if useBackdrop then
-		shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))	
-	end	
+		shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))
+	end
 	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
+	-- Save the shadow frame as a property of the parent frame
 	frame.Shadow = shadow
 
+	-- Return the created shadow frame
 	return shadow
 end
 
 -- Kill Function
 local function Kill(object)
-	-- Check if the object has an "UnregisterAllEvents" method
 	if object.UnregisterAllEvents then
-		-- Unregister all events for the object
 		object:UnregisterAllEvents()
-		-- Set the object's parent to K.UIFrameHider (likely a hidden frame used for hiding objects)
 		object:SetParent(K.UIFrameHider)
 	else
-		-- If the object does not have an "UnregisterAllEvents" method, set its "Show" method to its "Hide" method
 		object.Show = object.Hide
 	end
-	-- Hide the object
 	object:Hide()
 end
 
+-- Strip Textures
 local blizzTextures = {
 	"Inset",
 	"inset",
@@ -303,6 +319,7 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
+-- Button OnEnter and OnLeave
 local function Button_OnEnter(self)
 	if not self:IsEnabled() then
 		return
@@ -380,7 +397,7 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 	self:StripTextures()
 	-- Check if there is a Border attribute, if so set its alpha to 0
 	if self.Border then
-		self.Border:SetAlpha(1)
+		self.Border:SetAlpha(0)
 	end
 
 	-- Create a border for the button with specific color and alpha values
@@ -487,6 +504,7 @@ function K.ReskinArrow(self, direction)
 	self.__texture = tex
 end
 
+-- Grab ScrollBar Element
 local function GrabScrollBarElement(frame, element)
 	local frameName = frame:GetDebugName()
 	return frame[element] or frameName and (_G[frameName .. element] or string.find(frameName, element)) or nil
@@ -523,22 +541,49 @@ local function SkinScrollBar(self)
 	K.ReskinArrow(down, "down")
 end
 
+-- Add API Function
 local function addapi(object)
 	local mt = getmetatable(object).__index
-	if not object.CreateBorder then	mt.CreateBorder = CreateBorder end
-	if not object.CreateBackdrop then mt.CreateBackdrop = CreateBackdrop end
-	if not object.CreateShadow then	mt.CreateShadow = CreateShadow end
-	if not object.Kill then	mt.Kill = Kill end
-	if not object.SkinButton then mt.SkinButton = SkinButton end
-	if not object.StripTextures then mt.StripTextures = StripTextures end
-	if not object.StyleButton then mt.StyleButton = StyleButton	end
-	if not object.SkinCloseButton then mt.SkinCloseButton = SkinCloseButton	end
-	if not object.SkinCheckBox then	mt.SkinCheckBox = SkinCheckBox end
-	if not object.SkinEditBox then mt.SkinEditBox = SkinEditBox end
-	if not object.SkinScrollBar then mt.SkinScrollBar = SkinScrollBar end
-	if not object.HideBackdrop then	mt.HideBackdrop = HideBackdrop end
+
+	if not mt.CreateBorder then
+		mt.CreateBorder = CreateBorder
+	end
+	if not mt.CreateBackdrop then
+		mt.CreateBackdrop = CreateBackdrop
+	end
+	if not mt.CreateShadow then
+		mt.CreateShadow = CreateShadow
+	end
+	if not mt.Kill then
+		mt.Kill = Kill
+	end
+	if not mt.SkinButton then
+		mt.SkinButton = SkinButton
+	end
+	if not mt.StripTextures then
+		mt.StripTextures = StripTextures
+	end
+	if not mt.StyleButton then
+		mt.StyleButton = StyleButton
+	end
+	if not mt.SkinCloseButton then
+		mt.SkinCloseButton = SkinCloseButton
+	end
+	if not mt.SkinCheckBox then
+		mt.SkinCheckBox = SkinCheckBox
+	end
+	if not mt.SkinEditBox then
+		mt.SkinEditBox = SkinEditBox
+	end
+	if not mt.SkinScrollBar then
+		mt.SkinScrollBar = SkinScrollBar
+	end
+	if not mt.HideBackdrop then
+		mt.HideBackdrop = HideBackdrop
+	end
 end
 
+-- Apply API to Existing Frames
 local handled = { Frame = true }
 local object = CreateFrame("Frame")
 addapi(object)

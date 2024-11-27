@@ -714,7 +714,7 @@ local Loot = function(self)
 	Window:CreateSwitch("Loot", "FastLoot", L["Faster Auto-Looting"])
 
 	Window:CreateSection("Auto-Confirm")
-	Window:CreateSwitch("Loot", "AutoConfirm", L["Auto Confirm Loot Dialogs"])
+	Window:CreateSwitch("Loot", "AutoConfirmLoot", L["Auto Confirm Loot Dialogs"])
 	--Window:CreateSwitch("Loot", "AutoGreed", L["Auto Greed Green Items"])
 end
 
