@@ -1,19 +1,8 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- WoW API
-local CreateFrame = CreateFrame
-
--- Lua functions
-local gsub = string.gsub
-local ipairs = ipairs
-
--- Constants
-local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR
-
--- Processing key strings
-local keyButton = gsub(KEY_BUTTON4, "%d", "") -- Removes digits from KEY_BUTTON4
-local keyNumpad = gsub(KEY_NUMPAD1, "%d", "") -- Removes digits from KEY_NUMPAD1
+local keyButton = gsub(KEY_BUTTON4, "%d", "")
+local keyNumpad = gsub(KEY_NUMPAD1, "%d", "")
 
 local replaces = {
 	{ "(" .. keyButton .. ")", "M" },
@@ -46,7 +35,7 @@ function Module:UpdateHotKey()
 	if text == RANGE_INDICATOR then
 		text = ""
 	else
-		for _, value in ipairs(replaces) do
+		for _, value in pairs(replaces) do
 			text = gsub(text, value[1], value[2])
 		end
 	end
@@ -71,6 +60,8 @@ function Module:StyleActionButton(button)
 	local icon = button.icon
 	local cooldown = button.cooldown
 	local hotkey = button.HotKey
+	local count = button.Count
+	local name = button.Name
 	local flash = button.Flash
 	local border = button.Border
 	local normal = button.NormalTexture
@@ -116,8 +107,6 @@ function Module:StyleActionButton(button)
 	if cooldown then
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-		cooldown:SetDrawEdge(false)
-		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
 	if pushed then
 		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
