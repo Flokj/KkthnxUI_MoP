@@ -170,10 +170,6 @@ local function ResetDetails()
 	K:GetModule("Skins"):ResetDetailsAnchor(true)
 end
 
-local function UpdateBlipTextures()
-	K:GetModule("Minimap"):UpdateBlipTexture()
-end
-
 local function UpdateTotemBar()
 	if not C["Auras"].Totems then return end
 
@@ -348,7 +344,6 @@ end
 local function UpdateTotemSize()
 	K:GetModule("ActionBar"):UpdateTotemSize()
 end
-
 
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
@@ -736,10 +731,6 @@ local Minimap = function(self)
 	-- Recycle Bin Section
 	Window:CreateSection("Recycle Bin")
 	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
-
-	-- Blip Section
-	Window:CreateSection("Blip")
-	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
 
 	-- Location Section
 	Window:CreateSection("Location")

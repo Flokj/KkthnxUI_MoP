@@ -64,9 +64,9 @@ LE_ITEM_CLASS_BATTLEPET = LE_ITEM_CLASS_BATTLEPET or Enum.ItemClass.Battlepet
 LE_ITEM_CLASS_WOW_TOKEN = LE_ITEM_CLASS_WOW_TOKEN or Enum.ItemClass.WoWToken
 
 -- Create the Engine table and its sub-tables
-Engine[1] = {} -- K, Main
-Engine[2] = {} -- C, Config
-Engine[3] = {} -- L, Locale
+Engine[1] = {} -- K, Main functionality
+Engine[2] = {} -- C, Configuration
+Engine[3] = {} -- L, Localization
 
 -- Assign the sub-tables to variables K, C, and L
 local K, C, L = Engine[1], Engine[2], Engine[3]
@@ -198,10 +198,14 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	local eventFuncs = events[event]
 	if eventFuncs then
 		for func in pairs(eventFuncs) do
+			local success, err
 			if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-				func(event, CombatLogGetCurrentEventInfo())
+				success, err = pcall(func, event, CombatLogGetCurrentEventInfo())
 			else
-				func(event, ...)
+				success, err = pcall(func, event, ...)
+			end
+			if not success then
+				print("Error in event handler for event:", event, "-", err)
 			end
 		end
 	end
@@ -210,6 +214,11 @@ end)
 function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
+	end
+
+	-- Check if the event is already registered with the function
+	if events[event] and events[event][func] then
+		return
 	end
 
 	if not events[event] then
@@ -255,6 +264,7 @@ function K:UnregisterEvent(event, func)
 end
 
 function K:NewModule(name)
+	assert(type(name) == "string", "Module name must be a string.")
 	assert(not modules[name], ("Module '%s' already exists."):format(name))
 	local module = { name = name }
 	modules[name] = module
@@ -263,6 +273,7 @@ function K:NewModule(name)
 end
 
 function K:GetModule(name)
+	assert(type(name) == "string", "Module name must be a string.")
 	local module = modules[name]
 	assert(module, ("Cannot find module '%s'."):format(name))
 	return module
@@ -273,7 +284,8 @@ local function GetBestScale()
 	return K.Round(scale, 2)
 end
 
-function K.SetupUIScale(init)
+-- Function to set up UI scale
+function K:SetupUIScale(init)
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
@@ -300,8 +312,8 @@ local function UpdatePixelScale(event)
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize() -- Ensure globals are updated
 	end
 
-	K.SetupUIScale(true)
-	K.SetupUIScale()
+	K:SetupUIScale(true)
+	K:SetupUIScale()
 
 	isScaling = false
 end
@@ -312,7 +324,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	SetCVar("ActionButtonUseKeyDown", 1)
 
 	-- Set up UI scaling
-	K.SetupUIScale()
+	K:SetupUIScale()
 
 	-- Register event for UI scale change
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
@@ -344,16 +356,18 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	end
 end)
 
--- https://wowpedia.fandom.com/wiki/PLAYER_LEVEL_UP
+-- Register event for player level up
 K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
-	if not K.Level then return end
 	K.Level = level
 end)
 
+-- Initialize AddOn information
 for i = 1, GetNumAddOns() do
-	local Name, _, _, _, Reason = GetAddOnInfo(i)
-	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
-	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
+	local name, _, _, _, reason = GetAddOnInfo(i)
+	local lowerName = string.lower(name)
+	K.AddOns[lowerName] = GetAddOnEnableState(K.Name, name) == 2 and (not reason or reason ~= "DEMAND_LOADED")
+	K.AddOnVersion[lowerName] = GetAddOnMetadata(name, "Version")
 end
 
+-- Expose the Engine globally
 _G.KkthnxUI = Engine

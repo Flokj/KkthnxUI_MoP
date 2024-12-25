@@ -7,7 +7,7 @@ local string_format, GetInstanceInfo, C_Spell_GetSpellLink, IsActiveBattlefieldA
 local AURA_TYPE_BUFF = AURA_TYPE_BUFF
 local infoType = {}
 
-local spellBlackList = {
+local brokenBlackList = {
 	[15752] = true, -- Linken's Boomerang Disarm
 	[19647] = true, -- Spell Lock - Rank 2 (Warlock)
 	[13491] = true, -- Iron Knuckles
@@ -21,6 +21,10 @@ local spellBlackList = {
 	[47528] = true, -- Mind Freeze
 	[57994] = true, -- Wind Shear
 	[26090] = true, -- Pummel (Pet)
+}
+
+local interruptBlackList = {
+	[31935] = true,
 }
 
 local function getAlertChannel()
@@ -80,12 +84,12 @@ function Module:InterruptAlert_Update(...)
 		local sourceSpellID, destSpellID
 
 		if infoText == L["Broken Spell"] then
-			if auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
+			if auraType == AURA_TYPE_BUFF or brokenBlackList[spellID] then
 				return
 			end
 			sourceSpellID, destSpellID = extraskillID, spellID
 		elseif infoText == L["Interrupt"] then
-			if C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet then
+			if (C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet) or interruptBlackList[spellID] then
 				return
 			end
 			sourceSpellID, destSpellID = spellID, extraskillID

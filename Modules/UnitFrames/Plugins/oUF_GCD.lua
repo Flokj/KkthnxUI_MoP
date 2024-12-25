@@ -1,4 +1,4 @@
---	Based on oUF_GCD(by ALZA)
+-- Based on oUF_GCD(by ALZA)
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
@@ -37,6 +37,10 @@ local function Update(self)
 	end
 end
 
+local function ForceUpdate(element)
+	return Update(element.__owner)
+end
+
 local function Enable(self)
 	local element = self.GCD
 	if element then
@@ -56,7 +60,7 @@ local function Enable(self)
 		element:SetScript("OnShow", OnShow)
 		element:SetScript("OnHide", OnHide)
 
-		self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Update, true)
+		self:RegisterEvent("SPELL_UPDATE_COOLDOWN", Update, true)
 
 		return true
 	end
@@ -67,7 +71,7 @@ local function Disable(self)
 	if element then
 		element:Hide()
 
-		self:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Update)
+		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN", Update)
 	end
 end
 

@@ -10,8 +10,6 @@ local RAID = RAID
 local SAY = SAY
 local YELL = YELL
 
-local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
-
 -- Actionbar
 C["ActionBar"] = {
 	Enable = true,
@@ -291,11 +289,6 @@ C["AuraWatch"] = {
 	ClickThrough = false,
 	IconScale = 1,
 	MinCD = 3,
-	InternalCD = {},
-	AuraList = {
-		["Switcher"] = {},
-		["IgnoreSpells"] = {},
-	},
 }
 
 -- General
@@ -329,6 +322,9 @@ C["General"] = {
 		Value = 1,
 	},
 	Profiles = {
+		Options = {},
+	},
+	DeleteProfiles = {
 		Options = {},
 	},
 	GlowMode = {
@@ -376,21 +372,6 @@ C["Minimap"] = {
 			["Minimap Mouseover"] = "MOUSEOVER",
 		},
 		Value = "MOUSEOVER",
-	},
-	BlipTexture = {
-		Options = {
-			["Blank"] = BlipMedia .. "Blip-Blank",
-			["Blizzard Big R"] = BlipMedia .. "Blip-BlizzardBigR",
-			["Blizzard Big"] = BlipMedia .. "Blip-BlizzardBig",
-			["Charmed"] = BlipMedia .. "Blip-Charmed",
-			["Default"] = "Interface\\MiniMap\\ObjectIconsAtlas",
-			["Glass Spheres"] = BlipMedia .. "Blip-GlassSpheres",
-			["Hunter Z Small"] = BlipMedia .. "Blip-HunterZSmall",
-			["Nandini New"] = BlipMedia .. "Blip-Nandini-New",
-			["Nandini"] = BlipMedia .. "Blip-Nandini",
-			["SolidSpheres"] = BlipMedia .. "Blip-SolidSpheres",
-		},
-		Value = "Interface\\MiniMap\\ObjectIconsAtlas",
 	},
 }
 

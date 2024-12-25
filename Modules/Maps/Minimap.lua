@@ -402,10 +402,6 @@ function Module:Minimap_OnMouseUp(btn)
 	end
 end
 
-function Module:UpdateBlipTexture()
-	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
-end
-
 function Module:QueueStatusTimeFormat(seconds)
 	local hours = math_floor(mod(seconds, 86400) / 3600)
 	if hours > 0 then
@@ -499,7 +495,6 @@ function Module:OnEnable()
 
 	self:HideMinimapClock()
 	self:ShowCalendar()
-	self:UpdateBlipTexture()
 	self:UpdateMinimapScale()
 	if _G.QueueStatusMinimapButton then
 		Module:CreateQueueStatusText()
