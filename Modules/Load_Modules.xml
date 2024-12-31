@@ -121,7 +121,6 @@
    <Script file="Announcements\Elements\ItemAlert.lua" />
    <Script file="Announcements\Elements\KillingBlow.lua" />
    <Script file="Announcements\Elements\QuestNotifier.lua" />
-   <Script file="Announcements\Elements\RareAlert.lua" />
    <Script file="Announcements\Elements\ResetInstance.lua" />
    <Script file="Announcements\Elements\Sapped.lua" />
    <!-- Automation -->
@@ -130,12 +129,10 @@
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />
-   <Script file="Automation\Elements\Goodbye.lua" />
    <Script file="Automation\Elements\Invite.lua" />
    <Script file="Automation\Elements\Quest.lua" />
    <Script file="Automation\Elements\Release.lua" />
    <Script file="Automation\Elements\Resurrect.lua" />
-   <Script file="Automation\Elements\ScreenShot.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />
    <Script file="Automation\Elements\Summon.lua" />
    <Script file="Automation\Elements\LoggingCombat.lua" />

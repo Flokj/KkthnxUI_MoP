@@ -13,7 +13,7 @@ local TUTORIAL_TITLE47 = TUTORIAL_TITLE47
 
 local emojiExampleIcon = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 local enableTextColor = "|cff00cc4c"
-local newFeatureIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:14:14:-2|t"
+local newFeatureIcon = "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\star:14:14:-2|t"
 
 local function updateBagSize()
 	K:GetModule("Bags"):UpdateBagSize()
@@ -488,11 +488,6 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "QuestNotifier", enableTextColor .. L["Enable QuestNotifier"], "Enables notifications related to quest progress and completion.")
 	Window:CreateSwitch("Announcements", "OnlyCompleteRing", L["Only Play Complete Quest Sound"], "Plays a sound only when a quest is fully completed.")
 	Window:CreateSwitch("Announcements", "QuestProgress", L["Alert QuestProgress In Chat"], "Sends quest progress updates to chat.")
-
-	Window:CreateSection(L["Rare Alert"])
-	Window:CreateSwitch("Announcements", "RareAlert", enableTextColor .. L["Enable Event & Rare Alerts"], "Enables alerts for nearby rare creatures and events.")
-	Window:CreateSwitch("Announcements", "AlertInWild", L["Don't Alert In Instances"], "Prevents rare alerts from triggering inside instances.")
-	Window:CreateSwitch("Announcements", "AlertInChat", L["Print Alerts In Chat"], "Prints alerts for rare events and creatures in the chat window.")
 end
 
 local Automation = function(self)
@@ -512,7 +507,6 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoReward", L["Auto Select Quest Rewards Best Value"], "Automatically selects the highest value quest reward.")
 
 	Window:CreateSection("Miscellaneous Options")
-	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion"], "Automatically says 'Goodbye' to the group when the dungeon is completed.")
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"], "Automatically opens items in your inventory that contain loot.")
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"], "Automatically releases your spirit upon death in battlegrounds or arenas.")
 	Window:CreateSwitch("Automation", "AutoScreenshot", L["Auto Screenshot Achievements"], "Automatically takes a screenshot when you earn an achievement.")

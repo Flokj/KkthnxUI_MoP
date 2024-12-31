@@ -85,8 +85,6 @@ end
 
 --- Overwrites Blizzards Bag-Toggle-Functions with the implementation's ones
 --  @param name <string> The name of the implementation [optional]
-local hideFrame = CreateFrame("Frame")
-hideFrame:Hide()
 function cargBags:ReplaceBlizzard(name)
 	local impl = name and cargBags:GetImplementation(name) or self.blizzard
 	self.blizzard = impl
@@ -103,7 +101,7 @@ function cargBags:ReplaceBlizzard(name)
 	OpenBag = toggleBag -- fixed the loot won alert frame
 
 	BankFrame:UnregisterAllEvents()
-	BankFrame:SetParent(hideFrame)
+	BankFrame:SetParent(KkthnxUI[1].UIFrameHider)
 end
 
 --- Flags the implementation to handle Blizzards Bag-Toggle-Functions

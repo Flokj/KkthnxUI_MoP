@@ -2,46 +2,45 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
 local date = date
+local ipairs = ipairs
 local mod = mod
 local pairs = pairs
+local string_find = string.find
 local string_format = string.format
+local time = time
 local tonumber = tonumber
 
 local CALENDAR_FULLDATE_MONTH_NAMES = CALENDAR_FULLDATE_MONTH_NAMES
 local CALENDAR_WEEKDAY_NAMES = CALENDAR_WEEKDAY_NAMES
+local C_AreaPoiInfo_GetAreaPOIInfo = C_AreaPoiInfo.GetAreaPOIInfo
+local C_AreaPoiInfo_GetAreaPOISecondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft
+local C_Calendar_GetDayEvent = C_Calendar.GetDayEvent
+local C_Calendar_GetNumDayEvents = C_Calendar.GetNumDayEvents
 local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
+local C_Calendar_OpenCalendar = C_Calendar.OpenCalendar
+local C_Calendar_SetAbsMonth = C_Calendar.SetAbsMonth
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local C_Map_GetMapInfo = C_Map.GetMapInfo
 local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
-local C_TaskQuest_GetThreatQuests = C_TaskQuest.GetThreatQuests
 local FULLDATE = FULLDATE
 local GameTime_GetGameTime = GameTime_GetGameTime
 local GameTime_GetLocalTime = GameTime_GetLocalTime
 local GameTooltip = GameTooltip
+local GetCVar = GetCVar
 local GetCVarBool = GetCVarBool
 local GetGameTime = GetGameTime
 local GetNumSavedInstances = GetNumSavedInstances
 local GetSavedInstanceInfo = GetSavedInstanceInfo
+local PLAYER_DIFFICULTY_TIMEWALKER = PLAYER_DIFFICULTY_TIMEWALKER
 local QUESTS_LABEL = QUESTS_LABEL
 local QUEST_COMPLETE = QUEST_COMPLETE
+local QUEUE_TIME_UNAVAILABLE = QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = RequestRaidInfo
 local SecondsToTime = SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = TIMEMANAGER_TICKER_24HOUR
 
 local TimeDataText
-local TimeDataTextEntered
-
--- Data
-local questlist = {
-	{ name = "Feast of Winter Veil", id = 6983 },
-	{ name = "Blingtron Daily Gift", id = 34774 },
-	{ name = "500 Timewarped Badges", id = 40168, texture = 1129674 }, -- TBC
-	{ name = "500 Timewarped Badges", id = 40173, texture = 1129686 }, -- WotLK
-	{ name = "500 Timewarped Badges", id = 40786, texture = 1304688 }, -- Cata
-	{ name = "500 Timewarped Badges", id = 45563, texture = 1530590 }, -- MoP
-	{ name = "500 Timewarped Badges", id = 55499, texture = 1129683 }, -- WoD
-	{ name = "500 Timewarped Badges", id = 64710, texture = 1467047 }, -- Legion
-}
 
 local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
@@ -66,8 +65,7 @@ end
 -- Declare onUpdateTimer as a local variable
 local onUpdateTimer = onUpdateTimer or 3
 
--- Assuming Module is already defined somewhere in your code
-function Module:TimeOnUpdate(elapsed)
+local function OnUpdate(_, elapsed)
 	onUpdateTimer = onUpdateTimer + elapsed
 	if onUpdateTimer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
@@ -77,7 +75,7 @@ function Module:TimeOnUpdate(elapsed)
 		else
 			hour, minute = GetGameTime()
 		end
-		TimeDataText.Font:SetText(updateTimerFormat(color, hour, minute))
+		TimeDataText.Text:SetText(updateTimerFormat(color, hour, minute))
 
 		onUpdateTimer = 0
 	end
@@ -92,8 +90,14 @@ local function addTitle(text)
 	end
 end
 
-function Module:TimeOnEnter()
-	TimeDataTextEntered = true
+local function OnShiftDown()
+	if Module.Entered then
+		Module:OnEnter()
+	end
+end
+
+function Module:OnEnter()
+	Module.Entered = true
 
 	RequestRaidInfo()
 
@@ -143,51 +147,50 @@ function Module:TimeOnEnter()
 		end
 	end
 
-	-- Quests
-	title = false
-	for _, v in pairs(questlist) do
-		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
-			addTitle(QUESTS_LABEL)
-			GameTooltip:AddDoubleLine(v.itemID and GetItemLink(v.itemID) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-		end
-	end
-
 	-- Help Info
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
-	GameTooltip:AddLine(K.RightButton .. GAMETIME_TOOLTIP_TOGGLE_CLOCK)
+	GameTooltip:AddLine(K.RightButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
 	GameTooltip:Show()
+
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
-function Module:TimeOnLeave()
-	TimeDataTextEntered = false
+local function OnLeave()
+	Module.Entered = true
 	K.HideTooltip()
+	K:UnregisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
-function Module:TimeOnMouseUp(btn)
+local function OnMouseUp(_, btn)
 	if btn == "RightButton" then
-		_G.TimeManager_Toggle()
-	else
-		_G.ToggleCalendar()
+		TimeManager_LoadUI()
+		if TimeManager_Toggle then
+			TimeManager_Toggle()
+		end
 	end
 end
 
 function Module:CreateTimeDataText()
-	if not C["DataText"].Time then return end
-	if not Minimap then return end
+	if not C["DataText"].Time then
+		return
+	end
 
-	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
+	if not Minimap then
+		return
+	end
+
+	TimeDataText = CreateFrame("Frame", nil, UIParent)
 	TimeDataText:SetFrameLevel(8)
+	TimeDataText:SetHitRectInsets(0, 0, -10, -10)
 
-	TimeDataText.Font = TimeDataText.Font or TimeDataText:CreateFontString("OVERLAY")
-	TimeDataText.Font:SetFontObject(K.UIFont)
-	TimeDataText.Font:SetFont(select(1, TimeDataText.Font:GetFont()), 13, select(3, TimeDataText.Font:GetFont()))
-	TimeDataText.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
+	TimeDataText.Text = K.CreateFontString(TimeDataText, 13)
+	TimeDataText.Text:ClearAllPoints()
+	TimeDataText.Text:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
-	TimeDataText:SetAllPoints(TimeDataText.Font)
+	TimeDataText:SetAllPoints(TimeDataText.Text)
 
-	TimeDataText:SetScript("OnUpdate", Module.TimeOnUpdate)
-	TimeDataText:SetScript("OnEnter", Module.TimeOnEnter)
-	TimeDataText:SetScript("OnLeave", Module.TimeOnLeave)
-	TimeDataText:SetScript("OnMouseUp", Module.TimeOnMouseUp)
+	TimeDataText:SetScript("OnEnter", Module.OnEnter)
+	TimeDataText:SetScript("OnLeave", OnLeave)
+	TimeDataText:SetScript("OnMouseUp", OnMouseUp)
+	TimeDataText:SetScript("OnUpdate", OnUpdate)
 end

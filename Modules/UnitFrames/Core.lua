@@ -206,7 +206,7 @@ function Module:UpdateIconTexCoord(width, height)
 end
 
 function Module.PostCreateButton(element, button)
-	local fontSize = element.fontSize or element.size * 0.45
+	local fontSize = element.fontSize or element.size * 0.5
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)

@@ -883,7 +883,6 @@ local KKUI_Changelog = {
 				Header = "Changed",
 				Entries = {
 					"Adjusted Tank/Healer tag icons",
-					"AutoGoodbye now waits 6 seconds",
 					"Bags itemglow is now 100% alpha",
 					"Bump TOC file",
 					"Fonts are now XML based (Thanks Goldpaw)",

@@ -7,12 +7,10 @@ function Module:OnEnable()
 		"CreateAutoBadBuffs",
 		"CreateAutoBestReward",
 		"CreateAutoDeclineDuels",
-		"CreateAutoGoodbye",
 		"CreateAutoInvite",
 		"CreateAutoOpenItems",
 		"CreateAutoRelease",
 		"CreateAutoResurrect",
-		"CreateAutoScreenshot",
 		"CreateAutoWhisperInvite",
 		"CreateSkipCinematic",
 	}

@@ -9,7 +9,6 @@ function Module:OnEnable()
 		"CreateKillingBlow",
 		"CreatePullCountdown",
 		"CreateQuestNotifier",
-		"CreateRareAnnounce",
 		"CreateResetInstance",
 		"CreateSaySappedAnnounce",
 	}
