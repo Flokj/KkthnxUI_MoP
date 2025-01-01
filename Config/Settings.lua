@@ -155,7 +155,6 @@ C["Automation"] = {
 	AutoResurrect = false,
 	AutoResurrectThank = false,
 	AutoReward = false,
-	AutoScreenshot = false,
 	AutoSkipCinematic = false,
 	AutoSummon = false,
 	NoBadBuffs = false,

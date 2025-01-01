@@ -251,43 +251,25 @@ function Module:CreateMinimapButtonToggle()
 end
 
 -- Game Menu Setup
-local function PositionGameMenuButton()
-	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 36)
-	if GameMenuFrame.KkthnxUI then
-		GameMenuFrame.KkthnxUI:SetFormattedText(K.Title)
-	end
-
-	GameMenuButtonLogout:SetPoint("TOP", GameMenuFrame.KkthnxUI, "BOTTOM", 0, -14)
-	GameMenuButtonStore:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -6)
-	GameMenuButtonMacros:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -6)
-	GameMenuButtonAddons:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -6)
-	GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -6)
-end
-
-local function ClickGameMenu()
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-		return
-	end
-
-	K["GUI"]:Toggle()
-	HideUIPanel(GameMenuFrame)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	if not InCombatLockdown() then
-		HideUIPanel(GameMenuFrame)
-	end
-end
-
 function Module:CreateGUIGameMenuButton()
-	if GameMenuFrame.KkthnxUI then return end
+	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate")
+	gameMenuButton:SetText(K.Title)
+	gameMenuButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
 
-	local button = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate")
-	button:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -14)
-	button:SetScript("OnClick", ClickGameMenu)
+	GameMenuFrame:HookScript("OnShow", function(self)
+		GameMenuButtonLogout:SetPoint("TOP", gameMenuButton, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + gameMenuButton:GetHeight() + 22)
+	end)
 
-	button:SkinButton()
-	GameMenuFrame.KkthnxUI = button
-	GameMenuFrame:HookScript("OnShow", PositionGameMenuButton)
+	gameMenuButton:SetScript("OnClick", function()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+			return
+		end
+		K["GUI"]:Toggle()
+		HideUIPanel(GameMenuFrame)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end)
 end
 
 -- Reanchor DurabilityFrame

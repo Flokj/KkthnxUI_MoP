@@ -2,23 +2,17 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Chat")
 
 local pairs = pairs
+local string_format = string.format
 local string_gsub = string.gsub
 local string_match = string.match
 local string_rep = string.rep
 
 local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
-local GetItemInfo = GetItemInfo
-local GetItemStats = GetItemStats
-local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR
-local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON
+local DUNGEON_SCORE_LEADER = DUNGEON_SCORE_LEADER
+local GetItemInfo = C_Item.GetItemInfo
+local GetItemStats = C_Item.GetItemStats
 
--- Show itemlevel on chat hyperlinks
-local function isItemHasLevel(link)
-	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
-	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
-		return name, level
-	end
-end
+local itemCache = {}
 
 local socketWatchList = {
 	["BLUE"] = true,
@@ -30,8 +24,16 @@ local socketWatchList = {
 	["PRISMATIC"] = true,
 }
 
+-- Show itemlevel on chat hyperlinks
+local function isItemHasLevel(link)
+	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
+	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
+		return name, level
+	end
+end
+
 local function GetSocketTexture(socket, count)
-	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-"..socket..":0|t", count)
+	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-" .. socket .. ":0|t", count)
 end
 
 function Module.IsItemHasGem(link)
@@ -40,21 +42,23 @@ function Module.IsItemHasGem(link)
 	for stat, count in pairs(stats) do
 		local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
 		if socket and socketWatchList[socket] then
-			text = text..GetSocketTexture(socket, count)
+			text = text .. GetSocketTexture(socket, count)
 		end
 	end
+
 	return text
 end
 
-local itemCache = {}
 local function convertItemLevel(link)
-	if itemCache[link] then return itemCache[link] end
+	if itemCache[link] then
+		return itemCache[link]
+	end
 
 	local itemLink = string_match(link, "|Hitem:.-|h")
 	if itemLink then
 		local name, itemLevel = isItemHasLevel(itemLink)
 		if name and itemLevel then
-			link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..Module.IsItemHasGem(itemLink))
+			link = gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module.IsItemHasGem(itemLink))
 			itemCache[link] = link
 		end
 	end
@@ -63,6 +67,7 @@ end
 
 function Module:UpdateChatItemLevel(_, msg, ...)
 	msg = string_gsub(msg, "(|Hitem:%d+:.-|h.-|h)", convertItemLevel)
+
 	return false, msg, ...
 end
 

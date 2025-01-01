@@ -24,6 +24,7 @@ table_insert(C.defaultThemes, function()
 		GameMenuButtonLogout,
 		GameMenuButtonQuit,
 		GameMenuButtonContinue,
+		KKUI_GameMenuFrame,
 	}
 
 	for _, button in next, buttons do
