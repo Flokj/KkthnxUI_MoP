@@ -42,9 +42,9 @@ local function ShouldCheckPlayerHealth()
 end
 
 local function ShouldCheckPetHealth()
-	local inCombat = UnitAffectingCombat("player")
-	debugLog("Pet Health Check - InCombat: %s", tostring(inCombat))
-	return inCombat -- Pet health check only requires combat
+	local inCombat, hasPet = UnitAffectingCombat("player"), UnitExists("pet")
+	debugLog("Pet Health Check - InCombat: %s, HasPet: %s", tostring(inCombat), tostring(hasPet))
+	return inCombat and hasPet -- Pet health check requires combat and having a pet
 end
 
 local function HandleHealthAlert(unit, threshold, recoveryThreshold, alertFlag, lastAlertTime, messageCallback, soundCallback)
@@ -106,7 +106,7 @@ local function CheckPetHealth()
 	end
 
 	if not ShouldCheckPetHealth() then
-		debugLog("Skipping pet health check (not in combat)")
+		debugLog("Skipping pet health check (not in combat or has no pet exsits)")
 		return
 	end
 

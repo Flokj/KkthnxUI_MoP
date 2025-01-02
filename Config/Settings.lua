@@ -122,7 +122,6 @@ C["Announcements"] = {
 	InstAlertOnly = false,
 	InterruptAlert = false,
 	ItemAlert = false,
-	KillingBlow = false,
 	OnlyCompleteRing = false,
 	OwnDispell = false,
 	OwnInterrupt = false,
@@ -275,6 +274,7 @@ C["DataText"] = {
 	IconColor = { 102 / 255, 157 / 255, 255 / 255 },
 	Latency = true,
 	Location = true,
+	Spec = true,
 	System = true,
 	Time = true,
 }

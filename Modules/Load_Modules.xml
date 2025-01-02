@@ -11,6 +11,7 @@
    <Script file="DataText\Elements\Location.lua" />
    <Script file="DataText\Elements\System.lua" />
    <Script file="DataText\Elements\Time.lua" />
+   <Script file="DataText\Elements\Spec.lua" />
    <!-- Blizzard -->
    <Script file="Blizzard\Core.lua" />
    <Script file="Blizzard\Elements\AlertFrames.lua" />
@@ -119,7 +120,6 @@
    <Script file="Announcements\Elements\HealthAlert.lua" />
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
-   <Script file="Announcements\Elements\KillingBlow.lua" />
    <Script file="Announcements\Elements\QuestNotifier.lua" />
    <Script file="Announcements\Elements\ResetInstance.lua" />
    <Script file="Announcements\Elements\Sapped.lua" />
@@ -153,6 +153,7 @@
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
+   <Include file="Skins\Blizzard\FrameXML\SpellBookFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\Menu.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
