@@ -362,26 +362,30 @@ end
 
 -- Fix comparison error on cursor
 function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppingTooltip2, _, secondaryItemShown)
-	local point = shoppingTooltip1:GetPoint(2)
+	local point = shoppingTooltip1:GetPoint(1) -- Check the first point
+	if not point then
+		return
+	end
+
 	if secondaryItemShown then
-		if point == "TOP" then
+		if point and point == "TOPLEFT" then
 			shoppingTooltip1:ClearAllPoints()
-			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 3, 0)
+			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 2, 0)
 			shoppingTooltip2:ClearAllPoints()
-			shoppingTooltip2:SetPoint("TOPLEFT", shoppingTooltip1, "TOPRIGHT", 3, 0)
-		elseif point == "RIGHT" then
+			shoppingTooltip2:SetPoint("TOPLEFT", shoppingTooltip1, "TOPRIGHT", 2, 0)
+		elseif point and point == "TOPRIGHT" then
 			shoppingTooltip1:ClearAllPoints()
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -3, 0)
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -2, 0)
 			shoppingTooltip2:ClearAllPoints()
-			shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT", -3, 0)
+			shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT", -2, 0)
 		end
 	else
-		if point == "LEFT" then
+		if point and point == "TOPLEFT" then
 			shoppingTooltip1:ClearAllPoints()
-			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 3, 0)
-		elseif point == "RIGHT" then
+			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 2, 0)
+		elseif point and point == "TOPRIGHT" then
 			shoppingTooltip1:ClearAllPoints()
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -3, 0)
+			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -2, 0)
 		end
 	end
 end

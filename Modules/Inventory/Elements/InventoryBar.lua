@@ -7,37 +7,67 @@ local hooksecurefunc = hooksecurefunc
 
 local CreateFrame = CreateFrame
 local GetCVarBool = GetCVarBool
+local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 
 local buttonList = {}
+local bagBar
 local bagPosition
 
 function Module:BagBar_OnEnter()
-	local bagBar = _G.KKUI_BagBar
 	return C["Inventory"].BagBarMouseover and K.UIFrameFadeIn(bagBar, 0.2, bagBar:GetAlpha(), 1)
 end
 
 function Module:BagBar_OnLeave()
-	local bagBar = _G.KKUI_BagBar
 	return C["Inventory"].BagBarMouseover and K.UIFrameFadeOut(bagBar, 0.2, bagBar:GetAlpha(), 0)
+end
+
+function Module:BagBar_OnEvent(event)
+	bagBar:UnregisterEvent(event)
+end
+
+function Module:KeyRing_OnEnter()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+		GameTooltip:AddLine(_G.KEYRING, 1, 1, 1)
+		GameTooltip:Show()
+	end
+
+	Module:BagBar_OnEnter()
+end
+
+function Module:KeyRing_OnLeave()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide()
+	end
+
+	Module:BagBar_OnEnter()
 end
 
 function Module:SkinBag(bag)
 	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
 
-	bag.IconBorder:SetAlpha(0)
-	bag:StripTextures()
+	bag:StripTextures(true)
 	bag:CreateBorder()
+	bag:StyleButton(true)
+
+	bag:GetNormalTexture():SetAlpha(0)
+	bag:GetHighlightTexture():SetAlpha(0)
+	-- bag.CircleMask:Hide()
+
+	icon.Show = nil
+	icon:Show()
 
 	icon:SetAllPoints()
 	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
-function Module:SizeAndPositionBagBar()
-	local bagBar = _G.KKUI_BagBar
-	if not bagBar then return end
+function Module:SetSizeAndPositionBagBar()
+	if not bagBar then
+		return
+	end
 
 	local bagBarSize = C["Inventory"].BagBarSize
 	local buttonSpacing = 6
@@ -94,21 +124,53 @@ function Module:SizeAndPositionBagBar()
 	else
 		bagBar:SetSize(bagBarSize, btnSize + btnSpace)
 	end
+
+	bagBar.mover:SetSize(bagBar:GetSize())
+	Module:UpdateMainButtonCount()
+end
+
+function Module:UpdateMainButtonCount()
+	local mainCount = buttonList[1].Count
+	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
+	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
+end
+
+function Module:BagButton_UpdateTextures()
+	local pushed = self:GetPushedTexture()
+	pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+	pushed:SetDesaturated(true)
+	pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
+	pushed:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+	pushed:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
+	pushed:SetBlendMode("ADD")
+
+	if self.SlotHighlightTexture then
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self.SlotHighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+		self.SlotHighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
+		self.SlotHighlightTexture:SetBlendMode("ADD")
+	end
 end
 
 function Module:CreateInventoryBar()
-	if not C["ActionBar"].Enable then return end
-	if not C["Inventory"].BagBar then return end
+	if not C["ActionBar"].Enable then
+		return
+	end
 
-	local bagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
-	bagBar:SetSize(174, 30)
+	if not C["Inventory"].BagBar then
+		return
+	end
+
+	bagBar = CreateFrame("Frame", "KKUI_BagBar", K.PetBattleFrameHider)
 	if C["ActionBar"].MicroMenu then
-		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38 }
+		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 40 }
 	else
-		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
+		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
 	end
 	bagBar:SetScript("OnEnter", Module.BagBar_OnEnter)
 	bagBar:SetScript("OnLeave", Module.BagBar_OnLeave)
+	bagBar:SetScript("OnEvent", Module.BagBar_OnEvent)
+	bagBar:EnableMouse(true)
 
 	local backpackButton = MainMenuBarBackpackButton
 	backpackButton:SetParent(bagBar)
@@ -119,20 +181,79 @@ function Module:CreateInventoryBar()
 	backpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
 	backpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
 
+	-- hooksecurefunc(_G.BagsBar, "Layout", Module.SetSizeAndPositionBagBar)
+	-- hooksecurefunc(_G.MainMenuBarBagManager, "OnExpandBarChanged", Module.SetSizeAndPositionBagBar)
+
 	tinsert(buttonList, backpackButton)
 	Module:SkinBag(backpackButton)
+	Module.BagButton_UpdateTextures(backpackButton)
 
 	for i = 0, NUM_BAG_FRAMES - 1 do
 		local b = _G["CharacterBag" .. i .. "Slot"]
-		b:SetParent(bagBar)
 		b:HookScript("OnEnter", Module.BagBar_OnEnter)
 		b:HookScript("OnLeave", Module.BagBar_OnLeave)
-
+		b:SetParent(bagBar)
 		Module:SkinBag(b)
+
+		--hooksecurefunc(b, "UpdateTextures", Module.BagButton_UpdateTextures)
+
 		tinsert(buttonList, b)
 	end
 
-	Module:SizeAndPositionBagBar()
-	K.Mover(bagBar, "BagBar", "BagBar", buttonPosition)
-	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SizeAndPositionBagBar)
+	-- local ReagentSlot = CharacterReagentBag0Slot
+	-- if ReagentSlot then
+	-- 	ReagentSlot:SetParent(bagBar)
+	-- 	ReagentSlot:HookScript("OnEnter", Module.BagBar_OnEnter)
+	-- 	ReagentSlot:HookScript("OnLeave", Module.BagBar_OnLeave)
+
+	-- 	Module:SkinBag(ReagentSlot)
+
+	-- 	tinsert(buttonList, ReagentSlot)
+
+	-- 	hooksecurefunc(ReagentSlot, "UpdateTextures", Module.BagButton_UpdateTextures)
+	-- 	hooksecurefunc(ReagentSlot, "SetBarExpanded", Module.SetSizeAndPositionBagBar)
+	-- end
+
+	-- local KeyRing = _G.KeyRingButton
+	-- if KeyRing then
+	-- 	KeyRing:SetParent(bagBar)
+	-- 	KeyRing:SetScript("OnEnter", Module.KeyRing_OnEnter)
+	-- 	KeyRing:SetScript("OnLeave", Module.KeyRing_OnLeave)
+
+	-- 	KeyRing:StripTextures()
+	-- 	KeyRing:CreateBorder()
+	-- 	KeyRing:StyleButton(true)
+
+	-- 	KeyRing:SetNormalTexture([[Interface\ICONS\INV_Misc_Key_03]])
+	-- 	KeyRing:SetPushedTexture([[Interface\ICONS\INV_Misc_Key_03]])
+	-- 	KeyRing:SetDisabledTexture([[Interface\ICONS\INV_Misc_Key_03]])
+
+	-- 	local Normal, Pushed, Disabled = KeyRing:GetNormalTexture(), KeyRing:GetPushedTexture(), KeyRing:GetDisabledTexture()
+
+	-- 	Normal:SetAllPoints()
+	-- 	Pushed:SetAllPoints()
+	-- 	Disabled:SetAllPoints()
+	-- 	Disabled:SetDesaturated(true)
+
+	-- 	Normal:SetTexCoord(unpack(K.TexCoords))
+	-- 	Pushed:SetTexCoord(unpack(K.TexCoords))
+	-- 	Disabled:SetTexCoord(unpack(K.TexCoords))
+
+	-- 	tinsert(buttonList, KeyRing)
+	-- end
+
+	K.Mover(bagBar, "BagBar", "BagBar", bagPosition)
+	if not bagBar.mover then
+		bagBar.mover = K.Mover(bagBar, "BagBar", "BagBar", bagPosition)
+	else
+		bagBar.mover:SetSize(bagBar:GetSize())
+	end
+	bagBar:SetPoint("BOTTOMLEFT", bagBar.mover)
+	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SetSizeAndPositionBagBar)
+	K:RegisterEvent("BAG_UPDATE_DELAYED", Module.UpdateMainButtonCount)
+	Module:SetSizeAndPositionBagBar()
+
+	if _G.BagBarExpandToggle then
+		K.HideInterfaceOption(_G.BagBarExpandToggle)
+	end
 end

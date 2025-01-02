@@ -381,7 +381,7 @@ function Module:CreateAFKCam()
 	AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
 	AFKMode.top.wowlogo:SetSize(300, 150)
 	AFKMode.top.wowlogo.tex = AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
-	AFKMode.top.wowlogo.tex:SetTexture([[Interface\GLUES\COMMON\Glues-WoW-ClassicLogo]])
+	AFKMode.top.wowlogo.tex:SetTexture([[Interface\GLUES\COMMON\Glues-WoW-CCLogo]])
 	AFKMode.top.wowlogo.tex:SetAllPoints()
 
 	-- Date text
