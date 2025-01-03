@@ -18,8 +18,6 @@ At least one of the above widgets must be present for the element to work.
 .disableMouse       - Disables mouse events (boolean)
 .disableCooldown    - Disables the cooldown spiral (boolean)
 .size               - Aura icon size. Defaults to 16 (number)
-.width              - Aura icon width. Takes priority over `size` (number)
-.height             - Aura icon height. Takes priority over `size` (number)
 .onlyShowPlayer     - Shows only auras created by player/vehicle (boolean)
 .showStealableBuffs - Displays the stealable texture on buffs that can be stolen (boolean)
 .spacing            - Spacing between each icon. Defaults to 0 (number)
@@ -70,15 +68,11 @@ button.isPlayer - indicates if the aura caster is the player or their vehicle (b
 --]]
 
 local _, ns = ...
+local B, C, L, DB = unpack(ns)
 local oUF = ns.oUF
 
 local VISIBLE = 1
 local HIDDEN = 0
-
-local UnitAura = UnitAura
-local UnitIsUnit = UnitIsUnit
-local min = math.min
-local tinsert = table.insert
 
 local function UpdateTooltip(self)
 	GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
@@ -87,7 +81,7 @@ end
 local function onEnter(self)
 	if(not self:IsVisible()) then return end
 
-	GameTooltip:SetOwner(self, self:GetParent().__restricted and 'ANCHOR_CURSOR' or self:GetParent().tooltipAnchor)
+	GameTooltip:SetOwner(self, self:GetParent().tooltipAnchor)
 	self:UpdateTooltip()
 end
 
@@ -110,7 +104,7 @@ local function createAuraIcon(element, index)
 	countFrame:SetFrameLevel(cd:GetFrameLevel() + 1)
 
 	local count = countFrame:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
-	count:SetPoint('BOTTOMRIGHT', countFrame, 'BOTTOMRIGHT', -1, 0)
+	count:SetPoint('BOTTOMRIGHT', countFrame, 'BOTTOMRIGHT', 4, -2)
 
 	local overlay = button:CreateTexture(nil, 'OVERLAY')
 	overlay:SetTexture([[Interface\Buttons\UI-Debuff-Overlays]])
@@ -133,13 +127,13 @@ local function createAuraIcon(element, index)
 	button.count = count
 	button.cd = cd
 
-	--[[ Callback: Auras:PostCreateButton(button)
+	--[[ Callback: Auras:PostCreateIcon(button)
 	Called after a new aura button has been created.
 
 	* self   - the widget holding the aura buttons
 	* button - the newly created aura button (Button)
 	--]]
-	if(element.PostCreateButton) then element:PostCreateButton(button) end
+	if(element.PostCreateIcon) then element:PostCreateIcon(button) end
 
 	return button
 end
@@ -151,9 +145,7 @@ local function customFilter(element, unit, button, name)
 end
 
 local function updateIcon(element, unit, index, offset, filter, isDebuff, visible)
-	local name, texture, count, debuffType, duration, expiration, caster, isStealable,
-		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
-		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
+	local name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 
 	if(name) then
 		local position = visible + offset + 1
@@ -171,7 +163,7 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			--]]
 			button = (element.CreateIcon or createAuraIcon) (element, position)
 
-			tinsert(element, button)
+			table.insert(element, button)
 			element.createdIcons = element.createdIcons + 1
 		end
 
@@ -231,15 +223,14 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			if(button.icon) then button.icon:SetTexture(texture) end
 			if(button.count) then button.count:SetText(count > 1 and count or "") end
 
-			local width = element.width or element.size or 16
-			local height = element.height or element.size or 16
-			button:SetSize(width, height)
+			local size = element.size or 16
+			button:SetSize(size, size)
 
 			button:EnableMouse(not element.disableMouse)
 			button:SetID(index)
 			button:Show()
 
-			--[[ Callback: Auras:PostUpdateButton(unit, button, index, position)
+			--[[ Callback: Auras:PostUpdateIcon(unit, button, index, position)
 			Called after the aura button has been updated.
 
 			* self        - the widget holding the aura buttons
@@ -252,8 +243,8 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			* debuffType  - the debuff type of the aura (string?)['Curse', 'Disease', 'Magic', 'Poison']
 			* isStealable - whether the aura can be stolen or purged (boolean)
 			--]]
-			if(element.PostUpdateButton) then
-				element:PostUpdateButton(unit, button, index, position, duration, expiration, debuffType, isStealable)
+			if(element.PostUpdateIcon) then
+				element:PostUpdateIcon(unit, button, index, position, duration, expiration, debuffType, isStealable)
 			end
 
 			return VISIBLE
@@ -264,10 +255,8 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 end
 
 local function SetPosition(element, from, to)
-	local width = element.width or element.size or 16
-	local height = element.height or element.size or 16
-	local sizex = width + (element['spacing-x'] or element.spacing or 0)
-	local sizey = height + (element['spacing-y'] or element.spacing or 0)
+	local sizex = (element.size or 16) + (element['spacing-x'] or element.spacing or 0)
+	local sizey = (element.size or 16) + (element['spacing-y'] or element.spacing or 0)
 	local anchor = element.initialAnchor or 'BOTTOMLEFT'
 	local growthx = (element['growth-x'] == 'LEFT' and -1) or 1
 	local growthy = (element['growth-y'] == 'DOWN' and -1) or 1
@@ -330,7 +319,7 @@ local function UpdateAuras(self, event, unit)
 		local numDebuffs = auras.numDebuffs or 40
 		local max = auras.numTotal or numBuffs + numDebuffs
 
-		local visibleBuffs = filterIcons(auras, unit, auras.buffFilter or auras.filter or 'HELPFUL', min(numBuffs, max), nil, 0, true)
+		local visibleBuffs, hiddenBuffs = filterIcons(auras, unit, auras.buffFilter or auras.filter or 'HELPFUL', math.min(numBuffs, max), nil, 0, true)
 
 		local hasGap
 		if(visibleBuffs ~= 0 and auras.gap) then
@@ -340,7 +329,7 @@ local function UpdateAuras(self, event, unit)
 			local button = auras[visibleBuffs]
 			if(not button) then
 				button = (auras.CreateIcon or createAuraIcon) (auras, visibleBuffs)
-				tinsert(auras, button)
+				table.insert(auras, button)
 				auras.createdIcons = auras.createdIcons + 1
 			end
 
@@ -367,7 +356,7 @@ local function UpdateAuras(self, event, unit)
 			end
 		end
 
-		local visibleDebuffs = filterIcons(auras, unit, auras.debuffFilter or auras.filter or 'HARMFUL', min(numDebuffs, max - visibleBuffs), true, visibleBuffs)
+		local visibleDebuffs, hiddenDebuffs = filterIcons(auras, unit, auras.debuffFilter or auras.filter or 'HARMFUL', math.min(numDebuffs, max - visibleBuffs), true, visibleBuffs)
 		auras.visibleDebuffs = visibleDebuffs
 
 		if(hasGap and visibleDebuffs == 0) then
@@ -421,7 +410,7 @@ local function UpdateAuras(self, event, unit)
 		if(buffs.PreUpdate) then buffs:PreUpdate(unit) end
 
 		local numBuffs = buffs.num or 32
-		local visibleBuffs = filterIcons(buffs, unit, buffs.filter or 'HELPFUL', numBuffs)
+		local visibleBuffs, hiddenBuffs = filterIcons(buffs, unit, buffs.filter or 'HELPFUL', numBuffs)
 		buffs.visibleBuffs = visibleBuffs
 
 		local fromRange, toRange
@@ -442,7 +431,7 @@ local function UpdateAuras(self, event, unit)
 		if(debuffs.PreUpdate) then debuffs:PreUpdate(unit) end
 
 		local numDebuffs = debuffs.num or 40
-		local visibleDebuffs = filterIcons(debuffs, unit, debuffs.filter or 'HARMFUL', numDebuffs, true)
+		local visibleDebuffs, hiddenDebuffs = filterIcons(debuffs, unit, debuffs.filter or 'HARMFUL', numDebuffs, true)
 		debuffs.visibleDebuffs = visibleDebuffs
 
 		local fromRange, toRange
@@ -495,13 +484,19 @@ local function Enable(self)
 		local buffs = self.Buffs
 		if(buffs) then
 			buffs.__owner = self
-			-- check if there's any anchoring restrictions
-			buffs.__restricted = not pcall(self.GetCenter, self)
 			buffs.ForceUpdate = ForceUpdate
 
 			buffs.createdIcons = buffs.createdIcons or 0
 			buffs.anchoredIcons = 0
-			buffs.tooltipAnchor = buffs.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+
+			-- Avoid parenting GameTooltip to frames with anchoring restrictions,
+			-- otherwise it'll inherit said restrictions which will cause issues
+			-- with its further positioning, clamping, etc
+			if(not pcall(self.GetCenter, self)) then
+				buffs.tooltipAnchor = 'ANCHOR_CURSOR'
+			else
+				buffs.tooltipAnchor = buffs.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+			end
 
 			buffs:Show()
 		end
@@ -509,13 +504,19 @@ local function Enable(self)
 		local debuffs = self.Debuffs
 		if(debuffs) then
 			debuffs.__owner = self
-			-- check if there's any anchoring restrictions
-			debuffs.__restricted = not pcall(self.GetCenter, self)
 			debuffs.ForceUpdate = ForceUpdate
 
 			debuffs.createdIcons = debuffs.createdIcons or 0
 			debuffs.anchoredIcons = 0
-			debuffs.tooltipAnchor = debuffs.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+
+			-- Avoid parenting GameTooltip to frames with anchoring restrictions,
+			-- otherwise it'll inherit said restrictions which will cause issues
+			-- with its further positioning, clamping, etc
+			if(not pcall(self.GetCenter, self)) then
+				debuffs.tooltipAnchor = 'ANCHOR_CURSOR'
+			else
+				debuffs.tooltipAnchor = debuffs.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+			end
 
 			debuffs:Show()
 		end
@@ -523,13 +524,19 @@ local function Enable(self)
 		local auras = self.Auras
 		if(auras) then
 			auras.__owner = self
-			-- check if there's any anchoring restrictions
-			auras.__restricted = not pcall(self.GetCenter, self)
 			auras.ForceUpdate = ForceUpdate
 
 			auras.createdIcons = auras.createdIcons or 0
 			auras.anchoredIcons = 0
-			auras.tooltipAnchor = auras.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+
+			-- Avoid parenting GameTooltip to frames with anchoring restrictions,
+			-- otherwise it'll inherit said restrictions which will cause issues
+			-- with its further positioning, clamping, etc
+			if(not pcall(self.GetCenter, self)) then
+				auras.tooltipAnchor = 'ANCHOR_CURSOR'
+			else
+				auras.tooltipAnchor = auras.tooltipAnchor or 'ANCHOR_BOTTOMRIGHT'
+			end
 
 			auras:Show()
 		end

@@ -861,8 +861,8 @@ function Module:CreatePlates()
 	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 
 	self.Auras.showStealableBuffs = true
-	self.Auras.PostCreateButton = Module.PostCreateButton
-	self.Auras.PostUpdateButton = Module.PostUpdateButton
+	self.Auras.PostCreateIcon = Module.PostCreateIcon
+	self.Auras.PostUpdateIcon = Module.PostUpdateIcon
 
 	Module:CreateThreatColor(self)
 

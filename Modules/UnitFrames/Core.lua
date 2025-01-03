@@ -20,8 +20,6 @@ local UIParent = UIParent
 local UnitClass = UnitClass
 local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
-local UnitFrame_OnEnter = UnitFrame_OnEnter
-local UnitFrame_OnLeave = UnitFrame_OnLeave
 local UnitIsEnemy = UnitIsEnemy
 local UnitIsFriend = UnitIsFriend
 local UnitIsPVP = UnitIsPVP
@@ -43,9 +41,12 @@ local filteredStyle = {
 }
 
 function Module:UpdateClassPortraits(unit)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then return end
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or not unit then
+		return
+	end
 
 	local _, unitClass = UnitClass(unit)
+
 	if unitClass then
 		local PortraitValue = C["Unitframe"].PortraitStyle.Value
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
@@ -120,6 +121,7 @@ function Module:UpdatePhaseIcon(isPhased)
 end
 
 function Module:CreateHeader()
+	-- Register for mouse clicks and hook mouse enter/leave events
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
@@ -141,36 +143,18 @@ function Module:ToggleCastBarLatency(frame)
 	if not frame then return end
 
 	if C["Unitframe"].CastbarLatency then
-		--frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
-		--frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
+		-- frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
+		-- frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
 		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
 	else
-		--frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
-		--frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
+		-- frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
+		-- frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
 		frame:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
-		if frame.Castbar then frame.Castbar.__sendTime = nil end
+		if frame.Castbar then
+			frame.Castbar.__sendTime = nil
+		end
 	end
 end
-
---function Module.auraIconSize(w, n, s)
---	return (w - (n - 1) * s) / n
---end
---
---function Module:UpdateAuraContainer(width, element, maxAuras)
---	local iconsPerRow = element.iconsPerRow
---	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
---	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
---
---	element.size = size
---	element:SetWidth(width)
---	element:SetHeight((size + element.spacing) * maxLines)
---end
---
---function Module:UpdateIconTexCoord(width, height)
---	local ratio = height / width
---	local mult = (1 - ratio) / 2
---	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
---end
 
 -- Cache the result of auraIconSize calculation
 local auraIconSizeCache = {}
@@ -205,32 +189,36 @@ function Module:UpdateIconTexCoord(width, height)
 	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
 end
 
-function Module.PostCreateButton(element, button)
+function Module.PostCreateIcon(element, button)
 	local fontSize = element.fontSize or element.size * 0.5
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
-	
-	button.count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+
+	button.count = button.count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
 	button.cd:SetReverse(true)
 	button.cd:SetHideCountdownNumbers(true)
+
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
+	button.cd:ClearAllPoints()
 	if element.__owner.mystyle == "nameplate" then
 		button.cd:SetAllPoints()
 		button:CreateShadow(true)
+		button.stealable:SetAtlas("communities-create-avatar-border-selected")
 	else
 		button.cd:SetPoint("TOPLEFT", 1, -1)
 		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
 		button:CreateBorder()
+		button.stealable:SetAtlas("Forge-ColorSwatchSelection")
 	end
 
 	button.overlay:SetTexture(nil)
 	button.stealable:SetParent(parentFrame)
-	button.stealable:SetAtlas("bags-newitem")
 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
 	if not button.timer then
@@ -240,7 +228,11 @@ function Module.PostCreateButton(element, button)
 	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
-function Module.PostUpdateButton(element, _, button, _, _, duration, expiration, debuffType)
+local dispellType = {
+	["Magic"] = true,
+}
+
+function Module.PostUpdateIcon(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
 	button:SetSize(style == "nameplate" and element.size or element.size, style == "nameplate" and element.size * 1 or element.size)
 
@@ -254,17 +246,22 @@ function Module.PostUpdateButton(element, _, button, _, _, duration, expiration,
 	-- Update border color based on debuff type
 	if button.isDebuff then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
-		if style == "nameplate" and button.Shadow then
+		if style == "nameplate" then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
 			button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 		end
 	else
-		if style == "nameplate" and button.Shadow then
+		if style == "nameplate" then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		else
 			K.SetBorderColor(button.KKUI_Border)
 		end
+	end
+
+	-- -- Show stealable indicator if applicable
+	if dispellType[debuffType] and not UnitIsPlayer(style) and not button.isDebuff then
+		button.stealable:Show()
 	end
 
 	-- Handle cooldown and timer display
@@ -278,33 +275,66 @@ function Module.PostUpdateButton(element, _, button, _, _, duration, expiration,
 	end
 end
 
-local isCasterPlayer = {
-	["player"] = true,
-	["pet"] = true,
-	["vehicle"] = true,
-}
+function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
+	-- Ensure consistent variable naming conventions
+	element.bolsterStacks = 0
+	element.bolsterInstanceID = nil
 
-function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
+	-- Loop through all buffs to find Bolster stacks
+	for auraInstanceID, data in next, element.allBuffs do
+		if data.spellId == 209859 then
+			if not element.bolsterInstanceID then
+				element.bolsterInstanceID = auraInstanceID
+				element.activeBuffs[auraInstanceID] = true
+			end
+			element.bolsterStacks = element.bolsterStacks + 1
+			if element.bolsterStacks > 1 then
+				element.activeBuffs[auraInstanceID] = nil
+			end
+		end
+	end
+
+	-- Update visible buttons with Bolster stacks
+	if element.bolsterStacks > 0 then
+		for i = 1, element.visibleButtons do
+			local button = element[i]
+			if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
+				button.Count:SetText(element.bolsterStacks)
+				break
+			end
+		end
+	end
+end
+
+function Module.CustomFilter(element, unit, button, name, _, _, debuffType, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
+	-- Ensure consistent variable naming conventions
 	local style = element.__owner.mystyle
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
-	if style == "nameplate" or style == "boss" or style == "arena" then
-		if name and spellID == 209859 then -- pass all bolster
+	-- Add comments to clarify the purpose of certain sections
+	-- if style == "nameplate" or style == "boss" or style == "arena" then
+	if style == "nameplate" then
+		-- Filter out specific spells
+		if name and spellID == 209859 then -- Pass all bolster
 			return true
 		end
+		-- Filter based on nameplate type
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif isStealable and not UnitIsPlayer(unit) then
+		-- Filter based on debuff type and dispellability
+		elseif (isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and not button.isDebuff then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
 		else
+			-- Filter based on aura filter settings
 			local auraFilter = C["Nameplate"].AuraFilter.Value
-			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
+			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and button.isPlayer)
 		end
 	else
+		-- Filter based on showDebuffType setting
 		return (showDebuffType and button.isPlayer) or (not showDebuffType and name)
 	end
 end
@@ -352,18 +382,21 @@ local function SetStatusBarColor(element, r, g, b)
 end
 
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
+	local prevColor = element.prevColor
+	local thisColor
+
 	if not cur or cur == 0 then
-		element.prevColor = nil
+		thisColor = nil
 	else
-		element.thisColor = cur == max and 1 or 2
-		if not element.prevColor or element.prevColor ~= element.thisColor then
+		thisColor = cur == max and 1 or 2
+		if not prevColor or prevColor ~= thisColor then
 			local r, g, b = 1, 0, 0
-			if element.thisColor == 2 then
+			if thisColor == 2 then
 				local color = element.__owner.colors.power[powerType]
 				r, g, b = color[1], color[2], color[3]
 			end
 			SetStatusBarColor(element, r, g, b)
-			element.prevColor = element.thisColor
+			element.prevColor = thisColor
 		end
 	end
 
@@ -661,7 +694,7 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
-		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 52 or 28
+		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
 		local partyMoverWidth = C["Party"].HealthWidth
 		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 1 + partyYOffset * 8
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
@@ -687,7 +720,7 @@ function Module:CreateUnits()
 			]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 46, -200 }, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, partyMoverWidth, partyMoverHeight)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
