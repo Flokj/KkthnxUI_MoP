@@ -1,12 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
-local C_BattleNet = C_BattleNet
-local C_FriendList = C_FriendList
-local IsGuildMember = IsGuildMember
-local IsInGroup = IsInGroup
-local StaticPopup_Hide = StaticPopup_Hide
-
 local previousInviterGUID
 
 local function HandlePartyInvite(inviterGUID)

@@ -1,5 +1,12 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+local _G = _G
+local next = next
+local hooksecurefunc = hooksecurefunc
+
+local GetInventoryItemQuality = GetInventoryItemQuality
+local GetItemQualityColor = C_Item.GetItemQualityColor
+
 local function colourPopout(self)
 	self.arrow:SetVertexColor(0, 0.6, 1)
 end
@@ -15,6 +22,21 @@ function K:ReskinModelControl()
 			button.NormalTexture:SetAlpha(0)
 			button.PushedTexture:SetAlpha(0)
 		end
+	end
+end
+
+local function PaperDollItemSlotButtonUpdate(frame)
+	if not frame.KKUI_Border or not frame.KKUI_Border.SetVertexColor then
+		return
+	end
+
+	local id = frame:GetID()
+	local rarity = id and GetInventoryItemQuality("player", id)
+	if rarity and rarity > 1 then
+		local r, g, b = GetItemQualityColor(rarity)
+		frame.KKUI_Border:SetVertexColor(r, g, b)
+	else
+		frame.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
 end
 
@@ -48,19 +70,38 @@ tinsert(C.defaultThemes, function()
 		end)
 	end
 
-	-- [[ Item buttons ]]
+	for _, slot in next, { _G.PaperDollItemsFrame:GetChildren() } do
+		if slot:IsObjectType("Button") and slot.Count then
+			local name = slot:GetName()
+			local icon = _G[name .. "IconTexture"]
 
-	local function UpdateHighlight(self)
-		local highlight = self:GetHighlightTexture()
-		highlight:SetColorTexture(1, 1, 1, .25)
-		highlight:SetAllPoints()
+			slot:StripTextures()
+			slot:CreateBorder()
+			slot:StyleButton()
+
+			local popout = slot.popoutButton
+			popout:SetNormalTexture(0)
+			popout:SetHighlightTexture(0)
+
+			local arrow = popout:CreateTexture(nil, "OVERLAY")
+			arrow:SetSize(14, 14)
+			if slot.verticalFlyout then
+				K.SetupArrow(arrow, "down")
+				arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
+			else
+				K.SetupArrow(arrow, "right")
+				arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
+			end
+			popout.arrow = arrow
+
+			colourPopout(popout)
+			popout:HookScript("OnEnter", clearPopout)
+			popout:HookScript("OnLeave", colourPopout)
+
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			icon:SetAllPoints()
+		end
 	end
-
-	local slots = {
-		"Head", "Neck", "Shoulder", "Shirt", "Chest", "Waist", "Legs", "Feet", "Wrist",
-		"Hands", "Finger0", "Finger1", "Trinket0", "Trinket1", "Back", "MainHand",
-		"SecondaryHand", "Tabard", "Ranged",
-	}
 
 	local CharacterHeadSlot = _G.CharacterHeadSlot
 	CharacterHeadSlot:ClearAllPoints()
@@ -70,40 +111,7 @@ tinsert(C.defaultThemes, function()
 	CharacterHandsSlot:ClearAllPoints()
 	CharacterHandsSlot:SetPoint('LEFT', _G.CharacterHeadSlot, 'RIGHT', 230, 0)
 
-	for i = 1, #slots do
-		local slot = _G["Character" .. slots[i] .. "Slot"]
-
-		slot:StripTextures()
-		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-		slot.bg = CreateFrame("Frame", nil, slot)
-		slot.bg:SetAllPoints(slot.icon)
-		slot.bg:SetFrameLevel(slot:GetFrameLevel())
-		slot.bg:CreateBorder()
-
-		local popout = slot.popoutButton
-		popout:SetNormalTexture(0)
-		popout:SetHighlightTexture(0)
-
-		local arrow = popout:CreateTexture(nil, "OVERLAY")
-		arrow:SetSize(14, 14)
-		if slot.verticalFlyout then
-			K.SetupArrow(arrow, "down")
-			arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
-		else
-			K.SetupArrow(arrow, "right")
-			arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
-		end
-		popout.arrow = arrow
-
-		colourPopout(popout)
-		popout:HookScript("OnEnter", clearPopout)
-		popout:HookScript("OnLeave", colourPopout)
-	end
-
-	hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-		UpdateHighlight(button)
-	end)
+	hooksecurefunc("PaperDollItemSlotButton_Update", PaperDollItemSlotButtonUpdate)
 
 	-- [[ Sidebar tabs ]]
 	if PaperDollSidebarTabs.DecorRight then
