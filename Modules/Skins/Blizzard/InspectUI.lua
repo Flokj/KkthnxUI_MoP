@@ -1,9 +1,47 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-C.themes["Blizzard_InspectUI"] = function()
-	if not C["Skins"].BlizzardFrames then return end
+local _G = _G
+local next, unpack = next, unpack
+local hooksecurefunc = hooksecurefunc
 
-	InspectModelFrame:StripTextures()
+local GetItemQualityColor = C_Item.GetItemQualityColor
+local GetInventoryItemQuality = GetInventoryItemQuality
+
+local function Update_InspectPaperDollItemSlotButton(button)
+	local unit = button.hasItem and _G.InspectFrame.unit
+	local quality = unit and GetInventoryItemQuality(unit, button:GetID())
+	if quality and quality > 1 then
+		local r, g, b = GetItemQualityColor(quality)
+		button.KKUI_Border:SetVertexColor(r, g, b)
+		return
+	end
+
+	button.KKUI_Border:SetVertexColor(1, 1, 1)
+end
+
+local function UpdateInspectModelFrameTexture()
+	local _, targetClass = UnitClass("target")
+	if targetClass then
+		if not InspectModelFrame.KKUI_Texture then
+			-- Create the texture only once
+			local texture = InspectModelFrame:CreateTexture(nil, "BACKGROUND")
+			texture:SetPoint("TOPLEFT", 0, 0)
+			texture:SetPoint("BOTTOMRIGHT", 0, -20) -- Stretch down by 20 pixels
+			InspectModelFrame.KKUI_Texture = texture
+		end
+
+		-- Set the texture properties
+		InspectModelFrame.KKUI_Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
+		InspectModelFrame.KKUI_Texture:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+		InspectModelFrame.KKUI_Texture:SetHorizTile(false)
+		InspectModelFrame.KKUI_Texture:SetVertTile(false)
+	end
+end
+
+C.themes["Blizzard_InspectUI"] = function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
 
 	-- Character
 	local slots = {
@@ -13,16 +51,18 @@ C.themes["Blizzard_InspectUI"] = function()
 	}
 
 	for i = 1, #slots do
-		local slot = _G["Inspect" .. slots[i] .. "Slot"]
-		slot:StripTextures()
-		slot:SetNormalTexture(0)
-		slot:SetPushedTexture(0)
-		slot:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		local slot = _G["Inspect"..slots[i].."Slot"]
 
-		slot.bg = CreateFrame("Frame", nil, slot)
-		slot.bg:SetAllPoints(slot.icon)
-		slot.bg:SetFrameLevel(slot:GetFrameLevel())
-		slot.bg:CreateBorder()
+		slot:StripTextures()
+		slot:CreateBorder()
+		slot:SetFrameLevel(slot:GetFrameLevel() + 2)
+		slot:StyleButton()
+
+		slot.icon:SetTexCoord(unpack(K.TexCoords))
+		slot.icon:SetAllPoints()
 	end
+
+	hooksecurefunc("InspectPaperDollItemSlotButton_Update", Update_InspectPaperDollItemSlotButton)
+	UpdateInspectModelFrameTexture()
+	K:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateInspectModelFrameTexture)
 end
