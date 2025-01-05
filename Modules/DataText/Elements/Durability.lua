@@ -12,6 +12,7 @@ local GetInventoryItemTexture = GetInventoryItemTexture
 
 local DurabilityDataText
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
+local lowDurabilityCap = 0.25
 
 local localSlots = {
 	[1] = { 1, INVTYPE_HEAD, 1000 },
@@ -53,6 +54,14 @@ local function UpdateAllSlots()
 	return numSlots
 end
 
+local function isLowDurability()
+	for i = 1, 10 do
+		if localSlots[i][3] < lowDurabilityCap then
+			return true
+		end
+	end
+end
+
 local function getDurabilityColor(cur, max)
 	local r, g, b = K.oUF:RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 	return r, g, b
@@ -82,6 +91,7 @@ local function OnEvent(self, event, ...)
 	end
 
 	local numSlots = UpdateAllSlots()
+	local isLow = isLowDurability()
 
 	if event == "PLAYER_REGEN_ENABLED" then
 		DurabilityDataText:UnregisterEvent(event)
@@ -89,12 +99,17 @@ local function OnEvent(self, event, ...)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			local yellowColor = "|cFFF0C500" -- Hexadecimal color code for yellow, the closest I could find/get to match other tabs
 			-- Set the text color to yellow and format the durability text
-			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), yellowColor .. DURABILITY)
+			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), K.GreyColor .. DURABILITY)
 		else
 			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
+	end
+
+	if isLow then
+		Module:ShowLowDurabilityWarning()
+	else
+		Module:HideLowDurabilityWarning()
 	end
 end
 
@@ -108,7 +123,7 @@ local function OnEnter()
 	for i = 1, #localSlots do
 		if localSlots[i][3] ~= 1000 then
 			local slot = localSlots[i][1]
-			local cur = math_floor(localSlots[i][3] * 100)
+			local cur = floor(localSlots[i][3] * 100)
 			local slotIcon = localSlots[i][4]
 			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], cur .. "%", 1, 1, 1, getDurabilityColor(cur, 100))
 
@@ -156,4 +171,52 @@ function Module:CreateDurabilityDataText()
 	NewSetLevelFunction()
 
 	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
+end
+
+-- Create a frame for the low durability warning
+local lowDurabilityFrame = CreateFrame("Frame", "KKUI_DurabilityWarningFrame", UIParent)
+lowDurabilityFrame:SetSize(400, 100)
+lowDurabilityFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 300)
+lowDurabilityFrame:Hide()
+
+lowDurabilityFrame.text = lowDurabilityFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
+lowDurabilityFrame.text:SetPoint("CENTER", lowDurabilityFrame, "CENTER", 0, 0)
+
+-- Function to show the low durability warning
+function Module:ShowLowDurabilityWarning()
+	local lowestDurability = math_floor(localSlots[1][3] * 100)
+	lowDurabilityFrame.text:SetFormattedText("|A:services-icon-warning:16:16|a |cffff0000Low Durability!|r |cffffff00Please repair your gear.|r (|cff00ff00%d%%|r)", lowestDurability)
+	lowDurabilityFrame:Show()
+
+	-- Stop any ongoing animations
+	if lowDurabilityFrame.animGroup and lowDurabilityFrame.animGroup:IsPlaying() then
+		lowDurabilityFrame.animGroup:Stop()
+	end
+
+	-- Create animation group
+	if not lowDurabilityFrame.animGroup then
+		lowDurabilityFrame.animGroup = lowDurabilityFrame:CreateAnimationGroup()
+
+		-- Create fade out animation
+		local fadeOut = lowDurabilityFrame.animGroup:CreateAnimation("Alpha")
+		fadeOut:SetFromAlpha(1)
+		fadeOut:SetToAlpha(0)
+		fadeOut:SetDuration(1)
+		fadeOut:SetStartDelay(5)
+		fadeOut:SetSmoothing("OUT")
+
+		lowDurabilityFrame.animGroup:SetScript("OnFinished", function()
+			lowDurabilityFrame:Hide()
+			if isLowDurability() then
+				C_Timer.After(5, Module.ShowLowDurabilityWarning) -- Remind again after 5 seconds if still low
+			end
+		end)
+	end
+
+	lowDurabilityFrame.animGroup:Play()
+end
+
+-- Function to hide the low durability warning
+function Module:HideLowDurabilityWarning()
+	lowDurabilityFrame:Hide()
 end

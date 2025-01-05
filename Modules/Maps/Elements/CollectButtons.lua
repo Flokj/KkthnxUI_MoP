@@ -24,6 +24,7 @@ function Module:CreateRecycleBin()
 		["MinimapBackdrop"] = true,
 		["TimeManagerClockButton"] = true,
 		["FeedbackUIButton"] = true,
+		["KKUI_CalendarButton"] = true,
 		["HelpOpenTicketButton"] = true,
 		["MiniMapBattlefieldFrame"] = true,
 		["QueueStatusMinimapButton"] = true,

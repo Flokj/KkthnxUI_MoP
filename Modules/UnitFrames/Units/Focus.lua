@@ -211,21 +211,27 @@ function Module:CreateFocus()
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
-		local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
-		mhpb:SetWidth(1)
-		mhpb:SetTexture(HealPredictionTexture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+		local frame = CreateFrame("Frame", nil, self)
+		frame:SetAllPoints(Health)
 
-		local ohpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
-		ohpb:SetWidth(1)
-		ohpb:SetTexture(HealPredictionTexture)
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
+		local normalTexture = K.GetTexture(C["General"].Texture)
+
+		local myBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		myBar:SetWidth(1)
+		myBar:SetTexture(normalTexture)
+		myBar:SetVertexColor(0, 1, 0, 0.5)
+
+		local otherBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		otherBar:SetWidth(1)
+		otherBar:SetTexture(normalTexture)
+		otherBar:SetVertexColor(0, 1, 1, 0.5)
 
 		self.HealPredictionAndAbsorb = {
-			myBar = mhpb,
-			otherBar = ohpb,
+			myBar = myBar,
+			otherBar = otherBar,
 			maxOverflow = 1,
 		}
+		self.predicFrame = frame
 	end
 
 	-- Level

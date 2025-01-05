@@ -3,13 +3,9 @@ local Module = K:NewModule("Minimap")
 
 local math_floor = math.floor
 local mod = mod
-local pairs = pairs
 local select = select
-local table_insert = table.insert
-local table_sort = table.sort
 
 local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
-local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local GetUnitName = GetUnitName
 local InCombatLockdown = InCombatLockdown
 local Minimap = Minimap
@@ -23,7 +19,11 @@ function Module:CreateStyle()
 	minimapBorder:SetFrameStrata("LOW")
 	minimapBorder:CreateBorder()
 
-	if not C["Minimap"].MailPulse then return end
+	if not C["Minimap"].MailPulse then
+		return
+	end
+
+	local MinimapMailFrame = MiniMapMailFrame
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({
@@ -50,7 +50,7 @@ function Module:CreateStyle()
 		if event == "PLAYER_REGEN_DISABLED" then
 			borderColor = { 1, 0, 0, 0.8 }
 		elseif not InCombatLockdown() then
-			if C_Calendar.GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() then
+			if C_Calendar.GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
 				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
 				borderColor = { 1, 1, 0, 0.8 }
 			end
@@ -73,7 +73,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MiniMapMailFrame:HookScript("OnHide", function()
+	MinimapMailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end
@@ -148,7 +148,7 @@ function Module:ReskinRegions()
 		handleFlag(GuildInstanceDifficulty)
 	end
 
-	-- Tracking icon
+	-- Configure the tracking icon
 	MiniMapTracking:SetScale(1.1)
 	MiniMapTracking:ClearAllPoints()
 	MiniMapTracking:SetPoint("BOTTOMRIGHT", Minimap, 2, -4)
@@ -161,25 +161,49 @@ function Module:ReskinRegions()
 	hl:SetAllPoints(MiniMapTrackingIcon)
 
 	-- Mail icon
-	MiniMapMailFrame:ClearAllPoints()
-	if C["DataText"].Time then
-		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, 12)
-	else
-		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, -2)
+	if MiniMapMailFrame then
+		-- Mail icon
+		MiniMapMailFrame:ClearAllPoints()
+		if C["DataText"].Time then
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, 12)
+		else
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", -5, -2)
+		end
+		MiniMapMailIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\mail.blp")
+		MiniMapMailIcon:SetSize(28, 28)
+		MiniMapMailFrame:SetHitRectInsets(11, 2, 13, 7)
+		MiniMapMailIcon:SetVertexColor(1, 1, 1)
+		MiniMapMailIcon:SetAlpha(0.9)
 	end
-	MiniMapMailIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\mail.blp")
-	MiniMapMailIcon:SetSize(28, 28)
-	MiniMapMailFrame:SetHitRectInsets(11, 2, 13, 7)
-	MiniMapMailIcon:SetVertexColor(1, 1, 1)
-	MiniMapMailIcon:SetAlpha(0.9)
+
+	if TimeManagerClockButton then
+		TimeManagerClockButton:ClearAllPoints()
+		TimeManagerClockButton:SetPoint("BOTTOM", K.UIFrameHider)
+		TimeManagerClockButton:Hide()
+	end
 
 	-- Invites Icon
-	GameTimeCalendarInvitesTexture:ClearAllPoints()
-	GameTimeCalendarInvitesTexture:SetParent(Minimap)
-	GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
+	if GameTimeCalendarInvitesTexture then
+		GameTimeCalendarInvitesTexture:ClearAllPoints()
+		GameTimeCalendarInvitesTexture:SetParent(Minimap)
+		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
+	end
+
+	-- Streaming icon
+	if StreamingIcon then
+		StreamingIcon:ClearAllPoints()
+		StreamingIcon:SetParent(Minimap)
+		StreamingIcon:SetPoint("LEFT", -6, 0)
+		StreamingIcon:SetAlpha(0.5)
+		StreamingIcon:SetScale(0.8)
+		StreamingIcon:SetFrameStrata("LOW")
+	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
+	inviteNotification:SetBackdrop({
+		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay",
+		edgeSize = 12,
+	})
 	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
 	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
@@ -263,48 +287,65 @@ end
 
 function Module:HideMinimapClock()
 	if TimeManagerClockButton then
-		TimeManagerClockButton:SetParent(K.UIFrameHider)
-		TimeManagerClockButton:UnregisterAllEvents()
+		TimeManagerClockButton:Hide()
 	end
 end
 
-local GameTimeFrameStyled
+local calendarButton
+local lastClickTime = 0
+
+-- Function to calculate the current day
+local function GetCurrentDay()
+	local today = date("*t") -- Get the current system time as a table
+	return today.day -- Extract the day of the month
+end
+
+-- Function to handle calendar button click
+local function OnCalendarButtonClick()
+	ToggleCalendar()
+end
+
+-- Function to create a custom calendar button
 function Module:ShowCalendar()
-	if C["Minimap"].Calendar then
-		if not GameTimeFrameStyled then
-			local GameTimeFrame = GameTimeFrame
-			local calendarText = GameTimeFrame:CreateFontString(nil, "OVERLAY")
-			
-			GameTimeFrame:SetParent(Minimap)
-			GameTimeFrame:SetFrameLevel(16)
-			GameTimeFrame:ClearAllPoints()
-			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
-			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-			GameTimeFrame:SetSize(22, 22)
-
-			calendarText:ClearAllPoints()
-			calendarText:SetPoint("CENTER", 0, -4)
-			calendarText:SetFontObject(K.UIFont)
-			calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
-			calendarText:SetTextColor(0, 0, 0)
-			calendarText:SetShadowOffset(0, 0)
-			calendarText:SetAlpha(0.9)
-
-			hooksecurefunc("GameTimeFrame_SetDate", function()
-				GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-				GameTimeFrame:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-				GameTimeFrame:SetHighlightTexture(0)
-				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
-				calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
-			end)
-
-			GameTimeFrameStyled = true
+	if not C["Minimap"].Calendar then
+		if calendarButton then
+			calendarButton:Hide()
 		end
-		GameTimeFrame:Show()
-	else
-		GameTimeFrame:Hide()
+		return
 	end
+
+	if not calendarButton then
+		calendarButton = CreateFrame("Button", "KKUI_CalendarButton", Minimap)
+		calendarButton:SetSize(22, 22)
+		calendarButton:SetPoint("TOPRIGHT", Minimap, -4, -4)
+
+		local texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp"
+		calendarButton:SetNormalTexture(texturePath)
+		calendarButton:SetPushedTexture(texturePath)
+
+		local normalTexture = calendarButton:GetNormalTexture()
+		if normalTexture then
+			normalTexture:SetTexCoord(0, 1, 0, 1)
+		end
+
+		local pushedTexture = calendarButton:GetPushedTexture()
+		if pushedTexture then
+			pushedTexture:SetTexCoord(0, 1, 0, 1)
+		end
+
+		local calendarText = calendarButton:CreateFontString(nil, "OVERLAY")
+		calendarText:SetFontObject(K.UIFont)
+		calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
+		calendarText:SetTextColor(0.2, 0.2, 0.2) -- Set text color to black
+		calendarText:SetShadowOffset(0, 0)
+		calendarText:SetPoint("CENTER", 0, -4)
+		calendarText:SetText(GetCurrentDay()) -- Directly set the current day
+		calendarButton.calendarText = calendarText
+
+		calendarButton:SetScript("OnClick", OnCalendarButtonClick)
+	end
+
+	calendarButton:Show()
 end
 
 local function GetVolumeColor(cur)
@@ -493,9 +534,6 @@ function Module:OnEnable()
 	Minimap:SetPoint("TOPRIGHT", minimapMover)
 	Minimap.mover = minimapMover
 
-	self:HideMinimapClock()
-	self:ShowCalendar()
-	self:UpdateMinimapScale()
 	if _G.QueueStatusMinimapButton then
 		Module:CreateQueueStatusText()
 	end
@@ -514,13 +552,15 @@ function Module:OnEnable()
 		"MinimapZoomIn",
 		"MiniMapWorldMapButton",
 		"MiniMapMailBorder",
-		--"MiniMapTracking",
+		"GameTimeFrame",
 	}
 
 	for _, v in pairs(frames) do
-		K.HideInterfaceOption(_G[v])
+		local object = _G[v]
+		if object then
+			K.HideInterfaceOption(_G[v])
+		end
 	end
-
 	MinimapCluster:EnableMouse(false)
 
 	-- Add Elements
@@ -530,6 +570,9 @@ function Module:OnEnable()
 		"CreateSoundVolume",
 		"CreateStyle",
 		"ReskinRegions",
+		"HideMinimapClock",
+		"ShowCalendar",
+		"UpdateMinimapScale",
 	}
 
 	for _, funcName in ipairs(loadMinimapModules) do

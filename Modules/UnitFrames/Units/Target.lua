@@ -203,6 +203,11 @@ function Module:CreateTarget()
 		Castbar.Button:SetAllPoints(Castbar.Icon)
 		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
 
+		local stage = K.CreateFontString(Castbar, 20)
+		stage:ClearAllPoints()
+		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
+		Castbar.stageString = stage
+
 		Castbar.decimal = "%.2f"
 
 		Castbar.Time = timer
@@ -224,21 +229,23 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
+		frame:SetAllPoints(Health)
 
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		mhpb:SetWidth(1)
-		mhpb:SetTexture(HealPredictionTexture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+		local normalTexture = K.GetTexture(C["General"].Texture)
 
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		ohpb:SetWidth(1)
-		ohpb:SetTexture(HealPredictionTexture)
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
+		local myBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		myBar:SetWidth(1)
+		myBar:SetTexture(normalTexture)
+		myBar:SetVertexColor(0, 1, 0, 0.5)
+
+		local otherBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		otherBar:SetWidth(1)
+		otherBar:SetTexture(normalTexture)
+		otherBar:SetVertexColor(0, 1, 1, 0.5)
 
 		self.HealPredictionAndAbsorb = {
-			myBar = mhpb,
-			otherBar = ohpb,
+			myBar = myBar,
+			otherBar = otherBar,
 			maxOverflow = 1,
 		}
 		self.predicFrame = frame

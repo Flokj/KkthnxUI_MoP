@@ -39,8 +39,8 @@ local function togglePlatePower()
 	K:GetModule("Unitframes"):TogglePlatePower()
 end
 
-local function toggleMinimapIcon()
-	K:GetModule("Miscellaneous"):ToggleMinimapIcon()
+local function toggleMinimapButton()
+	K:GetModule("Miscellaneous"):ToggleMinimapButton()
 end
 
 local function togglePlayerPlate()
@@ -345,6 +345,10 @@ local function UpdateTotemSize()
 	K:GetModule("ActionBar"):UpdateTotemSize()
 end
 
+local function UpdateChatButtons()
+	K:GetModule("Chat"):UpdateChatButtons()
+end
+
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -608,6 +612,9 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "Chatbar", "Show Chat Bars")
 	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExampleIcon)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
+	Window:CreateSwitch("Chat", "CopyButton", newFeatureIcon .. "Enable Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", "Enable or disable the Copy Chat button, which allows you to copy chat text.", UpdateChatButtons)
+	Window:CreateSwitch("Chat", "ConfigButton", newFeatureIcon .. "Enable Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons)
+	Window:CreateSwitch("Chat", "RollButton", newFeatureIcon .. "Enable Roll Button |A:charactercreate-icon-dice:14:14|a", "Enable or disable the Roll button, which allows you to roll a random number between 1 and 100.", UpdateChatButtons)
 	Window:CreateDropdown("Chat", "TimestampFormat", L["Custom Chat Timestamps"])
 
 	-- Chat behavior
@@ -660,7 +667,7 @@ local General = function(self)
 
 	-- Toggles
 	Window:CreateSection(GENERAL)
-	Window:CreateSwitch("General", "MinimapIcon", "Enable Minimap Icon", nil, toggleMinimapIcon)
+	Window:CreateSwitch("General", "MinimapIcon", "Enable Minimap Icon", nil, toggleMinimapButton)
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])

@@ -208,6 +208,7 @@ function Module:CreatePlayer()
 		safeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 		safeZone:SetPoint("TOPRIGHT")
 		safeZone:SetPoint("BOTTOMRIGHT")
+		Castbar:SetFrameLevel(10)
 		Castbar.SafeZone = safeZone
 
 		local lagStr = K.CreateFontString(Castbar, 11)
@@ -216,6 +217,11 @@ function Module:CreatePlayer()
 		Castbar.LagString = lagStr
 
 		Module:ToggleCastBarLatency(self)
+
+		local stage = K.CreateFontString(Castbar, 20)
+		stage:ClearAllPoints()
+		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
+		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
 
@@ -238,21 +244,23 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
-		frame:SetAllPoints()
+		frame:SetAllPoints(Health)
 
-		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		mhpb:SetWidth(1)
-		mhpb:SetTexture(HealPredictionTexture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+		local normalTexture = K.GetTexture(C["General"].Texture)
 
-		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
-		ohpb:SetWidth(1)
-		ohpb:SetTexture(HealPredictionTexture)
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
+		local myBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		myBar:SetWidth(1)
+		myBar:SetTexture(normalTexture)
+		myBar:SetVertexColor(0, 1, 0, 0.5)
+
+		local otherBar = frame:CreateTexture(nil, "BORDER", nil, 5)
+		otherBar:SetWidth(1)
+		otherBar:SetTexture(normalTexture)
+		otherBar:SetVertexColor(0, 1, 1, 0.5)
 
 		self.HealPredictionAndAbsorb = {
-			myBar = mhpb,
-			otherBar = ohpb,
+			myBar = myBar,
+			otherBar = otherBar,
 			maxOverflow = 1,
 		}
 		self.predicFrame = frame
@@ -306,14 +314,15 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].GlobalCooldown then
-		local GCD = CreateFrame("Frame", "oUF_PlayerGCD", Power)
+		local GCD = CreateFrame("Frame", "oUF_PlayerGCD", Health)
 		GCD:SetWidth(playerWidth)
-		GCD:SetHeight(C["Unitframe"].PlayerPowerHeight - 2)
-		GCD:SetPoint("LEFT", Power, "LEFT", 0, 0)
+		GCD:SetHeight(C["Unitframe"].PlayerHealthHeight - 2)
+		GCD:SetPoint("LEFT", Health, "LEFT", 0, 0)
+		GCD:SetAlpha(0.7)
 
 		GCD.Color = { 1, 1, 1, 0.6 }
 		GCD.Texture = C["Media"].Textures.Spark128Texture
-		GCD.Height = C["Unitframe"].PlayerPowerHeight - 2
+		GCD.Height = C["Unitframe"].PlayerHealthHeight - 2
 		GCD.Width = 128 / 2
 
 		self.GCD = GCD
@@ -477,24 +486,21 @@ function Module:CreatePlayer()
 			texts[i] = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
 		end
 
-		local step, stepSpeed = 0, 0.33
-
+		local step, stepSpeed = 0, 0.35
 		local stepMaps = {
-			[1] = { true, false, false },
-			[2] = { true, true, false },
-			[3] = { true, true, true },
-			[4] = { false, true, true },
-			[5] = { false, false, true },
-			[6] = { false, false, false },
+			{ true, false, false },
+			{ true, true, false },
+			{ true, true, true },
+			{ false, true, true },
+			{ false, false, true },
+			{ false, false, false },
 		}
 
 		RestingIndicator:SetScript("OnUpdate", function(self, elapsed)
 			self.elapsed = (self.elapsed or 0) + elapsed
+
 			if self.elapsed > stepSpeed then
-				step = step + 1
-				if step == 7 then
-					step = 1
-				end
+				step = (step % 6) + 1
 
 				for i = 1, 3 do
 					texts[i]:SetShown(stepMaps[step][i])
@@ -506,6 +512,9 @@ function Module:CreatePlayer()
 
 		RestingIndicator:SetScript("OnHide", function()
 			step = 6
+			for i = 1, 3 do
+				texts[i]:SetShown(stepMaps[step][i])
+			end
 		end)
 
 		self.RestingIndicator = RestingIndicator
