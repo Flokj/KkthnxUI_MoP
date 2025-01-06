@@ -746,11 +746,12 @@ local Misc = function(self)
 
 	-- General Section
 	Window:CreateSection(GENERAL)
+	Window:CreateSwitch("Misc", "AlreadyKnown", "Highlight Already Known Items", "Highlights items you already know in various frames such as the merchant, auction house, and guild bank.")
+	Window:CreateSwitch("Misc", "ClassColorPlus", "Enable Class Color Enhancements", "Enhances various UI elements with class-specific colors, including guild, friends, who list, and battlefield score frames.")
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
 	Window:CreateSwitch("Misc", "Focuser", "Mouseover focus by Alt + LeftClick")	
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide Boss Emotes"])
-	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 
 	Window:CreateSection("Camera")
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 3.4, 0.1, nil, UpdateMaxZoomLevel)
@@ -773,6 +774,11 @@ local Misc = function(self)
 	Window:CreateSection("Questing")
 	Window:CreateSwitch("Misc", "ExpRep", "Display Exp/Rep Bar (Minimap)")
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
+
+	-- Durability Section
+	Window:CreateSection("Durability")
+	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
+	Window:CreateSwitch("Misc", "SlotDurabilityWarning", "Show Low Durability Warnings.", "Enable this option to display a warning when your equipment's durability falls below 25%. The warning will remind you to repair your gear to avoid item breakage.")
 
 	-- Raid Tool Section
 	Window:CreateSection("Raid Tool")

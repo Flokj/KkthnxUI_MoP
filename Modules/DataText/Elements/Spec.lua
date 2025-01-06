@@ -59,6 +59,7 @@ local function OnEnter(self)
 		GameTooltip:AddDoubleLine(unspendPoints, points, 0.6, 0.8, 1, 1, 0.8, 0)
 	end
 
+	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle TalentFrame" .. " ", 1, 1, 1, 0.6, 0.8, 1)
 	if GetNumTalentGroups() > 1 then
 		GameTooltip:AddDoubleLine(" ", K.RightButton.."Change Spec" .. " ", 1, 1, 1, 0.6, 0.8, 1)

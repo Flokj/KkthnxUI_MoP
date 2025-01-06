@@ -55,7 +55,7 @@ local function UpdateAllSlots()
 end
 
 local function isLowDurability()
-	for i = 1, 10 do
+	for i = 1, #localSlots do
 		if localSlots[i][3] < lowDurabilityCap then
 			return true
 		end
@@ -106,7 +106,8 @@ local function OnEvent(self, event, ...)
 		end
 	end
 
-	if isLow then
+	-- Show or hide the low durability warning based on the config setting
+	if isLow and C["Misc"].SlotDurabilityWarning then
 		Module:ShowLowDurabilityWarning()
 	else
 		Module:HideLowDurabilityWarning()
@@ -144,35 +145,6 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
-function Module:CreateDurabilityDataText()
-	if not C["Misc"].SlotDurability then return end
-
-	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
-
-	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
-	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, K.UnitColor)
-
-	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 0, -280)
-	DurabilityDataText.Text:SetFontObject(K.UIFont)
-	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 12, select(3, DurabilityDataText.Text:GetFont()))
-
-	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
-
-	for _, event in pairs(eventList) do
-		DurabilityDataText:RegisterEvent(event)
-	end
-
-	DurabilityDataText:SetScript("OnEvent", OnEvent)
-	DurabilityDataText:SetScript("OnEnter", OnEnter)
-	DurabilityDataText:SetScript("OnLeave", OnLeave)
-
-	-- Initial update
-	NewSetLevelFunction()
-
-	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
-end
-
 -- Create a frame for the low durability warning
 local lowDurabilityFrame = CreateFrame("Frame", "KKUI_DurabilityWarningFrame", UIParent)
 lowDurabilityFrame:SetSize(400, 100)
@@ -184,6 +156,10 @@ lowDurabilityFrame.text:SetPoint("CENTER", lowDurabilityFrame, "CENTER", 0, 0)
 
 -- Function to show the low durability warning
 function Module:ShowLowDurabilityWarning()
+	if not C["Misc"].SlotDurabilityWarning then
+		return
+	end
+
 	local lowestDurability = math_floor(localSlots[1][3] * 100)
 	lowDurabilityFrame.text:SetFormattedText("|A:services-icon-warning:16:16|a |cffff0000Low Durability!|r |cffffff00Please repair your gear.|r (|cff00ff00%d%%|r)", lowestDurability)
 	lowDurabilityFrame:Show()
@@ -218,5 +194,37 @@ end
 
 -- Function to hide the low durability warning
 function Module:HideLowDurabilityWarning()
+	if not C["Misc"].SlotDurabilityWarning then
+		return -- Ensure the feature respects the config setting
+	end
 	lowDurabilityFrame:Hide()
+end
+
+function Module:CreateDurabilityDataText()
+	if not C["Misc"].SlotDurability then return end
+
+	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
+
+	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
+	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, K.UnitColor)
+
+	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
+	DurabilityDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 0, -280)
+	DurabilityDataText.Text:SetFontObject(K.UIFont)
+	DurabilityDataText.Text:SetFont(select(1, DurabilityDataText.Text:GetFont()), 12, select(3, DurabilityDataText.Text:GetFont()))
+
+	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
+
+	for _, event in pairs(eventList) do
+		DurabilityDataText:RegisterEvent(event)
+	end
+
+	DurabilityDataText:SetScript("OnEvent", OnEvent)
+	DurabilityDataText:SetScript("OnEnter", OnEnter)
+	DurabilityDataText:SetScript("OnLeave", OnLeave)
+
+	-- Initial update
+	NewSetLevelFunction()
+
+	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end
