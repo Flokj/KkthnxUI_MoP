@@ -83,6 +83,9 @@ function Module:UpdateMapID()
 end
 
 function Module:SetupCoords()
+	if not C["WorldMap"].Coordinates then
+		return
+	end
 	local coordsFrame = CreateFrame("FRAME", nil, WorldMapFrame.ScrollContainer)
 	coordsFrame:SetSize(WorldMapFrame:GetWidth(), 17)
 	coordsFrame:SetPoint("BOTTOMLEFT", 17)
@@ -268,7 +271,7 @@ end
 
 function Module:OnEnable()
 	if not C["WorldMap"].SmallWorldMap then return end
-	if IsAddOnLoaded("Mapster") then return end
+	if IsAddOnLoaded("Leatrix_Maps") or IsAddOnLoaded("Mapster") then return end
 
 	-- Fix worldmap cursor when scaling
 	WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
@@ -321,9 +324,7 @@ function Module:OnEnable()
 	tinsert(UISpecialFrames, "WorldMapFrame")
 
 	self:MapPartyDots()
-	if C["WorldMap"].Coordinates then
-		self:SetupCoords()
-	end
+	self:SetupCoords()
 	self:MapFader()
 
 	self:CreateWowHeadLinks()
