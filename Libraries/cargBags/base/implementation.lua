@@ -21,6 +21,7 @@ local _, ns = ...
 local cargBags = ns.cargBags
 
 local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
+local GetContainerItemInfo = C_Container and C_Container.GetContainerItemInfo or GetContainerItemInfo
 
 --[[!
 	@class Implementation
@@ -33,10 +34,7 @@ Implementation.itemKeys = {}
 
 local toBagSlot = cargBags.ToBagSlot
 local PET_CAGE = 82800
-local MYTHIC_KEYSTONES = {
-	[180653] = true,
-	[187786] = true, -- Timewarped
-}
+local MYTHIC_KEYSTONE = 180653
 
 --[[!
 	Creates a new instance of the class
@@ -333,7 +331,7 @@ function Implementation:GetCustomItemInfo(bagID, slotID, i)
 	local texture, count, locked, quality, itemLink, noValue, itemID
 	local info = C_Container.GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice, i.bound = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue, info.isBound
 
 		--i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 
@@ -342,7 +340,7 @@ function Implementation:GetCustomItemInfo(bagID, slotID, i)
 		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		i.name, _, _, i.level, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = GetItemInfo(i.link)
+		i.name, _, _, i.level, i.minLevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if i.id == PET_CAGE then
@@ -352,7 +350,7 @@ function Implementation:GetCustomItemInfo(bagID, slotID, i)
 			i.level = tonumber(petLevel) or 0
 			i.classID = Enum.ItemClass.Miscellaneous
 			i.subClassID = Enum.ItemMiscellaneousSubclass.CompanionPet
-		elseif MYTHIC_KEYSTONES[i.id] then
+		elseif itemID == MYTHIC_KEYSTONE then
 			i.level, i.name = strmatch(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
 			i.level = tonumber(i.level) or 0
 		end

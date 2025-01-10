@@ -162,7 +162,7 @@ function Module:CreateBoss()
 	self.Debuffs.num = 4
 	self.Debuffs.iconsPerRow = 4
 
-	Module:UpdateAuraContainer(bossWidth - 32, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(bossWidth - 20, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.onlyShowPlayer = true --C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateIcon

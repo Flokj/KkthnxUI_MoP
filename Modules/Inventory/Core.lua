@@ -1,6 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Bags")
 
+local Unfit = K.LibUnfit
 local cargBags = K.cargBags
 
 local ceil = ceil
@@ -989,6 +990,16 @@ function Module:OnEnable()
 		self.iLvl:SetFontObject(K.UIFontOutline)
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
+		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPLEFT", 1, -2)
+		self.bindType:SetFontObject(K.UIFontOutline)
+		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
+
+		self.usableTexture = self:CreateTexture(nil, "ARTWORK")
+		self.usableTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.usableTexture:SetAllPoints(self)
+		self.usableTexture:SetVertexColor(1, 0, 0)
+		self.usableTexture:SetBlendMode("MOD")
+
 		if showNewItem and not self.glowFrame then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 			self.glowFrame:SetFrameLevel(self:GetFrameLevel() + 2)
@@ -1068,6 +1079,21 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdateButton(item)
+		if MerchantFrame:IsShown() then
+			if item.isInSet then
+				self:SetAlpha(0.5)
+			else
+				self:SetAlpha(1)
+			end
+		end
+
+		-- Determine if we can use that item or not?
+		if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
+			self.usableTexture:Show()
+		else
+			self.usableTexture:Hide()
+		end
+
 		if self.JunkIcon then
 			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
@@ -1089,6 +1115,16 @@ function Module:OnEnable()
 				local color = K.QualityColors[item.quality]
 				self.iLvl:SetText(level)
 				self.iLvl:SetTextColor(color.r, color.g, color.b)
+			end
+		end
+
+		self.bindType:SetText("")
+		if showBindOnEquip then
+			local BoE, BoU = item.bindType == 2, item.bindType == 3
+			if not item.bound and (BoE or BoU) then
+				local color = K.QualityColors[item.quality]
+				self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
+				self.bindType:SetTextColor(color.r, color.g, color.b)
 			end
 		end
 
