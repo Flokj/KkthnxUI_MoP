@@ -1,16 +1,15 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Tooltip")
 
 local strfind, format, strupper, strlen, pairs, unpack = string.find, string.format, string.upper, string.len, pairs, unpack
 local ICON_LIST = ICON_LIST
-local HIGHLIGHT_FONT_COLOR = HIGHLIGHT_FONT_COLOR
 local PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE = PVP, LEVEL, FACTION_HORDE, FACTION_ALLIANCE
 local YOU, TARGET, AFK, DND, DEAD, PLAYER_OFFLINE = YOU, TARGET, AFK, DND, DEAD, PLAYER_OFFLINE
 local FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL = FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
 local LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL = LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL
 local UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID = UnitIsPVP, UnitFactionGroup, UnitRealmRelationship, UnitGUID
 local UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction = UnitIsConnected, UnitIsDeadOrGhost, UnitIsAFK, UnitIsDND, UnitReaction
-local InCombatLockdown, IsShiftKeyDown, GetItemInfo = InCombatLockdown, IsShiftKeyDown, GetItemInfo
+local InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo = InCombatLockdown, IsShiftKeyDown, GetMouseFocus, GetItemInfo
 local GetCreatureDifficultyColor, UnitCreatureType, UnitClassification = GetCreatureDifficultyColor, UnitCreatureType, UnitClassification
 local UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel = UnitIsPlayer, UnitName, UnitPVPName, UnitClass, UnitRace, UnitLevel
 local GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild = GetRaidTargetIndex, UnitGroupRolesAssigned, GetGuildInfo, IsInGuild
@@ -39,13 +38,12 @@ function Module:GetUnit()
 		local mFocus = Module:GetMouseFocus()
 		unit = mFocus and (mFocus.unit or (mFocus.GetAttribute and mFocus:GetAttribute("unit")))
 	end
-
 	return unit
 end
 
-function Module:HideLines()
+function Module:UpdateFactionLine()
 	for i = 3, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft"..i]
+		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
@@ -71,8 +69,12 @@ function Module:HideLines()
 end
 
 function Module:GetLevelLine()
-	for i = 2, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft"..i]
+	for i = 5, self:NumLines() do
+		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
+		if not tiptext then
+			break
+		end
+		
 		local linetext = tiptext:GetText()
 		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
@@ -91,20 +93,23 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", 0, -5)
+		f:SetPoint("TOPRIGHT", -10, -10)
 		f:SetBlendMode("ADD")
-		f:SetScale(0.3)
+
 		self.factionFrame = f
 	end
-	self.factionFrame:SetTexture("Interface\\Timer\\"..faction.."-Logo")
-	self.factionFrame:SetAlpha(0.5)
+
+	if faction then
+		self.factionFrame:SetAtlas("MountJournalIcons-" .. faction, true)
+		self.factionFrame:Show()
+	end
 end
 
 function Module:OnTooltipCleared()
 	if self:IsForbidden() then return end
 
-	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
-		self.factionFrame:SetAlpha(0)
+	if self.factionFrame and self.factionFrame:IsShown() then
+		self.factionFrame:Hide()
 	end
 
 	GameTooltip_ClearMoney(self)
@@ -136,7 +141,7 @@ function Module:OnTooltipSetUnit()
 		return
 	end
 
-	Module.HideLines(self)
+	Module.UpdateFactionLine(self)
 
 	local unit = Module.GetUnit(self)
 	if not unit or not UnitExists(unit) then return end
@@ -164,8 +169,10 @@ function Module:OnTooltipSetUnit()
 		local status = (UnitIsAFK(unit) and AFK) or (UnitIsDND(unit) and DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
 		if status then
 			status = format(" |cffffcc00[%s]|r", status)
+		else
+			status = ""
 		end
-		GameTooltipTextLeft1:SetFormattedText("%s", name .. (status or ""))
+		GameTooltipTextLeft1:SetFormattedText("%s%s", name, status)
 
 		if C["Tooltip"].FactionIcon then
 			local faction = UnitFactionGroup(unit)
@@ -175,24 +182,26 @@ function Module:OnTooltipSetUnit()
 		end
 
 		if C["Tooltip"].LFDRole then
-			local unitColor
 			local unitRole = UnitGroupRolesAssigned(unit)
 			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (unitRole ~= "NONE") then
-				if unitRole == "HEALER" then
-					unitRole = HEALER
-					unitColor = "|cff00ff96" -- RGB: 0, 255, 150
-				elseif unitRole == "TANK" then
-					unitRole = TANK
-					unitColor = "|cff2850a0" -- RGB: 40, 80, 160
-				elseif unitRole == "DAMAGER" then
-					unitRole = DAMAGE
-					unitColor = "|cffc41f3b" -- RGB: 196, 31, 59
-				end
+				local roleColors = {
+					HEALER = "|cff00ff96", -- RGB: 0, 255, 150
+					TANK = "|cff2850a0", -- RGB: 40, 80, 160
+					DAMAGER = "|cffc41f3b", -- RGB: 196, 31, 59
+				}
+				local roleNames = {
+					HEALER = HEALER,
+					TANK = TANK,
+					DAMAGER = DAMAGE,
+				}
+				local unitColor = roleColors[unitRole]
+				local unitRoleName = roleNames[unitRole]
 
-				self:AddLine(ROLE .. ": " .. unitColor .. unitRole .. "|r")
+				if unitColor and unitRoleName then
+					self:AddLine(ROLE .. ": " .. unitColor .. unitRoleName .. "|r")
+				end
 			end
 		end
-
 		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
 		local hasText = GameTooltipTextLeft2:GetText()
 		if guildName and hasText then
@@ -200,7 +209,7 @@ function Module:OnTooltipSetUnit()
 			if IsInGuild() and guildName == myGuild and guildRealm == myGuildRealm then
 				GameTooltipTextLeft2:SetTextColor(0.25, 1, 0.25)
 			else
-				GameTooltipTextLeft2:SetTextColor(0.5, 0.7, 1)
+				GameTooltipTextLeft2:SetTextColor(0.6, 0.8, 1)
 			end
 
 			rankIndex = rankIndex + 1
@@ -211,6 +220,13 @@ function Module:OnTooltipSetUnit()
 			if guildRealm and isShiftKeyDown then
 				guildName = guildName .. "-" .. guildRealm
 			end
+
+			if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
+				if strlen(guildName) > 31 then
+					guildName = "..."
+				end
+			end
+
 			GameTooltipTextLeft2:SetText("<" .. guildName .. "> " .. rank .. "(" .. rankIndex .. ")")
 		end
 	end
@@ -223,6 +239,7 @@ function Module:OnTooltipSetUnit()
 		if ricon and ricon > 8 then
 			ricon = nil
 		end
+
 		ricon = ricon and ICON_LIST[ricon] .. "18|t " or ""
 		GameTooltipTextLeft1:SetFormattedText("%s%s%s", ricon, hexColor, text)
 	end
@@ -239,15 +256,16 @@ function Module:OnTooltipSetUnit()
 		local diff = GetCreatureDifficultyColor(level)
 		local classify = UnitClassification(unit)
 		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
+		local pvpFlag = isPlayer and UnitIsPVP(unit) and format(" |cffff0000%s|r", PVP) or ""
+		local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
+		local levelString = format("%s%s %s %s", textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
+
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
-			local reaction = UnitReaction(unit, "player")
-			local standingText = not isPlayer and reaction and hexColor.._G["FACTION_STANDING_LABEL"..reaction].."|r " or ""
-
-			local pvpFlag = isPlayer and UnitIsPVP(unit) and format(" |cffff0000%s|r", PVP) or ""
-			local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor..(UnitClass(unit) or "").."|r") or UnitCreatureType(unit) or ""
-
-			tiptextLevel:SetFormattedText(("%s%s %s %s"), textLevel, pvpFlag, standingText..unitClass, (not alive and "|cffCCCCCC"..DEAD.."|r" or ""))
+			tiptextLevel:SetText(levelString)
+		else
+			GameTooltipTextLeft3:SetText(levelString) -- need fix
+			--GameTooltip:AddLine(levelString)
 		end
 	end
 
@@ -264,7 +282,9 @@ function Module:OnTooltipSetUnit()
 		local guid = UnitGUID(unit)
 		local npcID = guid and K.GetNPCID(guid)
 		if npcID then
-			self:AddLine(format(npcIDstring, "NpcID:", npcID))
+			local reaction = UnitReaction(unit, "player")
+			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
+			self:AddLine(format(npcIDstring, standingText or "", npcID))
 		end
 	end
 
@@ -272,11 +292,15 @@ function Module:OnTooltipSetUnit()
 		Module.InspectUnitItemLevel(self, unit)
 	end
 
-	self.StatusBar:SetStatusBarColor(r, g, b)
+	if self.StatusBar then
+		self.StatusBar:SetStatusBarColor(r, g, b)
+	end
 end
 
-function Module:StatusBar_OnValueChanged(value)
-	if self:IsForbidden() or not value then return end
+function Module:RefreshStatusBar(value)
+	if self:IsForbidden() or not value then
+		return
+	end
 
 	local min, max = self:GetMinMaxValues()
 	if (value < min) or (value > max) then return end
@@ -311,8 +335,8 @@ function Module:GameTooltip_ShowStatusBar()
 		bar:StripTextures()
 		bar:CreateBorder()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	
-		bar.isStyled = true
+
+		bar.styled = true
 	end
 end
 
@@ -326,7 +350,7 @@ function Module:GameTooltip_ShowProgressBar()
 		bar.Bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		bar.Bar:CreateBorder()
 
-		bar.isStyled = true
+		bar.styled = true
 	end
 end
 
@@ -431,11 +455,15 @@ function Module:ReskinTooltip()
 end
 
 function Module:FixRecipeItemNameWidth()
+	if not self.GetName then
+		return
+	end
+
 	local name = self:GetName()
 	for i = 1, self:NumLines() do
 		local line = _G[name .. "TextLeft" .. i]
-		if line:GetHeight() > 40 then
-			line:SetWidth(line:GetWidth() + 1)
+		if line and line:GetHeight() > 40 then
+			line:SetWidth(line:GetWidth() + 2)
 		end
 	end
 end
@@ -452,11 +480,12 @@ function Module:OnEnable()
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
 	GameTooltip:HookScript("OnTooltipSetUnit", Module.OnTooltipSetUnit)
-	GameTooltip.StatusBar:SetScript("OnValueChanged", Module.StatusBar_OnValueChanged)
+	GameTooltip.StatusBar:SetScript("OnValueChanged", Module.RefreshStatusBar)
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
+
 	GameTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	EmbeddedItemTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
@@ -483,14 +512,9 @@ end
 -- Tooltip Skin Registration
 local tipTable = {}
 function Module:RegisterTooltips(addon, func)
-	if not C["Tooltip"].Enable then return end
-
 	tipTable[addon] = func
 end
-
 local function addonStyled(_, addon)
-	if not C["Tooltip"].Enable then return end
-
 	if tipTable[addon] then
 		tipTable[addon]()
 		tipTable[addon] = nil
@@ -499,8 +523,6 @@ end
 K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
-	if not C["Tooltip"].Enable then return end
-
 	local tooltips = {
 		_G.ChatMenu,
 		_G.EmoteMenu,
@@ -521,7 +543,6 @@ Module:RegisterTooltips("KkthnxUI", function()
 		_G.IMECandidatesFrame,
 		_G.QueueStatusFrame,
 	}
-
 	for _, f in pairs(tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
@@ -529,13 +550,14 @@ Module:RegisterTooltips("KkthnxUI", function()
 	_G.ItemRefCloseButton:SkinCloseButton()
 
 	-- DropdownMenu
+	local dropdowns = { "DropDownList", "L_DropDownList", "Lib_DropDownList" }
 	local function reskinDropdown()
-		for _, name in pairs({ "DropDownList", "L_DropDownList", "Lib_DropDownList" }) do
+		for _, name in pairs(dropdowns) do
 			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
 				local menu = _G[name .. i .. "MenuBackdrop"]
-				if menu and not menu.isStyled then
+				if menu and not menu.styled then
 					menu:HookScript("OnShow", Module.ReskinTooltip)
-					menu.isStyled = true
+					menu.styled = true
 				end
 			end
 		end

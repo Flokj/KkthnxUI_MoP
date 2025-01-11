@@ -12,7 +12,6 @@ local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
 local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
 local GetItemInfo = GetItemInfo
 local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame
@@ -81,9 +80,9 @@ local QuestCheckSubDomain = (setmetatable({
 	end,
 }))[K.Client]
 
-local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/quest="
-local QuestCheckComplete = "|TInterfaceRaidFrameReadyCheck-Ready:14:14:-1:-1|t"
-local QuestCheckIncomplete = "|TInterfaceRaidFrameReadyCheck-NotReady:14:14:-1:-1|t"
+local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/classic/quest="
+local QuestCheckComplete = "|A:common-icon-checkmark:14:14|a "
+local QuestCheckIncomplete = "|A:common-icon-redx:14:14|a "
 local function CheckQuestStatus(questid)
 	questid = tonumber(questid)
 
@@ -120,18 +119,6 @@ local function DeleteQuestItems()
 	_G.print("Please manually delete the listed quest items.")
 end
 
-local function DeleteHeirlooms()
-	for bag = 0, 4 do
-		for slot = 1, C_Container.GetContainerNumSlots(bag) do
-			local item = { C_Container.GetContainerItemInfo(bag, slot) }
-			if item[4] == 7 then -- Heirloom items
-				_G.print("Heirloom Item to Delete: " .. item[1] .. " in Bag: " .. bag .. " Slot: " .. slot)
-			end
-		end
-	end
-	_G.print("Please manually delete the listed heirloom items.")
-end
-
 local function ResetInstance()
 	_G.ResetInstances()
 end
@@ -159,25 +146,31 @@ local function ClearChat(cmd)
 end
 
 local function AbandonAllQuests()
-	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		C_QuestLog.SetSelectedQuest(C_QuestLog.GetInfo(i).questID)
-		C_QuestLog.SetAbandonQuest()
-		C_QuestLog.AbandonQuest()
+	-- Check if the player is in combat
+	if InCombatLockdown() then
+		print("|cFFFF0000[Quest Log]|r Cannot abandon quests while in combat.")
+		return
 	end
-	print("All quests have been abandoned.")
-end
 
-local function AbandonZoneQuests()
-	local zoneName = GetZoneText()
-	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
-		local info = C_QuestLog.GetInfo(i)
-		if info and not info.isHeader and info.zoneOrSort == zoneName then
-			C_QuestLog.SetSelectedQuest(C_QuestLog.GetInfo(i).questID)
-			C_QuestLog.SetAbandonQuest()
-			C_QuestLog.AbandonQuest()
+	local totalQuests = GetNumQuestLogEntries()
+	local abandonedCount = 0
+
+	if totalQuests == 0 then
+		print("|cFFFFD700[Quest Log]|r No quests found in your quest log.")
+		return
+	end
+
+	for i = totalQuests, 1, -1 do
+		local title, _, _, isHeader = GetQuestLogTitle(i)
+		if not isHeader and title then
+			SelectQuestLogEntry(i)
+			SetAbandonQuest()
+			AbandonQuest()
+			abandonedCount = abandonedCount + 1
 		end
 	end
-	print("All quests in " .. zoneName .. " have been abandoned.")
+
+	print("|cFFFFD700[Quest Log]|r " .. abandonedCount .. " quest(s) have been abandoned.")
 end
 
 local function StoreAndDisableAddons()
@@ -260,6 +253,7 @@ local function CreateCommandWindow()
 		_G.KKUICommandWindow:Show() -- Show the window if it already exists
 		return
 	end
+
 	local frame = CreateFrame("Frame", "KKUICommandWindow", UIParent)
 	frame:SetSize(650, 500) -- Width, Height
 	frame:SetPoint("CENTER") -- Position at the center of the screen
@@ -269,35 +263,39 @@ local function CreateCommandWindow()
 	frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
 	-- Title Text
 	frame.title = frame:CreateFontString(nil, "OVERLAY")
 	frame.title:SetFontObject("GameFontHighlightLarge")
 	frame.title:SetPoint("TOP", frame, "TOP", 0, -8)
 	frame.title:SetText(K.InfoColor .. "Commands List|r") -- Blue color title
+
 	local frameLogo = frame:CreateTexture(nil, "OVERLAY")
 	frameLogo:SetSize(512, 256)
 	frameLogo:SetBlendMode("ADD")
 	frameLogo:SetAlpha(0.07)
 	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
+
 	-- Scroll Frame
 	local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetSize(594, 440)
 	scrollFrame:SetPoint("CENTER")
+
 	-- Scroll Child Frame
 	local scrollChild = CreateFrame("Frame")
 	scrollChild:SetSize(594, 440)
 	scrollFrame:SetScrollChild(scrollChild)
 	scrollFrame.ScrollBar:SkinScrollBar()
+
 	-- List of commands and descriptions
 	local commandsList = {
 		{ "KkthnxUI Commands", "" }, -- Section title
 		{ "/kk allquests", "Abandons all active quests." },
-		{ "/kk checkqueststatus [questid]", "Checks the completion status of a quest." },
+		{ "/kk checkquest [questid]", "Checks the completion status of a quest." },
 		{ "/kk clearchat [all]", "Clears the chat for the current window or all windows." },
 		{ "/kk clearcombatlog", "Clears the combat log." },
 		{ "/kk debug [on/off]", "Toggles debug mode for disabling/enabling addons." },
-		{ "/kk deleteheirlooms", "Lists all heirloom items for manual deletion." },
 		{ "/kk deletequestitems", "Lists all quest items for manual deletion." },
 		{ "/kk gmticket", "Opens the GM ticket window." },
 		{ "/kk gui", "Opens the KkthnxUI settings window." },
@@ -305,7 +303,6 @@ local function CreateCommandWindow()
 		{ "/kk readycheck", "Initiates a ready check." },
 		{ "/kk resetinstance", "Resets the current instance." },
 		{ "/kk volume [value]", "Sets the master volume level (0 to 1)." },
-		{ "/kk zonequests", "Abandons all quests from the current zone." },
 		{ "General Commands", "" }, -- Section title
 		{ "/debufftrack", "Opens the debuff tracking interface to manage and track debuffs in PvE and PvP." },
 		{ "/getfont", "Prints the font name, size, and flags of a specified global font object." },
@@ -324,14 +321,17 @@ local function CreateCommandWindow()
 		{ "/rl", "Shortcut to reload the user interface quickly." },
 		{ "/way [x] [y]", "Create a custom waypoint with the specified coordinates." },
 	}
+
 	-- Start positioning for the text
 	local yOffset = -10
+
 	for _, cmd in ipairs(commandsList) do
 		-- Create the font string for command text
 		local commandText = scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		commandText:SetPoint("TOPLEFT", 0, yOffset)
 		commandText:SetWidth(594)
 		commandText:SetJustifyH("LEFT")
+
 		-- Check if the current entry is a section title or a command
 		if cmd[2] == "" then
 			-- Section title (larger font, different color)
@@ -342,17 +342,22 @@ local function CreateCommandWindow()
 			commandText:SetFontObject("GameFontHighlight")
 			commandText:SetText(K.InfoColor .. cmd[1] .. "|r - " .. K.SystemColor .. cmd[2] .. "|r")
 		end
+
 		-- Adjust the yOffset for the next line
 		yOffset = yOffset - 26
 	end
+
 	frame:Hide() -- Hide by default
+
 	-- Close Button
 	frame.closeButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
 	frame.closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
 	frame.closeButton:SkinCloseButton()
+
 	-- Store the frame for future use
 	_G.KKUICommandWindow = frame
 end
+
 -- Open Command Window with /kkhelp
 local function OpenCommandWindow()
 	CreateCommandWindow()
@@ -365,17 +370,17 @@ local commandMap = {
 	gui = ToggleGUI,
 	volume = SetVolume,
 	readycheck = DoReadyCheckCommand,
-	checkqueststatus = CheckQuestStatus,
+	rc = DoReadyCheckCommand,
+	checkquest = CheckQuestStatus,
+	cq = CheckQuestStatus,
 	gmticket = ToggleHelpFrame,
 	deletequestitems = DeleteQuestItems,
-	deleteheirlooms = DeleteHeirlooms,
 	resetinstance = ResetInstance,
 	keybindframe = KeybindFrame,
 	clearcombatlog = ClearCombatLog,
 	clearchat = ClearChat,
 	debug = DebugMode,
 	allquests = AbandonAllQuests,
-	zonequests = AbandonZoneQuests,
 	help = OpenCommandWindow,
 	-- Add more commands as needed...
 }
