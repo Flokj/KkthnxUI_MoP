@@ -72,12 +72,6 @@ local function addTitle(text)
 	end
 end
 
-local function OnShiftDown()
-	if Module.Entered then
-		Module:OnEnter()
-	end
-end
-
 function Module:OnEnter()
 	Module.Entered = true
 
@@ -129,19 +123,30 @@ function Module:OnEnter()
 		end
 	end
 
+	if GameTooltip:NumLines() > 0 then
+		GameTooltip:AddLine(" ")
+	end
+
+	local dailyReset = C_DateAndTime.GetSecondsUntilDailyReset()
+	if dailyReset then
+		GameTooltip:AddDoubleLine("Daily Reset", SecondsToTime(dailyReset), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
+	end
+
+	local weeklyReset = C_DateAndTime.GetSecondsUntilWeeklyReset()
+	if weeklyReset then
+		GameTooltip:AddDoubleLine(format("%s %s", WEEKLY, RESET), SecondsToTime(weeklyReset), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
+	end
+
 	-- Help Info
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
 	GameTooltip:AddLine(K.RightButton .. TIMEMANAGER_SHOW_STOPWATCH)
 	GameTooltip:Show()
-
-	K:RegisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
 local function OnLeave()
 	Module.Entered = true
 	K.HideTooltip()
-	K:UnregisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
 local function OnMouseUp(_, btn)

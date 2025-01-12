@@ -69,7 +69,7 @@ function Module:UpdateFactionLine()
 end
 
 function Module:GetLevelLine()
-	for i = 5, self:NumLines() do
+	for i = 2, self:NumLines() do
 		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
 		if not tiptext then
 			break
