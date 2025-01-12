@@ -264,7 +264,7 @@ function Module:OnTooltipSetUnit()
 		if tiptextLevel then
 			tiptextLevel:SetText(levelString)
 		else
-			GameTooltipTextLeft3:SetText(levelString) -- need fix
+			GameTooltipTextLeft3:SetText(levelString) -- need fix (ru)
 			--GameTooltip:AddLine(levelString)
 		end
 	end

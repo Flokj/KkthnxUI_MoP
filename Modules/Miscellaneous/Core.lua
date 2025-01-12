@@ -263,6 +263,10 @@ function Module:CreateGUIGameMenuButton()
 
 	GameMenuFrame:HookScript("OnShow", function(self)
 		GameMenuButtonLogout:SetPoint("TOP", gameMenuButton, "BOTTOM", 0, -21)
+		GameMenuButtonStore:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -6)
+		GameMenuButtonMacros:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -6)
+		GameMenuButtonAddons:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -6)
+		GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -6)
 		self:SetHeight(self:GetHeight() + gameMenuButton:GetHeight() + 22)
 		if self:GetScale() ~= 1.2 then
 			self:SetScale(1.2)
