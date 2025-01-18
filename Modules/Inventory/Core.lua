@@ -1,7 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Bags")
 
-local Unfit = K.LibUnfit
 local cargBags = K.cargBags
 
 local ceil = ceil
@@ -994,12 +993,6 @@ function Module:OnEnable()
 		self.bindType:SetFontObject(K.UIFontOutline)
 		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
-		self.usableTexture = self:CreateTexture(nil, "ARTWORK")
-		self.usableTexture:SetTexture(C["Media"].Textures.White8x8Texture)
-		self.usableTexture:SetAllPoints(self)
-		self.usableTexture:SetVertexColor(1, 0, 0)
-		self.usableTexture:SetBlendMode("MOD")
-
 		if showNewItem and not self.glowFrame then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 			self.glowFrame:SetFrameLevel(self:GetFrameLevel() + 2)
@@ -1085,13 +1078,6 @@ function Module:OnEnable()
 			else
 				self:SetAlpha(1)
 			end
-		end
-
-		-- Determine if we can use that item or not?
-		if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
-			self.usableTexture:Show()
-		else
-			self.usableTexture:Hide()
 		end
 
 		if self.JunkIcon then

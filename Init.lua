@@ -82,7 +82,6 @@ K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true) or nil
 K.LibRangeCheck = LibStub("LibRangeCheck-3.0-KkthnxUI", true) or nil
 K.LibSerialize = LibStub("LibSerialize-KkthnxUI", true) or nil
 K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true) or nil
-K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI", true) or nil
 K.cargBags = Engine and Engine.cargBags or nil
 K.oUF = Engine and Engine.oUF or nil
 
