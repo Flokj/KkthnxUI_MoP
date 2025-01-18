@@ -218,11 +218,6 @@ function Module:CreatePlayer()
 
 		Module:ToggleCastBarLatency(self)
 
-		local stage = K.CreateFontString(Castbar, 20)
-		stage:ClearAllPoints()
-		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
-		Castbar.stageString = stage
-
 		Castbar.decimal = "%.2f"
 
 		Castbar.Time = timer
@@ -246,16 +241,14 @@ function Module:CreatePlayer()
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(Health)
 
-		local normalTexture = K.GetTexture(C["General"].Texture)
-
 		local myBar = frame:CreateTexture(nil, "BORDER", nil, 5)
 		myBar:SetWidth(1)
-		myBar:SetTexture(normalTexture)
+		myBar:SetTexture(HealPredictionTexture)
 		myBar:SetVertexColor(0, 1, 0, 0.5)
 
 		local otherBar = frame:CreateTexture(nil, "BORDER", nil, 5)
 		otherBar:SetWidth(1)
-		otherBar:SetTexture(normalTexture)
+		otherBar:SetTexture(HealPredictionTexture)
 		otherBar:SetVertexColor(0, 1, 1, 0.5)
 
 		self.HealPredictionAndAbsorb = {

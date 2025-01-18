@@ -167,6 +167,7 @@ C["Inventory"] = {
 	BagBar = true,
 	BagBarMouseover = false,
 	BagBarSize = 32,
+	BagsBindOnEquip = false,
 	BagsItemLevel = true,
 	BagsPerRow = 8,
 	BagsWidth = 12,

@@ -521,10 +521,12 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "AutoSell", L["Auto Vendor Grays"])
 
 	Window:CreateSection("Bags")
+	Window:CreateSwitch("Inventory", "BagsBindOnEquip", newFeatureIcon .. L["Display Bind Status"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
 	Window:CreateSwitch("Inventory", "ReverseSort", L["Reverse the Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
+	Window:CreateSwitch("Inventory", "SpecialBagsColor", "Color Special Bags", "Color Special Bags:|n- |cffabda74Hunter's Quiver or Ammo Pouch|r|n- |cff8787edWarlock's Soul Pouch|r|n- |cffc800c8Enchanting Mageweave Pouch|r|n- |cff008000Herbalist's Herb Pouch|r")
 	Window:CreateSlider("Inventory", "BagsPerRow", L["Bags Per Row"], 1, 20, 1, nil, updateBagAnchor)
 
 	Window:CreateSection(BANK)

@@ -856,8 +856,8 @@ function Module:OnEnable()
 	-- Settings
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
+	local showBindOnEquip = C["Inventory"].BagsBindOnEquip
 	local showNewItem = C["Inventory"].ShowNewItem
-	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")
 
 	-- Init
@@ -1135,9 +1135,9 @@ function Module:OnEnable()
 		if C["Inventory"].SpecialBagsColor then
 			local bagType = Module.BagsType[item.bagId]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
-			self:SetBackdropColor(unpack(color))
+			self.KKUI_Background:SetVertexColor(unpack(color))
 		else
-			self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
+			self.KKUI_Background:SetVertexColor(1, 1, 1, 1)
 		end
 
 		-- Hide empty tooltip

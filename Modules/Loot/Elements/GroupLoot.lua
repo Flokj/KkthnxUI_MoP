@@ -42,8 +42,7 @@ local function SetTip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
 	GameTooltip:AddLine(button.tiptext)
 
-	local rollID = button.parent.rollID
-	local rolls = rollID and cachedRolls[rollID] and cachedRolls[rollID][button.rolltype]
+	local rolls = button.parent.rolls[button.rolltype]
 	if rolls then
 		for _, rollerInfo in next, rolls do
 			local playerName, className = unpack(rollerInfo)
