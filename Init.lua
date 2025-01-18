@@ -72,6 +72,7 @@ Engine[3] = {} -- L, Localization
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
+K.LibShowUIPanel = LibStub("LibShowUIPanel-1.0-KkthnxUI", true) or nil
 K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
@@ -121,8 +122,15 @@ K.GreyColor = "|CFFC0C0C0" -- Soft gray
 K.InfoColor = "|CFF5C8BCF" -- Soft blue
 K.InfoColorTint = "|CFF93BAFF" -- Softened tint
 K.SystemColor = "|CFFFFCC66" -- Soft gold
+-- Additional Soft Colors
+K.WhiteColor = "|CFFEFEFEF" -- Soft white
+K.RedColor = "|CFFFF7F7F" -- Soft red
+K.GreenColor = "|CFF7FFF7F" -- Soft green
+K.BlueColor = "|CFF7F7FFF" -- Soft blue
+K.YellowColor = "|CFFFFFF7F" -- Soft yellow
+K.OrangeColor = "|CFFFFBF7F" -- Soft orange
+K.PurpleColor = "|CFFBF7FBF" -- Soft purple
 
--- Media Info
 -- Media Info
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"

@@ -427,7 +427,11 @@ C["Misc"] = {
 }
 
 C["Nameplate"] = {
-	AKSProgress = false,
+	ColorByDot = false, -- This is not ready
+	DotColor = { 1, 0.5, 0.2 },
+	DotSpellList = {
+		Spells = {},
+	},
 	AuraSize = 30,
 	CastTarget = false,
 	ClassIcon = false,
@@ -581,7 +585,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	AllTextScale = 1.1, -- Testing
+	AllTextScale = 1.1,
 	AdditionalPower = false,
 	AutoAttack = true,
 	CastClassColor = true,

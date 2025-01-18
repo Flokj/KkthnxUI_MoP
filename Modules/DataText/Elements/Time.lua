@@ -86,8 +86,8 @@ function Module:OnEnter()
 	local w, m, d, y = today.weekday, today.month, today.monthDay, today.year
 	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(L["Local Time"], GameTime_GetLocalTime(true), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
-	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
+	GameTooltip:AddDoubleLine(L["Local Time"], GameTime_GetLocalTime(true), nil, nil, nil, 0.75, 0.75, 0.75)
+	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 0.75, 0.75, 0.75)
 
 	-- Herioc/Mythic Dungeons
 	title = false
@@ -98,7 +98,7 @@ function Module:OnEnter()
 			if extended then
 				r, g, b = 0.3, 1, 0.3
 			else
-				r, g, b = 192 / 255, 192 / 255, 192 / 255
+				r, g, b = 0.75, 0.75, 0.75
 			end
 
 			GameTooltip:AddDoubleLine(name .. " - " .. maxPlayers .. " " .. PLAYER .. " (" .. diffName .. ") (" .. encounterProgress .. "/" .. numEncounters .. ")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
@@ -114,7 +114,7 @@ function Module:OnEnter()
 			if extended then
 				r, g, b = 0.3, 1, 0.3
 			else
-				r, g, b = 192 / 255, 192 / 255, 192 / 255
+				r, g, b = 0.75, 0.75, 0.75
 			end
 
 			local progressColor = (numEncounters == encounterProgress) and "ff0000" or "00ff00"
@@ -123,23 +123,21 @@ function Module:OnEnter()
 		end
 	end
 
-	if GameTooltip:NumLines() > 0 then
-		GameTooltip:AddLine(" ")
-	end
-
+	title = false
+	addTitle("Reset Times")
 	local dailyReset = C_DateAndTime.GetSecondsUntilDailyReset()
 	if dailyReset then
-		GameTooltip:AddDoubleLine("Daily Reset", SecondsToTime(dailyReset), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
+		GameTooltip:AddDoubleLine("Daily Reset", SecondsToTime(dailyReset), 1, 1, 1, 0.75, 0.75, 0.75)
 	end
 
 	local weeklyReset = C_DateAndTime.GetSecondsUntilWeeklyReset()
 	if weeklyReset then
-		GameTooltip:AddDoubleLine(format("%s %s", WEEKLY, RESET), SecondsToTime(weeklyReset), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
+		GameTooltip:AddDoubleLine(format("%s %s", WEEKLY, RESET), SecondsToTime(weeklyReset), 1, 1, 1, 0.75, 0.75, 0.75)
 	end
 
 	-- Help Info
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
+	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CLOCK)
 	GameTooltip:AddLine(K.RightButton .. TIMEMANAGER_SHOW_STOPWATCH)
 	GameTooltip:Show()
 end

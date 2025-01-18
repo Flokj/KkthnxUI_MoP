@@ -263,9 +263,15 @@ function Module:OnTooltipSetUnit()
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
 			tiptextLevel:SetText(levelString)
-		else
-			GameTooltipTextLeft3:SetText(levelString) -- need fix (ru)
-			--GameTooltip:AddLine(levelString)
+		--[[else
+			if isPlayer then -- we need something for the "ru" version(only for player)
+				local hasText3 = GameTooltipTextLeft3:GetText()
+				if hasText3 then
+					GameTooltipTextLeft3:SetText(levelString)
+				else
+					GameTooltipTextLeft2:SetText(levelString) 
+				end
+			end]]
 		end
 	end
 

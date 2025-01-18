@@ -66,7 +66,7 @@ function Module:UpdatePlateCVars()
 		namePlateMinScale = C["Nameplate"].MinScale,
 		namePlateMaxScale = C["Nameplate"].MinScale,
 		nameplateMinAlpha = C["Nameplate"].MinAlpha,
-		nameplateMaxAlpha = C["Nameplate"].MinAlpha,		
+		nameplateMaxAlpha = C["Nameplate"].MinAlpha,
 		nameplateOverlapV = C["Nameplate"].VerticalSpacing,
 		nameplateNotSelectedAlpha = 1,
 		nameplateShowOnlyNames =  0,
@@ -123,10 +123,14 @@ function Module:SetupCVars()
 end
 
 function Module:BlockAddons()
-	if not DBM or not DBM.Nameplate then return end
+	if not _G.DBM or not _G.DBM.Nameplate then
+		return
+	end
 
 	if DBM.Options then
+		DBM.Options.DontShowNameplateIcons = true
 		DBM.Options.DontShowNameplateIconsCD = true
+		DBM.Options.DontShowNameplateIconsCast = true
 	end
 
 	local function showAurasForDBM(_, _, _, spellID)
@@ -135,7 +139,7 @@ function Module:BlockAddons()
 			C.NameplateWhiteList[spellID] = true
 		end
 	end
-	hooksecurefunc(DBM.Nameplate, "Show", showAurasForDBM)
+	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
 end
 
 function Module:CreateUnitTable()
@@ -222,6 +226,7 @@ function Module:UpdateColor(_, unit)
 	local revertThreat = C["Nameplate"].DPSRevertThreat
 	local secureColor = C["Nameplate"].SecureColor
 	local transColor = C["Nameplate"].TransColor
+	local dotColor = C["Nameplate"].DotColor
 
 	local executeRatio = C["Nameplate"].ExecuteRatio
 	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + 0.0001) * 100
@@ -234,6 +239,8 @@ function Module:UpdateColor(_, unit)
 			r, g, b = targetColor[1], targetColor[2], targetColor[3]
 		elseif isCustomUnit then
 			r, g, b = customColor[1], customColor[2], customColor[3]
+		elseif self.Auras.hasTheDot then
+			r, g, b = dotColor[1], dotColor[2], dotColor[3]
 		elseif isPlayer and isFriendly then
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
@@ -488,7 +495,7 @@ function Module:UpdateQuestUnit(_, unit)
 end
 
 function Module:UpdateForQuestie(npcID)
-	local data = _QuestieTooltips.lookupByKey and _QuestieTooltips.lookupByKey["m_"..npcID]
+	local data = _QuestieTooltips.lookupByKey and _QuestieTooltips.lookupByKey["m_" .. npcID]
 	if data then
 		local foundObjective, progressText
 		for _, tooltip in pairs(data) do
@@ -863,6 +870,7 @@ function Module:CreatePlates()
 	self.Auras.showStealableBuffs = true
 	self.Auras.PostCreateIcon = Module.PostCreateIcon
 	self.Auras.PostUpdateIcon = Module.PostUpdateIcon
+	self.Auras.PostUpdateInfo = Module.AurasPostUpdateInfo
 
 	Module:CreateThreatColor(self)
 
@@ -924,33 +932,12 @@ function Module:UpdateNameplateAuras()
 end
 
 function Module:UpdateNameplateSize()
-	-- local plateHeight = C["Nameplate"].PlateHeight
-	-- local nameTextSize = C["Nameplate"].NameTextSize
-	-- local iconSize = plateHeight * 2 + 3
-
-	-- self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
-
-	-- self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
 	if self.plateType == "NameOnly" then
 		self:Tag(self.nameText, "[nprare][color][name] [nplevel]")
 		self.npcTitle:UpdateTag()
 	else
 		self:Tag(self.nameText, "[nprare][name]")
 	end
-
-	-- self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
-	-- self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
-
-	-- self.Castbar.Icon:SetSize(iconSize, iconSize)
-	-- self.Castbar:SetHeight(plateHeight)
-	-- self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
-	-- self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize-1, "")
-	-- self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "RIGHT", 0, 5)
-	-- self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "LEFT", 0, 5)
-	-- self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
- 
-	-- self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
-	-- self.healthValue:UpdateTag()
 
 	self.nameText:UpdateTag()
 end
@@ -1088,9 +1075,8 @@ function Module:PostUpdatePlates(event, unit)
 	if event ~= "NAME_PLATE_UNIT_REMOVED" then
 		Module.UpdateUnitPower(self)
 		Module.UpdateTargetChange(self)
-		--Module.UpdateQuestUnit(self, event, unit)
-		Module.UpdateQuestIndicator(self)
 		Module.UpdateUnitClassify(self, unit)
+		Module.UpdateQuestIndicator(self)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
 
