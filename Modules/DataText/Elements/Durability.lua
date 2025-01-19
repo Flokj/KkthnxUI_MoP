@@ -81,7 +81,7 @@ local eventList = {
 	"PLAYER_AVG_ITEM_LEVEL_UPDATE",
 }
 
-local function OnEvent(self, event, ...)
+local function OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		DurabilityDataText:UnregisterEvent(event)
 		-- Stop animation when zoning in to prevent stuck animations
@@ -107,7 +107,7 @@ local function OnEvent(self, event, ...)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), K.GreyColor .. "Dur")
+			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), K.GreyColor .. DURABILITY)
 		else
 			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
