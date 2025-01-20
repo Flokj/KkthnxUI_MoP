@@ -292,7 +292,7 @@ function Module:CreateDurabilityFrameMove()
 	durabilityHolder:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -40, -50)
 
 	-- Create a mover for the new frame
-	K.Mover(durabilityHolder, "DurabilityFrameMover", "Durability Frame", { "TOPLEFT", Minimap, "BOTTOMLEFT", -40, -50 })
+	K.Mover(durabilityHolder, "DurabilityFrameMover", "Durability Frame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 470, 50 })
 
 	-- Reanchor the DurabilityFrame to the new frame
 	DurabilityFrame:ClearAllPoints()
