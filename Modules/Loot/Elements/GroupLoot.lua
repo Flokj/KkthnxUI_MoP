@@ -42,12 +42,13 @@ local function SetTip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
 	GameTooltip:AddLine(button.tiptext)
 
-	local rolls = button.parent.rolls[button.rolltype]
+	local rollID = button.parent.rollID
+	local rolls = rollID and cachedRolls[rollID] and cachedRolls[rollID][button.rolltype]
 	if rolls then
 		for _, rollerInfo in next, rolls do
 			local playerName, className = unpack(rollerInfo)
-			local r, g, b = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
-			GameTooltip:AddLine(playerName, r, g, b)
+			local classColor = K.ClassColors[K.ClassList[className] or className] or K.ClassColors["PRIEST"]
+			GameTooltip:AddLine(playerName, classColor.r, classColor.g, classColor.b)
 		end
 	end
 
