@@ -8,7 +8,7 @@ local LE_ITEM_CLASS_CONSUMABLE, LE_ITEM_CLASS_ITEM_ENHANCEMENT = LE_ITEM_CLASS_C
 local LE_ITEM_CLASS_WEAPON, LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_TRADEGOODS = LE_ITEM_CLASS_WEAPON, LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_TRADEGOODS
 local AmmoEquipLoc = _G.INVTYPE_AMMO
 
--- Custom filter for consumable
+-- Custom filter lists
 local CustomFilterList = {
 	[12450] = true, -- Juju Flurry
 	[12451] = true, -- Juju Power
@@ -34,7 +34,6 @@ local function isCustomFilter(item)
 	return CustomFilterList[item.id]
 end
 
--- Default filter
 local function isItemInBag(item)
 	return item.bagId >= 0 and item.bagId <= 4
 end
@@ -54,7 +53,7 @@ local function isItemEquipSet(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterEquipSet then return end
 
-	return item.isInSet
+	return item.isItemSet
 end
 
 local function isItemAmmo(item)

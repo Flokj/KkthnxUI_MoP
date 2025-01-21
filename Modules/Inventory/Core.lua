@@ -1243,7 +1243,7 @@ function Module:OnEnable()
 		elseif name:match("Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif name:match("EquipSet$") then
-			label = L["Equipement Set"]
+			label = "Equipement Set"
 		elseif name == "BankLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif name:match("Consumable$") then
