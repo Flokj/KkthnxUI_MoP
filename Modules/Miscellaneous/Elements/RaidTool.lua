@@ -480,6 +480,19 @@ function Module:RaidTool_CreateMenu(parent)
 	parent.buttons = bu
 end
 
+local iconTexture = {
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_6",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_4",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
+	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+	"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
+}
+local maxButtons = #iconTexture
+
 function Module:RaidTool_EasyMarker()
 	if not C["Misc"].EasyMarking then return end
 	local menuList = {}
@@ -548,6 +561,73 @@ function Module:RaidTool_EasyMarker()
 	end)
 end
 
+function Module:RaidTool_WorldMarker()
+	local frame = CreateFrame("Frame", "KKUI_WorldMarkers", UIParent)
+	frame:SetPoint("RIGHT", -100, 0)
+	K.CreateMoverFrame(frame, nil, true)
+	K.RestoreMoverFrame(frame)
+	frame:CreateBorder()
+	frame.buttons = {}
+
+	for i = 1, maxButtons do
+		local button = CreateFrame("Button", nil, frame, "SecureActionButtonTemplate")
+		button:SetSize(24, 24)
+		button.Icon = button:CreateTexture(nil, "ARTWORK")
+		button.Icon:SetAllPoints()
+		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.Icon:SetTexture(iconTexture[i])
+		button:SetHighlightTexture(iconTexture[i])
+		button:SetPushedTexture(iconTexture[i])
+
+		if i ~= maxButtons then
+			button:RegisterForClicks("AnyDown")
+			button:SetAttribute("type", "macro")
+			button:SetAttribute("macrotext1", format("/wm %d", i))
+			button:SetAttribute("macrotext2", format("/cwm %d", i))
+		else
+			button:SetScript("OnClick", ClearRaidMarker)
+		end
+		frame.buttons[i] = button
+	end
+
+	Module:RaidTool_UpdateGrid()
+end
+
+local markerTypeToRow = {
+	[1] = 3,
+	[2] = 9,
+	[3] = 1,
+	[4] = 3,
+}
+
+function Module:RaidTool_UpdateGrid()
+	local frame = _G["KKUI_WorldMarkers"]
+	if not frame then return end
+
+	local size, margin = C["Misc"].MarkerBarSize, 6
+	local showType = C["Misc"].ShowMarkerBar.Value
+	local perRow = markerTypeToRow[showType]
+
+	for i = 1, maxButtons do
+		local button = frame.buttons[i]
+		button:SetSize(size, size)
+		button:ClearAllPoints()
+		if i == 1 then
+			button:SetPoint("TOPLEFT", frame, margin, -margin)
+		elseif mod(i - 1, perRow) == 0 then
+			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
+		else
+			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
+		end
+	end
+
+	local column = min(maxButtons, perRow)
+	local rows = ceil(maxButtons / perRow)
+	frame:SetWidth(column * size + (column - 1) * margin + 2 * margin)
+	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * margin)
+	frame:SetShown(showType ~= 4)
+end
+
 function Module:RaidTool_Misc()
 	-- UIWidget reanchor
 	if not UIWidgetTopCenterContainerFrame:IsMovable() then -- can be movable for some addons, eg BattleInfo
@@ -567,6 +647,7 @@ function Module:RaidTool_Init()
 	Module:RaidTool_CreateMenu(frame)
 
 	Module:RaidTool_EasyMarker()
+	Module:RaidTool_WorldMarker()
 	Module:RaidTool_Misc()
 end
 Module:RegisterMisc("RaidTool", Module.RaidTool_Init)
