@@ -190,7 +190,7 @@ function Module.PostCreateIcon(element, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
 
-	button.count = button.count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+	button.count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
