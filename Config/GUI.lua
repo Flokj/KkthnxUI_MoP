@@ -189,84 +189,120 @@ local function UpdateInterruptAlert()
 end
 
 local function UpdateUnitPlayerSize()
-	local width = C["Unitframe"].PlayerHealthWidth
-	local healthHeight = C["Unitframe"].PlayerHealthHeight
-	local powerHeight = C["Unitframe"].PlayerPowerHeight
-	local height = healthHeight + powerHeight + 6
+	-- Retrieve dimensions from config, ensuring they are not nil
+	local width = C["Unitframe"].PlayerHealthWidth or 190 -- Default width
+	local healthHeight = C["Unitframe"].PlayerHealthHeight or 36 -- Default health height
+	local powerHeight = C["Unitframe"].PlayerPowerHeight or 16 -- Default power height
+	local gap = 6 -- Gap between health and power bars
+
+	-- Calculate total height
+	local height = healthHeight + powerHeight + gap
 
 	if not _G.oUF_Player then
 		return
 	end
 
-	_G.oUF_Player:SetSize(width, height)
-	_G.oUF_Player.Health:SetHeight(healthHeight)
-	_G.oUF_Player.Power:SetHeight(powerHeight)
+	-- Only update if dimensions have changed to improve performance
+	if _G.oUF_Player:GetWidth() ~= width or _G.oUF_Player:GetHeight() ~= height then
+		_G.oUF_Player:SetSize(width, height)
+		_G.oUF_Player.Health:SetHeight(healthHeight)
+		_G.oUF_Player.Power:SetHeight(powerHeight)
+	end
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if _G.KKUI_PlayerPortrait then
-			_G.KKUI_PlayerPortrait:SetSize(healthHeight + powerHeight + 6, healthHeight + powerHeight + 6)
-		end
+	-- Update portrait if it's not set to 'NoPortraits'
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and _G.KKUI_PlayerPortrait then
+		local portraitSize = height -- Use height for square portraits
+		-- Adjust size if necessary, considering different portrait styles might require different sizing logic
+		_G.KKUI_PlayerPortrait:SetSize(portraitSize, portraitSize)
 	end
 end
 
 local function UpdateUnitTargetSize()
-	local width = C["Unitframe"].TargetHealthWidth
-	local healthHeight = C["Unitframe"].TargetHealthHeight
-	local powerHeight = C["Unitframe"].TargetPowerHeight
-	local height = healthHeight + powerHeight + 6
+	-- Retrieve dimensions from config, ensuring they are not nil
+	local width = C["Unitframe"].TargetHealthWidth or 190 -- Default width
+	local healthHeight = C["Unitframe"].TargetHealthHeight or 36 -- Default health height
+	local powerHeight = C["Unitframe"].TargetPowerHeight or 16 -- Default power height
+	local gap = 6 -- Gap between health and power bars
+
+	-- Calculate total height
+	local height = healthHeight + powerHeight + gap
 
 	if not _G.oUF_Target then
 		return
 	end
 
-	_G.oUF_Target:SetSize(width, height)
-	_G.oUF_Target.Health:SetHeight(healthHeight)
-	_G.oUF_Target.Power:SetHeight(powerHeight)
+	-- Only update if dimensions have changed to improve performance
+	if _G.oUF_Target:GetWidth() ~= width or _G.oUF_Target:GetHeight() ~= height then
+		_G.oUF_Target:SetSize(width, height)
+		_G.oUF_Target.Health:SetHeight(healthHeight)
+		_G.oUF_Target.Power:SetHeight(powerHeight)
+	end
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if _G.KKUI_TargetPortrait then
-			_G.KKUI_TargetPortrait:SetSize(healthHeight + powerHeight + 6, healthHeight + powerHeight + 6)
-		end
+	-- Update portrait if it's not set to 'NoPortraits'
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and _G.KKUI_TargetPortrait then
+		local portraitSize = height -- Use height for square portraits
+		-- Adjust size if necessary, considering different portrait styles might require different sizing logic
+		_G.KKUI_TargetPortrait:SetSize(portraitSize, portraitSize)
 	end
 end
 
 local function UpdateUnitFocusSize()
-	local width = C["Unitframe"].FocusHealthWidth
-	local healthHeight = C["Unitframe"].FocusHealthHeight
-	local powerHeight = C["Unitframe"].FocusPowerHeight
-	local height = healthHeight + powerHeight + 6
+	-- Retrieve dimensions from config, ensuring they are not nil
+	local width = C["Unitframe"].FocusHealthWidth or 150 -- Default width
+	local healthHeight = C["Unitframe"].FocusHealthHeight or 28 -- Default health height
+	local powerHeight = C["Unitframe"].FocusPowerHeight or 12 -- Default power height
+	local gap = 6 -- Gap between health and power bars
+
+	-- Calculate total height
+	local height = healthHeight + powerHeight + gap
 
 	if not _G.oUF_Focus then
 		return
 	end
 
-	_G.oUF_Focus:SetSize(width, height)
-	_G.oUF_Focus.Health:SetHeight(healthHeight)
-	_G.oUF_Focus.Power:SetHeight(powerHeight)
+	-- Only update if dimensions have changed to improve performance
+	if _G.oUF_Focus:GetWidth() ~= width or _G.oUF_Focus:GetHeight() ~= height then
+		_G.oUF_Focus:SetSize(width, height)
+		_G.oUF_Focus.Health:SetHeight(healthHeight)
+		_G.oUF_Focus.Power:SetHeight(powerHeight)
+	end
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if _G.KKUI_FocusPortrait then
-			_G.KKUI_FocusPortrait:SetSize(healthHeight + powerHeight + 6, healthHeight + powerHeight + 6)
-		end
+	-- Update portrait if it's not set to 'NoPortraits'
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and _G.KKUI_FocusPortrait then
+		local portraitSize = height -- Use height for square portraits
+		-- Adjust size if necessary, considering different portrait styles might require different sizing logic
+		_G.KKUI_FocusPortrait:SetSize(portraitSize, portraitSize)
 	end
 end
 
 local function UpdateUnitPartySize()
-	local width = C["Party"].HealthWidth
-	local healthHeight = C["Party"].HealthHeight
-	local powerHeight = C["Party"].PowerHeight
-	local height = healthHeight + powerHeight + 6
+	-- Retrieve dimensions from config, ensuring they are not nil
+	local width = C["Party"].HealthWidth or 150 -- Default width
+	local healthHeight = C["Party"].HealthHeight or 22 -- Default health height
+	local powerHeight = C["Party"].PowerHeight or 12 -- Default power height
+	local gap = 6 -- Gap between health and power bars
+
+	-- Calculate total height
+	local height = healthHeight + powerHeight + gap
 
 	for i = 1, _G.MAX_PARTY_MEMBERS do
 		local bu = _G["oUF_PartyUnitButton" .. i]
 		if bu then
-			bu:SetSize(width, height)
-			bu.Health:SetHeight(healthHeight)
-			bu.Power:SetHeight(powerHeight)
+			-- Only update if dimensions have changed to improve performance
+			if bu:GetWidth() ~= width or bu:GetHeight() ~= height then
+				bu:SetSize(width, height)
+				bu.Health:SetHeight(healthHeight)
+				bu.Power:SetHeight(powerHeight)
+			end
 
+			-- Update portrait for each party member if not 'NoPortraits'
 			if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-				if _G.KKUI_PartyPortrait then
-					_G.KKUI_PartyPortrait:SetSize(healthHeight + powerHeight + 6, healthHeight + powerHeight + 6)
+				-- Note: This assumes there's a unique portrait for each party member.
+				-- If not, you might need to adjust this to reference the correct portrait per member.
+				local portrait = _G["KKUI_PartyPortrait" .. i]
+				if portrait then
+					local portraitSize = height -- Use height for square portraits
+					portrait:SetSize(portraitSize, portraitSize)
 				end
 			end
 		end
@@ -274,17 +310,24 @@ local function UpdateUnitPartySize()
 end
 
 local function UpdateUnitRaidSize()
-	local width = C["Raid"].Width
-	local healthHeight = C["Raid"].Height
+	-- Retrieve dimensions from config, ensuring they are not nil
+	local width = C["Raid"].Width or 70 -- Default width
+	local healthHeight = C["Raid"].Height or 44 -- Default height
 	local height = healthHeight
 
-	for i = 1, _G.MAX_RAID_MEMBERS do
-		if InCombatLockdown() then return end
+	-- Check if we're in combat to avoid protected frame errors
+	if InCombatLockdown() then
+		return
+	end
 
+	for i = 1, _G.MAX_RAID_MEMBERS do
 		local bu = _G["oUF_Raid" .. i .. "UnitButton" .. i]
 		if bu then
-			bu:SetSize(width, height)
-			bu.Health:SetHeight(healthHeight)
+			-- Only update if dimensions have changed to improve performance
+			if bu:GetWidth() ~= width or bu:GetHeight() ~= height then
+				bu:SetSize(width, height)
+				bu.Health:SetHeight(healthHeight)
+			end
 		end
 	end
 end
@@ -433,7 +476,7 @@ local ActionBar = function(self)
 	end
 
 	Window:CreateSection("ActionBar Vehicle")
-	Window:CreateSlider("ActionBar", "VehButtonSize", "Button Size", 20, 80, 1, nil, UpdateActionBarVehicleButton)	
+	Window:CreateSlider("ActionBar", "VehButtonSize", "Button Size", 20, 80, 1, nil, UpdateActionBarVehicleButton)
 
 	Window:CreateSection("Toggles")
 	Window:CreateSwitch("ActionBar", "EquipColor", "Equip Color", nil, UpdateActionbarHotkeys)
@@ -458,7 +501,6 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "BarFadeCasting", "Fade While Casting", "Keeps the bars visible while casting or channeling spells.")
 	Window:CreateSwitch("ActionBar", "BarFadeHealth", "Fade on Full Health", "Fades the bars when the player is at full health.")
 	Window:CreateSwitch("ActionBar", "BarFadeVehicle", "Fade in Vehicle", "Fades the bars while in a vehicle UI.")
-
 end
 
 local Announcements = function(self)
@@ -557,6 +599,7 @@ local Inventory = function(self)
 	Window:CreateSection("Bag Bar")
 	Window:CreateSwitch("Inventory", "BagBar", enableTextColor .. L["Enable Bagbar"])
 	Window:CreateSwitch("Inventory", "JustBackpack", "Just Show Main Backpack")
+	Window:CreateSwitch("Inventory", "BagBarMouseover", "Show Bag Bar On Mouseover")
 	Window:CreateSlider("Inventory", "BagBarSize", "BagBar Size", 20, 34, 1)
 	Window:CreateDropdown("Inventory", "GrowthDirection", "Growth Direction")
 	Window:CreateDropdown("Inventory", "SortDirection", "Sort Direction")
@@ -636,6 +679,7 @@ local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection(GENERAL)
+	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
 	Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
 	Window:CreateSwitch("DataText", "Gold", L["Enable Currency Info"])
 	Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
@@ -644,7 +688,6 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "Spec", "Enable Specialization Info")
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
-	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
 
 	-- Section: Icon Colors
 	Window:CreateSection("Icon Colors")
@@ -718,12 +761,11 @@ local Minimap = function(self)
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor .. L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
-	
+
 	-- Features Section
 	Window:CreateSection("Features")
 	Window:CreateSwitch("Minimap", "EasyVolume", newFeatureIcon .. L["EasyVolume"], L["EasyVolumeTip"])
 	Window:CreateSwitch("Minimap", "MailPulse", newFeatureIcon .. L["Pulse Minimap Mail"])
-	--Window:CreateSwitch("Minimap", "QueueStatusText", newFeatureIcon .. L["QueueStatus"])
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
 
 	-- Recycle Bin Section
@@ -815,10 +857,10 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "HostileCC", L["Show Hostile ClassColor"])
 	Window:CreateSwitch("Nameplate", "InsideView", L["Interacted Nameplate Stay Inside"])
 	Window:CreateSwitch("Nameplate", "NameOnly", L["Show Only Names For Friendly"])
-	Window:CreateSwitch("Nameplate", "NameplateClassPower", L["Target Nameplate ClassPower"])
+	Window:CreateSwitch("Nameplate", "NameplateClassPower", "Show Nameplate Class Power")
 	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, refreshNameplates)
 	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, refreshNameplates)
-	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "Target Indicator Texture") -- Needs Locale
+	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture") -- Needs Locale
 	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], UpdateCustomUnitList)
 	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], UpdatePowerUnitList)
 
@@ -940,7 +982,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "CastClassColor", L["Class Color Castbars"])
 	Window:CreateSwitch("Unitframe", "CastReactionColor", L["Reaction Color Castbars"])
 	Window:CreateSwitch("Unitframe", "ClassResources", L["Show Class Resources"])
-	--Window:CreateSwitch("Unitframe", "CombatFade", L["Fade Unitframes"])
+	-- Window:CreateSwitch("Unitframe", "CombatFade", L["Fade Unitframes"]) -- Broken. Portraits do not obey? Blizzard issue?
 	Window:CreateSwitch("Unitframe", "DebuffHighlight", L["Show Health Debuff Highlight"])
 	Window:CreateSwitch("Unitframe", "PvPIndicator", L["Show PvP Indicator on Player / Target"])
 	Window:CreateSwitch("Unitframe", "Range", "Fade Unitframes When NOT In Unit Range")
@@ -974,7 +1016,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "OffOnTop", "Offhand timer on top")
 	Window:CreateSlider("Unitframe", "SwingWidth", "Unitframe SwingBar Width", 50, 1000, 1)
 	Window:CreateSlider("Unitframe", "SwingHeight", "Unitframe SwingBar Height", 1, 50, 1)
-	
+
 	Window:CreateSlider("Unitframe", "PlayerBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdatePlayerBuffs)
 	Window:CreateSlider("Unitframe", "PlayerDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdatePlayerDebuffs)
 	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, UpdateUnitPlayerSize)
