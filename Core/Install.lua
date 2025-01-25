@@ -558,8 +558,7 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\UI-EJ-BOSS-Ragnaros")
-
+	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Deathwing")
 	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
