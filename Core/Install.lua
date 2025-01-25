@@ -229,11 +229,11 @@ function Module:ForceChatSettings()
 	-- Configure ChatFrame2 (Combat Log)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, true)
-	FCF_SetWindowName(ChatFrame2, L["Combat"])
+	FCF_SetWindowName(ChatFrame2, GUILD_BANK_LOG)
 	ChatFrame2:Show()
 
 	-- Configure Whispers Window
-	local Whispers = FCF_OpenNewWindow("Whispers")
+	local Whispers = FCF_OpenNewWindow(WHISPER)
 	FCF_SetLocked(Whispers, true)
 	FCF_DockFrame(Whispers)
 	ChatFrame_RemoveAllMessageGroups(Whispers)
@@ -242,7 +242,7 @@ function Module:ForceChatSettings()
 	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
 
 	-- Configure Trade Window
-	local Trade = FCF_OpenNewWindow(L["Trade"])
+	local Trade = FCF_OpenNewWindow(TRADE)
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
 	ChatFrame_RemoveAllMessageGroups(Trade)
@@ -251,7 +251,7 @@ function Module:ForceChatSettings()
 	ChatFrame_AddChannel(Trade, L["Services"])
 
 	-- Configure Loot Window
-	local Loot = FCF_OpenNewWindow(L["Loot"])
+	local Loot = FCF_OpenNewWindow(LOOT)
 	FCF_SetLocked(Loot, true)
 	FCF_DockFrame(Loot)
 	ChatFrame_RemoveAllMessageGroups(Loot)
@@ -547,9 +547,7 @@ local function HelloWorld()
 	welcome:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(welcome)
 	welcome:CreateBorder()
-	K.CreateFontString(welcome, 30, K.Title, "", false, "TOPLEFT", 10, 28)
-	K.CreateFontString(welcome, 14, K.Version, "", true, "TOPLEFT", 154, 16)
-	K.CreateFontString(welcome, 16, "Help Info", "", true, "TOP", 0, -10)
+	K.CreateFontString(welcome, 16, "Installer Info", "", true, "TOP", 0, -10)
 
 	local welcomeLogo = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeLogo:SetSize(512, 256)
@@ -560,7 +558,8 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Deathwing")
+	welcomeBoss:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\UI-EJ-BOSS-Ragnaros")
+
 	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
@@ -578,7 +577,7 @@ local function HelloWorld()
 	K.CreateFontString(welcome, 13, "onto the information and functionality, while still keeping", "", false, "TOP", 0, -106)
 	K.CreateFontString(welcome, 13, "most of the good looks. It can be used for any class or role.", "", false, "TOP", 0, -126)
 
-	K.CreateFontString(welcome, 16, "|cff669dffJoin The Community!|r", "", false, "TOP", 0, -160)
+	K.CreateFontString(welcome, 16, "|cff5C8BCFJoin The Community!|r", "", false, "TOP", 0, -160)
 	K.CreateFontString(welcome, 13, "There are thousands of users, but most are content", "", false, "TOP", 0, -180)
 
 	K.CreateFontString(welcome, 13, "to simply download and use the interface without further", "", false, "TOP", 0, -200)
@@ -598,7 +597,7 @@ local function HelloWorld()
 
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff5C8BCFKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
 	K.CreateFontString(welcome, 13, "please take a minute to go through the tutorial!", "", false, "BOTTOM", 0, 110)
-	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)
+	K.CreateFontString(welcome, 13, "if you need help for commands type /kk help", "", false, "BOTTOM", 0, 90)
 
 	if KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or K.isDeveloper then
 		local close = CreateFrame("Button", nil, welcome)
@@ -629,10 +628,12 @@ local function HelloWorld()
 	goSkip:SetPoint("BOTTOM", 58, 10)
 	goSkip:SetSize(110, 22)
 	goSkip:SkinButton()
+
 	goSkip.text = goSkip:CreateFontString(nil, "OVERLAY")
 	goSkip.text:SetFontObject(K.UIFont)
 	goSkip.text:SetPoint("CENTER", 0, -1)
-	goSkip.text:SetText(K.MyClassColor .. RENOWN_LEVEL_UP_SKIP_BUTTON .. "|r")
+	goSkip.text:SetText(K.MyClassColor .. "Skip" .. "|r")
+
 	goSkip:SetScript("OnClick", function()
 		Module:ForceDefaultCVars()
 		ForceRaidFrame()
@@ -646,12 +647,14 @@ local function HelloWorld()
 		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or true
 		ReloadUI()
 	end)
+
 	goSkip:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText("Skip Installer", 1, 0.82, 0) -- Gold color for title
 		GameTooltip:AddLine("This will skip the installer and quickly apply the default settings for this character.", 1, 1, 1, true) -- White text with line break
 		GameTooltip:Show()
 	end)
+
 	goSkip:SetScript("OnLeave", function(self)
 		GameTooltip:Hide()
 	end)
