@@ -165,13 +165,6 @@ local function RebuildMicroMenu()
 	end
 end
 
--- Handles CVAR updates
-local function HandleCVARUpdate(event, cvarName)
-	if cvarName == "useClassicGuildUI" then
-		RebuildMicroMenu()
-	end
-end
-
 -- Main function to create the micro menu
 function Module:CreateMicroMenu()
 	if not C["ActionBar"].MicroMenu then
@@ -208,7 +201,4 @@ function Module:CreateMicroMenu()
 			PVPMicroButtonTexture:SetPoint("TOPLEFT", PVPMicroButton, "TOPLEFT", -2, -3)
 		end
 	end)
-
-	-- Hook into CVAR updates to rebuild the menu dynamically
-	K:RegisterEvent("CVAR_UPDATE", HandleCVARUpdate)
 end
