@@ -127,11 +127,11 @@ function Module:CreateTargetOfTarget()
 
 	local Debuffs = CreateFrame("Frame", nil, self)
 	Debuffs.spacing = 6
-	Debuffs.initialAnchor = "BOTTOMRIGHT"
-	Debuffs["growth-x"] = "LEFT"
-	Debuffs["growth-y"] = "UP"
-	Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "BOTTOMLEFT", 0, -8)
-	Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "BOTTOMRIGHT", 0, -8)
+	Debuffs.initialAnchor = "BOTTOMLEFT"
+	Debuffs["growth-x"] = "RIGHT"
+	Debuffs["growth-y"] = "DOWN"
+	Debuffs:SetPoint("BOTTOMLEFT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "TOPLEFT", 0, 16)
+	Debuffs:SetPoint("BOTTOMRIGHT", C["Unitframe"].HideTargetOfTargetName and Health or Name, "TOPRIGHT", 0, 16)
 	Debuffs.num = 3
 	Debuffs.iconsPerRow = 3
 
