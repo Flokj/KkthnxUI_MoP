@@ -751,7 +751,7 @@ local Loot = function(self)
 
 	Window:CreateSection("Auto-Confirm")
 	Window:CreateSwitch("Loot", "AutoConfirmLoot", L["Auto Confirm Loot Dialogs"])
-	--Window:CreateSwitch("Loot", "AutoGreed", L["Auto Greed Green Items"])
+	Window:CreateSwitch("Loot", "AutoGreed", L["Auto Greed Green Items"])
 end
 
 local Minimap = function(self)

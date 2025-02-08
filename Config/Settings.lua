@@ -616,7 +616,7 @@ C["Unitframe"] = {
 	PlayerHealthWidth = 190,
 	PlayerPowerHeight = 16,
 
-	PvPIndicator = false,
+	PvPIndicator = true,
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
@@ -692,7 +692,7 @@ C["Unitframe"] = {
 			["Default Portraits"] = "DefaultPortraits",
 			["No Portraits"] = "NoPortraits",
 		},
-		Value = "NoPortraits",
+		Value = "ThreeDPortraits",
 	},
 }
 

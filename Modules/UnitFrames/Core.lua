@@ -615,7 +615,7 @@ function Module:CreateUnits()
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
 			TargetOfTarget:SetSize(C["Unitframe"].TargetTargetHealthWidth, C["Unitframe"].TargetTargetHealthHeight)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 16, 22 }, TargetOfTarget:GetWidth(), TargetOfTarget:GetHeight())
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -7 }, TargetOfTarget:GetWidth(), TargetOfTarget:GetHeight())
 		end
 
 		-- Spawn Pet Frame
