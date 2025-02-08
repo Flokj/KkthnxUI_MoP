@@ -248,7 +248,8 @@ function Module:CreateFocus()
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		self.PvPIndicator:SetSize(30, 33)
+		self.PvPIndicator:SetSize(32, 36)
+		self.PvPIndicator:SetAlpha(0.9)
 		if focusPortraitStyle ~= "NoPortraits" and focusPortraitStyle ~= "OverlayPortrait" then
 			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
 		else

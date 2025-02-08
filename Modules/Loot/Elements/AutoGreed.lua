@@ -1,29 +1,25 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Loot")
 
--- Sourced: ShestakUI (Wetxius, Shestak)
-
-local GetItemInfo = GetItemInfo
 local GetLootRollItemInfo = GetLootRollItemInfo
-local GetLootRollItemLink = GetLootRollItemLink
 local RollOnLoot = RollOnLoot
 
-local function SetupAutoGreed(_, _, id)
-	local _, _, _, quality, BoP, _, _, canDisenchant = GetLootRollItemInfo(id)
-	if id and quality == 2 and not BoP then
-		local link = GetLootRollItemLink(id)
-		local _, _, _, ilevel = GetItemInfo(link)
-		if canDisenchant and ilevel > 270 then
-			RollOnLoot(id, 3)
+local function SetupAutoGreed(_, _, rollID)
+	local _, _, _, quality, _, _, _, canDisenchant = GetLootRollItemInfo(rollID)
+	if quality == 2 then -- Quality 2 is Green (Uncommon)
+		if canDisenchant then
+			RollOnLoot(rollID, 3) -- Disenchant
 		else
-			RollOnLoot(id, 2)
+			RollOnLoot(rollID, 2) -- Greed
 		end
 	end
 end
 
 function Module:CreateAutoGreed()
-	local maxLevel = GetMaxLevelForExpansionLevel(GetExpansionLevel())
-	if not C["Loot"].AutoGreed or K.Level ~= maxLevel then return end
+	if not C["Loot"].AutoGreed then return end
+
+	-- Classic WoW has a max level of 85, so we use that directly
+	if K.Level ~= 85 then return end
 
 	K:RegisterEvent("START_LOOT_ROLL", SetupAutoGreed)
 end
