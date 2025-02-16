@@ -535,6 +535,7 @@ function Module:OnEnable()
 		"CreateCopyChat",
 		"CreateCopyURL",
 		"CreateEmojis",
+		"EnableClassColorNames",
 		"CreateChatbar",
 		"ToggleLanguageFilter",
 	}

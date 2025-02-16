@@ -242,6 +242,7 @@ C["Chat"] = {
 	ConfigButton = true,
 	CopyButton = true,
 	Emojis = false,
+	ClassColorNames = true,
 	Enable = true,
 	Fading = true,
 	FadingTimeVisible = 100,

@@ -68,6 +68,7 @@ function Module:UpdateFactionLine()
 	end
 end
 
+local ruLEVEL = "уров"
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
 		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
@@ -76,7 +77,7 @@ function Module:GetLevelLine()
 		end
 		
 		local linetext = tiptext:GetText()
-		if linetext and strfind(linetext, LEVEL) then
+		if linetext and strfind(linetext, ruLEVEL or LEVEL) then
 			return tiptext
 		end
 	end
@@ -263,15 +264,6 @@ function Module:OnTooltipSetUnit()
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
 			tiptextLevel:SetText(levelString)
-		--[[else
-			if isPlayer then -- we need something for the "ru" version(only for player)
-				local hasText3 = GameTooltipTextLeft3:GetText()
-				if hasText3 then
-					GameTooltipTextLeft3:SetText(levelString)
-				else
-					GameTooltipTextLeft2:SetText(levelString) 
-				end
-			end]]
 		end
 	end
 

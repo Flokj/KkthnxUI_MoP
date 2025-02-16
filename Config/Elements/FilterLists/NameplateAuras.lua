@@ -1,7 +1,7 @@
 local C = KkthnxUI[2]
 
 C.NameplateWhiteList = {
-	-- Boss/T12
+	-- T12
     [99497]  = true, -- [Beth'tilac] Frenzy @Boss
     [100634] = true, -- [Beth'tilac] Consume @Add
     [99296]  = true, -- [Ragnaros] Meteor Knockable
@@ -15,9 +15,29 @@ C.NameplateWhiteList = {
     [100656] = true, -- [Shannox] Feeding Frenzy
     [100167] = true, -- [Shannox] Wary
     [99837]  = true, -- [Shannox] Crystal Trap
-    --[34976] = true, -- Eyes flag
-    --[70338] = true, -- Necrotic Plague
-    --[72148] = true, -- Enrage (dublicate warrior enrage by spell name)
+
+    -- T13
+    [103846]  = true,
+    [104894]  = true,
+    [105027]  = true,
+    [104896]  = true,
+    [104897]  = true,
+    [104898]  = true,
+    [104901]  = true,
+    [104900]  = true,
+    [103968]  = true,
+    [105904]  = true,
+
+    -- Taunt
+    [355]  = true,
+    [62124]  = true,
+    [31789]  = true,
+    [6795]  = true,
+    [5209]  = true,
+    [56222]  = true,
+    [49576]  = true,
+
+    --[104897]  = true,
 
     --[29703] = true, -- Dazed(-50% move.speed/%.s)
 

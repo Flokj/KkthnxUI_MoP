@@ -7,7 +7,6 @@
    <Script file="Emojis.lua" />
    <Script file="MapReveal.lua" />
    <Script file="NameplateAuras.lua" />
-   <Script file="RaidUtilityBuffs.lua" />
    <Script file="SpellReminders.lua" />
    <Script file="UnitframeAuras.lua" />
 </Ui>
