@@ -22,7 +22,6 @@ local chatEvents = {
     "CHAT_MSG_WHISPER",
     "CHAT_MSG_WHISPER_INFORM",
     "CHAT_MSG_YELL",
-    "CHAT_MSG_SYSTEM",
 }
 
 -- Функция окрашивания имени игрока в цвет его класса
@@ -40,9 +39,21 @@ local function OnChatMessage(self, event, msg, author, ...)
     -- Окрашивание имени отправителя
     local coloredAuthor = ColorizeName(author)
 
-    -- Окрашивание имен в самом тексте сообщения
+    -- Сохраняем ссылки на ачивки без изменений
+    local achievements = {}
+    msg = msg:gsub("(|Hachievement:%d+:[^|]+|h.-|h)", function(link)
+        table.insert(achievements, link)
+        return "\x01" .. #achievements
+    end)
+
+    -- Окрашивание имен в оставшемся тексте
     msg = gsub(msg, "([%a%dА-Яа-яЁё]+)", function(word)
         return ColorizeName(word) or word
+    end)
+
+    -- Восстанавливаем ссылки на ачивки
+    msg = msg:gsub("\x01(%d+)", function(index)
+        return achievements[tonumber(index)]
     end)
 
     return false, msg, coloredAuthor, ...
