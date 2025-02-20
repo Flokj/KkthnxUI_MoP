@@ -61,8 +61,8 @@ end
 
 -- Функция подключения фильтра сообщений
 function Module:EnableClassColorNames()
-	if not C["Chat"].ClassColorNames then return	end
-	
+    if not C["Chat"].ClassColorNames then return end
+
     for _, event in ipairs(chatEvents) do
         ChatFrame_AddMessageEventFilter(event, OnChatMessage)
     end

@@ -367,6 +367,7 @@ function Module:OnEnable()
 	Module.movers = {}
 	local loadActionBarModules = {
 		"CreateBars",
+		"CreateExtrabar",
 		"CreateLeaveVehicle",
 		"CreatePetbar",
 		"CreateStancebar",

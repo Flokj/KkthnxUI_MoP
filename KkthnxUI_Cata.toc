@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 40402
 ## Name: KkthnxUI
 ## Title: |TInterface\AddOns\KkthnxUI\Media\KkthnxUI_Spell_Icon:16:16:0:0:512:512:70:442:40:472|t |cff5C8BCFKkthnxUI|r
 ## Notes: Enhances the game's user interface (UI) by providing a clean,|nminimalist design and a range of customizable features.|n|n|cff5C8BCFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/KkthnxTV|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
