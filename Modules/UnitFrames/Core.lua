@@ -307,7 +307,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, debuffType, _, _
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif (isStealable or (element.alwaysShowStealable and dispellType[debuffType])) and not UnitIsPlayer(unit) and not button.isDebuff then
+		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and (not button.isDebuff) then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true

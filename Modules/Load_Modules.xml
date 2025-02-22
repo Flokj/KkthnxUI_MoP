@@ -31,7 +31,6 @@
    <Script file="Chat\Elements\URL.lua" />
    <Script file="Chat\Elements\ChatBars.lua" />
    <Script file="Chat\Elements\RealLinks.lua" />
-   <Script file="Chat\Elements\ClassColorNames.lua" />
    <!-- Inventory -->
    <Script file="Inventory\Elements\SortBags.lua" />
    <Script file="Inventory\Core.lua" />

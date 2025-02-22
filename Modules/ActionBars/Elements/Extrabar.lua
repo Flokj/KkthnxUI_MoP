@@ -1,16 +1,9 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
--- Cache global references
 local _G = _G
-local CreateFrame = _G.CreateFrame
-local UIParent = _G.UIParent
-local tinsert = _G.table.insert
-local RegisterStateDriver = _G.RegisterStateDriver
-local hooksecurefunc = _G.hooksecurefunc
-local IsUsableAction = _G.IsUsableAction
-
-local padding = 0
+local tinsert = tinsert
+local padding = 2
 
 function Module:CreateExtrabar()
 	local buttonList = {}
@@ -20,7 +13,7 @@ function Module:CreateExtrabar()
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
-	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 294, 100 })
+	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", -200, 120 })
 
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraActionBarFrame:ClearAllPoints()
@@ -43,10 +36,7 @@ function Module:CreateExtrabar()
 
 	-- Extra button range, needs review
 	hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
-		if not self.action then
-			return
-		end
-
+		if not self.action then return end
 		if checksRange and not inRange then
 			self.icon:SetVertexColor(0.8, 0.1, 0.1)
 		else
