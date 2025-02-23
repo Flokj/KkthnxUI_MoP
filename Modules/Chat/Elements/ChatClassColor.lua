@@ -95,6 +95,31 @@ function Module:ClassFilter(message)
 	return rebuiltString
 end
 
+function Module:UpdateBubbleColor()
+	if not C["Chat"].ChatClassColor then return end
+
+	local backdrop = self.backdrop
+	local str = backdrop and backdrop.String
+	local text = str and str:GetText()
+	local rebuiltString = text and Module:ClassFilter(text)
+
+	if rebuiltString then
+		str:SetText(RemoveExtraSpaces(rebuiltString))
+	end
+end
+
+function Module:HookBubble(frame, backdrop)
+	if frame.isHooked then return end
+
+	if not frame.backdrop then
+		frame.backdrop = backdrop
+		frame:HookScript("OnShow", Module.UpdateBubbleColor)
+		Module.UpdateBubbleColor(frame)
+	end
+
+	frame.isHooked = true
+end
+
 function Module:UpdateChatColor(event, msg, ...)
 	msg = Module:ClassFilter(msg) or msg
 	return false, msg, ...

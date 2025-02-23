@@ -1,4 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
+local Module = K:GetModule("Chat")
+
 local table_insert = table.insert
 local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 
@@ -39,6 +41,15 @@ end
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].ChatBubbles then return end
 
+	local function findChatBubble()
+		for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
+			local frame = chatBubble:GetChildren()
+			if frame and not frame:IsForbidden() then
+				Module:HookBubble(chatBubble, frame)
+			end
+		end
+	end
+
 	local bubbleHook = CreateFrame("Frame")
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
@@ -70,9 +81,9 @@ table_insert(C.defaultThemes, function()
 					reskinChatBubble(chatbubble)
 				end
 			end
+			findChatBubble()
 			self:Hide()
 		end
 	end)
-
 	bubbleHook:Hide()
 end)
