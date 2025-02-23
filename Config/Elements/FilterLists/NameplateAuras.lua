@@ -28,6 +28,12 @@ C.NameplateWhiteList = {
     [103968]  = true,
     [105904]  = true,
     [105248]  = true,
+    [104031]  = true,
+    [107851]  = true,
+    [108934]  = true,
+    [105409]  = true,
+    [105256]  = true,
+    [104543]  = true,
 
     -- Taunt
     [355]  = true,
