@@ -37,6 +37,11 @@ end
 function Module.IsItemHasGem(link)
 	local text = ""
 	local stats = GetItemStats(link)
+
+	if not stats then
+		return text
+	end
+
 	for stat, count in pairs(stats) do
 		local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
 		if socket and socketWatchList[socket] then
@@ -80,7 +85,7 @@ function Module:CreateChatItemLevels()
 			"CHAT_MSG_LOOT", "CHAT_MSG_CHANNEL", "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_WHISPER", 
 			"CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_BN_WHISPER", "CHAT_MSG_RAID", "CHAT_MSG_RAID_LEADER", 
 			"CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER", "CHAT_MSG_GUILD", "CHAT_MSG_BATTLEGROUND", 
-			"CHAT_MSG_INSTANCE_CHAT", "CHAT_MSG_INSTANCE_CHAT_LEADER"
+			"CHAT_MSG_INSTANCE_CHAT", "CHAT_MSG_INSTANCE_CHAT_LEADER",
 		}
 		for _, event in pairs(filters) do
 			ChatFrame_AddMessageEventFilter(event, self.UpdateChatItemLevel)
