@@ -8,7 +8,6 @@ local string_match = string.match
 local string_rep = string.rep
 
 local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
-local DUNGEON_SCORE_LEADER = DUNGEON_SCORE_LEADER
 local GetItemInfo = GetItemInfo
 local GetItemStats = GetItemStats
 
@@ -24,7 +23,6 @@ local socketWatchList = {
 	["PRISMATIC"] = true,
 }
 
--- Show itemlevel on chat hyperlinks
 local function isItemHasLevel(link)
 	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
 	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
@@ -45,7 +43,6 @@ function Module.IsItemHasGem(link)
 			text = text .. GetSocketTexture(socket, count)
 		end
 	end
-
 	return text
 end
 
@@ -57,8 +54,15 @@ local function convertItemLevel(link)
 	local itemLink = string_match(link, "|Hitem:.-|h")
 	if itemLink then
 		local name, itemLevel = isItemHasLevel(itemLink)
+		local gems = Module.IsItemHasGem(itemLink)
 		if name and itemLevel then
-			link = gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module.IsItemHasGem(itemLink))
+			if C["Chat"].ChatItemLevel and C["Chat"].ChatItemGem then
+				link = gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. gems)
+			elseif C["Chat"].ChatItemLevel then
+				link = gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h")
+			elseif C["Chat"].ChatItemGem then
+				link = gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "]|h" .. gems)
+			end
 			itemCache[link] = link
 		end
 	end
@@ -67,26 +71,19 @@ end
 
 function Module:UpdateChatItemLevel(_, msg, ...)
 	msg = string_gsub(msg, "(|Hitem:%d+:.-|h.-|h)", convertItemLevel)
-
 	return false, msg, ...
 end
 
 function Module:CreateChatItemLevels()
-	if C["Chat"].ChatItemLevel then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateChatItemLevel)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateChatItemLevel)
+	if C["Chat"].ChatItemLevel or C["Chat"].ChatItemGem then
+		local filters = {
+			"CHAT_MSG_LOOT", "CHAT_MSG_CHANNEL", "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_WHISPER", 
+			"CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_BN_WHISPER", "CHAT_MSG_RAID", "CHAT_MSG_RAID_LEADER", 
+			"CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER", "CHAT_MSG_GUILD", "CHAT_MSG_BATTLEGROUND", 
+			"CHAT_MSG_INSTANCE_CHAT", "CHAT_MSG_INSTANCE_CHAT_LEADER"
+		}
+		for _, event in pairs(filters) do
+			ChatFrame_AddMessageEventFilter(event, self.UpdateChatItemLevel)
+		end
 	end
 end

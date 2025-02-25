@@ -238,6 +238,7 @@ C["Chat"] = {
 	Background = true,
 	Chatbar = true,
 	ChatItemLevel = true,
+	ChatItemGem = false,
 	ChatMenu = true,
 	ConfigButton = true,
 	CopyButton = true,
