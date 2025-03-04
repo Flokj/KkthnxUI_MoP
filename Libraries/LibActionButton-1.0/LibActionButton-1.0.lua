@@ -2081,7 +2081,7 @@ function UpdateHotkeys(self)
 end
 
 function ShowOverlayGlow(self)
-	if LCG and lib.eventFrame.showGlow then
+	if LCG then
 		LCG.ShowOverlayGlow(self)
 	end
 end
