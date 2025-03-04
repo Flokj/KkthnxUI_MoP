@@ -387,7 +387,7 @@ end
 function Module:RaidTool_CreateMenu(parent)
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetPoint("TOP", parent, "BOTTOM", 0, -6)
-	frame:SetSize(250, 38)
+	frame:SetSize(132, 70)
 	frame:CreateBorder()
 	frame:Hide()
 
@@ -469,10 +469,16 @@ function Module:RaidTool_CreateMenu(parent)
 	local bu = {}
 	for i, j in pairs(buttons) do
 		bu[i] = CreateFrame("Button", nil, frame)
-		bu[i]:SetSize(116, 26)
+		bu[i]:SetSize(120, 26)
 		bu[i]:SkinButton()
 		bu[i].text = K.CreateFontString(bu[i], 12, j[1], "", true)
-		bu[i]:SetPoint(mod(i, 2) == 0 and "TOPRIGHT" or "TOPLEFT", mod(i, 2) == 0 and -6 or 6, i > 2 and -38 or -6)
+		
+		if i == 1 then
+		    bu[i]:SetPoint("TOP", frame, "TOP", 0, -6)
+		else
+		    bu[i]:SetPoint("TOP", bu[i-1], "BOTTOM", 0, -6)
+		end
+
 		bu[i]:SetScript("OnClick", j[2])
 	end
 

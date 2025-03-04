@@ -68,7 +68,7 @@ function Module:UpdateFactionLine()
 	end
 end
 
-local ruLEVEL = "уров"
+local LEVEL = "уров" or LEVEL
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
 		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
@@ -77,7 +77,7 @@ function Module:GetLevelLine()
 		end
 		
 		local linetext = tiptext:GetText()
-		if linetext and strfind(linetext, ruLEVEL or LEVEL) then
+		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
 		end
 	end
