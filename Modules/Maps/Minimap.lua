@@ -88,7 +88,7 @@ end
 function Module:ReskinRegions()
 	-- QueueStatus Button
 	MiniMapBattlefieldFrame:ClearAllPoints()
-	MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -2)
+	MiniMapBattlefieldFrame:SetPoint("BOTTOMRIGHT", Minimap, -20, -4)
 	MiniMapBattlefieldBorder:Hide()
 	MiniMapBattlefieldIcon:SetAlpha(0)
 	BattlegroundShine:SetTexture(nil)

@@ -492,9 +492,9 @@ local iconTexture = {
 	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
 	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
 	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
-	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
-	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
-	--"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
+	"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
 	"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
 }
 local maxButtons = #iconTexture

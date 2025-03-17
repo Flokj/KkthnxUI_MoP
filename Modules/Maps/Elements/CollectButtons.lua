@@ -36,18 +36,18 @@ function Module:CreateRecycleBin()
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
 	bu:SetAlpha(0.6)
-	bu:SetSize(16, 16)
+	bu:SetSize(18, 18)
 	bu:ClearAllPoints()
 	if C["Minimap"].RecycleBinPosition.Value == 1 then
-		bu:SetPoint("BOTTOMLEFT", -7, -7)
+		bu:SetPoint("BOTTOMLEFT", -8, -8)
 	elseif C["Minimap"].RecycleBinPosition.Value == 2 then
-		bu:SetPoint("BOTTOMRIGHT", 7, -7)
+		bu:SetPoint("BOTTOMRIGHT", 8, -8)
 	elseif C["Minimap"].RecycleBinPosition.Value == 3 then
-		bu:SetPoint("TOPLEFT", -7, 7)
+		bu:SetPoint("TOPLEFT", -8, 8)
 	elseif C["Minimap"].RecycleBinPosition.Value == 4 then
-		bu:SetPoint("TOPRIGHT", 7, 7)
+		bu:SetPoint("TOPRIGHT", 8, 8)
 	else
-		bu:SetPoint("BOTTOMLEFT", -7, -7)
+		bu:SetPoint("BOTTOMLEFT", -8, -8)
 	end
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
