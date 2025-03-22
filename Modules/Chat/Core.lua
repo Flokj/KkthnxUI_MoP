@@ -247,6 +247,13 @@ function Module:SkinChat()
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
 
+	if self == GeneralDockManager.primary then
+		local messageFrame = CommunitiesFrame and CommunitiesFrame.Chat and CommunitiesFrame.Chat.MessageFrame
+		if messageFrame then
+			messageFrame:SetFont(font, fontSize, fontStyle)
+		end
+	end
+
 	self.styled = true
 end
 
@@ -556,5 +563,25 @@ function Module:OnEnable()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
 		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
 		FCF_SavePositionAndDimensions(ChatFrame1)
+	end
+
+	-- Extra elements in chat tab menu
+	do
+		-- Font size
+		local function IsSelected(height)
+			local _, fontHeight = FCF_GetCurrentChatFrame():GetFont()
+			return height == floor(fontHeight + 0.5)
+		end
+
+		local function SetSelected(height)
+			FCF_SetChatWindowFontSize(nil, FCF_GetChatFrameByID(CURRENT_CHAT_FRAME_ID), height)
+		end
+
+		Menu.ModifyMenu("MENU_FCF_TAB", function(self, rootDescription, data)
+			local fontSizeSubmenu = rootDescription:CreateButton(K.InfoColor .. "More Font Size")
+			for i = 10, 30 do
+				fontSizeSubmenu:CreateRadio((format(FONT_SIZE_TEMPLATE, i)), IsSelected, SetSelected, i)
+			end
+		end)
 	end
 end
