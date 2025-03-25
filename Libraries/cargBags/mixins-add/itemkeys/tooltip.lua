@@ -35,12 +35,14 @@ local bindTypeToString = {
 	[ITEM_BNETACCOUNTBOUND] = "account",
 }
 
+local ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
+
 cargBags.itemKeys["bindOn"] = function(i)
 	if not i.link then
 		return
 	end
 
-	local tip = K.ScanTooltip
+	local tip = ScanTooltip
 	if not tip then
 		return
 	end
@@ -49,11 +51,12 @@ cargBags.itemKeys["bindOn"] = function(i)
 	tip:SetBagItem(i.bagId, i.slotId)
 
 	for j = 2, 5 do
-		local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
+		local line = _G[ScanTooltip:GetName() .. "TextLeft" .. j]
 		local lineText = line and line:GetText()
 		if not lineText then
-			break 
+			break
 		end
+
 		local bindOn = bindTypeToString[lineText]
 		if bindOn then
 			i.bindOn = bindOn

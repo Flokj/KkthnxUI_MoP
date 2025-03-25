@@ -176,6 +176,7 @@ C["Inventory"] = {
 	DeleteButton = true,
 	Enable = true,
 	FilterAmmo = true,
+	FilterBOE = true,
 	FilterCollection = true,
 	FilterConsumable = true,
 	FilterCustom = false,

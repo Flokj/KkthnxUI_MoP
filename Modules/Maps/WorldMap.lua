@@ -322,6 +322,10 @@ function Module:OnEnable()
 	WorldMapFrame.HandleUserActionToggleSelf = function()
 		if WorldMapFrame:IsShown() then WorldMapFrame:Hide() else WorldMapFrame:Show() end end
 	tinsert(UISpecialFrames, "WorldMapFrame")
+	-- Fix issue when map open at default
+	if WorldMapFrame:IsShown() then
+		ToggleFrame(WorldMapFrame)
+	end
 
 	self:MapPartyDots()
 	self:SetupCoords()

@@ -151,6 +151,12 @@ local function isQuestItem(item)
 	return item.isQuestItem
 end
 
+local function isItemBOE(item)
+	if not C["Inventory"].ItemFilter then return end
+	if not C["Inventory"].FilterBOE then return end
+	return item.bindOn and item.bindOn == "equip" and Module:IsItemHasLevel(item)
+end
+
 function Module:GetFilters()
 	local filters = {}
 
@@ -173,6 +179,8 @@ function Module:GetFilters()
 	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end
 	filters.bagQuest = function(item) return isItemInBag(item) and isQuestItem(item) end
 	filters.bankQuest = function(item) return isItemInBank(item) and isQuestItem(item) end
+	filters.bagBOE = function(item) return isItemInBag(item) and isItemBOE(item) end
+	filters.bankBOE = function(item) return isItemInBank(item) and isItemBOE(item) end
 
 	for i = 1, 5 do
 		filters["bagCustom" .. i] = function(item) return isItemInBag(item) and isItemCustom(item, i) end
