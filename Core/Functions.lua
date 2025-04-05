@@ -591,7 +591,21 @@ do
 	end
 end
 
-do	
+-- Role Updater and Chat Channel Check Functions
+do
+	-- Role Icons
+	local GroupRoleTex = {
+		TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",
+		HEALER = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder",
+		DAMAGER = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder",
+		DPS = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder",
+	}
+
+	function K.ReskinSmallRole(self, role)
+		self:SetTexCoord(0, 1, 0, 1)
+		self:SetAtlas(GroupRoleTex[role])
+	end
+
 	function K.CheckChat()
 		return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 	end

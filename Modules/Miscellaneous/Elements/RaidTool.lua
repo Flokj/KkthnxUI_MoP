@@ -47,7 +47,7 @@ function Module:RaidTool_Header()
 			local tank = UnitGroupRolesAssigned("player") == "TANK"
 			local healer = UnitGroupRolesAssigned("player") == "HEALER"
 			local dps = UnitGroupRolesAssigned("player") == "DAMAGER"
-			local role = (tank and "|A:groupfinder-icon-role-micro-tank:16:16|a" or healer and "|A:groupfinder-icon-role-micro-heal:16:16|a" or dps and "|A:groupfinder-icon-role-micro-dps:16:16|a") or "None"
+			local role = (tank and "|A:UI-LFG-RoleIcon-Tank-Micro-GroupFinder:16:16|a" or healer and "|A:UI-LFG-RoleIcon-Healer-Micro-GroupFinder:16:16|a" or dps and "|A:UI-LFG-RoleIcon-DPS-Micro-GroupFinder:16:16|a") or "None"
 
 			GameTooltip:AddDoubleLine("Role:", K.InfoColor .. role)
 			GameTooltip:AddLine(" ")
@@ -141,11 +141,7 @@ function Module:GetRaidMaxGroup()
 end
 
 function Module:RaidTool_RoleCount(parent)
-	local roleTexCoord = {
-		{ 0.5, 0.75, 0, 1 },
-		{ 0.75, 1, 0, 1 },
-		{ 0.25, 0.5, 0, 1 },
-	}
+	local roleIndex = { "TANK", "HEALER", "DAMAGER" }
 
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetAllPoints()
@@ -153,12 +149,11 @@ function Module:RaidTool_RoleCount(parent)
 	for i = 1, 3 do
 		role[i] = frame:CreateTexture(nil, "OVERLAY")
 		role[i]:SetPoint("LEFT", 36 * i - 27, 0)
-		role[i]:SetSize(14, 14)
-		role[i]:SetTexture("Interface\\LFGFrame\\LFGROLE")
-		role[i]:SetTexCoord(unpack(roleTexCoord[i]))
+		role[i]:SetSize(18, 18)
+		K.ReskinSmallRole(role[i], roleIndex[i])
 		role[i].text = K.CreateFontString(frame, 13, "0", "")
 		role[i].text:ClearAllPoints()
-		role[i].text:SetPoint("CENTER", role[i], "RIGHT", 12, 0)
+		role[i].text:SetPoint("CENTER", role[i], "RIGHT", 8, 0)
 	end
 
 	local raidCounts = {

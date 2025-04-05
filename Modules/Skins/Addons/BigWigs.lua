@@ -123,7 +123,7 @@ function Module:ReskinBigWigs()
 
 	if BigWigsLoader then
 		BigWigsLoader.RegisterMessage("KkthnxUI", "BigWigs_FrameCreated", function(_, frame, name)
-			if name == "QueueTimer" and not frame.styled then
+			if frame and (name == "QueueTimer") and not frame.styled then
 				frame:SetHeight(18)
 				frame:StripTextures()
 
