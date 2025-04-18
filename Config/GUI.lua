@@ -1201,7 +1201,7 @@ local WorldMap = function(self)
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.01)
 	Window:CreateSlider("WorldMap", "MaxMapScale", "Fullscreen map scale", 0.1, 1, 0.1)
-	Window:CreateSlider("WorldMap", "MapScale", "Window map scale", 0.1, 1, 0.1)
+	Window:CreateSlider("WorldMap", "MapScale", "Window map scale", 0.5, 2, 0.1)
 end
 
 GUI:AddWidgets(ActionBar)

@@ -685,7 +685,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
 	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
 	EditBox.Box:SetJustifyH("CENTER")
-	EditBox.Box:SetMaxLetters(4)
+	EditBox.Box:SetMaxLetters(8)
 	EditBox.Box:SetAutoFocus(false)
 	EditBox.Box:EnableKeyboard(true)
 	EditBox.Box:EnableMouse(true)

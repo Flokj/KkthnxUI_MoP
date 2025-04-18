@@ -491,6 +491,21 @@ function Module:ToggleLanguageFilter()
 	end
 end
 
+function Module:HandleMinimizedFrame()
+	local minFrame = self.minFrame
+	if minFrame and not minFrame.styled then
+		minFrame:StripTextures()
+		minFrame:CreateBackdrop(4, -4, -4, 4, nil, nil, nil, nil, nil, K.UnitColor)
+
+		local maximizeButton = _G[minFrame:GetName().."MaximizeButton"]
+		if maximizeButton then
+			maximizeButton:Kill()
+		end
+
+		minFrame.styled = true
+	end
+end
+
 function Module:OnEnable()
 	if not C["Chat"].Enable then return end
 
@@ -512,6 +527,7 @@ function Module:OnEnable()
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
+	hooksecurefunc("FCF_MinimizeFrame", Module.HandleMinimizedFrame)
 
 	-- Default
 	if CHAT_OPTIONS then -- only flash whisper
