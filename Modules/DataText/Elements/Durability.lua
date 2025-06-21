@@ -67,18 +67,9 @@ local function getDurabilityColor(cur, max)
 	return r, g, b
 end
 
-local function NewSetLevelFunction()
-	local total, equipped = GetAverageItemLevel()
-	local r, g, b = K.GetILvlTextColor(equipped)
-	CharacterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
-	CharacterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
-end
-
 local eventList = {
 	"UPDATE_INVENTORY_DURABILITY",
 	"PLAYER_ENTERING_WORLD",
-	"PLAYER_EQUIPMENT_CHANGED",
-	"PLAYER_AVG_ITEM_LEVEL_UPDATE",
 }
 
 local function OnEvent(event)
@@ -88,10 +79,6 @@ local function OnEvent(event)
 		if lowDurabilityFrame.animGroup and lowDurabilityFrame.animGroup:IsPlaying() then
 			lowDurabilityFrame.animGroup:Stop()
 		end
-	end
-
-	if event == "PLAYER_EQUIPMENT_CHANGED" or event == "PLAYER_AVG_ITEM_LEVEL_UPDATE" then
-		NewSetLevelFunction()
 	end
 
 	local numSlots = UpdateAllSlots()
@@ -210,8 +197,6 @@ end
 function Module:CreateDurabilityDataText()
 	if not C["Misc"].SlotDurability then return end
 
-	_G.hooksecurefunc("PaperDollFrame_SetLevel", NewSetLevelFunction)
-
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, K.UnitColor)
 
@@ -229,9 +214,6 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetScript("OnEvent", OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
-
-	-- Initial update
-	NewSetLevelFunction()
 
 	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end

@@ -104,7 +104,7 @@ C["ActionBar"] = {
 	Bar8PerRow = 12,
 	Bar8Fade = false,
 
-	BarFadeGlobal = true,
+	BarFadeGlobal = false,
 	BarFadeAlpha = 0.1,
 	BarFadeDelay = 0,
 	BarFadeCombat = true,
@@ -253,7 +253,7 @@ C["Chat"] = {
 	Lock = true,
 	LogMax = 0,
 	OldChatNames = false,
-	RollButton = true,
+	RollButton = false,
 	Sticky = true,
 	WhisperColor = true,
 	Width = 400,
