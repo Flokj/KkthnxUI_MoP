@@ -189,6 +189,8 @@ end
 local function GetOrderedIndex(t)
 	local OrderedIndex = {}
 
+	if type(t) ~= "table" then return {} end
+
 	for key in pairs(t) do
 		OrderedIndex[#OrderedIndex + 1] = key
 	end
@@ -1089,7 +1091,7 @@ local CreateDropdown = function(self, group, option, text, tooltip, custom, hook
 	Dropdown.Current:SetFontObject(K.UIFont)
 	Dropdown.Current:SetJustifyH("LEFT")
 	Dropdown.Current:SetWidth(DropdownWidth - 4)
-	Dropdown.Current:SetText(Value)
+	Dropdown.Current:SetText(type(value) == "string" and Value or "")
 
 	Dropdown.Label = Dropdown:CreateFontString(nil, "OVERLAY")
 	Dropdown.Label:SetPoint("LEFT", Dropdown, "RIGHT", LabelSpacing, 0)

@@ -62,57 +62,87 @@ local function KKUI_LoadCustomSettings()
 		return
 	end
 
+	-- Validate and clean settings to prevent table accumulation
 	for group, options in pairs(settings) do
-		local count = 0
-		for option, value in pairs(options) do
-			if C[group] and C[group][option] ~= nil then
-				if C[group][option] == value then
-					options[option] = nil
-				else
-					count = count + 1
-					if type(C[group][option]) == "table" and C[group][option].Options then
-						C[group][option].Value = value
+		if type(options) ~= "table" then
+			settings[group] = nil
+		else
+			local count = 0
+			for option, value in pairs(options) do
+				if C[group] and C[group][option] ~= nil then
+					if C[group][option] == value then
+						options[option] = nil
 					else
-						C[group][option] = value
+						count = count + 1
+						if type(C[group][option]) == "table" and C[group][option].Options then
+							C[group][option].Value = value
+						else
+							C[group][option] = value
+						end
 					end
+				else
+					-- Remove invalid options to prevent accumulation
+					options[option] = nil
 				end
 			end
-		end
-		if count == 0 then
-			settings[group] = nil
+			if count == 0 then
+				settings[group] = nil
+			end
 		end
 	end
 end
 
-local function KKUI_LoadProfiles()
+function KKUI_LoadProfiles()
 	local Profiles = C["General"].Profiles
 	local Menu = Profiles.Options
-	local Data = KkthnxUIDB.Variables
 	local GUISettings = KkthnxUIDB.Settings
-	local Nickname = K.Name
-	local Server = K.Realm
+	local MyProfileName = K.Realm .. "-" .. K.Name
 
 	if not GUISettings then
 		return
 	end
 
-	for Index, Table in pairs(GUISettings) do
-		local Server = Index
+	wipe(Menu)
 
+	for Server, Table in pairs(GUISettings) do
 		for Nickname, Settings in pairs(Table) do
 			local ProfileName = Server .. "-" .. Nickname
-			local MyProfileName = K.Realm .. "-" .. K.Name
+			Menu[ProfileName] = ProfileName -- Always include all profiles, including current
+		end
+	end
 
-			if MyProfileName ~= ProfileName then
+	-- Set the dropdown value to the current profile
+	Profiles.Value = MyProfileName
+end
+
+function KKUI_LoadDeleteProfiles()
+	local DeleteProfiles = C["General"].DeleteProfiles
+	local Menu = DeleteProfiles.Options
+	local GUISettings = KkthnxUIDB.Settings
+	local MyProfileName = K.Realm .. "-" .. K.Name
+
+	if not GUISettings then
+		return
+	end
+
+	wipe(Menu)
+
+	for Server, Table in pairs(GUISettings) do
+		for Nickname, Settings in pairs(Table) do
+			local ProfileName = Server .. "-" .. Nickname
+			if ProfileName ~= MyProfileName then
 				Menu[ProfileName] = ProfileName
 			end
 		end
 	end
+
+	DeleteProfiles.Value = nil
 end
 
 local function KKUI_LoadVariables()
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
+	KKUI_LoadDeleteProfiles()
 	KKUI_LoadCustomSettings()
 	K.GUI:Enable()
 	K.Profiles:Enable()
