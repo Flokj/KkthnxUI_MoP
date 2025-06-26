@@ -1021,7 +1021,7 @@ local AddDropdownScrollBar = function(self)
 	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
 end
 
-local CreateDropdown = function(self, group, option, text, custom, tooltip, hook)
+local CreateDropdown = function(self, group, option, text, tooltip, custom, hook)
 	local Value
 	local Selections = {}
 
@@ -1249,6 +1249,107 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		AddDropdownScrollBar(Dropdown.Menu)
 	else
 		Dropdown.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
+	end
+
+	-- Add Update method to refresh dropdown options
+	function Dropdown:Update()
+		-- Remove old menu items
+		for i = 1, #self.Menu do
+			self.Menu[i]:Hide()
+			self.Menu[i] = nil
+		end
+
+		-- Get the current options - handle both static and dynamic dropdowns
+		local Selections
+		if C[self.Group] and C[self.Group][self.Option] and C[self.Group][self.Option].Options then
+			Selections = C[self.Group][self.Option].Options
+		else
+			-- For dynamic dropdowns, we need to regenerate the options
+			if self.Group == "General" and self.Option == "DeleteProfiles" then
+				-- Call the function that populates DeleteProfiles
+				KKUI_LoadDeleteProfiles()
+				Selections = C[self.Group][self.Option].Options
+			elseif self.Group == "General" and self.Option == "Profiles" then
+				-- Call the function that populates Profiles
+				KKUI_LoadProfiles()
+				Selections = C[self.Group][self.Option].Options
+			end
+		end
+
+		if not Selections then
+			return -- No options to update
+		end
+
+		local Count = 0
+		local LastMenuItem
+
+		for k, v in PairsByKeys(Selections) do
+			Count = Count + 1
+
+			local MenuItem = CreateFrame("Frame", nil, self.Menu)
+			MenuItem:SetSize(DropdownWidth - 6, WidgetHeight)
+			MenuItem:CreateBorder()
+			MenuItem:SetScript("OnMouseUp", MenuItemOnMouseUp)
+			MenuItem:SetScript("OnEnter", MenuItemOnEnter)
+			MenuItem:SetScript("OnLeave", MenuItemOnLeave)
+			MenuItem.Key = k
+			MenuItem.Value = v
+			MenuItem.Group = self.Group
+			MenuItem.Option = self.Option
+			MenuItem.Parent = MenuItem:GetParent()
+			MenuItem.GrandParent = MenuItem:GetParent():GetParent()
+
+			MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
+			MenuItem.Highlight:SetAllPoints()
+			MenuItem.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
+			MenuItem.Highlight:SetAlpha(0)
+
+			MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
+			MenuItem.Texture:SetAllPoints()
+
+			MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
+			MenuItem.Selected:SetAllPoints()
+
+			MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
+			MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
+			MenuItem.Selected:SetVertexColor(R, G, B)
+
+			MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
+			MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
+			MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
+			MenuItem.Text:SetFontObject(K.UIFont)
+			MenuItem.Text:SetJustifyH("LEFT")
+			MenuItem.Text:SetText(k)
+
+			if MenuItem.Value == self.Value then
+				MenuItem.Selected:Show()
+				self.Current:SetText(k)
+			else
+				MenuItem.Selected:Hide()
+			end
+
+			tinsert(self.Menu, MenuItem)
+
+			if LastMenuItem then
+				MenuItem:SetPoint("TOP", LastMenuItem, "BOTTOM", 0, -6)
+			else
+				MenuItem:SetPoint("TOP", self.Menu, 0, -3)
+			end
+
+			if Count > ListItemsToShow then
+				MenuItem:Hide()
+			end
+
+			LastMenuItem = MenuItem
+		end
+
+		if #self.Menu > ListItemsToShow then
+			AddDropdownScrollBar(self.Menu)
+		else
+			self.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
+		end
 	end
 
 	if self.Widgets then

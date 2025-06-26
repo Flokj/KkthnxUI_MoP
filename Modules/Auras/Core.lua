@@ -187,6 +187,8 @@ function Module:UpdateTempEnchant(button, index)
 		button.expiration = nil
 		button.timeLeft = nil
 		button.timer:SetText("")
+		-- Ensure OnUpdate script is removed when no enchantment
+		button:SetScript("OnUpdate", nil)
 	end
 end
 
@@ -329,7 +331,7 @@ function Module:CreateAuraIcon(button)
 	button:StyleButton()
 	button:CreateBorder()
 
-	button:RegisterForClicks("RightButtonUp", "RightButtonDown")
+	--button:RegisterForClicks("RightButtonUp", "RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 	button:SetScript("OnEnter", Module.Button_OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)

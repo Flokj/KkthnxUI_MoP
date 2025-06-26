@@ -709,6 +709,40 @@ local General = function(self)
 	local AddProfile = Window:CreateDropdown("General", "Profiles", L["Import Profiles From Other Characters"])
 	AddProfile.Menu:HookScript("OnHide", GUI.SetProfile)
 
+	-- Delete Profile Dropdown
+	local DeleteProfileDropdown = Window:CreateDropdown("General", "DeleteProfiles", "Delete Profile", "Select a profile to delete, You pick a profile from the dropdown, and then press the button to delete it!")
+
+	-- Delete Profile Button
+	Window:CreateButton("Press To Delete", "Delete the selected profile from your list.", "", function()
+		local profileToDelete = C["General"].DeleteProfiles.Value
+
+		if profileToDelete then
+			local server, nickname = strsplit("-", profileToDelete)
+			if KkthnxUIDB.Settings[server] and KkthnxUIDB.Settings[server][nickname] then
+				KkthnxUIDB.Settings[server][nickname] = nil
+				if KkthnxUIDB.Variables[server] then
+					KkthnxUIDB.Variables[server][nickname] = nil
+				end
+				print("Profile deleted: " .. profileToDelete)
+
+				-- Clear the dropdown value and text
+				C["General"].DeleteProfiles.Value = nil
+				if DeleteProfileDropdown then
+					DeleteProfileDropdown.Current:SetText("")
+					DeleteProfileDropdown.Value = nil
+				end
+
+				-- Refresh the options and update dropdown
+				KKUI_LoadDeleteProfiles()
+				KKUI_LoadProfiles()
+
+				if DeleteProfileDropdown and DeleteProfileDropdown.Update then
+					DeleteProfileDropdown:Update()
+				end
+			end
+		end
+	end)
+
 	-- Toggles
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("General", "MinimapIcon", "Enable Minimap Icon")

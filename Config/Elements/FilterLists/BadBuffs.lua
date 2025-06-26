@@ -3,9 +3,20 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local GetSpellInfo = GetSpellInfo
 
 local function SpellName(id)
-	local name = GetSpellInfo(id)
-	if name then return name else
-		K.Print("|cffff0000WARNING: [BadBuffsFilter] - spell ID ["..tostring(id).."] no longer exists! Report this to Kkthnx.|r")
+	local spellInfo = GetSpellInfo(id)
+	local name
+
+	-- Handle both old API (string) and new API (table)
+	if type(spellInfo) == "table" then
+		name = spellInfo.name
+	else
+		name = spellInfo
+	end
+
+	if name then
+		return name
+	else
+		K.Print("|cffff0000WARNING: [BadBuffsFilter] - spell ID [" .. tostring(id) .. "] no longer exists! Report this to Kkthnx.|r")
 		return "Empty"
 	end
 end
