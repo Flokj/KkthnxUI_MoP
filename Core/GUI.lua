@@ -956,9 +956,9 @@ end
 local DropdownScrollBarOnValueChanged = function(self)
 	local Value = K.Round(self:GetValue())
 	local Parent = self:GetParent()
-	parent.Offset = Value
+	Parent.Offset = Value
 
-	parent:ScrollMenu()
+	Parent:ScrollMenu()
 end
 
 local DropdownScrollBarOnMouseWheel = function(self, delta)
