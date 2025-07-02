@@ -361,7 +361,7 @@ function Module:OnEnable()
 	Module.buttons = {}
 	Module:CreateMicroMenu()
 
-	if IsAddOnLoaded("ConsolePort") then return end
+	if C_AddOns.IsAddOnLoaded("ConsolePort") then return end
 	if not C["ActionBar"].Enable then return end
 
 	Module.movers = {}

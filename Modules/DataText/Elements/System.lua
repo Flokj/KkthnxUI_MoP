@@ -2,7 +2,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
 local string_format, table_insert, table_sort, table_wipe = string.format, table.insert, table.sort, table.wipe
-local GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown
+local GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, C_AddOns.GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, C_AddOns.GetNumAddOns, GetTime, C_AddOns.IsAddOnLoaded, IsShiftKeyDown
 local ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage = ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage
 local collectgarbage, gcinfo = collectgarbage, gcinfo
 

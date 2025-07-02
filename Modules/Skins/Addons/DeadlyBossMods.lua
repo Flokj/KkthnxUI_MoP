@@ -8,7 +8,7 @@ local string_match = _G.string.match
 local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
-local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
 local buttonsize = 24

@@ -8,7 +8,7 @@ local string_match = string.match
 local string_rep = string.rep
 
 local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 local GetItemStats = GetItemStats
 
 local itemCache = {}

@@ -9,7 +9,7 @@ local wipe = wipe
 
 -- Unit and item information functions
 local UnitGUID = UnitGUID
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTradePlayerItemLink = GetTradePlayerItemLink

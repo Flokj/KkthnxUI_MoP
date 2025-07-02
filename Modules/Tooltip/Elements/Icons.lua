@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
 local gsub = gsub
-local GetItemIcon, GetSpellTexture = GetItemIcon, GetSpellTexture
+local GetItemIconByID, GetSpellTexture = GetItemIconByID, GetSpellTexture
 local newString = "0:0:64:64:5:59:5:59"
 
 function Module:SetupTooltipIcon(icon)
@@ -35,7 +35,7 @@ function Module:HookTooltipSetItem()
 	if not self.tipModified then
 		local _, link = self:GetItem()
 		if link then
-			Module.SetupTooltipIcon(self, GetItemIcon(link))
+			Module.SetupTooltipIcon(self, GetItemIconByID(link))
 		end
 
 		self.tipModified = true

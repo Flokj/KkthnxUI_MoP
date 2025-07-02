@@ -2,7 +2,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Tooltip")
 
 local strmatch, format, tonumber, select, strfind = string.match, string.format, tonumber, select, string.find
-local UnitAura, GetItemCount, GetItemInfo, GetUnitName = UnitAura, GetItemCount, GetItemInfo, GetUnitName
+local UnitAura, GetItemCount, GetItemInfo, GetUnitName = UnitAura, C_Item.GetItemCount, C_Item.GetItemInfo, GetUnitName
 local GetCurrencyListInfo = GetCurrencyListInfo
 local BAGSLOT, BANK = BAGSLOT, BANK
 local SELL_PRICE_TEXT = format("|cffffffff%s%s%%s|r", SELL_PRICE, HEADER_COLON)

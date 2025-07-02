@@ -3,7 +3,7 @@ local Module = K:NewModule("Skins")
 
 local table_wipe = table.wipe
 
-local IsAddOnLoaded = IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
 -- Tables to store default themes, registered themes and other skins
 C.defaultThemes = {}

@@ -12,7 +12,7 @@ local C_QuestLog_IsQuestFlaggedCompleted = C_QuestLog.IsQuestFlaggedCompleted
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
 local GetContainerItemLink = GetContainerItemLink
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 local PlaySound = PlaySound
 local UIErrorsFrame = UIErrorsFrame
 
@@ -184,7 +184,7 @@ local function StoreAndDisableAddons()
 
 	for i = 1, addonCount do
 		local name = C_AddOns.GetAddOnInfo(i)
-		if name ~= "KkthnxUI" and IsAddOnLoaded(name) then
+		if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
 			addonsToDisable = addonsToDisable + 1
 		end
 	end
@@ -201,7 +201,7 @@ local function StoreAndDisableAddons()
 		OnAccept = function()
 			for i = 1, addonCount do
 				local name = C_AddOns.GetAddOnInfo(i)
-				if name ~= "KkthnxUI" and IsAddOnLoaded(name) then
+				if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
 					KkthnxUIDB.DisabledAddOns[name] = true
 					C_AddOns.DisableAddOn(name)
 				end

@@ -51,7 +51,7 @@ local function OnEvent(_, event, ...)
 	if tContains(eventList, event) then
 		subzone = GetSubZoneText()
 		zone = GetZoneText()
-		pvpType, _, faction = GetZonePVPInfo()
+		pvpType, _, faction = C_PvP.GetZonePVPInfo()
 		pvpType = pvpType or "neutral"
 	end
 end

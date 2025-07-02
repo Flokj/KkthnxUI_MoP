@@ -271,7 +271,7 @@ end
 
 function Module:OnEnable()
 	if not C["WorldMap"].SmallWorldMap then return end
-	if IsAddOnLoaded("Leatrix_Maps") or IsAddOnLoaded("Mapster") then return end
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") or C_AddOns.IsAddOnLoaded("Mapster") then return end
 
 	-- Fix worldmap cursor when scaling
 	WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)

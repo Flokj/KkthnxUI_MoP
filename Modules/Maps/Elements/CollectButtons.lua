@@ -15,7 +15,25 @@ local PlaySound = PlaySound
 local UIParent = UIParent
 
 function Module:CreateRecycleBin()
-	if not C["Minimap"].ShowRecycleBin then return end
+	if not C["Minimap"].ShowRecycleBin then
+		-- Clean up if feature is disabled
+		if _G.RecycleBinFrame then
+			_G.RecycleBinFrame:Hide()
+		end
+		if _G.RecycleBinToggleButton then
+			_G.RecycleBinToggleButton:Hide()
+		end
+		return
+	end
+
+	-- Show existing frames if they exist
+	if _G.RecycleBinFrame then
+		_G.RecycleBinFrame:Show()
+	end
+	if _G.RecycleBinToggleButton then
+		_G.RecycleBinToggleButton:Show()
+		return
+	end
 
 	local blackList = {
 		["GameTimeFrame"] = true,
@@ -82,6 +100,43 @@ function Module:CreateRecycleBin()
 		end
 	end
 
+	-- Auto-close functionality
+	local autoCloseTimer
+	local function StartAutoCloseTimer()
+		if autoCloseTimer then
+			autoCloseTimer:Cancel()
+		end
+		autoCloseTimer = C_Timer.NewTimer(6, function()
+			if bin:IsShown() then
+				clickFunc(1)
+			end
+		end)
+	end
+
+	local function StopAutoCloseTimer()
+		if autoCloseTimer then
+			autoCloseTimer:Cancel()
+			autoCloseTimer = nil
+		end
+	end
+
+	-- Mouse enter/leave handlers for auto-close
+	bin:SetScript("OnEnter", function()
+		StopAutoCloseTimer()
+	end)
+
+	bin:SetScript("OnLeave", function()
+		StartAutoCloseTimer()
+	end)
+
+	bu:SetScript("OnEnter", function()
+		StopAutoCloseTimer()
+	end)
+
+	bu:SetScript("OnLeave", function()
+		StartAutoCloseTimer()
+	end)
+
 	local ignoredButtons = {
 		["GatherMatePin"] = true,
 		["HandyNotes.-Pin"] = true,
@@ -140,9 +195,17 @@ function Module:CreateRecycleBin()
 		for _, child in pairs(buttons) do
 			if not child.styled then
 				child:SetParent(bin)
-				if child:HasScript("OnDragStop") then child:SetScript("OnDragStop", nil) end
-				if child:HasScript("OnDragStart") then child:SetScript("OnDragStart", nil) end
-				--if child:HasScript("OnClick") then child:HookScript("OnClick", clickFunc) end
+				if child:HasScript("OnDragStop") then
+					child:SetScript("OnDragStop", nil)
+				end
+
+				if child:HasScript("OnDragStart") then
+					child:SetScript("OnDragStart", nil)
+				end
+
+				if child:HasScript("OnClick") then
+					child:HookScript("OnClick", clickFunc)
+				end
 
 				if child:IsObjectType("Button") then
 					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
@@ -160,7 +223,7 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					--child:HookScript("OnMouseUp", clickFunc)
+					child:HookScript("OnMouseUp", clickFunc)
 				elseif name == "WIM3MinimapButton" then
 					child.SetParent = K.Noop
 					child:SetFrameStrata("DIALOG")
@@ -172,7 +235,52 @@ function Module:CreateRecycleBin()
 		end
 	end
 
+	local shownButtons = {}
+	local function SortRubbish()
+		if #buttons == 0 then
+			return
+		end
+
+		table.wipe(shownButtons)
+		for _, button in pairs(buttons) do
+			if button and button.IsShown and button:IsShown() then -- fix for fuxking AHDB
+				table_insert(shownButtons, button)
+			end
+		end
+
+		local numShown = #shownButtons
+		local row = numShown == 0 and 1 or K.Round((numShown + rowMult) / iconsPerRow)
+		local newHeight = row * 37 + 3
+		bin:SetHeight(newHeight)
+
+		for index, button in pairs(shownButtons) do
+			button:ClearAllPoints()
+			if index == 1 then
+				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
+			elseif row > 1 and mod(index, row) == 1 or row == 1 then
+				button:SetPoint("RIGHT", shownButtons[index - row], "LEFT", -6, 0)
+			else
+				button:SetPoint("BOTTOM", shownButtons[index - 1], "TOP", 0, 6)
+			end
+		end
+	end
+
+	-- Add cleanup function for when feature is disabled
+	local function CleanupCollectButtons()
+		table.wipe(buttons)
+		table.wipe(shownButtons)
+		numMinimapChildren = 0
+		currentIndex = 0
+		StopAutoCloseTimer()
+	end
+
+	-- Improved collection function with better error handling
 	local function CollectRubbish()
+		if not C["Minimap"].ShowRecycleBin then
+			CleanupCollectButtons()
+			return
+		end
+
 		local numChildren = Minimap:GetNumChildren()
 		if numChildren ~= numMinimapChildren then
 			-- examine new children
@@ -199,43 +307,15 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local shownButtons = {}
-	local function SortRubbish()
-		if #buttons == 0 then
-			return
-		end
-
-		table.wipe(shownButtons)
-		for _, button in pairs(buttons) do
-			if next(button) and button:IsShown() then -- fix for fuxking AHDB
-				table_insert(shownButtons, button)
-			end
-		end
-
-		local numShown = #shownButtons
-		local row = numShown == 0 and 1 or K.Round((numShown + rowMult) / iconsPerRow)
-		local newHeight = row * 37 + 3
-		bin:SetHeight(newHeight)
-
-		for index, button in pairs(shownButtons) do
-			button:ClearAllPoints()
-			if index == 1 then
-				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
-			elseif row > 1 and mod(index, row) == 1 or row == 1 then
-				button:SetPoint("RIGHT", shownButtons[index - row], "LEFT", -6, 0)
-			else
-				button:SetPoint("BOTTOM", shownButtons[index - 1], "TOP", 0, 6)
-			end
-		end
-	end
-
 	bu:SetScript("OnClick", function()
 		if bin:IsShown() then
+			StopAutoCloseTimer()
 			clickFunc(1)
 		else
 			PlaySound(825)
 			SortRubbish()
 			UIFrameFadeIn(bin, 0.5, bin:GetAlpha(), 1)
+			StartAutoCloseTimer()
 		end
 	end)
 

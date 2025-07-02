@@ -14,7 +14,7 @@ local type = type
 -- WoW API Functions
 local Ambiguate = Ambiguate
 local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
-local IsAddOnLoaded = IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
 local ChatFrame_SendTell = ChatFrame_SendTell

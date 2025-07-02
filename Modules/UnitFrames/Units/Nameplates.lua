@@ -102,7 +102,7 @@ function Module:SetupCVars()
 		SetCVar(cvar, value)
 	end
 
-	if IsAddOnLoaded("Questie") and QuestieLoader then
+	if C_AddOns.IsAddOnLoaded("Questie") and QuestieLoader then
 		_QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 		_QuestieTooltips = QuestieLoader:ImportModule("QuestieTooltips")
 

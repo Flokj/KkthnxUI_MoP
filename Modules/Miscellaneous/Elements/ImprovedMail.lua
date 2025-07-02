@@ -6,7 +6,7 @@ local wipe, select, pairs, tonumber = wipe, select, pairs, tonumber
 local wipe, select, pairs, tonumber = wipe, select, pairs, tonumber
 local strsplit, strfind, tinsert = strsplit, strfind, tinsert
 local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem
-local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo
+local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, C_Item.GetItemInfo
 local GetSendMailPrice, GetMoney = GetSendMailPrice, GetMoney
 local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
 local C_Mail_IsCommandPending = C_Mail.IsCommandPending
@@ -450,7 +450,7 @@ end
 
 function Module:CreateImprovedMail()
 	if not C["Misc"].EnhancedMail then return end	
-	if IsAddOnLoaded("Postal") then return end
+	if C_AddOns.IsAddOnLoaded("Postal") then return end
 
 	-- Delete buttons
 	for i = 1, 7 do

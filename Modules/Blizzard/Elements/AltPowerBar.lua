@@ -152,7 +152,7 @@ function Module:SkinAltPowerBar()
 end
 
 function Module:CreateAltPowerbar()
-	if IsAddOnLoaded("SimplePowerBar") then return end
+	if C_AddOns.IsAddOnLoaded("SimplePowerBar") then return end
 
 	self:PositionAltPowerBar()
 	self:SkinAltPowerBar()

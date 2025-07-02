@@ -72,7 +72,7 @@ end
 
 -- Create enhanced color picker frame
 function Module:CreateColorPicker()
-	if IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then return end
+	if C_AddOns.IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then return end
 
 	local pickerFrame = ColorPickerFrame
 	pickerFrame:SetHeight(250)

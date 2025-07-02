@@ -6,7 +6,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 function Module:ReskinSkada()
 	if not C["Skins"].Skada then return	end
-	if not IsAddOnLoaded("Skada") then return end
+	if not C_AddOns.IsAddOnLoaded("Skada") then return end
 
 	local pairs, ipairs, tinsert = pairs, ipairs, table.insert
 	local Skada = Skada

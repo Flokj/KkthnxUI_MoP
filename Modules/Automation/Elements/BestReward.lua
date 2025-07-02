@@ -4,7 +4,7 @@ local Module = K:GetModule("Automation")
 local GetNumQuestChoices = GetNumQuestChoices
 local GetQuestItemLink = GetQuestItemLink
 local GetQuestItemInfo = GetQuestItemInfo
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 
 local questRewardGoldIconFrame
 

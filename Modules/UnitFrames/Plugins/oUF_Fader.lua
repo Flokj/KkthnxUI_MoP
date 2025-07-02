@@ -13,7 +13,7 @@ local string_gmatch = string.gmatch
 local string_match = string.match
 local type = type
 
-local C_PvP_GetZonePVPInfo = C_PvP.GetZonePVPInfo
+local GetZonePVPInfo = C_PvP and C_PvP.GetZonePVPInfo or GetZonePVPInfo
 local IsInInstance = IsInInstance
 local UnitCanAttack = UnitCanAttack
 local UnitCastingInfo = UnitCastingInfo
@@ -124,7 +124,7 @@ local conditions = setmetatable({
 	end,
 
 	Arena = function(_, unit)
-		return unit and C_PvP_GetZonePVPInfo() == "arena"
+		return unit and GetZonePVPInfo() == "arena"
 	end,
 
 	Instance = function(_, unit)

@@ -1,11 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
-local IsAddOnLoaded = IsAddOnLoaded
 local hooksecurefunc = hooksecurefunc
 
 function Module:ReskinBugSack()
-	if not IsAddOnLoaded("BugSack") then return end
+	if not C_AddOns.IsAddOnLoaded("BugSack") then return end
 
 	hooksecurefunc(BugSack, "OpenSack", function()
 	if BugSackFrame.IsSkinned then return end

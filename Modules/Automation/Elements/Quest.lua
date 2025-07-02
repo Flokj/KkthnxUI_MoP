@@ -38,7 +38,7 @@ local function setupCheckButton()
 	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
 	AutoQuestCheckButton:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 2)
 	AutoQuestCheckButton:ClearAllPoints()
-	if IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
 		if LeaMapsDB["ShowCoords"] == "On" then
 			AutoQuestCheckButton:SetPoint("BOTTOMLEFT", 22, 44)
 		else
@@ -53,7 +53,7 @@ local function setupCheckButton()
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
 	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
 
-	if IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
 		AutoQuestCheckButton.text:SetTextColor(1, 1, 1)
 	else
 		AutoQuestCheckButton.text:SetTextColor(1.0, 0.82, 0)

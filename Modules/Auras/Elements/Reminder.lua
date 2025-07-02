@@ -2,6 +2,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Auras")
 
 local IsPlayerSpell, GetSpellTexture = IsPlayerSpell, GetSpellTexture
+local GetZonePVPInfo = C_PvP and C_PvP.GetZonePVPInfo or GetZonePVPInfo
 local pairs, tinsert, next = pairs, table.insert, next
 
 local groups = C.SpellReminderBuffs[K.Class]

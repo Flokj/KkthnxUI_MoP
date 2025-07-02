@@ -135,7 +135,7 @@ function Module:MapData_ResetTexturePool(texture)
 end
 
 function Module:CreateWorldMapReveal()
-	if IsAddOnLoaded("Leatrix_Maps") then return end
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") then return end
 
 	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
 	bu:SetHitRectInsets(-5, -5, -5, -5)

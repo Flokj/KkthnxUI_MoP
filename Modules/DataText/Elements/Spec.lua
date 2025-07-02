@@ -7,37 +7,42 @@ local UnitLevel, ToggleTalentFrame, UnitCharacterPoints = UnitLevel, ToggleTalen
 local talentString = "%s (%s)"
 local unspendPoints = gsub(CHARACTER_POINTS1_COLON, HEADER_COLON, "")
 
+local GetTalentInfo = C_SpecializationInfo.GetTalentInfo
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
+local SetSpecialization = C_SpecializationInfo.SetSpecialization
+
+local function addIcon(texture)
+	texture = texture and "|T" .. texture .. ":12:16:0:0:50:50:4:46:4:46|t" or ""
+	return texture
+end
+
+local currentSpecIndex, currentLootIndex, newMenu, numSpecs, numLocal
+
 local eventList = {
 	"PLAYER_ENTERING_WORLD",
-	"CHARACTER_POINTS_CHANGED",
-	"SPELLS_CHANGED",
+	"ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
 }
 
 local function OnEvent()
-	local text = ""
-	local higher = 0
-	for i = 1, 5 do
-		local _, name, _, _, pointsSpent = GetTalentTabInfo(i)
-		if not name then
-			break
+	currentSpecIndex = GetSpecialization()
+	if currentSpecIndex and currentSpecIndex < 5 then
+		local _, name, _, icon = GetSpecializationInfo(currentSpecIndex)
+		if not name then return end
+		currentLootIndex = GetLootSpecialization()
+		if currentLootIndex == 0 then
+			icon = addIcon(icon)
+		else
+			icon = addIcon(select(4, GetSpecializationInfoByID(currentLootIndex)))
 		end
-		if pointsSpent > higher then
-			higher = pointsSpent
-			text = name
-		end
+		self.text:SetText(K.MyClassColor .. name .. icon)
+	else
+		self.text:SetText(SPECIALIZATION .. ": ".. K.MyClassColor .. NONE)
 	end
-	if text == "" then
-		text = NONE
-	end
-	local points = UnitCharacterPoints("player")
-	if points > 0 then
-		text = format(talentString, text, points)
-	end
-	SpecDataText.Text:SetText(TALENT .. ": " .. K.MyClassColor .. text)
 end
 
 local function OnEnter(self)
-	if not self then return end
+	if not currentSpecIndex or currentSpecIndex == 5 then return end
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
@@ -46,24 +51,22 @@ local function OnEnter(self)
 	GameTooltip:AddLine(TALENTS_BUTTON, 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
-	for i = 1, 5 do
-		local _, name, _, _, pointsSpent = GetTalentTabInfo(i)
-		if not name then
-			break
+	local specID, specName, _, specIcon = GetSpecializationInfo(currentSpecIndex)
+	GameTooltip:AddLine(addIcon(specIcon) .." " .. specName, 0.6, 0.8, 1)
+--[[]
+	for t = 1, MAX_TALENT_TIERS do
+		for c = 1, 3 do
+			local _, name, icon, selected = GetTalentInfo(t, c, 1)
+			if selected then
+				GameTooltip:AddLine(addIcon(icon).." "..name, 1,1,1)
+			end
 		end
-		GameTooltip:AddDoubleLine(name, pointsSpent, 1, 1, 1, 1, 0.8, 0)
 	end
-	local points = UnitCharacterPoints("player")
-	if points > 0 then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(unspendPoints, points, 0.6, 0.8, 1, 1, 0.8, 0)
-	end
+]]
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle TalentFrame" .. " ", 1, 1, 1, 0.6, 0.8, 1)
-	if GetNumTalentGroups() > 1 then
-		GameTooltip:AddDoubleLine(" ", K.RightButton.."Change Spec" .. " ", 1, 1, 1, 0.6, 0.8, 1)
-	end
+	--GameTooltip:AddDoubleLine(" ", K.RightButton.."Change Spec" .. " ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
@@ -78,7 +81,7 @@ local function OnMouseUp(self, btn)
 		local idx = GetActiveTalentGroup()
 		SetActiveTalentGroup(idx == 1 and 2 or 1)
 	else
-		--if InCombatLockdown() then UIErrorsFrame:AddMessage(DB.InfoColor..ERR_NOT_IN_COMBAT) return end -- fix by LibShowUIPanel
+		--if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT) return end -- fix by LibShowUIPanel
 		ToggleTalentFrame()
 	end
 end

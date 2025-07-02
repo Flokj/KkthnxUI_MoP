@@ -5,7 +5,7 @@ local table_wipe = table.wipe
 
 -- DBM bars
 local function ForceDBMOptions()
-	if not IsAddOnLoaded("DBM-Core") then return end
+	if not C_AddOns.IsAddOnLoaded("DBM-Core") then return end
 	if DBT_AllPersistentOptions then table_wipe(DBT_AllPersistentOptions) end
 
 	DBT_AllPersistentOptions = {
@@ -55,8 +55,8 @@ local function ForceDBMOptions()
 end
 
 local function ForceCursorTrail()
-	if not IsAddOnLoaded("CursorTrail") then return end
-	print(IsAddOnLoaded("CursorTrail"))
+	if not C_AddOns.IsAddOnLoaded("CursorTrail") then return end
+	print(C_AddOns.IsAddOnLoaded("CursorTrail"))
 	if CursorTrail_PlayerConfig then table_wipe(CursorTrail_PlayerConfig) end
 
 	CursorTrail_PlayerConfig = {
@@ -77,7 +77,7 @@ end
 
 -- BigWigs
 local function ForceBigwigs()
-	if not IsAddOnLoaded("BigWigs") then return end
+	if not C_AddOns.IsAddOnLoaded("BigWigs") then return end
 	if BigWigsClassicDB then table_wipe(BigWigsClassicDB) end
 	BigWigsClassicDB = {
 		["namespaces"] = {

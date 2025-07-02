@@ -5,7 +5,7 @@ local Module = K:GetModule("Tooltip")
 local select, max, strfind, format, strsplit = select, math.max, string.find, string.format, string.split
 local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown
 local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
-local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
+local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, C_Item.GetItemInfo, GetItemGem, GetAverageItemLevel
 local HEIRLOOMS = _G.HEIRLOOMS
 
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL..": "..K.InfoColor

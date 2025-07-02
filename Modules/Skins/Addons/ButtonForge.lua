@@ -18,7 +18,7 @@ local cfg = {
 
 function Module:ReskinButtonForge()
 	if not C["Skins"].ButtonForge then return end
-	if not IsAddOnLoaded("ButtonForge") then return	end
+	if not C_AddOns.IsAddOnLoaded("ButtonForge") then return	end
 
 	local ActionBar = K:GetModule("ActionBar")
 

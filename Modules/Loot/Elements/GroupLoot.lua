@@ -294,7 +294,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 	end
 
 	local link = GetLootRollItemLink(rollID)
-	local _, _, _, itemLevel, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(link)
+	local _, _, _, itemLevel, _, _, _, _, _, _, _, _, _, bindType = C_Item.GetItemInfo(link)
 	local color = ITEM_QUALITY_COLORS[quality]
 
 	if not bop then bop = bindType == 1 end -- recheck sometimes, we need this from bindType

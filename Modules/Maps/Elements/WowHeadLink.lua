@@ -30,7 +30,7 @@ end
 
 -- Main Function
 function Module:CreateWowHeadLinks()
-	if not C["Misc"].ShowWowHeadLinks or IsAddOnLoaded("Leatrix_Plus") then
+	if not C["Misc"].ShowWowHeadLinks or C_AddOns.IsAddOnLoaded("Leatrix_Plus") then
 		return
 	end
 
