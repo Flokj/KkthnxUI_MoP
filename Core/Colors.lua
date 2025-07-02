@@ -81,14 +81,22 @@ oUF.colors.power = {
 	["RUNIC_POWER"] = { 0.00, 0.70, 0.85 }, -- Deep sky blue, softer cyan
 	["SOUL_SHARDS"] = { 0.50, 0.35, 0.60 }, -- Softened purple-gray
 	["EBON_MIGHT"] = { 0.70, 0.45, 0.30 }, -- Warm, softer orange-brown
+	["STAGGER"] = {
+		{ 0.50, 0.85, 0.50 }, -- Soft green
+		{ 0.90, 0.85, 0.55 }, -- Muted golden yellow
+		{ 0.90, 0.45, 0.45 }, -- Softened red
+	},
 	["UNUSED"] = { 0.70, 0.75, 0.80 }, -- Soft light gray
 }
 
 oUF.colors.class = {
 	["DEATHKNIGHT"] = { 0.70, 0.15, 0.20 }, -- Deep muted red
+	["DEMONHUNTER"] = { 0.60, 0.25, 0.75 }, -- Softer violet
 	["DRUID"] = { 1.00, 0.45, 0.10 }, -- Warm earthy orange
+	["EVOKER"] = { 0.25, 0.55, 0.50 }, -- Muted teal
 	["HUNTER"] = { 0.65, 0.80, 0.50 }, -- Soft olive green
 	["MAGE"] = { 0.40, 0.75, 1.00 }, -- Softer sky blue
+	["MONK"] = { 0.00, 0.90, 0.55 }, -- Muted bright green
 	["PALADIN"] = { 0.90, 0.60, 0.70 }, -- Soft pink
 	["PRIEST"] = { 0.85, 0.90, 0.95 }, -- Soft pastel blue
 	["ROGUE"] = { 1.00, 0.90, 0.35 }, -- Softened golden yellow
