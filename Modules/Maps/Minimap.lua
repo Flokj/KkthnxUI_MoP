@@ -89,9 +89,6 @@ function Module:ReskinRegions()
 	-- QueueStatus Button
 	MiniMapBattlefieldFrame:ClearAllPoints()
 	MiniMapBattlefieldFrame:SetPoint("BOTTOMRIGHT", Minimap, -20, -4)
-	MiniMapBattlefieldBorder:Hide()
-	MiniMapBattlefieldIcon:SetAlpha(0)
-	BattlegroundShine:SetTexture(nil)
 	MiniMapBattlefieldFrame:SetFrameLevel(999)
 
 	local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")

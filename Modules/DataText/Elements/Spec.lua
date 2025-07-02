@@ -1,19 +1,13 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("DataText")
 
-local format, strsub = string.format, strsub
-local TALENT, SHOW_SPEC_LEVEL, FEATURE_BECOMES_AVAILABLE_AT_LEVEL, NONE = TALENT, SHOW_SPEC_LEVEL, FEATURE_BECOMES_AVAILABLE_AT_LEVEL, NONE
-local UnitLevel, ToggleTalentFrame, UnitCharacterPoints = UnitLevel, ToggleTalentFrame, UnitCharacterPoints
-local talentString = "%s (%s)"
-local unspendPoints = gsub(CHARACTER_POINTS1_COLON, HEADER_COLON, "")
-
 local GetTalentInfo = C_SpecializationInfo.GetTalentInfo
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 local SetSpecialization = C_SpecializationInfo.SetSpecialization
 
 local function addIcon(texture)
-	texture = texture and "|T" .. texture .. ":12:16:0:0:50:50:4:46:4:46|t" or ""
+	texture = texture and "|T" .. texture .. ":16:16:0:0:50:50:4:46:4:46|t" or ""
 	return texture
 end
 
@@ -35,24 +29,24 @@ local function OnEvent()
 		else
 			icon = addIcon(select(4, GetSpecializationInfoByID(currentLootIndex)))
 		end
-		self.text:SetText(K.MyClassColor .. name .. icon)
+		SpecDataText.Text:SetText(icon .. " " .. K.MyClassColor .. name)
 	else
-		self.text:SetText(SPECIALIZATION .. ": ".. K.MyClassColor .. NONE)
+		SpecDataText.Text:SetText(SPECIALIZATION .. ": ".. K.MyClassColor .. NONE)
 	end
 end
 
-local function OnEnter(self)
+local function OnEnter()
 	if not currentSpecIndex or currentSpecIndex == 5 then return end
 
-	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(self))
+	GameTooltip:SetOwner(SpecDataText, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(SpecDataText))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(TALENTS_BUTTON, 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local specID, specName, _, specIcon = GetSpecializationInfo(currentSpecIndex)
-	GameTooltip:AddLine(addIcon(specIcon) .." " .. specName, 0.6, 0.8, 1)
+	GameTooltip:AddLine(addIcon(specIcon) .. " " .. specName, 0.6, 0.8, 1)
 --[[]
 	for t = 1, MAX_TALENT_TIERS do
 		for c = 1, 3 do
@@ -72,17 +66,83 @@ end
 
 local OnLeave = K.HideTooltip
 
+local function selectSpec(_, specIndex)
+	if currentSpecIndex == specIndex then return end
+	SetSpecialization(specIndex)
+	DropDownList1:Hide()
+end
+
+local function checkSpec(self)
+	return currentSpecIndex == self.arg1
+end
+
+local function selectLootSpec(_, index)
+	SetLootSpecialization(index)
+	DropDownList1:Hide()
+end
+
+local function checkLootSpec(self)
+	return currentLootIndex == self.arg1
+end
+
+local function refreshDefaultLootSpec()
+	if not currentSpecIndex or currentSpecIndex == 5 then return end
+	local mult = 3 + numSpecs
+	newMenu[numLocal - mult].text = format(LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or NONE)
+end
+
+local seperatorMenu = {
+	text = "",
+	isTitle = true,
+	notCheckable = true,
+	iconOnly = true,
+	icon = "Interface\\Common\\UI-TooltipDivider-Transparent",
+	iconInfo = {
+		tCoordLeft = 0,
+		tCoordRight = 1,
+		tCoordTop = 0,
+		tCoordBottom = 1,
+		tSizeX = 0,
+		tSizeY = 8,
+		tFitDropDownSizeX = true
+	},
+}
+
+local function BuildSpecMenu()
+	if newMenu then return end
+
+	newMenu = {
+		{ text = SPECIALIZATION, isTitle = true, notCheckable = true },
+		seperatorMenu,
+		{ text = SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true },
+		{ text = "", arg1 = 0, func = selectLootSpec, checked = checkLootSpec },
+	}
+
+	for i = 1, 4 do
+		local id, name = GetSpecializationInfo(i)
+		if id then
+			numSpecs = (numSpecs or 0) + 1
+			tinsert(newMenu, i + 1, { text = name, arg1 = i, func = selectSpec, checked = checkSpec })
+			tinsert(newMenu, { text = name, arg1 = id, func = selectLootSpec, checked = checkLootSpec })
+		end
+	end
+
+	numLocal = #newMenu
+
+	refreshDefaultLootSpec()
+	K:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", refreshDefaultLootSpec)
+end
+
 local function OnMouseUp(self, btn)
-	if UnitLevel("player") < SHOW_SPEC_LEVEL then
-		UIErrorsFrame:AddMessage(K.InfoColor .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_SPEC_LEVEL))
-	elseif btn == "RightButton" then
-		if InCombatLockdown() then return end
-		if GetNumTalentGroups() < 2 then return end
-		local idx = GetActiveTalentGroup()
-		SetActiveTalentGroup(idx == 1 and 2 or 1)
-	else
-		--if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT) return end -- fix by LibShowUIPanel
+	if not currentSpecIndex or currentSpecIndex == 5 then return end
+
+	if btn == "LeftButton" then
+		if InCombatLockdown() then UIErrorsFrame:AddMessage(DB.InfoColor..ERR_NOT_IN_COMBAT) return end -- fix by LibShowUIPanel
 		ToggleTalentFrame()
+	else
+	--	BuildSpecMenu()
+	--	EasyMenu(newMenu, B.EasyMenu, self, -80, 100, "MENU", 1)
+	--	GameTooltip:Hide()
 	end
 end
 
