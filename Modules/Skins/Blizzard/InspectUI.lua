@@ -51,6 +51,17 @@ C.themes["Blizzard_InspectUI"] = function()
 		return
 	end
 
+	InspectFrameInset:Hide()
+	InspectModelFrameBorderTop:Hide()
+	InspectModelFrameBorderBottom:Hide()
+	InspectModelFrameBorderRight:Hide()
+	InspectModelFrameBorderLeft:Hide()
+
+	InspectModelFrameBorderTopRight:Hide()
+	InspectModelFrameBorderTopLeft:Hide()
+	InspectModelFrameBorderBottomRight:Hide()
+	InspectModelFrameBorderBottomLeft:Hide()
+
 	for _, slot in next, { _G.InspectPaperDollItemsFrame:GetChildren() } do
 		local icon = _G[slot:GetName() .. "IconTexture"]
 		-- local cooldown = _G[slot:GetName() .. "Cooldown"]

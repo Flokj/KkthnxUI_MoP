@@ -138,22 +138,6 @@ function Module:EnhancedTradeSkill()
 	_G["TradeSkillFrameCloseButton"]:SetPoint("TOPRIGHT", _G["TradeSkillFrame"], "TOPRIGHT", -30, -8)
 
 	-- Position dropdown menus
-	TradeSkillInvSlotDropdown:ClearAllPoints()
-	TradeSkillInvSlotDropdown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -40)
-	TradeSkillSubClassDropdown:ClearAllPoints()
-	TradeSkillSubClassDropdown:SetPoint("RIGHT", TradeSkillInvSlotDropdown, "LEFT", 0, 0)
-
-	-- Move search box below rank frame
-	TradeSkillFrameEditBox:ClearAllPoints()
-	TradeSkillFrameEditBox:SetPoint("TOPRIGHT", TradeSkillRankFrame, "BOTTOMRIGHT", 0, 1)
-	TradeSkillFrameEditBox:SetFrameLevel(3)
-
-	-- Move have materials checkbox down slightly
-	TradeSkillFrameAvailableFilterCheckButton:ClearAllPoints()
-	TradeSkillFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 70, -53)
-
-	-- Ensure have materials checkbox doesn't overlap search box
-	TradeSkillFrameAvailableFilterCheckButtonText:SetWidth(110)
-	TradeSkillFrameAvailableFilterCheckButtonText:SetWordWrap(false)
-	TradeSkillFrameAvailableFilterCheckButtonText:SetJustifyH("LEFT")
+	TradeSkillFrame.FilterDropdown:ClearAllPoints()
+	TradeSkillFrame.FilterDropdown:SetPoint("TOPRIGHT", TradeSkillFrame, "TOPRIGHT", -44, -44)
 end

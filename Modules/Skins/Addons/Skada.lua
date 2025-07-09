@@ -110,7 +110,7 @@ function Module:ReskinSkada()
 		for _, window in ipairs(Skada:GetWindows()) do
 			tinsert(windows, window)
 		end
-		EmbedSkada()
+		--EmbedSkada()
 	end
 
 	Skada.DeleteWindow_ = Skada.DeleteWindow
