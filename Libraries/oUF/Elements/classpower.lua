@@ -266,10 +266,10 @@ do
 		KkthnxUI[1]:UnregisterEvent("UNIT_POWER_FREQUENT", WatchVehicleCombos)
 	end
 
-	if(PlayerClass == "MONK") then
+	if (PlayerClass == "MONK") then
 		ClassPowerID = SPELL_POWER_CHI
 		ClassPowerType = "CHI"
-	elseif(PlayerClass == "PALADIN") then
+	elseif (PlayerClass == "PALADIN") then
 		ClassPowerID = SPELL_POWER_HOLY_POWER
 		ClassPowerType = "HOLY_POWER"
 	elseif PlayerClass == "WARLOCK" then

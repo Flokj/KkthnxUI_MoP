@@ -8,7 +8,7 @@ local string_format = string.format
 -- WoW API
 local CreateFrame = CreateFrame
 
-function Module.PostUpdateAddPower(element, cur, max)
+function Module.PostUpdateAddPower(element, _, cur, max)
 	if element.Text and max > 0 then
 		local perc = cur / max * 100
 		if perc == 100 then
@@ -35,20 +35,25 @@ function Module:CreatePlayer()
 
 	if not self then return end
 
+	-- Create Overlay
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(5)
 	Overlay:SetAllPoints()
 	Overlay:EnableMouse(false)
+	self.Overlay = Overlay
 
+	-- Create Header
 	Module.CreateHeader(self)
 
+	-- Create Health
 	local Health = CreateFrame("StatusBar", nil, self)
 	Health:SetHeight(playerHeight)
 	Health:SetPoint("TOPLEFT")
 	Health:SetPoint("TOPRIGHT")
 	Health:SetStatusBarTexture(UnitframeTexture)
 	Health:CreateBorder()
+	self.Health = Health
 
 	Health.colorDisconnected = true
 	Health.frequentUpdates = true
@@ -77,12 +82,14 @@ function Module:CreatePlayer()
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
 	self:Tag(Health.Value, "[hp]")
 
+	-- Create Power
 	local Power = CreateFrame("StatusBar", nil, self)
 	Power:SetHeight(C["Unitframe"].PlayerPowerHeight)
 	Power:SetPoint("TOPLEFT", Health, "BOTTOMLEFT", 0, -6)
 	Power:SetPoint("TOPRIGHT", Health, "BOTTOMRIGHT", 0, -6)
 	Power:SetStatusBarTexture(UnitframeTexture)
 	Power:CreateBorder()
+	self.Power = Power
 
 	Power.colorPower = true
 	Power.frequentUpdates = true
@@ -97,9 +104,9 @@ function Module:CreatePlayer()
 	Power.Value:SetFont(select(1, Power.Value:GetFont()), 11, select(3, Power.Value:GetFont()))
 	self:Tag(Power.Value, "[power]")
 
+	-- Create Portrait conditionally
 	if playerPortraitStyle ~= "NoPortraits" then
 		local Portrait
-
 		if playerPortraitStyle == "OverlayPortrait" then
 			Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
@@ -126,15 +133,16 @@ function Module:CreatePlayer()
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
-
 		self.Portrait = Portrait
 	end
 
+	-- Class Resources
 	if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
 		Module:CreateClassPower(self)
 		Module:CreateEclipseBar(self)
 	end
 
+	-- Player Debuffs
 	if C["Unitframe"].PlayerDebuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Debuffs = CreateFrame("Frame", nil, self)
 		Debuffs.spacing = 6
@@ -154,6 +162,7 @@ function Module:CreatePlayer()
 		self.Debuffs = Debuffs
 	end
 
+	-- Player Buffs
 	if C["Unitframe"].PlayerBuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
@@ -174,6 +183,7 @@ function Module:CreatePlayer()
 		self.Buffs = Buffs
 	end
 
+	-- Player Castbar
 	if C["Unitframe"].PlayerCastbar then
 		local Castbar = CreateFrame("StatusBar", "oUF_CastbarPlayer", self)
 		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -237,6 +247,7 @@ function Module:CreatePlayer()
 		self.Castbar = Castbar
 	end
 
+	-- Heal Prediction
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(Health)
@@ -270,17 +281,15 @@ function Module:CreatePlayer()
 		end
 		Level:SetFontObject(K.UIFont)
 		self:Tag(Level, "[fulllevel]")
-
 		self.Level = Level
 	end
 
-	if C["Unitframe"].AdditionalPower then
-		if K.Class ~= "DRUID" then return end
-
+	-- Additional Power for Druids
+	if C["Unitframe"].AdditionalPower and K.Class == "DRUID" then
 		local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", Health)
-		AdditionalPower.frequentUpdates = true
 		AdditionalPower:SetWidth(12)
 		AdditionalPower:SetOrientation("VERTICAL")
+
 		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 			AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
 			AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
@@ -288,9 +297,11 @@ function Module:CreatePlayer()
 			AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
 			AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
 		end
+
 		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
 		AdditionalPower:CreateBorder()
+		AdditionalPower.colorPower = true
 
 		if C["Unitframe"].Smooth then
 			K:SmoothBar(AdditionalPower)
@@ -302,10 +313,12 @@ function Module:CreatePlayer()
 		AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
 
 		AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+		AdditionalPower.frequentUpdates = true
 
 		self.AdditionalPower = AdditionalPower
 	end
 
+	-- Global Cooldown
 	if C["Unitframe"].GlobalCooldown then
 		local GCD = CreateFrame("Frame", "oUF_PlayerGCD", Health)
 		GCD:SetWidth(playerWidth)
@@ -321,29 +334,29 @@ function Module:CreatePlayer()
 		self.GCD = GCD
 	end
 
+	-- Combat Text
 	if C["Unitframe"].CombatText then
-		if C_AddOns.IsAddOnLoaded("MikScrollingBattleText") or C_AddOns.IsAddOnLoaded("Parrot") or C_AddOns.IsAddOnLoaded("xCT") or C_AddOns.IsAddOnLoaded("sct") then
+		if not (C_AddOns.IsAddOnLoaded("MikScrollingBattleText") or C_AddOns.IsAddOnLoaded("Parrot") or C_AddOns.IsAddOnLoaded("xCT") or C_AddOns.IsAddOnLoaded("sct")) then
+			local parentFrame = CreateFrame("Frame", nil, UIParent)
+			local FloatingCombatFeedback = CreateFrame("Frame", "oUF_Player_CombatTextFrame", parentFrame)
+			FloatingCombatFeedback:SetSize(32, 32)
+			K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", { "BOTTOM", self, "TOPLEFT", 0, 120 })
+
+			for i = 1, 36 do
+				FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
+			end
+
+			FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
+			FloatingCombatFeedback.fontFlags = "OUTLINE"
+			FloatingCombatFeedback.abbreviateNumbers = true
+
+			self.FloatingCombatFeedback = FloatingCombatFeedback
+		else
 			C["Unitframe"].CombatText = false
-			return
 		end
-
-		local parentFrame = CreateFrame("Frame", nil, UIParent)
-		local FloatingCombatFeedback = CreateFrame("Frame", "oUF_Player_CombatTextFrame", parentFrame)
-		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", { "BOTTOM", self, "TOPLEFT", 0, 120 })
-
-		for i = 1, 36 do
-			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
-		end
-
-		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
-		FloatingCombatFeedback.fontFlags = "OUTLINE"
-		FloatingCombatFeedback.abbreviateNumbers = true
-
-		self.FloatingCombatFeedback = FloatingCombatFeedback
 	end
 
-	-- Swing timer
+	-- Swing Timer
 	if C["Unitframe"].SwingBar then
 		local width, height = C["Unitframe"].SwingWidth, C["Unitframe"].SwingHeight
 
@@ -395,6 +408,7 @@ function Module:CreatePlayer()
 		self.Swing.hideOoc = true
 	end
 
+	-- Indicators
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	LeaderIndicator:SetSize(16, 16)
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
@@ -402,6 +416,7 @@ function Module:CreatePlayer()
 	else
 		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	end
+	self.LeaderIndicator = LeaderIndicator
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(16, 16)
@@ -410,6 +425,7 @@ function Module:CreatePlayer()
 	else
 		AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	end
+	self.AssistantIndicator = AssistantIndicator
 
 	if C["Unitframe"].PvPIndicator then
 		local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
@@ -421,7 +437,6 @@ function Module:CreatePlayer()
 			PvPIndicator:SetPoint("RIGHT", Health, "LEFT", -2, 0)
 		end
 		PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
-
 		self.PvPIndicator = PvPIndicator
 	end
 
@@ -429,7 +444,8 @@ function Module:CreatePlayer()
 	CombatIndicator:SetSize(26, 26)
 	CombatIndicator:SetPoint("LEFT", 6, -1)
 	CombatIndicator:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon")
-	CombatIndicator:SetAlpha(0.7)
+	CombatIndicator:SetAlpha(0.6)
+	self.CombatIndicator = CombatIndicator
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
@@ -438,6 +454,7 @@ function Module:CreatePlayer()
 		RaidTargetIndicator:SetPoint("TOP", Health, "TOP", 0, 8)
 	end
 	RaidTargetIndicator:SetSize(24, 24)
+	self.RaidTargetIndicator = RaidTargetIndicator
 
 	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
@@ -446,6 +463,7 @@ function Module:CreatePlayer()
 		ReadyCheckIndicator:SetPoint("CENTER", Health)
 	end
 	ReadyCheckIndicator:SetSize(playerHeight - 4, playerHeight - 4)
+	self.ReadyCheckIndicator = ReadyCheckIndicator
 
 	local ResurrectIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	ResurrectIndicator:SetSize(44, 44)
@@ -454,6 +472,7 @@ function Module:CreatePlayer()
 	else
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
+	self.ResurrectIndicator = ResurrectIndicator
 
 	do
 		local RestingIndicator = CreateFrame("Frame", "KKUI_RestingFrame", Overlay)
@@ -514,6 +533,7 @@ function Module:CreatePlayer()
 		self.RestingIndicator = RestingIndicator
 	end
 
+	-- Debuff Highlight
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
 		DebuffHighlight:SetAllPoints(Health)
@@ -522,11 +542,11 @@ function Module:CreatePlayer()
 		DebuffHighlight:SetBlendMode("ADD")
 
 		self.DebuffHighlight = DebuffHighlight
-
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
 	end
 
+	-- Highlight
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
@@ -534,21 +554,12 @@ function Module:CreatePlayer()
 	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
+	self.Highlight = Highlight
 
+	-- Threat Indicator
 	local ThreatIndicator = {
 		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
-
-	self.Overlay = Overlay
-	self.Health = Health
-	self.Power = Power
-	self.LeaderIndicator = LeaderIndicator
-	self.AssistantIndicator = AssistantIndicator
-	self.CombatIndicator = CombatIndicator
-	self.RaidTargetIndicator = RaidTargetIndicator
-	self.ReadyCheckIndicator = ReadyCheckIndicator
-	self.ResurrectIndicator = ResurrectIndicator
-	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
 end

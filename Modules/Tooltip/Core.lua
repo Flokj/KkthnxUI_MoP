@@ -68,8 +68,8 @@ function Module:UpdateFactionLine()
 	end
 end
 
-local LEVEL = "уров" or LEVEL
 function Module:GetLevelLine()
+   if GetLocale() == "ruRU" then LEVEL = "уров" else LEVEL = LEVEL end
 	for i = 2, self:NumLines() do
 		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
 		if not tiptext then

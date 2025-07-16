@@ -590,7 +590,7 @@ C["Tooltip"] = {
 -- Unitframe
 C["Unitframe"] = {
 	AllTextScale = 1.1,
-	AdditionalPower = false,
+	AdditionalPower = true,
 	AutoAttack = true,
 	CastClassColor = true,
 	CastReactionColor = false,

@@ -1008,7 +1008,7 @@ local Tooltip = function(self)
 	Window:CreateDropdown("Tooltip", "CursorMode", L["Follow Cursor"])
 end
 
-local function updateUFTextScale() -- WIP
+local function updateUFTextScale()
 	K:GetModule("Unitframes"):UpdateTextScale()
 end
 
@@ -1038,7 +1038,7 @@ local Unitframe = function(self)
 
 	Window:CreateSection(PLAYER)
 	if K.Class == "DRUID" then
-		Window:CreateSwitch("Unitframe", "AdditionalPower", L["Show Additional Mana Power (|CFFFF7D0ADruid|r)"])
+		Window:CreateSwitch("Unitframe", "AdditionalPower", "Show Additional Mana Power (|CFFFF7D0ADruid|r)")
 	end
 	Window:CreateSwitch("Unitframe", "CastbarLatency", L["Show Castbar Latency"])
 	Window:CreateSwitch("Unitframe", "GlobalCooldown", "Show Global Cooldown Spark")
