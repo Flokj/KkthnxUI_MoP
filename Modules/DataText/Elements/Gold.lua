@@ -310,6 +310,7 @@ local function OnMouseUp(self, btn)
 		if KkthnxUIDB.ShowSlots then
 			ToggleAllBags()
 		else
+			if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT) return end
 			ToggleCharacter("TokenFrame")
 		end
 	end

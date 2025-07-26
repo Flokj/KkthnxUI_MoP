@@ -46,7 +46,10 @@ local function isItemJunk(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterJunk then return end
 
-	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice
+	-- Optimized short-circuiting for database access
+	local isCustomJunk = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] and KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]
+
+	return (item.quality == LE_ITEM_QUALITY_POOR or isCustomJunk) and item.hasPrice
 end
 
 local function isItemEquipSet(item)
@@ -127,7 +130,9 @@ local function isItemCustom(item, index)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterFavourite then return end
 
-	local customIndex = item.id and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
+	-- Optimized short-circuiting for database access
+	local customIndex = KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
+
 	return customIndex and customIndex == index
 end
 

@@ -214,14 +214,14 @@ function Module:ReskinRegions()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
 
 	inviteNotification:SetScript("OnClick", function(_, btn)
-		inviteNotification:Hide()
+	inviteNotification:Hide()
 
-		if btn == "LeftButton" then
-			ToggleCalendar()
-		end
+	if btn == "LeftButton" and not InCombatLockdown() then
+		ToggleCalendar()
+	end
 
-		K:UnregisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateInviteVisibility)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
+	K:UnregisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateInviteVisibility)
+	K:UnregisterEvent("PLAYER_ENTERING_WORLD", updateInviteVisibility)
 	end)
 end
 

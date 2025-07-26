@@ -72,7 +72,6 @@ Engine[3] = {} -- L, Localization
 local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
-K.LibShowUIPanel = LibStub("LibShowUIPanel-1.0-KkthnxUI", true) or nil
 K.LibEasyMenu = LibStub("LibEasyMenu-1.0-KkthnxUI", true) or nil
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI", true) or nil
 K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI", true) or nil
@@ -213,7 +212,10 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 				success, err = pcall(func, event, ...)
 			end
 			if not success then
-				print("Error in event handler for event:", event, "-", err)
+				-- Only log errors in debug mode to avoid spam
+				if K.Debug then
+					print("|cFF00FF00KkthnxUI:|r Error in event handler for event:", event, "-", err)
+				end
 			end
 		end
 	end

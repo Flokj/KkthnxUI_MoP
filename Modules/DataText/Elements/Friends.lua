@@ -663,6 +663,7 @@ local function OnLeave()
 end
 
 local function OnMouseUp(_, btn)
+	if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT) return end
 	if btn ~= "LeftButton" then
 		return
 	end
