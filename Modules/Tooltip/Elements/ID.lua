@@ -93,22 +93,8 @@ function Module:AddLineForID(id, linkType, noadd)
 		elseif bagCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. ":", K.InfoColor .. bagCount)
 		end
-
 		if itemStackCount and itemStackCount > 1 then
 			self:AddDoubleLine(L["Stack Cap"] .. ":", K.InfoColor .. itemStackCount)
-		end
-
-		-- iLvl info like retail
-		if name and itemLevel and itemLevel > 1 and K.iLvlClassIDs[classID] then
-			local tipName = self:GetName()
-			local index = strfind(tipName, "Shopping") and 3 or 2
-			local line = _G[tipName .. "TextLeft" .. index]
-			local lineText = line and line:GetText()
-			if lineText then
-				line:SetFormattedText(ITEM_LEVEL_STR, itemLevel, lineText)
-				line:SetJustifyH("LEFT")
-				line:SetWidth(ceil(line:GetStringWidth())) -- make sure it won't affect by RatingBuster
-			end
 		end
 	end
 
