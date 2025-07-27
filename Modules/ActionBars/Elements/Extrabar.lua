@@ -19,9 +19,10 @@ function Module:CreateExtrabar()
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", frame)
 	ExtraActionBarFrame.ignoreFramePositionManager = true
+	ExtraActionBarFrame:SetParent(frame)
 
 	hooksecurefunc(ExtraActionBarFrame, "SetParent", function(self, parent)
-		if parent == ExtraAbilityContainer then
+		if parent == MainMenuBar then
 			self:SetParent(frame)
 		end
 	end)
