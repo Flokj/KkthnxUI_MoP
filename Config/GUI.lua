@@ -1228,6 +1228,7 @@ local WorldMap = function(self)
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])
 	Window:CreateSwitch("WorldMap", "Coordinates", L["Show Player/Mouse Coordinates"])
+	Window:CreateSwitch("WorldMap", "HideTown", "Hide town and city icons on Worldmap")
 
 	Window:CreateSection("WorldMap Reveal")
 	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])

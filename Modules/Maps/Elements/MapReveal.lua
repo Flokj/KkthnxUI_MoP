@@ -12,7 +12,7 @@ local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExpl
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
-local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
+local shownMapCache, exploredCache, fileDataIDs, storedTex = {}, {}, {}, {}
 
 local function GetStringFromInfo(info)
 	return format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
@@ -34,6 +34,10 @@ end
 function Module:MapData_RefreshOverlays(fullUpdate)
 	table_wipe(shownMapCache)
 	table_wipe(exploredCache)
+	for _, tex in pairs(storedTex) do
+		tex:SetVertexColor(1, 1, 1)
+	end
+	wipe(storedTex)
 
 	local mapID = WorldMapFrame.mapID
 	if not mapID then return end
@@ -88,6 +92,7 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 				end
 				for k = 1, numTexturesWide do
 					local texture = self.overlayTexturePool:Acquire()
+					tinsert(storedTex, texture)
 					if k < numTexturesWide then
 						texturePixelWidth = TILE_SIZE_WIDTH
 						textureFileWidth = TILE_SIZE_WIDTH
@@ -135,51 +140,24 @@ function Module:MapData_ResetTexturePool(texture)
 end
 
 function Module:CreateWorldMapReveal()
-	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") then return end
+	if IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["RevealMap"] then
+		return
+	end
 
 	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
+	bu:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 2)
 	bu:SetHitRectInsets(-5, -5, -5, -5)
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 	bu.text = K.CreateFontString(bu, 12, "Map Reveal", "", "system", "LEFT", 24, 0)
+	bu.title = "Map Reveal"
+	K.AddTooltip(bu, "ANCHOR_BOTTOMLEFT", "|nEnable this option to reveal unexplored areas of the world map.|n|n" .. "When enabled, unexplored areas will appear with a slight glow effect.", "info", "Map Reveal", true)
 
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooksecurefunc(pin, "RefreshOverlays", Module.MapData_RefreshOverlays)
 		pin.overlayTexturePool.resetterFunc = Module.MapData_ResetTexturePool
 	end
-
-	function bu.UpdateTooltip(self)
-		if GameTooltip:IsForbidden() then return end
-
-		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
-
-		local r, g, b = 0.2, 1.0, 0.2
-
-		if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == true then
-			GameTooltip:AddLine(L["Reveal Enabled"])
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Reveal Enabled Desc"], r, g, b)
-		else
-			GameTooltip:AddLine(L["Reveal Disabled"])
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Reveal Disabled Desc"], r, g, b)
-		end
-
-		GameTooltip:Show()
-	end
-
-	bu:HookScript("OnEnter", function(self)
-		if GameTooltip:IsForbidden() then return end
-
-		self:UpdateTooltip()
-	end)
-
-	bu:HookScript("OnLeave", function()
-		if GameTooltip:IsForbidden() then return end
-
-		GameTooltip:Hide()
-	end)
 
 	bu:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = self:GetChecked()

@@ -826,6 +826,7 @@ C["WorldMap"] = {
 	SmallWorldMap = true,
 	AlphaWhenMoving = 0.2,
 	Coordinates = false,
+	HideTown = true,
 	FadeWhenMoving = true,
 	MapRevealGlow = true,
 	MaxMapScale = 0.7,

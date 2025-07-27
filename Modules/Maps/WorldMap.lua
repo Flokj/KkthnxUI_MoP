@@ -1,26 +1,25 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("WorldMap")
 
-local select, wipe, strmatch, gmatch, tinsert, pairs = select, wipe, strmatch, gmatch, tinsert, pairs
-local tonumber, format, ceil, mod = tonumber, format, ceil, mod
+local select, tinsert = select, tinsert
 local WorldMapFrame = WorldMapFrame
 local CreateVector2D = CreateVector2D
 local UnitPosition = UnitPosition
-local C_Map_GetMapArtID = C_Map.GetMapArtID
-local C_Map_GetMapArtLayers = C_Map.GetMapArtLayers
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
-local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures
-local TexturePool_HideAndClearAnchors = TexturePool_HideAndClearAnchors
 
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
 local currentMapID, playerCoords, cursorCoords
 
 function Module:GetPlayerMapPos(mapID)
-	if not mapID then return end
+	if not mapID then
+		return
+	end
 	tempVec2D.x, tempVec2D.y = UnitPosition("player")
-	if not tempVec2D.x then return end
+	if not tempVec2D.x then
+		return
+	end
 
 	local mapRect = mapRects[mapID]
 	if not mapRect then
@@ -37,16 +36,20 @@ function Module:GetPlayerMapPos(mapID)
 end
 
 function Module:GetCursorCoords()
-	if not WorldMapFrame.ScrollContainer:IsMouseOver() then return end
+	if not WorldMapFrame.ScrollContainer:IsMouseOver() then
+		return
+	end
 
 	local cursorX, cursorY = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
-	if cursorX < 0 or cursorX > 1 or cursorY < 0 or cursorY > 1 then return end
+	if cursorX < 0 or cursorX > 1 or cursorY < 0 or cursorY > 1 then
+		return
+	end
 	return cursorX, cursorY
 end
 
 local function CoordsFormat(owner, none)
 	local text = none and ": --, --" or ": %.1f, %.1f"
-	return owner .. K.MyClassColor .. text
+	return K.SystemColor .. owner .. K.MyClassColor .. text
 end
 
 function Module:UpdateCoords(elapsed)
@@ -54,9 +57,9 @@ function Module:UpdateCoords(elapsed)
 	if self.elapsed > 0.1 then
 		local cursorX, cursorY = Module:GetCursorCoords()
 		if cursorX and cursorY then
-			cursorCoords:SetFormattedText(CoordsFormat("Cursor"), 100 * cursorX, 100 * cursorY)
+			cursorCoords:SetFormattedText(CoordsFormat(MOUSE_LABEL), 100 * cursorX, 100 * cursorY)
 		else
-			cursorCoords:SetText(CoordsFormat("Cursor", true))
+			cursorCoords:SetText(CoordsFormat(MOUSE_LABEL, true))
 		end
 
 		if not currentMapID then
@@ -86,18 +89,26 @@ function Module:SetupCoords()
 	if not C["WorldMap"].Coordinates then
 		return
 	end
-	local coordsFrame = CreateFrame("FRAME", nil, WorldMapFrame.ScrollContainer)
-	coordsFrame:SetSize(WorldMapFrame:GetWidth(), 17)
-	coordsFrame:SetPoint("BOTTOMLEFT", 17)
-	coordsFrame:SetPoint("BOTTOMRIGHT", 0)
 
-	coordsFrame.Texture = coordsFrame:CreateTexture(nil, "BACKGROUND")
-	coordsFrame.Texture:SetAllPoints()
-	coordsFrame.Texture:SetTexture(C["Media"].Textures.White8x8Texture)
-	coordsFrame.Texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
+	-- Create the coordinates frame
+	local textParent = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
+	textParent:SetFrameLevel(5)
+	textParent:SetSize(WorldMapFrame:GetWidth(), 17)
+	textParent:SetPoint("BOTTOMLEFT", 17)
+	textParent:SetPoint("BOTTOMRIGHT", 0)
 
-	playerCoords = K.CreateFontString(coordsFrame, 13, "", "", false, "BOTTOMRIGHT", -132, 1)
-	cursorCoords = K.CreateFontString(coordsFrame, 13, "", "", false, "BOTTOMLEFT", 152, 1)
+	-- Background texture for the coordinates frame
+	textParent.Texture = textParent:CreateTexture(nil, "BACKGROUND")
+	textParent.Texture:SetAllPoints()
+	textParent.Texture:SetTexture(C["Media"].Textures.White8x8Texture)
+	textParent.Texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
+
+	playerCoords = K.CreateFontString(textParent, 13, "", "OUTLINE", false, "BOTTOMLEFT", 80, 2)
+	playerCoords:SetAlpha(0.8)
+	playerCoords:SetJustifyH("LEFT")
+	cursorCoords = K.CreateFontString(textParent, 13, "", "OUTLINE", false, "BOTTOMRIGHT", -80, 2)
+	cursorCoords:SetAlpha(0.8)
+	cursorCoords:SetJustifyH("RIGHT")
 
 	hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", Module.UpdateMapID)
 	hooksecurefunc(WorldMapFrame, "OnMapChanged", Module.UpdateMapID)
@@ -133,7 +144,6 @@ end
 
 function Module:MapPartyDots()
 	local WorldMapUnitPin, WorldMapUnitPinSizes
-	--local partyTexture = "WhiteCircle-RaidBlips"
 	local partyTexture = "Interface\\OptionsFrame\\VoiceChat-Record"
 
 	local function setPinTexture(self)
@@ -158,120 +168,23 @@ function Module:MapPartyDots()
 	WorldMapUnitPin:SynchronizePinSizes()
 end
 
-local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
-
-local function GetStringFromInfo(info)
-	return format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
-end
-
-local function GetShapesFromString(str)
-	local w, h, x, y = strmatch(str, "W(%d*)H(%d*)X(%d*)Y(%d*)")
-	return tonumber(w), tonumber(h), tonumber(x), tonumber(y)
-end
-
-local function RefreshFileIDsByString(str)
-	wipe(fileDataIDs)
-
-	for fileID in gmatch(str, "%d+") do
-		tinsert(fileDataIDs, fileID)
-	end
-end
-
-function Module:MapData_RefreshOverlays(fullUpdate)
-	wipe(shownMapCache)
-	wipe(exploredCache)
-
-	local mapID = WorldMapFrame.mapID
-	if not mapID then return end
-
-	local mapArtID = C_Map_GetMapArtID(mapID)
-	local mapData = mapArtID and C.WorldMapPlusData[mapArtID]
-	if not mapData then return end
-
-	local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(mapID)
-	if exploredMapTextures then
-		for _, exploredTextureInfo in pairs(exploredMapTextures) do
-			exploredCache[GetStringFromInfo(exploredTextureInfo)] = true
-		end
-	end
-
-	if not self.layerIndex then self.layerIndex = WorldMapFrame.ScrollContainer:GetCurrentLayerIndex() end
-	local layers = C_Map_GetMapArtLayers(mapID)
-	local layerInfo = layers and layers[self.layerIndex]
-	if not layerInfo then return end
-
-	local TILE_SIZE_WIDTH = layerInfo.tileWidth
-	local TILE_SIZE_HEIGHT = layerInfo.tileHeight
-
-	-- Blizzard_SharedMapDataProviders\MapExplorationDataProvider: MapExplorationPinMixin:RefreshOverlays
-	for i, exploredInfoString in pairs(mapData) do
-		if not exploredCache[i] then
-			local width, height, offsetX, offsetY = GetShapesFromString(i)
-			RefreshFileIDsByString(exploredInfoString)
-			local numTexturesWide = ceil(width / TILE_SIZE_WIDTH)
-			local numTexturesTall = ceil(height / TILE_SIZE_HEIGHT)
-			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
-
-			for j = 1, numTexturesTall do
-				if j < numTexturesTall then
-					texturePixelHeight = TILE_SIZE_HEIGHT
-					textureFileHeight = TILE_SIZE_HEIGHT
-				else
-					texturePixelHeight = mod(height, TILE_SIZE_HEIGHT)
-					if texturePixelHeight == 0 then
-						texturePixelHeight = TILE_SIZE_HEIGHT
-					end
-					textureFileHeight = 16
-					while textureFileHeight < texturePixelHeight do
-						textureFileHeight = textureFileHeight * 2
-					end
-				end
-				for k = 1, numTexturesWide do
-					local texture = self.overlayTexturePool:Acquire()
-					if k < numTexturesWide then
-						texturePixelWidth = TILE_SIZE_WIDTH
-						textureFileWidth = TILE_SIZE_WIDTH
-					else
-						texturePixelWidth = width % TILE_SIZE_WIDTH
-						if texturePixelWidth == 0 then
-							texturePixelWidth = TILE_SIZE_WIDTH
-						end
-						textureFileWidth = 16
-						while textureFileWidth < texturePixelWidth do
-							textureFileWidth = textureFileWidth * 2
-						end
-					end
-					texture:SetWidth(texturePixelWidth)
-					texture:SetHeight(texturePixelHeight)
-					texture:SetTexCoord(0, texturePixelWidth / textureFileWidth, 0, texturePixelHeight / textureFileHeight)
-					texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k - 1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
-					texture:SetTexture(fileDataIDs[((j - 1) * numTexturesWide) + k], nil, nil, "TRILINEAR")
-
-					if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap then
-						texture:SetVertexColor(0.7, 0.7, 0.7)
-						if C["WorldMap"].MapRevealGlow then
-							texture:SetVertexColor(0.7, 0.7, 0.7)
-						else
-							texture:SetVertexColor(1, 1, 1)
-						end
-						texture:SetDrawLayer("ARTWORK", -1)
-						texture:Show()
-						if fullUpdate then
-							self.textureLoadGroup:AddTexture(texture)
-						end
-					else
-						texture:Hide()
-					end
-					tinsert(shownMapCache, texture)
-				end
-			end
-		end
-	end
-end
-
 function Module:OnEnable()
+	self:CreateWowheadLinks()
 	if not C["WorldMap"].SmallWorldMap then return end
-	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") or C_AddOns.IsAddOnLoaded("Mapster") then return end
+
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
+		local border = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
+		border:SetPoint("TOPLEFT", -4, 4)
+		border:SetPoint("BOTTOMRIGHT", 4, -4)
+		border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10, nil, "")
+
+		WorldMapFrameCloseButton:SkinCloseButton(WorldMapFrame, -2, -2, 20)
+	end
+
+	-- Exit if conflicting addons are loaded
+	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") or C_AddOns.IsAddOnLoaded("Mapster") then
+		return
+	end
 
 	-- Fix worldmap cursor when scaling
 	WorldMapFrame.ScrollContainer.GetCursorPosition = function(f)
@@ -281,14 +194,16 @@ function Module:OnEnable()
 	end
 
 	-- Hide town and city icons
-	hooksecurefunc(BaseMapPoiPinMixin, "OnAcquired", function(self)
-	local wmapID = WorldMapFrame.mapID
-		if wmapID and wmapID == 1414 or wmapID == 1415 or wmapID == 947 or wmapID == 1945 or wmapID == 113 then
-			if self.Texture and self.Texture:GetTexture() == 136441 then
-				self:Hide()
+	if C["WorldMap"].HideTown then
+		hooksecurefunc(BaseMapPoiPinMixin, "OnAcquired", function(self)
+		local wmapID = WorldMapFrame.mapID
+			if wmapID and wmapID == 1414 or wmapID == 1415 or wmapID == 947 or wmapID == 1945 or wmapID == 113 then
+				if self.Texture and self.Texture:GetTexture() == 136441 then
+					self:Hide()
+				end
 			end
-		end
-	end)
+		end)
+	end
 
 	-- Fix scroll zooming in classic
 	WorldMapFrame.ScrollContainer:HookScript("OnMouseWheel", function(self, delta)
@@ -316,21 +231,36 @@ function Module:OnEnable()
 	WorldMapFrame:SetFrameStrata("MEDIUM")
 	WorldMapFrame.BorderFrame:SetFrameStrata("MEDIUM")
 	WorldMapFrame.BorderFrame:SetFrameLevel(1)
+	WorldMapTitleButton:SetFrameLevel(1)
 	WorldMapFrame:SetAttribute("UIPanelLayout-area", "center")
 	WorldMapFrame:SetAttribute("UIPanelLayout-enabled", false)
 	WorldMapFrame:SetAttribute("UIPanelLayout-allowOtherPanels", true)
 	WorldMapFrame.HandleUserActionToggleSelf = function()
-		if WorldMapFrame:IsShown() then WorldMapFrame:Hide() else WorldMapFrame:Show() end end
-	tinsert(UISpecialFrames, "WorldMapFrame")
-	-- Fix issue when map open at default
-	if WorldMapFrame:IsShown() then
-		ToggleFrame(WorldMapFrame)
+		if WorldMapFrame:IsShown() then
+			WorldMapFrame:Hide()
+		else
+			WorldMapFrame:Show()
+		end
 	end
+	tinsert(UISpecialFrames, "WorldMapFrame")
 
 	self:MapPartyDots()
 	self:SetupCoords()
 	self:MapFader()
 
-	self:CreateWowHeadLinks()
-	self:CreateWorldMapReveal()
+	local loadWorldMapModules = {
+		"CreateWorldMapReveal",
+		"CreateWowHeadLinks",
+		"CreateWorldMapPins",
+	}
+
+	for _, funcName in ipairs(loadWorldMapModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
+	end
 end
