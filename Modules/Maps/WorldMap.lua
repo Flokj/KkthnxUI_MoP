@@ -194,10 +194,10 @@ function Module:OnEnable()
 	end
 
 	-- Hide town and city icons
-	if C["WorldMap"].HideTown then
+	if C["WorldMap"].HideTownCityIcons then
 		hooksecurefunc(BaseMapPoiPinMixin, "OnAcquired", function(self)
 		local wmapID = WorldMapFrame.mapID
-			if wmapID and wmapID == 1414 or wmapID == 1415 or wmapID == 947 or wmapID == 1945 or wmapID == 113 then
+			if wmapID and wmapID == 13 or wmapID == 12 or wmapID == 1467 or wmapID == 113 or wmapID == 424 or wmapID == 947 then
 				if self.Texture and self.Texture:GetTexture() == 136441 then
 					self:Hide()
 				end
