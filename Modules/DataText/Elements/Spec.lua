@@ -165,8 +165,6 @@ function Module:CreateSpecDataText()
 
 	SpecDataText:SetAllPoints(SpecDataText.Text)
 
-	K.Mover(SpecDataText.Text, "SpecDataText", "SpecDataText", { "LEFT", UIParent, "LEFT", 24, -230 }, 100, 16)
-
 	local function _OnEvent(...)
 		OnEvent(...)
 	end
@@ -179,4 +177,6 @@ function Module:CreateSpecDataText()
 	SpecDataText:SetScript("OnEnter", OnEnter)
 	SpecDataText:SetScript("OnLeave", OnLeave)
 	SpecDataText:SetScript("OnMouseUp", OnMouseUp)
+
+	K.Mover(SpecDataText.Text, "SpecDT", "SpecDT", { "LEFT", UIParent, "LEFT", 24, -230 }, 100, 16)
 end

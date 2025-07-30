@@ -349,6 +349,6 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		K.Mover(GoldDataText.Text, "GoldDataText", "GoldDataText", { "LEFT", UIParent, "LEFT", 24, -260 }, 100, 16)
+		K.Mover(GoldDataText.Text, "GoldDT", "GoldDT", { "LEFT", UIParent, "LEFT", 24, -260 }, 100, 16)
 	end
 end

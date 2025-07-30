@@ -707,5 +707,5 @@ function Module:CreateSocialDataText()
 	FriendsDataText:SetScript("OnLeave", OnLeave)
 	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
 
-	K.Mover(FriendsDataText.Text, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 24, -270 }, 56, 12)
+	K.Mover(FriendsDataText.Text, "FriendsDT", "FriendsDT", { "LEFT", UIParent, "LEFT", 24, -170 }, 100, 16)
 end

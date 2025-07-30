@@ -489,7 +489,7 @@ function Module:CreateGuildDataText()
 
 	GuildDataText.Text = K.CreateFontString(GuildDataText, 12)
 	GuildDataText.Text:ClearAllPoints()
-	GuildDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -240)
+	GuildDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -200)
 
 	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "ARTWORK")
 	GuildDataText.Texture:SetPoint("RIGHT", GuildDataText.Text, "LEFT", 0, 2)
@@ -511,4 +511,6 @@ function Module:CreateGuildDataText()
 	GuildDataText:SetScript("OnEnter", OnEnter)
 	GuildDataText:SetScript("OnLeave", OnLeave)
 	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
+
+	K.Mover(GuildDataText.Text, "GuildDT", "GuildDT", { "LEFT", UIParent, "LEFT", 24, -200 }, 100, 16)
 end

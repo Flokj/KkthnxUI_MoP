@@ -130,4 +130,6 @@ function Module:CreateCoordsDataText()
 	CoordsDataText:SetScript("OnLeave", OnLeave)
 	CoordsDataText:SetScript("OnMouseUp", OnMouseUp)
 	CoordsDataText:SetScript("OnUpdate", OnUpdate)
+
+	K.Mover(CoordsDataText.Text, "CoordsDT", "CoordsDT", { "TOP", UIParent, "TOP", 0, -90 }, 72, -32)
 end
