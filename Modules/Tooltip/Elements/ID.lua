@@ -6,8 +6,6 @@ local UnitAura, GetItemCount, GetItemInfo, GetUnitName = UnitAura, C_Item.GetIte
 local GetCurrencyListInfo = GetCurrencyListInfo
 local BAGSLOT, BANK = BAGSLOT, BANK
 local SELL_PRICE_TEXT = format("|cffffffff%s%s%%s|r", SELL_PRICE, HEADER_COLON)
-local ITEM_LEVEL_STR = gsub(ITEM_LEVEL_PLUS, "%+", "")
-ITEM_LEVEL_STR = format("|cffffd100%s|r|n%%s", ITEM_LEVEL_STR)
 
 local types = {
 	spell = SPELLS .. "ID:",
@@ -87,7 +85,7 @@ function Module:AddLineForID(id, linkType, noadd)
 	if linkType == types.item then
 		local bagCount = GetItemCount(id)
 		local bankCount = GetItemCount(id, true) - bagCount
-		local name, _, _, itemLevel, _, _, _, itemStackCount, _, _, _, classID = GetItemInfo(id)
+		local itemStackCount = select(8, GetItemInfo(id))
 		if bankCount > 0 then
 			self:AddDoubleLine(BAGSLOT .. "/" .. BANK .. ":", K.InfoColor .. bagCount .. "/" .. bankCount)
 		elseif bagCount > 0 then

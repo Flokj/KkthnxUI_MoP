@@ -176,7 +176,7 @@ function Module:OnEnable()
 		local border = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 		border:SetPoint("TOPLEFT", -4, 4)
 		border:SetPoint("BOTTOMRIGHT", 4, -4)
-		border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10, nil, "")
+		border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 28, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10, nil, "")
 
 		WorldMapFrameCloseButton:SkinCloseButton(WorldMapFrame, -2, -2, 20)
 	end
@@ -251,7 +251,6 @@ function Module:OnEnable()
 	local loadWorldMapModules = {
 		"CreateWorldMapReveal",
 		"CreateWowHeadLinks",
-		"CreateWorldMapPins",
 	}
 
 	for _, funcName in ipairs(loadWorldMapModules) do

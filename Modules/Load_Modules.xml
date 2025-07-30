@@ -147,9 +147,9 @@
    <Script file="Loot\Elements\FasterLoot.lua" />
    <!-- Skins Blizzard -->
    <Include file="Skins\Core.lua" />
+   <Include file="Skins\Blizzard\DeathRecap.lua" />
    <Include file="Skins\Blizzard\InspectUI.lua" />
    <Include file="Skins\Blizzard\ProfessionsBook.lua" />
-   <!--Include file="Skins\Blizzard\WorldMap.lua" /-->
    <!-- Skins FrameXML -->
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />
@@ -157,6 +157,7 @@
    <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
    <Include file="Skins\Blizzard\FrameXML\SpellBookFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
+   <Include file="Skins\Blizzard\FrameXML\GhostFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\Menu.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
