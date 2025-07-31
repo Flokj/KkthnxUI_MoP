@@ -90,6 +90,8 @@ function Module:ReskinRegions()
 	MiniMapBattlefieldFrame:ClearAllPoints()
 	MiniMapBattlefieldFrame:SetPoint("BOTTOMRIGHT", Minimap, -20, -4)
 	MiniMapBattlefieldFrame:SetFrameLevel(999)
+	MiniMapBattlefieldFrameBorder:Hide()
+	MiniMapBattlefieldFrameIcon:Hide()
 
 	local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
 	queueIcon:SetPoint("CENTER", MiniMapBattlefieldFrame)
