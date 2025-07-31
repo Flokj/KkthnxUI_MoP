@@ -2,6 +2,7 @@ local C = KkthnxUI[2]
 
 C.NameplateWhiteList = {
     
+    -- Source Big Debuffs
     -- Racials
 
     [20549] = true, --{ type = CROWD_CONTROL }, -- War Stomp
@@ -66,8 +67,6 @@ C.NameplateWhiteList = {
     [126690] = true, --{ type = BUFF_OFFENSIVE }, -- Call of Conquest
     [126683] = true, --{ type = BUFF_OFFENSIVE }, -- Call of Dominance
 
-
-
     -- Interrupts
 
     [15752] = true, --{ type = INTERRUPT, duration = 10 }, -- Linken's Boomerang Disarm
@@ -93,7 +92,6 @@ C.NameplateWhiteList = {
     [48792] = true, --{ type = BUFF_DEFENSIVE, },  -- Icebound Fortitude
     [49028] = true, --{ type = BUFF_OFFENSIVE, },  -- Dancing Rune Weapon // might not work - spell id vs aura
     [49039] = true, --{ type = IMMUNITY_SPELL, },  -- Lichborne
-    [49203] = true, --{ type = CROWD_CONTROL, }, -- Hungering Cold
     [50461] = true, --{ type = BUFF_DEFENSIVE, },  -- Anti-Magic Zone
     [49016] = true, --{ type = BUFF_OFFENSIVE, },  -- Unholy Frenzy
     [91802] = true, --{ type = INTERRUPT, duration = 2 },  -- Shambling Rush (pet dk kick)
@@ -109,8 +107,6 @@ C.NameplateWhiteList = {
     [115018] = true, --{ type = IMMUNITY }, -- Desecrated Ground
     [51271] = true, --{ type = BUFF_OFFENSIVE, },  -- Pillar of Frost
     --[91807] = true, --{ type = ROOT }, -- Shambling Rush (Dark Transformation)
-
-
 
     -- Priest
 
@@ -128,13 +124,10 @@ C.NameplateWhiteList = {
     [8122] = true, --{ type = CROWD_CONTROL }, -- Psychic Scream
     [10060] = true, --{ type = BUFF_OFFENSIVE }, -- Power Infusion
     [15487] = true, --{ type = CROWD_CONTROL }, -- Silence
-    [14892] = true, --{ type = BUFF_DEFENSIVE }, -- Inspiration
-        [15362] = true, --{ parent = 14892 },
     [6346] = true, --{ type = BUFF_DEFENSIVE }, -- Fear Ward
     [9484] = true, --{ type = CROWD_CONTROL }, -- Shackle Undead
     [27827] = true, --{ type = IMMUNITY }, -- Spirit of Redemption
     [33206] = true, --{ type = BUFF_DEFENSIVE }, -- Pain Suppression
-    [14751] = true, --{ type = BUFF_DEFENSIVE }, -- Inner Focus
     [87204] = true, --{ type = CROWD_CONTROL }, -- Sin and Punishment (VT dispel)
     [96267] = true, --{ type = BUFF_DEFENSIVE }, -- Strength of Soul
     -- MoP
@@ -147,9 +140,6 @@ C.NameplateWhiteList = {
 
     -- Warlock
     -- WoTLK
-    [47241] = true, --{ type = BUFF_OFFENSIVE, }, -- Metamorphosis
-    [60995] = true, --{ type = CROWD_CONTROL, }, -- Demon Charge (Metamorphosis)
-
     [24259] = true, --{ type = CROWD_CONTROL }, -- Spell Lock Silence
     [6358] = true, --{ type = CROWD_CONTROL }, -- Seduction
     [5782] = true, --{ type = CROWD_CONTROL }, -- Fear
@@ -164,17 +154,8 @@ C.NameplateWhiteList = {
     [30283] = true, --{ type = CROWD_CONTROL }, -- Shadowfury
     [43523] = true, --{ type = CROWD_CONTROL }, -- Unstable Affliction
         [31117] = true, --{ parent = 43523 },
-    [30299] = true, --{ type = BUFF_DEFENSIVE }, -- Nether Protection
-        [30301] = true, --{ parent = 30299 },
-    [18708] = true, --{ type = BUFF_DEFENSIVE }, -- Fel Domination
     [32752] = true, --{ type = CROWD_CONTROL }, -- Summoning Disorientation
-    [19482] = true, --{ type = CROWD_CONTROL }, -- Doom Guard Stun
     [89766] = true, --{ type = CROWD_CONTROL }, -- Axe Toss (felguard stun)
-    [79462] = true, --{ type = BUFF_OFFENSIVE }, -- Demon Soul: Felguard
-    [79460] = true, --{ type = BUFF_OFFENSIVE }, -- Demon Soul: Felhunter
-    [79459] = true, --{ type = BUFF_OFFENSIVE }, -- Demon Soul: Imp
-    [79463] = true, --{ type = BUFF_OFFENSIVE }, -- Demon Soul: Succubus
-    [79464] = true, --{ type = BUFF_OFFENSIVE }, -- Demon Soul: Voidwalker
     -- MoP
     [137143] = true, --{ type = BUFF_DEFENSIVE }, -- Blood Horror
     [130616] = true, --{ type = CROWD_CONTROL }, -- Fear (Glyph of Fear)
@@ -196,7 +177,6 @@ C.NameplateWhiteList = {
     [32182] = true, --{ type = BUFF_OFFENSIVE },  -- Heroism
     [51514] = true, --{ type = CROWD_CONTROL, },  -- Hex
     [57994] = true, --{ type = INTERRUPT, duration = 2, },  -- Wind Shear
-    [58861] = true, --{ type = CROWD_CONTROL, }, -- Bash (Spirit Wolf)
     [58875] = true, --{ type = BUFF_OTHER, }, -- Spirit Walk (Spirit Wolf)
     --[63685] = true, --{ type = ROOT, }, -- Freeze (Enhancement)
     --[64695] = true, --{ type = ROOT, }, -- Earthgrab (Elemental)
@@ -204,7 +184,6 @@ C.NameplateWhiteList = {
     [8178] = true, --{ type = IMMUNITY_SPELL }, -- Grounding Totem Effect
     [16188] = true, --{ type = BUFF_DEFENSIVE }, -- Nature's Swiftness
     --[12548] = true, --{ type = ROOT }, -- Frost Shock
-    [39796] = true, --{ type = CROWD_CONTROL }, -- Stoneclaw Totem
     [16166] = true, --{ type = BUFF_OFFENSIVE }, -- Elemental Mastery
     [30823] = true, --{ type = BUFF_DEFENSIVE }, -- Shamanistic Rage
     -- MoP
@@ -221,7 +200,6 @@ C.NameplateWhiteList = {
     [54428] = true, --{ type = BUFF_OTHER, }, -- Divine Plea
     [59578] = true, --{ type = BUFF_OTHER, }, -- The Art of War
     [31935] = true, --{ type = CROWD_CONTROL, }, -- Silenced - Avenger's Shield
-    [64205] = true, --{ type = BUFF_DEFENSIVE, }, -- Divine Sacrifice
 
     [1022] = true, --{ type = IMMUNITY },-- Blessing of Protection
     [498] = true, --{ type = BUFF_DEFENSIVE }, -- Divine Protection
@@ -237,7 +215,6 @@ C.NameplateWhiteList = {
 
     -- Cataclysm
     [96231] = true, --{ type = INTERRUPT, duration = 4 }, -- Rebuke
-    [85696] = true, --{ type = BUFF_OFFENSIVE }, -- Zealotry
 
     -- MoP
     [105421] = true, --{ type = CROWD_CONTROL }, -- Blinding Light
@@ -322,7 +299,6 @@ C.NameplateWhiteList = {
     --    [16857] = true, --{ parent = 770 }, -- Faerie Fire (Feral)
     [33786] = true, --{ type = CROWD_CONTROL }, -- Cyclone
     --[45334] = true, --{ type = ROOT }, -- Feral Charge Effect
-    [17116] = true, --{ type = BUFF_DEFENSIVE }, -- Nature's Swiftness
     [81261] = true, --{ type = CROWD_CONTROL, },  -- Solar Beam
     [78675] = true, --{ type = INTERRUPT, duration = 5 }, -- Solar Beam interrupt
     -- MoP
@@ -351,7 +327,6 @@ C.NameplateWhiteList = {
     [110575] = true, --{ type = BUFF_DEFENSIVE }, -- Icebound Fortitude (Death Knight)
     [122291] = true, --{ type = BUFF_DEFENSIVE }, -- Unending Resolve (Warlock)
 
-
     -- Mage
 
     -- WoTLK
@@ -360,7 +335,6 @@ C.NameplateWhiteList = {
     [44544] = true, --{ type = BUFF_OFFENSIVE, }, -- Fingers of Frost
     [44572] = true, --{ type = CROWD_CONTROL, }, -- Deep Freeze
     [55021] = true, --{ type = CROWD_CONTROL, }, -- Improved Counterspell
-    [64346] = true, --{ type = CROWD_CONTROL, }, -- Fiery Payback (Fire Mage Disarm)
     [82691] = true, --{ type = CROWD_CONTROL, }, -- Ring of Frost
     --[83302] = true, --{ type = ROOT, }, -- Improved Cone of Cold
     --[116] = true, --{ type = ROOT }, -- Frostbolt
@@ -370,7 +344,6 @@ C.NameplateWhiteList = {
     --[12486] = true, --{ type = ROOT }, -- Chilled
     --[12487] = true, --{ type = ROOT }, -- Ice Shards
 
-    [18469] = true, --{ type = CROWD_CONTROL }, -- Improved Counterspell
     [118] = true, --{ type = CROWD_CONTROL }, -- Polymorph
         [28271] = true, --{ parent = 118 },
         [28272] = true, --{ parent = 118 },
@@ -379,8 +352,6 @@ C.NameplateWhiteList = {
         [61721] = true, --{ parent = 118 },
 
     [11426] = true, --{ type = BUFF_DEFENSIVE }, -- Ice Barrier
-    [543] = true, --{ type = BUFF_DEFENSIVE }, -- Fire Ward
-    [12355] = true, --{ type = CROWD_CONTROL }, -- Impact Stun
     --[122] = true, --{ type = ROOT }, -- Frost Nova
     --    [55080] = true, --{ parent = 122 }, -- Shattered Barrier
     [12042] = true, --{ type = BUFF_OFFENSIVE }, -- Arcane Power
@@ -412,7 +383,6 @@ C.NameplateWhiteList = {
     [51713] = true, --{ type = BUFF_OFFENSIVE, }, -- Shadow Dance
     [51722] = true, --{type = CROWD_CONTROL, }, -- Dismantle
 
-    [18425] = true, --{ type = CROWD_CONTROL }, -- Improved Kick
     [13750] = true, --{ type = BUFF_OFFENSIVE}, -- Adrenaline Rush
     [13877] = true, --{ type = BUFF_OFFENSIVE}, -- Blade Flurry
     [1833] = true, --{ type = CROWD_CONTROL }, -- Cheap Shot
@@ -426,8 +396,6 @@ C.NameplateWhiteList = {
     [1330] = true, --{ type = CROWD_CONTROL }, -- Garrote Silence
     [31224] = true, --{ type = IMMUNITY_SPELL }, -- Cloak of Shadows
     [45182] = true, --{ type = BUFF_DEFENSIVE }, -- Cheating Death
-    [14177] = true, --{ type = BUFF_OFFENSIVE }, -- Cold Blood
-    [86759] = true, --{ type = CROWD_CONTROL }, -- Improved Kick (Rank 2)
     [74001] = true, --{ type = BUFF_DEFENSIVE }, -- Combat Readiness
     -- MoP
     [113953] = true, --{ type = CROWD_CONTROL },  -- Paralysis (Paralytic Poison)
@@ -448,15 +416,12 @@ C.NameplateWhiteList = {
     [55694] = true, --{ type = BUFF_DEFENSIVE },  -- Enraged Regeneration
     [60503] = true, --{ type = BUFF_OFFENSIVE, }, -- Taste for Blood
     [65925] = true, --{ type = BUFF_OFFENSIVE, }, -- Unrelenting Assault (2/2)
-    [85388] = true, --{ type = CROWD_CONTROL }, -- Throwdown
     [18498] = true, --{ type = CROWD_CONTROL }, -- Improved Shield Bash
-    [20230] = true, --{ type = IMMUNITY }, -- Retaliation
     [1719] = true, --{ type = BUFF_OFFENSIVE }, -- Recklessness
     [871] = true, --{ type = BUFF_DEFENSIVE }, -- Shield Wall
     [12292] = true, --{ type = BUFF_OFFENSIVE }, -- Death Wish
     --[23694] = true, --{ type = ROOT }, -- Improved Hamstring
     [18499] = true, --{ type = BUFF_OFFENSIVE }, -- Berserker Rage
-    [20253] = true, --{ type = CROWD_CONTROL }, -- Intercept Stun
         [20615] = true, --{ parent = 20253 },
     [12809] = true, --{ type = CROWD_CONTROL }, -- Concussion Blow
     [7922] = true, --{ type = CROWD_CONTROL }, -- Charge Stun
@@ -464,7 +429,6 @@ C.NameplateWhiteList = {
         [20511] = true, --{ parent = 5246 },
     [676] = true, --{ type = BUFF_OTHER }, -- Disarm
     [23920] = true, --{ type = IMMUNITY_SPELL }, -- Spell Reflection
-    [12976] = true, --{ type = BUFF_DEFENSIVE }, -- Last Stand
     --[12294] = true, --{ type = BUFF_OTHER }, -- Mortal Strike
     -- MoP
     [118895] = true, --{ type = CROWD_CONTROL }, -- Dragon Roar
