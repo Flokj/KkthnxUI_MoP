@@ -636,6 +636,7 @@ C["Unitframe"] = {
 	TargetPowerHeight = 16,
 	TargetBuffs = true,
 	TargetBuffsPerRow = 6,
+	TargetBuffsPerCol = 4,
 	TargetCastbar = true,
 	TargetCastbarIcon = true,
 	TargetCastbarHeight = 25,

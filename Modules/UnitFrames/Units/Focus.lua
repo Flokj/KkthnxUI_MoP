@@ -135,7 +135,7 @@ function Module:CreateFocus()
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 6
-		self.Debuffs.iconsPerRow = 6 --C["Unitframe"].TargetDebuffsPerRow
+		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
 		Module:UpdateAuraContainer(focusWidth, self.Debuffs, self.Debuffs.num)
 
@@ -153,7 +153,7 @@ function Module:CreateFocus()
 		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6 -- C["Unitframe"].TargetBuffsPerRow
+		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
 		Module:UpdateAuraContainer(focusWidth, self.Buffs, self.Buffs.num)
