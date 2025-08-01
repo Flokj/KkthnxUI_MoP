@@ -636,13 +636,14 @@ C["Unitframe"] = {
 	TargetPowerHeight = 16,
 	TargetBuffs = true,
 	TargetBuffsPerRow = 6,
-	TargetBuffsPerCol = 4,
+	TargetBuffsNum = 24,
 	TargetCastbar = true,
 	TargetCastbarIcon = true,
 	TargetCastbarHeight = 25,
 	TargetCastbarWidth = 200,
 	TargetDebuffs = true,
 	TargetDebuffsPerRow = 6,
+	TargetDebuffsNum = 6,
 
 	-- Focus
 	FocusBuffs = true,

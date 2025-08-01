@@ -147,7 +147,7 @@ function Module:CreateTarget()
 		Debuffs["growth-y"] = "UP"
 		Debuffs:SetPoint("BOTTOMLEFT", Name, "TOPLEFT", 0, 6)
 		Debuffs:SetPoint("BOTTOMRIGHT", Name, "TOPRIGHT", 0, 6)
-		Debuffs.num = C["Unitframe"].TargetDebuffsPerRow --* 2   -- count row
+		Debuffs.num = C["Unitframe"].TargetDebuffsNum
 		Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
 		Module:UpdateAuraContainer(targetWidth, Debuffs, Debuffs.num)
@@ -167,7 +167,7 @@ function Module:CreateTarget()
 		Buffs.initialAnchor = "TOPRIGHT"
 		Buffs["growth-x"] = "LEFT"
 		Buffs["growth-y"] = "DOWN"
-		Buffs.num = C["Unitframe"].TargetBuffsPerRow * C["Unitframe"].TargetBuffsPerCol  -- count row
+		Buffs.num = C["Unitframe"].TargetBuffsNum
 		Buffs.spacing = 6
 		Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		Buffs.onlyShowPlayer = false
