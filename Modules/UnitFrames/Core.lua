@@ -119,6 +119,34 @@ function Module:UpdatePhaseIcon(isPhased)
 	self:SetTexCoord(unpack(phaseIconTexCoords[isPhased == 2 and 2 or 1]))
 end
 
+local showOverAbsorb = false
+function Module:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allAbsorb)
+	if not showOverAbsorb then
+		self.overAbsorbBar:Hide()
+		return
+	end
+
+	local hasOverAbsorb
+	local overAbsorbAmount = health + allIncomingHeal + allAbsorb - maxHealth
+	if overAbsorbAmount > 0 then
+		if overAbsorbAmount > maxHealth then
+			hasOverAbsorb = true
+			overAbsorbAmount = maxHealth
+		end
+		self.overAbsorbBar:SetMinMaxValues(0, maxHealth)
+		self.overAbsorbBar:SetValue(overAbsorbAmount)
+		self.overAbsorbBar:Show()
+	else
+		self.overAbsorbBar:Hide()
+	end
+
+	if hasOverAbsorb then
+		self.overAbsorb:Show()
+	else
+		self.overAbsorb:Hide()
+	end
+end
+
 function Module:CreateHeader()
 	-- Register for mouse clicks and hook mouse enter/leave events
 	self:RegisterForClicks("AnyUp")

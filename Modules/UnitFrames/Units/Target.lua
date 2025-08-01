@@ -17,18 +17,6 @@ function Module:CreateTarget()
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
-	if not self then
-		return
-	end
-
-	-- Create Overlay
-	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	Overlay:SetFrameStrata(self:GetFrameStrata())
-	Overlay:SetFrameLevel(5)
-	Overlay:SetAllPoints()
-	Overlay:EnableMouse(false)
-	self.Overlay = Overlay
-
 	Module.CreateHeader(self)
 
 	-- Create Health
@@ -39,6 +27,13 @@ function Module:CreateTarget()
 	Health:SetStatusBarTexture(UnitframeTexture)
 	Health:CreateBorder()
 	self.Health = Health
+
+	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	Overlay:SetFrameStrata(self:GetFrameStrata())
+	Overlay:SetFrameLevel(6)
+	Overlay:SetAllPoints()
+	Overlay:EnableMouse(false)
+	self.Overlay = Overlay
 
 	Health.colorTapping = true
 	Health.colorDisconnected = true
@@ -239,21 +234,100 @@ function Module:CreateTarget()
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetAllPoints(Health)
+		local frameLevel = frame:GetFrameLevel()
 
-		local myBar = frame:CreateTexture(nil, "BORDER", nil, 5)
-		myBar:SetWidth(1)
-		myBar:SetTexture(HealPredictionTexture)
-		myBar:SetVertexColor(0, 1, 0, 0.5)
+		local normalTexture = K.GetTexture(C["General"].Texture)
 
-		local otherBar = frame:CreateTexture(nil, "BORDER", nil, 5)
-		otherBar:SetWidth(1)
-		otherBar:SetTexture(HealPredictionTexture)
-		otherBar:SetVertexColor(0, 1, 1, 0.5)
+		-- Position and size
+		local myBar = CreateFrame("StatusBar", nil, frame)
+		myBar:SetPoint("TOP")
+		myBar:SetPoint("BOTTOM")
+		myBar:SetPoint("LEFT", Health:GetStatusBarTexture(), "RIGHT")
+		myBar:SetStatusBarTexture(normalTexture)
+		myBar:SetStatusBarColor(0, 1, 0.5, 0.5)
+		myBar:SetFrameLevel(frameLevel)
+		myBar:Hide()
 
-		self.HealPredictionAndAbsorb = {
+		local otherBar = CreateFrame("StatusBar", nil, frame)
+		otherBar:SetPoint("TOP")
+		otherBar:SetPoint("BOTTOM")
+		otherBar:SetPoint("LEFT", myBar:GetStatusBarTexture(), "RIGHT")
+		otherBar:SetStatusBarTexture(normalTexture)
+		otherBar:SetStatusBarColor(0, 1, 0, 0.5)
+		otherBar:SetFrameLevel(frameLevel)
+		otherBar:Hide()
+
+		local absorbBar = CreateFrame("StatusBar", nil, frame)
+		absorbBar:SetPoint("TOP")
+		absorbBar:SetPoint("BOTTOM")
+		absorbBar:SetPoint("LEFT", otherBar:GetStatusBarTexture(), "RIGHT")
+		absorbBar:SetStatusBarTexture(normalTexture)
+		absorbBar:SetStatusBarColor(0.66, 1, 1)
+		absorbBar:SetFrameLevel(frameLevel)
+		absorbBar:SetAlpha(0.5)
+		absorbBar:Hide()
+		local tex = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex:SetAllPoints(absorbBar:GetStatusBarTexture())
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetHorizTile(true)
+		tex:SetVertTile(true)
+
+		local overAbsorbBar = CreateFrame("StatusBar", nil, frame)
+		overAbsorbBar:SetAllPoints()
+		overAbsorbBar:SetStatusBarTexture(normalTexture)
+		overAbsorbBar:SetStatusBarColor(0.66, 1, 1)
+		overAbsorbBar:SetFrameLevel(frameLevel)
+		overAbsorbBar:SetAlpha(0.35)
+		overAbsorbBar:Hide()
+		local tex = overAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetHorizTile(true)
+		tex:SetVertTile(true)
+
+		local healAbsorbBar = CreateFrame("StatusBar", nil, frame)
+		healAbsorbBar:SetPoint("TOP")
+		healAbsorbBar:SetPoint("BOTTOM")
+		healAbsorbBar:SetPoint("RIGHT", Health:GetStatusBarTexture())
+		healAbsorbBar:SetReverseFill(true)
+		healAbsorbBar:SetStatusBarTexture(normalTexture)
+		healAbsorbBar:SetStatusBarColor(1, 0, 0.5)
+		healAbsorbBar:SetFrameLevel(frameLevel)
+		healAbsorbBar:SetAlpha(0.35)
+		healAbsorbBar:Hide()
+		local tex = healAbsorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+		tex:SetAllPoints(healAbsorbBar:GetStatusBarTexture())
+		tex:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		tex:SetHorizTile(true)
+		tex:SetVertTile(true)
+
+		local overAbsorb = Health:CreateTexture(nil, "OVERLAY", nil, 2)
+		overAbsorb:SetWidth(8)
+		overAbsorb:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+		overAbsorb:SetBlendMode("ADD")
+		overAbsorb:SetPoint("TOPLEFT", Health, "TOPRIGHT", -5, 0)
+		overAbsorb:SetPoint("BOTTOMLEFT", Health, "BOTTOMRIGHT", -5, -0)
+		overAbsorb:Hide()
+
+		local overHealAbsorb = frame:CreateTexture(nil, "OVERLAY")
+		overHealAbsorb:SetWidth(15)
+		overHealAbsorb:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
+		overHealAbsorb:SetBlendMode("ADD")
+		overHealAbsorb:SetPoint("TOPRIGHT", Health, "TOPLEFT", 5, 2)
+		overHealAbsorb:SetPoint("BOTTOMRIGHT", Health, "BOTTOMLEFT", 5, -2)
+		overHealAbsorb:Hide()
+
+		-- Register with oUF
+		self.HealthPrediction = {
 			myBar = myBar,
 			otherBar = otherBar,
+			absorbBar = absorbBar,
+			healAbsorbBar = healAbsorbBar,
+			overAbsorbBar = overAbsorbBar,
+			overAbsorb = overAbsorb,
+			overHealAbsorb = overHealAbsorb,
 			maxOverflow = 1,
+			PostUpdate = Module.PostUpdatePrediction,
 		}
 		self.predicFrame = frame
 	end
