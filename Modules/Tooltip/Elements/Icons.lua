@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Tooltip")
 
 local gsub = gsub
-local GetSpellTexture = GetSpellTexture
+local GetSpellTexture = C_Spell.GetSpellTexture
 local newString = "0:0:64:64:5:59:5:59"
 
 function Module:SetupTooltipIcon(icon)

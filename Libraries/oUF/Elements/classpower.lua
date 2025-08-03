@@ -55,6 +55,7 @@ local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints or 4
 local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards or 7
 local SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower or 9
 local SPELL_POWER_CHI = Enum.PowerType.Chi or 12
+local SPELL_POWER_SHADOW_ORBS = Enum.PowerType.ShadowOrbs or 3
 
 -- Holds the class specific stuff.
 local ClassPowerID, ClassPowerType
@@ -266,15 +267,19 @@ do
 		KkthnxUI[1]:UnregisterEvent("UNIT_POWER_FREQUENT", WatchVehicleCombos)
 	end
 
-	if (PlayerClass == "MONK") then
+	if PlayerClass == "MONK" then
 		ClassPowerID = SPELL_POWER_CHI
 		ClassPowerType = "CHI"
-	elseif (PlayerClass == "PALADIN") then
+	elseif PlayerClass == "PALADIN" then
 		ClassPowerID = SPELL_POWER_HOLY_POWER
 		ClassPowerType = "HOLY_POWER"
 	elseif PlayerClass == "WARLOCK" then
 		ClassPowerID = SPELL_POWER_SOUL_SHARDS
 		ClassPowerType = "SOUL_SHARDS"
+	elseif PlayerClass == "PRIEST" then
+		ClassPowerID = SPELL_POWER_SHADOW_ORBS
+		ClassPowerType = "SHADOW_ORBS"
+		RequireSpell = 15473 -- Shadowform
 	elseif PlayerClass == "ROGUE" or PlayerClass == "DRUID" then
 		ClassPowerID = SPELL_POWER_COMBO_POINTS
 		ClassPowerType = "COMBO_POINTS"
