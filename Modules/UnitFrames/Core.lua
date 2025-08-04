@@ -398,7 +398,11 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 	if not cur or cur == 0 then
 		thisColor = nil
 	else
-		thisColor = cur == max and 1 or 2
+		if C["Unitframe"].ResourceColorMode then
+			thisColor = 2
+		else 
+			thisColor = cur == max and 1 or 2
+		end
 		if not prevColor or prevColor ~= thisColor then
 			local r, g, b = 1, 0, 0
 			if thisColor == 2 then
@@ -411,8 +415,10 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 	end
 
 	if diff then
+		local barWidth = (element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max
 		for i = 1, max do
-			element[i]:SetWidth((element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max)
+			local bar = element[i]
+			bar:SetWidth(barWidth)
 		end
 	end
 
@@ -441,48 +447,49 @@ function Module:CreateClassPower(self)
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
-	local bar = CreateFrame("Frame", "$parentClassPowerBar", self)
+	local maxBar = 6
+	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 
 	bar:SetSize(barWidth, barHeight)
 	K.Mover(bar, "ClassPower", "ClassPower", { unpack(barPoint) })
 
-	local bars = {}
-	for i = 1, 6 do
-		bars[i] = CreateFrame("StatusBar", nil, bar)
-		bars[i]:SetHeight(barHeight)
-		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
-		bars[i]:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+	if not bar.chargeParent then
+		bar.chargeParent = CreateFrame("Frame", nil, bar)
+		bar.chargeParent:SetAllPoints()
+		bar.chargeParent:SetFrameLevel(8)
+	end
+
+	for i = 1, maxBar do
+		local statusbar = CreateFrame("StatusBar", nil, bar)
+		statusbar:SetHeight(barHeight)
+		statusbar:SetWidth((barWidth - (maxBar - 1) * 6) / maxBar)
+		statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		statusbar:SetFrameLevel(self:GetFrameLevel() + 5)
 		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
-			bars[i]:CreateShadow(true)
+			statusbar:CreateShadow(true)
 		else
-			bars[i]:CreateBorder()
+			statusbar:CreateBorder()
 		end
 
 		if i == 1 then
-			bars[i]:SetPoint("BOTTOMLEFT")
+			statusbar:SetPoint("BOTTOMLEFT")
 		else
-			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+			statusbar:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
 
 		if isDK then
-			bars[i].timer = K.CreateFontString(bars[i], 10, "")
-		elseif K.Class == "ROGUE" then
-			if not bar.chargeParent then
-				bar.chargeParent = CreateFrame("Frame", nil, bar)
-				bar.chargeParent:SetAllPoints()
-				bar.chargeParent:SetFrameLevel(8)
-			end
-
+			statusbar.timer = K.CreateFontString(statusbar, 10, "")
+		else
 			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
-			chargeStar:SetPoint("CENTER", bars[i])
+			chargeStar:SetPoint("CENTER", statusbar)
 			chargeStar:Hide()
-
-			bars[i].chargeStar = chargeStar
+			statusbar.chargeStar = chargeStar
 		end
+
+		bars[i] = statusbar
 	end
 
 	if isDK then

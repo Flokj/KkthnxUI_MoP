@@ -1018,8 +1018,7 @@ local Unitframe = function(self)
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Unitframe", "Enable", enableTextColor .. L["Enable Unitframes"])
 	Window:CreateSwitch("Unitframe", "CastClassColor", L["Class Color Castbars"])
-	Window:CreateSwitch("Unitframe", "CastReactionColor", L["Reaction Color Castbars"])
-	Window:CreateSwitch("Unitframe", "ClassResources", L["Show Class Resources"])
+	Window:CreateSwitch("Unitframe", "CastReactionColor", L["Reaction Color Castbars"])	
 	-- Window:CreateSwitch("Unitframe", "CombatFade", L["Fade Unitframes"]) -- Broken. Portraits do not obey? Blizzard issue?
 	Window:CreateSwitch("Unitframe", "DebuffHighlight", L["Show Health Debuff Highlight"])
 	Window:CreateSwitch("Unitframe", "PvPIndicator", L["Show PvP Indicator on Player / Target"])
@@ -1028,6 +1027,10 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "Smooth", L["Smooth Bars"])
 
 	Window:CreateSlider("Unitframe", "AllTextScale", "Scale All Unitframe Texts", 0.8, 1.5, 0.05, nil, updateUFTextScale) -- WIP
+
+	Window:CreateSection("Class Resources")
+	Window:CreateSwitch("Unitframe", "ClassResources", L["Show Class Resources"])
+	Window:CreateSwitch("Unitframe", "ResourceColorMode", newFeatureIcon .. "Use the primary color regardless of the bar's fullness")
 
 	Window:CreateSection("Combat Text")
 	Window:CreateSwitch("Unitframe", "CombatText", enableTextColor .. L["Enable Simple CombatText"])
