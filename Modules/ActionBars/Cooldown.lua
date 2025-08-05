@@ -162,6 +162,7 @@ function Module:StartTimer(start, duration, modRate)
 	-- Disable blizzard cooldown numbers
 	if self.SetHideCountdownNumbers then
 		self:SetHideCountdownNumbers(true)
+		self:GetRegions():SetAlpha(0)	-- Hide Blizzard cd text
 	end
 end
 
@@ -215,6 +216,7 @@ function Module:OnSetHideCountdownNumbers(hide)
 	local disable = not (hide or self.noCooldownCount or self:IsForbidden())
 	if disable then
 		self:SetHideCountdownNumbers(true)
+		self:GetRegions():SetAlpha(0)	-- Hide Blizzard cd text
 	end
 end
 

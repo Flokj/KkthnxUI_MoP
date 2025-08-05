@@ -443,7 +443,11 @@ function Module:CreateClassPower(self)
 		barPoint = { "CENTER", self }
 	else
 		barWidth, barHeight = C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerPowerHeight - 4
-		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
+		if C["Unitframe"].Stagger and K.Class == "MONK" then
+			barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 26 }
+		else
+			barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
+		end
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"

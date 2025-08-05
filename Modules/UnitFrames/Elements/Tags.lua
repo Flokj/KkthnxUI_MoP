@@ -5,7 +5,7 @@ local format, floor = string.format, math.floor
 local AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL = AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL
 local ALTERNATE_POWER_INDEX = ALTERNATE_POWER_INDEX or 10
 local UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer = UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer
-local UnitHealth, UnitHealthMax, UnitPower, UnitPowerType = UnitHealth, UnitHealthMax, UnitPower, UnitPowerType
+local UnitHealth, UnitHealthMax, UnitPower, UnitPowerType, UnitStagger = UnitHealth, UnitHealthMax, UnitPower, UnitPowerType, UnitStagger
 local UnitClass, UnitReaction, UnitLevel, UnitClassification = UnitClass, UnitReaction, UnitLevel, UnitClassification
 local UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost = UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost
 local GetCreatureDifficultyColor = GetCreatureDifficultyColor
@@ -296,6 +296,22 @@ oUF.Tags.Methods["cureclipse"] = function(unit)
 	return format(textFormat, (max == 0 and 0) or math.abs(UnitPower("player", POWERTYPE_BALANCE)))
 end
 oUF.Tags.Events["cureclipse"] = "UNIT_POWER_FREQUENT ECLIPSE_DIRECTION_CHANGE"
+
+-- Monk stagger
+oUF.Tags.Methods["monkstagger"] = function(unit)
+	if unit ~= "player" or K.Class ~= "MONK" then
+		return
+	end
+
+	local cur = UnitStagger(unit) or 0
+	local perc = cur / UnitHealthMax(unit)
+	if cur == 0 then
+		return
+	end
+
+	return K.ShortValue(cur) .. " - " .. K.MyClassColor .. K.Round(perc * 100) .. "%"
+end
+oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)

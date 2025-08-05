@@ -230,7 +230,7 @@ C["Auras"] = {
 	ReverseBuffs = false,
 	ReverseDebuffs = false,
 	TotemSize = 32,
-	Totems = false,
+	Totems = true,
 	VerticalTotems = false,
 }
 
@@ -624,6 +624,7 @@ C["Unitframe"] = {
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
+	Stagger = true,
 
 	SwingBar = false,
 	SwingWidth = 320,

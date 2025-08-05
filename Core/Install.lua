@@ -78,6 +78,7 @@ function Module:ForceDefaultCVars()
 		{ "instantQuestText", 1 },
 		{ "lockActionBars", 1 },
 		{ "lootUnderMouse", 1 },
+		{ "lossOfControl", 0 },
 		{ "overrideArchive", 0 },
 		{ "profanityFilter", 0 },
 		{ "removeChatDelay", 1 },
@@ -93,6 +94,7 @@ function Module:ForceDefaultCVars()
 		{ "whisperMode", "inline" },
 		{ "ActionButtonUseKeyDown", 1 },
 		{ "fstack_preferParentKeys", 0 },
+		{ "showNPETutorials", 0 },
 		{ "statusTextDisplay", "BOTH" },
 		{ "threatWarning", 3 },
 	}
@@ -229,11 +231,11 @@ function Module:ForceChatSettings()
 	-- Configure ChatFrame2 (Combat Log)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, true)
-	FCF_SetWindowName(ChatFrame2, GUILD_BANK_LOG)
+	FCF_SetWindowName(ChatFrame2, L["Combat"])
 	ChatFrame2:Show()
 
 	-- Configure Whispers Window
-	local Whispers = FCF_OpenNewWindow(WHISPER)
+	local Whispers = FCF_OpenNewWindow("Whispers")
 	FCF_SetLocked(Whispers, true)
 	FCF_DockFrame(Whispers)
 	ChatFrame_RemoveAllMessageGroups(Whispers)
@@ -242,7 +244,7 @@ function Module:ForceChatSettings()
 	ChatFrame_AddMessageGroup(Whispers, "BN_CONVERSATION")
 
 	-- Configure Trade Window
-	local Trade = FCF_OpenNewWindow(TRADE)
+	local Trade = FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
 	ChatFrame_RemoveAllMessageGroups(Trade)
@@ -251,7 +253,7 @@ function Module:ForceChatSettings()
 	ChatFrame_AddChannel(Trade, L["Services"])
 
 	-- Configure Loot Window
-	local Loot = FCF_OpenNewWindow(LOOT)
+	local Loot = FCF_OpenNewWindow(L["Loot"])
 	FCF_SetLocked(Loot, true)
 	FCF_DockFrame(Loot)
 	ChatFrame_RemoveAllMessageGroups(Loot)
@@ -547,7 +549,9 @@ local function HelloWorld()
 	welcome:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(welcome)
 	welcome:CreateBorder()
-	K.CreateFontString(welcome, 16, "Installer Info", "", true, "TOP", 0, -10)
+	K.CreateFontString(welcome, 30, K.Title, "", false, "TOPLEFT", 10, 28)
+	K.CreateFontString(welcome, 14, K.Version, "", true, "TOPLEFT", 272, 16)
+	K.CreateFontString(welcome, 16, "Help Info", "", true, "TOP", 0, -10)
 
 	local welcomeLogo = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeLogo:SetSize(512, 256)
@@ -558,8 +562,8 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Deathwing")
-	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
+	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Elegon")
+	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 20, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
