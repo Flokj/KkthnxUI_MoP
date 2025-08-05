@@ -14,24 +14,25 @@ local YOU = YOU
 
 local channelingTicks = {
 	-- Warlock
-	[1120]	= 5,  -- Drain Soul
-	[689]		= 5,  -- Drain Life
-	[5740]	= 4,  -- Rain of Fire
-	[755]		= 10, -- Health Funnel
-	[79268]	= 3,  -- Soul Harvest
+	[1120]	= 5, -- Drain Soul
+	[689]	= 5, -- Drain Life
+	[5740]	= 4, -- Rain of Fire
+	[755]	= 10, -- Health Funnel
+	[79268]	= 3, -- Soul Harvest
 	[1949]	= 15, -- Hellfire
 	-- Druid
-	[740]		= 4,  -- Tranquility
+	[44203]	= 4, -- Tranquility
 	[16914]	= 10, -- Hurricane
 	-- Priest
 	[15407]	= 3, -- Mind Flay
+	[129197] = 3, -- Mind Flay (Insanity)
 	[48045]	= 5, -- Mind Sear
 	[47540]	= 3, -- Penance
 	[64901]	= 4, -- Hymn of Hope
 	[64843]	= 4, -- Divine Hymn
 	-- Mage
 	[5143]	= 5, -- Arcane Missiles
-	[10]		= 8, -- Blizzard
+	[10]	= 8, -- Blizzard
 	[12051]	= 4, -- Evocation
 	-- Death Knight
 	[42650]	= 8, -- Army of the Dead
@@ -52,7 +53,7 @@ local channelingTicks = {
 	[3268]	= 7, -- Heavy Wool Bandage
 	[3267]	= 7, -- Wool Bandage
 	[1159]	= 6, -- Heavy Linen Bandage
-	[746]		= 6  -- Linen Bandage
+	[746]	= 6 -- Linen Bandage
 }
 
 local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
