@@ -392,4 +392,6 @@ function Module:OnEnable()
 
 	Module:ReassignBindings()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
+	K:RegisterEvent("PET_BATTLE_CLOSE", Module.ReassignBindings)
+	K:RegisterEvent("PET_BATTLE_OPENING_DONE", Module.ClearBindings)
 end

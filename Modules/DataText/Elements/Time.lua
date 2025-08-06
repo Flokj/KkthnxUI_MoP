@@ -19,7 +19,9 @@ local GameTooltip = GameTooltip
 local GetCVarBool = GetCVarBool
 local GetGameTime = GetGameTime
 local GetNumSavedInstances = GetNumSavedInstances
+local GetNumSavedWorldBosses = GetNumSavedWorldBosses
 local GetSavedInstanceInfo = GetSavedInstanceInfo
+local GetSavedWorldBossInfo = GetSavedWorldBossInfo
 local RequestRaidInfo = RequestRaidInfo
 local SecondsToTime = SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = TIMEMANAGER_TICKER_12HOUR
@@ -92,6 +94,19 @@ function Module:OnEnter()
 	GameTooltip:AddDoubleLine(L["Local Time"], GameTime_GetLocalTime(true), nil, nil, nil, 0.75, 0.75, 0.75)
 	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 0.75, 0.75, 0.75)
 
+	-- World bosses
+	title = false
+	local numSavedWorldBosses = GetNumSavedWorldBosses()
+	if numSavedWorldBosses > 0 then
+		addTitle(RAID_INFO_WORLD_BOSS)
+		for i = 1, numSavedWorldBosses do
+			local name, id, reset = GetSavedWorldBossInfo(i)
+			if not (id == 11 or id == 12 or id == 13) then
+				GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 192 / 255, 192 / 255, 192 / 255)
+			end
+		end
+	end
+
 	-- Herioc/Mythic Dungeons
 	title = false
 	for i = 1, GetNumSavedInstances() do
@@ -108,16 +123,21 @@ function Module:OnEnter()
 		end
 	end
 
+	-- Raids
 	title = false
 	for i = 1, GetNumSavedInstances() do
 		local name, _, reset, _, locked, extended, _, isRaid, _, diffName, numEncounters, encounterProgress = GetSavedInstanceInfo(i)
 		if isRaid and (locked or extended) and name then
 			addTitle(L["Saved Raid(s)"])
-			local r, g, b = extended and { 0.3, 1, 0.3 } or { 0.75, 0.75, 0.75 }
+			if extended then
+				r, g, b = 0.3, 1, 0.3
+			else
+				r, g, b = 192 / 255, 192 / 255, 192 / 255
+			end
 
 			local progressColor = (numEncounters == encounterProgress) and "ff0000" or "00ff00"
 			local progressStr = format(" |cff%s(%s/%s)|r", progressColor, encounterProgress, numEncounters)
-			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr, SecondsToTime(reset, true, nil, 3), 1, 1, 1, unpack(r, g, b))
+			GameTooltip:AddDoubleLine(name .. " - " .. diffName .. progressStr, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
