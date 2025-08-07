@@ -17,19 +17,30 @@ local AURA_TYPE_BUFF = AURA_TYPE_BUFF
 local infoType = {}
 
 local blackList = {
-	[(GetSpellInfo(1776))] = true, -- 凿击
-	[(GetSpellInfo(5246))] = true, -- 破胆怒吼
-	[(GetSpellInfo(8122))] = true, -- 心灵尖啸
+	[(GetSpellInfo(99))] = true,		-- 夺魂咆哮
+	[(GetSpellInfo(122))] = true,		-- 冰霜新星
+	[(GetSpellInfo(1776))] = true,		-- 凿击
+	[(GetSpellInfo(1784))] = true,		-- 潜行
+	[(GetSpellInfo(5246))] = true,		-- 破胆怒吼
+	[(GetSpellInfo(8122))] = true,		-- 心灵尖啸
+	[(GetSpellInfo(31661))] = true,		-- 龙息术
+	[(GetSpellInfo(33395))] = true,		-- 冰冻术
 }
 
 local LOCspells = {
-	[(GetSpellInfo(96231))] = true, -- 制裁之锤
-	[(GetSpellInfo(47528))] = true, -- 凿击
-	[(GetSpellInfo(6552))] = true, -- 致盲
-	[(GetSpellInfo(34490))] = true, -- 破胆怒吼
-	[(GetSpellInfo(2139))] = true, -- 恐惧
-	[(GetSpellInfo(57994))] = true, -- 心灵尖啸
-	[(GetSpellInfo(1766))] = true, -- 冰冻陷阱
+	[(GetSpellInfo(853))] = true, 		-- 制裁之锤
+	[(GetSpellInfo(1776))] = true, 		-- 凿击
+	--[(GetSpellInfo(2070))] = true,		-- 闷棍
+	[(GetSpellInfo(2094))] = true, 		-- 致盲
+	[(GetSpellInfo(5246))] = true, 		-- 破胆怒吼
+	[(GetSpellInfo(5782))] = true, 		-- 恐惧
+	[(GetSpellInfo(8122))] = true, 		-- 心灵尖啸
+	--[(GetSpellInfo(14308))] = true,		-- 冰冻陷阱
+	[(GetSpellInfo(15487))] = true,		-- 沉默
+	[(GetSpellInfo(19386))] = true, 	-- 翼龙钉刺
+	[(GetSpellInfo(19503))] = true, 	-- 驱散射击
+	[(GetSpellInfo(20066))] = true, 	-- 忏悔
+	[(GetSpellInfo(34490))] = true, 	-- 沉默射击
 }
 
 local function getAlertChannel()
