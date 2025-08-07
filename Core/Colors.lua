@@ -71,7 +71,6 @@ oUF.colors.power = {
 	["HOLY_POWER"] = { 0.90, 0.85, 0.50 }, -- Muted golden, reduced brightness
 	["INSANITY"] = { 0.45, 0.10, 0.80 }, -- Deep, softer purple
 	["SHADOW_ORBS"] = { 0.45, 0.10, 0.80 }, -- MOP Shadow Priest, softer purple
-	["SOUL_SHARDS"] = { 0.45, 0.10, 0.80 }, -- Deep, softer purple
 	["LUNAR_POWER"] = { 0.85, 0.60, 0.85 }, -- Pastel purple, softer magenta
 	["MAELSTROM"] = { 0.00, 0.55, 0.85 }, -- Deep sky blue
 	["MANA"] = { 0.35, 0.50, 0.65 }, -- Muted blue, consistent with others
