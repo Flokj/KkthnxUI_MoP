@@ -120,6 +120,4 @@ oUF.colors.faction = {
 	{ r = 0.00, g = 0.70, b = 0.90 }, -- 10: Soft teal (Renown)
 }
 
-oUF.colors.runes[4] = { 0.6, 0.1, 0.6 } -- tempolary fix for dk
-
 K["Colors"] = oUF.colors
