@@ -184,9 +184,10 @@ colors.power[Enum.PowerType.LunarPower or 8] = colors.power.LUNAR_POWER
 colors.power[Enum.PowerType.HolyPower or 9] = colors.power.HOLY_POWER
 colors.power[Enum.PowerType.Maelstrom or 11] = colors.power.MAELSTROM
 colors.power[Enum.PowerType.Insanity or 13] = colors.power.INSANITY
+colors.power[Enum.PowerType.BurningEmbers or 14] = colors.power.BURNING_EMBERS
+colors.power[Enum.PowerType.DemonicFury or 15] = colors.power.DEMONIC_FURY
 colors.power[Enum.PowerType.Fury or 17] = colors.power.FURY
 colors.power[Enum.PowerType.Pain or 18] = colors.power.PAIN
-colors.power[Enum.PowerType.ShadowOrbs or 19] = colors.power.SHADOW_ORBS
 
 -- these two don't have fallback values in PowerBarColor, but we want them
 colors.power[Enum.PowerType.Chi or 12] = colors.power.CHI
@@ -200,6 +201,9 @@ colors.power[Enum.PowerType.Essence or 19] = colors.power.ESSENCE
 -- alternate power, sourced from Blizzard_UnitFrame/Mainline/CompactUnitFrame.lua
 colors.power.ALTERNATE = oUF:CreateColor(0.7, 0.7, 0.6)
 colors.power[Enum.PowerType.Alternate or 10] = colors.power.ALTERNATE
+
+-- shadow priest MOP
+colors.power[Enum.PowerType.ShadowOrbs or 28] = colors.power.SHADOW_ORBS
 
 for i = 0, 3 do
 	colors.threat[i] = oUF:CreateColor(GetThreatStatusColor(i))

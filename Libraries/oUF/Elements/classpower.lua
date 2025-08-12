@@ -52,12 +52,19 @@ local _, PlayerClass = UnitClass("player")
 -- sourced from Blizzard_FrameXMLBase/Constants.lua
 local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE or 1
 local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER or 3
-local SPEC_WARLOCK_DESTRUCTION = _G.SPEC_WARLOCK_DESTRUCTION or 3
 local SPEC_PRIEST_SHADOW = _G.SPEC_PRIEST_SHADOW or 3
+
+local SPEC_WARLOCK_AFFLICTION = _G.SPEC_WARLOCK_AFFLICTION or 1
+local SPEC_WARLOCK_DEMONOLOGY = _G.SPEC_WARLOCK_DEMONOLOGY or 2
+local SPEC_WARLOCK_DESTRUCTION = _G.SPEC_WARLOCK_DESTRUCTION or 3
 
 local SPELL_POWER_ENERGY = Enum.PowerType.Energy or 3
 local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints or 4
+
 local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards or 7
+local SPELL_POWER_DEMONIC_FURY = Enum.PowerType.DemonicFury or 15
+local SPELL_POWER_BURNING_EMBER = Enum.PowerType.BurningEmbers or 14
+
 local SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower or 9
 local SPELL_POWER_CHI = Enum.PowerType.Chi or 12
 local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType.ArcaneCharges or 16
@@ -127,19 +134,24 @@ local function Update(self, event, unit, powerType)
 		-- mod should never be 0, but according to Blizz code it can actually happen
 		cur = mod == 0 and 0 or cur / mod
 
-		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
-		if ClassPowerType == "SOUL_SHARDS" and C_SpecializationInfo.GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION then
-			cur = cur - cur % 1
+		if ClassPowerType == "DEMONIC_FURY" and C_SpecializationInfo.GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY then
+			cur = UnitPower(unit, powerID) / 1000
+			max = 1
 		end
 
 		local numActive = cur + 0.9
-		for i = 1, max do
-			if i > numActive then
+		for i = 1, #element do
+			if i <= max then
+				if i > numActive then
+					element[i]:Hide()
+					element[i]:SetValue(0)
+				else
+					element[i]:Show()
+					element[i]:SetValue(cur - i + 1)
+				end
+			else
 				element[i]:Hide()
 				element[i]:SetValue(0)
-			else
-				element[i]:Show()
-				element[i]:SetValue(cur - i + 1)
 			end
 		end
 
@@ -203,6 +215,23 @@ end
 local function Visibility(self, event, unit)
 	local element = self.ClassPower
 	local shouldEnable
+
+	if PlayerClass == "WARLOCK" then
+		local spec = C_SpecializationInfo.GetSpecialization()
+		if spec == SPEC_WARLOCK_AFFLICTION then
+			ClassPowerID = SPELL_POWER_SOUL_SHARDS
+			ClassPowerType = "SOUL_SHARDS"
+		elseif spec == SPEC_WARLOCK_DEMONOLOGY then
+			ClassPowerID = SPELL_POWER_DEMONIC_FURY
+			ClassPowerType = "DEMONIC_FURY"
+		elseif spec == SPEC_WARLOCK_DESTRUCTION then
+			ClassPowerID = SPELL_POWER_BURNING_EMBER
+			ClassPowerType = "BURNING_EMBERS"
+		else
+			ClassPowerID = nil
+			ClassPowerType = nil
+		end
+	end
 
 	if UnitHasVehicleUI("player") then
 		unit = "vehicle"
@@ -296,9 +325,6 @@ do
 	elseif PlayerClass == "PALADIN" then
 		ClassPowerID = SPELL_POWER_HOLY_POWER
 		ClassPowerType = "HOLY_POWER"
-	elseif PlayerClass == "WARLOCK" then
-		ClassPowerID = SPELL_POWER_SOUL_SHARDS
-		ClassPowerType = "SOUL_SHARDS"
 	elseif PlayerClass == "ROGUE" or PlayerClass == "DRUID" then
 		ClassPowerID = SPELL_POWER_COMBO_POINTS
 		ClassPowerType = "COMBO_POINTS"
@@ -324,6 +350,10 @@ local function Enable(self, unit)
 		element.__owner = self
 		element.__max = #element
 		element.ForceUpdate = ForceUpdate
+
+		if RequireSpec or RequireSpell or PlayerClass == "WARLOCK" then
+			self:RegisterEvent("PLAYER_TALENT_UPDATE", VisibilityPath, true)
+		end
 
 		if RequirePower then
 			self:RegisterEvent("UNIT_DISPLAYPOWER", VisibilityPath)
@@ -351,6 +381,7 @@ local function Disable(self)
 	if self.ClassPower then
 		ClassPowerDisable(self)
 
+		self:UnregisterEvent('PLAYER_TALENT_UPDATE', VisibilityPath)
 		self:UnregisterEvent("UNIT_DISPLAYPOWER", VisibilityPath)
 		self:UnregisterEvent("SPELLS_CHANGED", Visibility)
 	end

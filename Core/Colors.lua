@@ -81,6 +81,8 @@ oUF.colors.power = {
 	["RUNES"] = { 0.55, 0.55, 0.60 }, -- Neutral gray, consistent with Steam
 	["RUNIC_POWER"] = { 0.00, 0.70, 0.85 }, -- Deep sky blue, softer cyan
 	["SOUL_SHARDS"] = { 0.50, 0.35, 0.60 }, -- Softened purple-gray
+	["DEMONIC_FURY"] = { 0.50, 0.35, 0.60 }, 
+	["BURNING_EMBERS"] = { 0.50, 0.35, 0.60 },
 	["EBON_MIGHT"] = { 0.70, 0.45, 0.30 }, -- Warm, softer orange-brown
 	["STAGGER"] = {
 		{ 0.50, 0.85, 0.50 }, -- Soft green
