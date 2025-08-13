@@ -1,6 +1,4 @@
-local K = KkthnxUI[1]
-local C = KkthnxUI[2]
-local L = KkthnxUI[3]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
 -- Localizing Lua built-in functions
@@ -52,6 +50,33 @@ function Module:RegisterMisc(name, func)
 	end
 end
 
+-- Enable Auto Chat Bubbles
+local function enableAutoBubbles()
+	if C["Misc"].AutoBubbles then
+		local function updateBubble()
+			local name, instType = GetInstanceInfo()
+			SetCVar("chatBubbles", (name and instType == "raid") and 1 or 0)
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+	end
+end
+
+-- Readycheck sound on master channel
+K:RegisterEvent("READY_CHECK", function()
+	PlaySound(SOUNDKIT.READY_CHECK, "master")
+end)
+
+-- Modify Delete Dialog
+local function modifyDeleteDialog()
+	local DELETE_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_ITEM)
+	DELETE_ITEM.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_ITEM = DELETE_ITEM
+
+	local DELETE_QUEST_ITEM = K.CopyTable(StaticPopupDialogs.DELETE_QUEST_ITEM)
+	DELETE_QUEST_ITEM.timeout = 5 -- also add a timeout
+	StaticPopupDialogs.DELETE_GOOD_QUEST_ITEM = DELETE_QUEST_ITEM
+end
+
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
 	for name, func in next, KKUI_MISC_MODULE do
@@ -61,7 +86,6 @@ function Module:OnEnable()
 	end
 
 	local loadMiscModules = {
-		"CreateAutoBubbles",		
 		"CreateBossEmote",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
@@ -90,68 +114,9 @@ function Module:OnEnable()
 			end
 		end
 	end
-end
 
--- Enable Auto Chat Bubbles
-function Module:CreateAutoBubbles()
-	if C["Misc"].AutoBubbles then
-		local function updateBubble()
-			local name, instType = GetInstanceInfo()
-			SetCVar("chatBubbles", (name and instType == "raid") and 1 or 0)
-		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
-	end
-end
-
--- Readycheck sound on master channel
-K:RegisterEvent("READY_CHECK", function()
-	PlaySound(SOUNDKIT.READY_CHECK, "master")
-end)
-
--- Modify Delete Dialog
-function Module:CreateQuickDeleteDialog()
-	local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
-	local _, confirmationType = strsplit("@", confirmationText, 2)
-
-	local function setHyperlinkHandlers(dialog)
-		dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
-		dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
-	end
-
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
-	setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
-
-	local deleteConfirmationFrame = CreateFrame("FRAME")
-	deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
-	deleteConfirmationFrame:SetScript("OnEvent", function()
-		local staticPopup = StaticPopup1
-		local editBox = StaticPopup1EditBox
-		local button = StaticPopup1Button1
-		local popupText = StaticPopup1Text
-
-		if editBox:IsShown() then
-			staticPopup:SetHeight(staticPopup:GetHeight() - 14)
-			editBox:Hide()
-			button:Enable()
-			local link = select(3, GetCursorInfo())
-
-			if link then
-				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-			end
-		else
-			staticPopup:SetHeight(staticPopup:GetHeight() + 40)
-			editBox:Hide()
-			button:Enable()
-			local link = select(3, GetCursorInfo())
-
-			if link then
-				local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
-				popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
-			end
-		end
-	end)
+	enableAutoBubbles()
+	modifyDeleteDialog()
 end
 
 -- Update Drag Cursor for Minimap

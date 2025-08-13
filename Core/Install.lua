@@ -484,9 +484,12 @@ local function YesTutor()
 				apply:ClearAllPoints()
 				if currentPage < 5 then
 					apply.text:SetText(APPLY)
+					apply:SetPoint("BOTTOMRIGHT", -10, 10) -- Reset position for Apply button
+					pass:Show() -- Ensure pass button is shown for pages < 5
 				else
 					apply:SetPoint("BOTTOM", 0, 10)
 					apply.text:SetText(COMPLETE)
+					pass:Hide() -- Hide pass button on final page
 				end
 				apply.text:SetTextColor(0, 1, 0) -- Set text color back to green
 				apply:Enable()
@@ -494,7 +497,6 @@ local function YesTutor()
 			end
 		end, countdownTime)
 
-		pass:Show()
 		if currentPage == 1 then
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
@@ -517,7 +519,6 @@ local function YesTutor()
 			KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest or true
 			Module.ForceAddonSkins()
 			ShowFakeAchievement("Achievement Earned", "You have successfully applied the relevant AddOn Settings.")
-			pass:Hide()
 			PlaySound(21968)
 		elseif currentPage == 5 then
 			Module:ForceDefaultCVars() -- Set these one more time
@@ -549,21 +550,8 @@ local function HelloWorld()
 	welcome:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(welcome)
 	welcome:CreateBorder()
-	K.CreateFontString(welcome, 30, K.Title, "", false, "TOPLEFT", 10, 28)
-	K.CreateFontString(welcome, 14, K.Version, "", true, "TOPLEFT", 272, 16)
-	K.CreateFontString(welcome, 16, "Help Info", "", true, "TOP", 0, -10)
 
-	local welcomeLogo = welcome:CreateTexture(nil, "OVERLAY")
-	welcomeLogo:SetSize(512, 256)
-	welcomeLogo:SetBlendMode("ADD")
-	welcomeLogo:SetAlpha(0.04)
-	welcomeLogo:SetTexture(C["Media"].Textures.LogoTexture)
-	welcomeLogo:SetPoint("CENTER", welcome, "CENTER", 0, 0)
-
-	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
-	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Elegon")
-	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 20, 64)
+	K.CreateFontString(welcome, 16, "Welcome " .. K.Name .. "|r", "", true, "TOP", 0, -10)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
@@ -626,7 +614,6 @@ local function HelloWorld()
 		welcome:Hide()
 		YesTutor()
 	end)
-
 	local goSkip = CreateFrame("Button", nil, welcome)
 	goSkip:SetPoint("BOTTOM", 58, 10)
 	goSkip:SetSize(110, 22)
@@ -648,7 +635,7 @@ local function HelloWorld()
 		KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest = KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest or true
 		Module.ForceAddonSkins()
 		KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete or true
-		ReloadUI()
+		StaticPopup_Show("SKIP_INSTALLER_CONFIRM")
 	end)
 
 	goSkip:SetScript("OnEnter", function(self)
