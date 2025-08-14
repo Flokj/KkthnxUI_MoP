@@ -15,6 +15,7 @@ local currentSpecIndex, currentLootIndex, newMenu, numSpecs, numLocal
 
 local eventList = {
 	"PLAYER_ENTERING_WORLD",
+	"SPELLS_CHANGED",
 	"ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
 }
 
@@ -143,8 +144,7 @@ local function OnMouseUp(self, btn)
 		if InCombatLockdown() then return end
 		if GetNumSpecGroups() < 2 then return end
 		local idx = GetActiveTalentGroup()
-		SetActiveTalentGroup(idx == 1 and 2 or 1)		
-		OnEvent()
+		SetActiveTalentGroup(idx == 1 and 2 or 1)
 	end
 end
 
