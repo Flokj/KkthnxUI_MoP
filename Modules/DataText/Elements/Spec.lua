@@ -4,7 +4,7 @@ local Module = K:GetModule("DataText")
 local GetTalentInfo = C_SpecializationInfo.GetTalentInfo
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
-local SetSpecialization = C_SpecializationInfo.SetSpecialization
+local SetSpecialization = SetSpecialization
 
 local function addIcon(texture)
 	texture = texture and "|T" .. texture .. ":16:16:0:0:50:50:4:46:4:46|t" or ""
@@ -60,7 +60,7 @@ local function OnEnter()
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle TalentFrame" .. " ", 1, 1, 1, 0.6, 0.8, 1)
-	--GameTooltip:AddDoubleLine(" ", K.RightButton.."Change Spec" .. " ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", K.RightButton .. "Change Spec" .. " ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
@@ -139,10 +139,12 @@ local function OnMouseUp(self, btn)
 	if btn == "LeftButton" then
 		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT) return end
 		ToggleTalentFrame()
-	else
-	--	BuildSpecMenu()
-	--	EasyMenu(newMenu, B.EasyMenu, self, -80, 100, "MENU", 1)
-	--	GameTooltip:Hide()
+	elseif btn == "RightButton" then
+		if InCombatLockdown() then return end
+		if GetNumSpecGroups() < 2 then return end
+		local idx = GetActiveTalentGroup()
+		SetActiveTalentGroup(idx == 1 and 2 or 1)		
+		OnEvent()
 	end
 end
 
