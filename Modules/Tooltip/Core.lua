@@ -120,7 +120,7 @@ function Module:OnTooltipCleared()
 end
 
 local function ShouldHideInCombat()
-	local index = C["Tooltip"].HideInCombat.Value
+	local index = C["Tooltip"].HideInCombat
 	if index == 1 then
 		return true
 	elseif index == 2 then
@@ -371,14 +371,14 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 	if self:IsForbidden() then return end
 	if not parent then return end
 
-	local mode = C["Tooltip"].CursorMode.Value
+	local mode = C["Tooltip"].CursorMode
 	self:SetOwner(parent, cursorIndex[mode])
 	if mode == 1 then
 		if not mover then
 			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 75 }, 100, 100)
 		end
 		self:ClearAllPoints()
-		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor.Value], mover)
+		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor], mover)
 	end
 end
 

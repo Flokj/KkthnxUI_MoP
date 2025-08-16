@@ -176,7 +176,7 @@ function Module:OnEnable()
 		local border = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 		border:SetPoint("TOPLEFT", -4, 4)
 		border:SetPoint("BOTTOMRIGHT", 4, -4)
-		border:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 28, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10, nil, "")
+		border:CreateBorder(nil, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and 28, nil, C["General"].BorderStyle ~= "KkthnxUI_Pixel" and -10, nil, "")
 
 		WorldMapFrameCloseButton:SkinCloseButton(WorldMapFrame, -2, -2, 20)
 	end

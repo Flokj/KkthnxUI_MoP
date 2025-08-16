@@ -327,7 +327,7 @@ function Module:ChatCopy_Create()
 			PlaySound(111)
 			K.LibEasyMenu.Create(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
-			K.GUI:Toggle()
+			K.NewGUI:Toggle()
 		end
 	end)
 

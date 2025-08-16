@@ -156,7 +156,7 @@ local function OnMinimapButtonClick(_, button)
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
-		K.GUI:Toggle()
+		K.NewGUI:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION, "SFX")
 	end
 end
@@ -216,7 +216,19 @@ function Module:CreateMinimapButton()
 	Module:ToggleMinimapButton()
 end
 
--- Game Menu Setup
+function Module:ClickGameMenu()
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+		return
+	end
+	K.NewGUI:Toggle()
+	HideUIPanel(GameMenuFrame)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	if not InCombatLockdown() then
+		HideUIPanel(GameMenuFrame)
+	end
+end
+
 function Module:CreateGUIGameMenuButton()
 	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate")
 	gameMenuButton:SetHeight(26)
@@ -240,13 +252,7 @@ function Module:CreateGUIGameMenuButton()
 	end)
 
 	gameMenuButton:SetScript("OnClick", function()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-			return
-		end
-		K["GUI"]:Toggle()
-		HideUIPanel(GameMenuFrame)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+		Module:ClickGameMenu()
 	end)
 end
 

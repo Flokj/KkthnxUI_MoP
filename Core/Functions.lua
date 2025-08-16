@@ -46,7 +46,7 @@ do
 
 		local caps = localeCaps[GetLocale()] or localeCaps["enUS"] -- Default to English if locale not found
 
-		if C["General"].NumberPrefixStyle.Value == 1 then
+		if C["General"].NumberPrefixStyle == 1 then
 			if n >= 1e12 then
 				return format("%.2ft", n / 1e12)
 			elseif n >= 1e9 then
@@ -58,7 +58,7 @@ do
 			else
 				return format("%.0f", n)
 			end
-		elseif C["General"].NumberPrefixStyle.Value == 2 then
+		elseif C["General"].NumberPrefixStyle == 2 then
 			if n >= 1e12 then
 				return format("%.2f" .. caps.Cap3, n / 1e12)
 			elseif n >= 1e8 then

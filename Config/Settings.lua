@@ -1,14 +1,6 @@
 local C = KkthnxUI[2]
 
 local DISABLE = DISABLE
-local EMOTE = EMOTE
-local GUILD = GUILD
-local NONE = NONE
-local PARTY = PARTY
-local PLAYER = PLAYER
-local RAID = RAID
-local SAY = SAY
-local YELL = YELL
 
 -- Actionbar
 C["ActionBar"] = {
@@ -131,17 +123,7 @@ C["Announcements"] = {
 	QuestProgress = false,
 	ResetInstance = false,
 	SaySapped = false,
-	AlertChannel = {
-		Options = {
-			[EMOTE] = 6,
-			[PARTY .. " / " .. RAID] = 2,
-			[PARTY] = 1,
-			[RAID] = 3,
-			[SAY] = 4,
-			[YELL] = 5,
-		},
-		Value = 2,
-	},
+	AlertChannel = 2,
 }
 
 -- Automation
@@ -194,28 +176,9 @@ C["Inventory"] = {
 	ReverseSort = false,
 	ShowNewItem = true,
 	SpecialBagsColor = false,
-	GrowthDirection = {
-		Options = {
-			["Horizontal"] = "HORIZONTAL",
-			["Vertical"] = "VERTICAL",
-		},
-		Value = "HORIZONTAL",
-	},
-	SortDirection = {
-		Options = {
-			["Ascending"] = "ASCENDING",
-			["Descending"] = "DESCENDING",
-		},
-		Value = "DESCENDING",
-	},
-	AutoRepair = {
-		Options = {
-			[NONE] = 0,
-			[GUILD] = 1,
-			[PLAYER] = 2,
-		},
-		Value = 2,
-	},
+	GrowthDirection = 1,
+	SortDirection = 2,
+	AutoRepair = 2,
 }
 
 -- Buffs & Debuffs
@@ -257,16 +220,7 @@ C["Chat"] = {
 	Sticky = true,
 	WhisperColor = true,
 	Width = 400,
-	TimestampFormat = {
-		Options = {
-			["Disable"] = 1,
-			["03:27 PM"] = 2,
-			["03:27:32 PM"] = 3,
-			["15:27"] = 4,
-			["15:27:32"] = 5,
-		},
-		Value = 4,
-	},
+	TimestampFormat = 4,
 }
 
 -- Datatext
@@ -306,38 +260,9 @@ C["General"] = {
 	UseGlobal = false,
 	Texture = "Flat",
 	SmoothAmount = 0.25,
-	BorderStyle = {
-		Options = {
-			["KkthnxUI"] = "KkthnxUI",
-			["AzeriteUI"] = "AzeriteUI",
-			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
-			["KkthnxUI_Blank"] = "KkthnxUI_Blank",
-		},
-		Value = "KkthnxUI",
-	},
-	NumberPrefixStyle = {
-		Options = {
-			["Standard: b/m/k"] = 1,
-			["Asian: y/w"] = 2,
-			["Full Digits"] = 3,
-		},
-		Value = 1,
-	},
-	Profiles = {
-		Options = {},
-	},
-	DeleteProfiles = {
-		Options = {},
-	},
-	GlowMode = {
-		Options = {
-			["Pixel"] = 1,
-			["Autocast"] = 2,
-			["Action Button"] = 3,
-			["Proc Glow"] = 4,
-		},
-		Value = 3,
-	},
+	BorderStyle = "KkthnxUI",
+	NumberPrefixStyle = 1,
+	GlowMode = 3,
 }
 
 -- Loot
@@ -357,24 +282,9 @@ C["Minimap"] = {
 	MailPulse = false,
 	QueueStatusText = false,
 	ShowRecycleBin = true,
-	Size = 190,
-	RecycleBinPosition = {
-		Options = {
-			["BottomLeft"] = 1,
-			["BottomRight"] = 2,
-			["TopLeft"] = 3,
-			["TopRight"] = 4,
-		},
-		Value = "BottomLeft",
-	},
-	LocationText = {
-		Options = {
-			["Always Display"] = "SHOW",
-			["Hide"] = "Hide",
-			["Minimap Mouseover"] = "MOUSEOVER",
-		},
-		Value = "MOUSEOVER",
-	},
+	Size = 210,
+	RecycleBinPosition = 1,
+	LocationText = 3,
 }
 
 -- Miscellaneous
@@ -405,24 +315,8 @@ C["Misc"] = {
 	DBMCount = "12",
 	EasyMarking = false,
 	MarkerBarSize = 22,
-	EasyMarkKey = {
-		Options = {
-			["CTRL"] = 1,
-			["ALT"] = 2,
-			["SHIFT"] = 3,
-			["DISABLE"] = 4,
-		},
-		Value = 1,
-	},
-	ShowMarkerBar = {
-		Options = {
-			["Grids"] = 1,
-			["Horizontal"] = 2,
-			["Vertical"] = 3,
-			["DISABLE"] = 4,
-		},
-		Value = 4,
-	},
+	EasyMarkKey = 1,
+	ShowMarkerBar = 4,
 	ThreatEnable = true,
 	ThreatHeight = 17,
 	ThreatWidth = 220,
@@ -483,42 +377,9 @@ C["Nameplate"] = {
 	TargetIndicatorColor = { 1, 1, 1 },
 	TransColor = { 1, 0.8, 0 },
 	VerticalSpacing = 0.7,
-	AuraFilter = {
-		Options = {
-			["White & Black List"] = 1,
-			["List & Player"] = 2,
-			["List & Player & CCs"] = 3,
-		},
-		Value = 3,
-	},
-	TargetIndicator = {
-		Options = {
-			["Disable"] = 1,
-			["Top Arrow"] = 2,
-			["Right Arrow"] = 3,
-			["Border Glow"] = 4,
-			["Top Arrow + Glow"] = 5,
-			["Right Arrow + Glow"] = 6,
-		},
-		Value = 4,
-	},
-	TargetIndicatorTexture = {
-		Options = {
-			["Blue Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow2]],
-			["Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow]],
-			["Neon Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
-			["Neon Green Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonGreenArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonGreenArrow]],
-			["Neon Pink Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPinkArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPinkArrow]],
-			["Neon Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonRedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonRedArrow]],
-			["Neon Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPurpleArrow]],
-			["Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\PurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\PurpleArrow]],
-			["Red Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow2]],
-			["Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow]],
-			["Red Chevron Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow]],
-			["Red Chevron Arrow2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow2]],
-		},
-		Value = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
-	},
+	AuraFilter = 3,
+	TargetIndicator = 4,
+	TargetIndicatorTexture = "Interface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow",
 }
 
 -- Skins
@@ -557,34 +418,9 @@ C["Tooltip"] = {
 	ShowIDs = true,
 	TargetBy = true,
 	SpecLevelByShift = false,
-	CursorMode = {
-		Options = {
-			["DISABLE"] = 1,
-			["LEFT"] = 2,
-			["TOP"] = 3,
-			["RIGHT"] = 4,
-		},
-		Value = 1,
-	},	
-	TipAnchor = {
-		Options = {
-			["TOPLEFT"] = 1,
-			["TOPRIGHT"] = 2,
-			["BOTTOMLEFT"] = 3,
-			["BOTTOMRIGHT"] = 4,
-		},
-		Value = 4,
-	},
-	HideInCombat = {
-		Options = {
-			["DISABLE"] = 1,
-			["ALT"] = 2,
-			["SHIFT"] = 3,
-			["CTRL"] = 4,
-			["ALWAYS"] = 5,
-		},
-		Value = 1,
-	},	
+	CursorMode = 1,
+	TipAnchor = 4,
+	HideInCombat = 1,
 }
 
 -- Unitframe
@@ -601,11 +437,11 @@ C["Unitframe"] = {
 	CombatText = false,
 	DebuffHighlight = false,
 	Enable = true,
-	Range = true,
 	FCTOverHealing = false,
 	GlobalCooldown = true,
 	HotsDots = true,
 	OnlyShowPlayerDebuff = false,
+	Range = true,
 
 	-- Player
 	PlayerBuffs = false,
@@ -681,26 +517,8 @@ C["Unitframe"] = {
 	HideFocusTargetLevel = true,
 	HideFocusTargetName = false,
 	HideFocusTarget = true,
-
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
-	PortraitStyle = {
-		Options = {
-			["Overlay Portrait"] = "OverlayPortrait",
-			["3D Portraits"] = "ThreeDPortraits",
-			["Class Portraits"] = "ClassPortraits",
-			["New Class Portraits"] = "NewClassPortraits",
-			["Default Portraits"] = "DefaultPortraits",
-			["No Portraits"] = "NoPortraits",
-		},
-		Value = "NoPortraits",
-	},
+	HealthbarColor = 1,
+	PortraitStyle = 0,
 }
 
 C["Party"] = {
@@ -718,14 +536,7 @@ C["Party"] = {
 	ShowPlayer = true,
 	Smooth = false,
 	TargetHighlight = false,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 C["Boss"] = {
@@ -736,14 +547,7 @@ C["Boss"] = {
 	HealthWidth = 134,
 	PowerHeight = 10,
 	YOffset = 54,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 C["Arena"] = {
@@ -755,14 +559,7 @@ C["Arena"] = {
 	HealthWidth = 134,
 	PowerHeight = 10,
 	YOffset = 54,
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
+	HealthbarColor = 1,
 }
 
 -- Raidframe
@@ -785,44 +582,14 @@ C["Raid"] = {
 	Smooth = false,
 	TargetHighlight = false,
 	Width = 70,
-	RaidBuffsStyle = {
-		Options = {
-			["Aura Track"] = "Aura Track",
-			["Standard"] = "Standard",
-			["None"] = "None",
-		},
-		Value = "Aura Track",
-	},
-	RaidBuffs = {
-		Options = {
-			["Only my buffs"] = "Self",
-			["Only castable buffs"] = "Castable",
-			["All buffs"] = "All",
-		},
-		Value = "Self",
-	},
+	RaidBuffsStyle = 2,
+	RaidBuffs = 1,
 	AuraTrack = false,
 	AuraTrackIcons = false,
 	AuraTrackSpellTextures = false,
 	AuraTrackThickness = 5,
-
-	HealthbarColor = {
-		Options = {
-			["Dark"] = "Dark",
-			["Value"] = "Value",
-			["Class"] = "Class",
-		},
-		Value = "Class",
-	},
-	HealthFormat = {
-		Options = {
-			["Disable HP"] = 1,
-			["Health Percentage"] = 2,
-			["Health Remaining"] = 3,
-			["Health Lost"] = 4,
-		},
-		Value = 1,
-	},
+	HealthbarColor = 1,
+	HealthFormat = 1,
 }
 
 -- Worldmap

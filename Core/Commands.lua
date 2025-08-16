@@ -37,7 +37,7 @@ local function ToggleEventTrace()
 end
 
 local function ToggleGUI()
-	K.GUI:Toggle()
+	K.NewGUI:Toggle()
 end
 
 local function SetVolume(val)
@@ -81,8 +81,8 @@ local QuestCheckSubDomain = (setmetatable({
 }))[K.Client]
 
 local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/classic/quest="
-local QuestCheckComplete = "|A:common-icon-checkmark:14:14|a "
-local QuestCheckIncomplete = "|A:common-icon-redx:14:14|a "
+local QuestCheckComplete = "|TInterfaceRaidFrameReadyCheck-Ready:14:14:-1:-1|t"
+local QuestCheckIncomplete = "|TInterfaceRaidFrameReadyCheck-NotReady:14:14:-1:-1|t"
 local function CheckQuestStatus(questid)
 	questid = tonumber(questid)
 
@@ -224,7 +224,7 @@ local function RestoreAddons()
 		button2 = "No",
 		OnAccept = function()
 			for name in pairs(KkthnxUIDB.DisabledAddOns) do
-				EnableAddOn(name)
+				C_AddOns.EnableAddOn(name)
 			end
 
 			wipe(KkthnxUIDB.DisabledAddOns)
@@ -292,7 +292,7 @@ local function CreateCommandWindow()
 	local commandsList = {
 		{ "KkthnxUI Commands", "" }, -- Section title
 		{ "/kk allquests", "Abandons all active quests." },
-		{ "/kk checkquest [questid]", "Checks the completion status of a quest." },
+		{ "/kk checkqueststatus [questid]", "Checks the completion status of a quest." },
 		{ "/kk clearchat [all]", "Clears the chat for the current window or all windows." },
 		{ "/kk clearcombatlog", "Clears the combat log." },
 		{ "/kk debug [on/off]", "Toggles debug mode for disabling/enabling addons." },
@@ -397,3 +397,13 @@ SlashCmdList["KKUI"] = function(input)
 	end
 end
 _G.SLASH_KKUI1 = "/kk"
+
+SlashCmdList.KKUI_PROFILE = function()
+	if K.ProfileGUI then
+		K.ProfileGUI:Toggle()
+	else
+		print("|cff669DFFKkthnxUI:|r ProfileGUI system not available.")
+	end
+end
+SLASH_KKUI_PROFILE1 = "/kprofile"
+SLASH_KKUI_PROFILE2 = "/kkthnxprofile"

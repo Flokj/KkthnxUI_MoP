@@ -38,6 +38,7 @@ local function KKUI_VerifyDatabase()
 
 	KkthnxUIDB.ChatHistory = KkthnxUIDB.ChatHistory or {}
 	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
+	KkthnxUIDB.ProfilePortraits = KkthnxUIDB.ProfilePortraits or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
 	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
@@ -45,119 +46,83 @@ end
 
 local function KKUI_CreateDefaults()
 	K.Defaults = {}
+
 	for group, options in pairs(C) do
-		if type(options) == "table" then
+		if not K.Defaults[group] then
 			K.Defaults[group] = {}
-			for option, value in pairs(options) do
-				local defaultValue = type(value) == "table" and value.Options and value.Value or value
-				K.Defaults[group][option] = defaultValue
-			end
+		end
+
+		for option, value in pairs(options) do
+			K.Defaults[group][option] = value
 		end
 	end
 end
 
 local function KKUI_LoadCustomSettings()
-	local settings = KkthnxUIDB.Settings[K.Realm] and KkthnxUIDB.Settings[K.Realm][K.Name]
-	if type(settings) ~= "table" then
-		return
-	end
+	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
-	-- Validate and clean settings to prevent table accumulation
-	for group, options in pairs(settings) do
-		if type(options) ~= "table" then
-			settings[group] = nil
-		else
-			local count = 0
+	for group, options in pairs(Settings) do
+		if C[group] then
+			local Count = 0
+
 			for option, value in pairs(options) do
-				if C[group] and C[group][option] ~= nil then
+				if C[group][option] ~= nil then
 					if C[group][option] == value then
-						options[option] = nil
+						Settings[group][option] = nil
 					else
-						count = count + 1
-						if type(C[group][option]) == "table" and C[group][option].Options then
-							C[group][option].Value = value
-						else
-							C[group][option] = value
-						end
+						Count = Count + 1
+						C[group][option] = value
 					end
-				else
-					-- Remove invalid options to prevent accumulation
-					options[option] = nil
 				end
 			end
-			if count == 0 then
-				settings[group] = nil
+
+			-- Keeps settings clean and small
+			if Count == 0 then
+				Settings[group] = nil
 			end
+		else
+			Settings[group] = nil
 		end
 	end
-end
-
-function KKUI_LoadProfiles()
-	local Profiles = C["General"].Profiles
-	local Menu = Profiles.Options
-	local GUISettings = KkthnxUIDB.Settings
-	local MyProfileName = K.Realm .. "-" .. K.Name
-
-	if not GUISettings then
-		return
-	end
-
-	wipe(Menu)
-
-	for Server, Table in pairs(GUISettings) do
-		for Nickname, Settings in pairs(Table) do
-			local ProfileName = Server .. "-" .. Nickname
-			Menu[ProfileName] = ProfileName -- Always include all profiles, including current
-		end
-	end
-
-	-- Set the dropdown value to the current profile
-	Profiles.Value = MyProfileName
-end
-
-function KKUI_LoadDeleteProfiles()
-	local DeleteProfiles = C["General"].DeleteProfiles
-	local Menu = DeleteProfiles.Options
-	local GUISettings = KkthnxUIDB.Settings
-	local MyProfileName = K.Realm .. "-" .. K.Name
-
-	if not GUISettings then
-		return
-	end
-
-	wipe(Menu)
-
-	for Server, Table in pairs(GUISettings) do
-		for Nickname, Settings in pairs(Table) do
-			local ProfileName = Server .. "-" .. Nickname
-			if ProfileName ~= MyProfileName then
-				Menu[ProfileName] = ProfileName
-			end
-		end
-	end
-
-	DeleteProfiles.Value = nil
 end
 
 local function KKUI_LoadVariables()
 	KKUI_CreateDefaults()
-	KKUI_LoadProfiles()
-	KKUI_LoadDeleteProfiles()
 	KKUI_LoadCustomSettings()
-	K.GUI:Enable()
-	K.Profiles:Enable()
+
+	-- ExtraGUI (provides additional config functionality)
+	if K.ExtraGUI then
+		-- K.ExtraGUI:Enable()
+	end
+
+	-- Main GUI system second (provides core configuration)
+	if K.NewGUI then
+		-- K.NewGUI:Enable()
+	end
+
+	-- ProfileGUI last (depends on main GUI being available)
+	if K.ProfileGUI then
+		-- K.ProfileGUI:Enable()
+	end
 end
 
 local function KKUI_OnEvent(_, event, addonName)
-	if event == "ADDON_LOADED" or event == "PLAYER_ENTERING_WORLD" and addonName == "KkthnxUI" then
-		KKUI_VerifyDatabase()
-		KKUI_LoadVariables()
-		K:SetupUIScale(true)
+	if event == "ADDON_LOADED" and addonName == "KkthnxUI" then
+		-- Add error handling to prevent crashes during loading
+		local success, err = pcall(function()
+			KKUI_VerifyDatabase()
+			KKUI_LoadVariables()
+			K:SetupUIScale(true)
+		end)
+
+		if not success then
+			print("|cffFF0000KkthnxUI ERROR:|r Critical error during loading: " .. tostring(err))
+			print("|cffFF0000KkthnxUI ERROR:|r Please check your installation and try again.")
+		end
+
 		KKUI_AddonLoader:UnregisterEvent("ADDON_LOADED")
-		KKUI_AddonLoader:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end
 
 KKUI_AddonLoader:RegisterEvent("ADDON_LOADED")
-KKUI_AddonLoader:RegisterEvent("PLAYER_ENTERING_WORLD")
 KKUI_AddonLoader:SetScript("OnEvent", KKUI_OnEvent)

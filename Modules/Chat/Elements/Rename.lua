@@ -37,14 +37,14 @@ function Module:SetupChannelNames(text, ...)
 		r, g, b = 0.6274, 0.3231, 0.6274
 	end
 
-	if C["Chat"].TimestampFormat.Value > 1 then
+	if C["Chat"].TimestampFormat > 1 then
 		local locTime, realmTime = GetCurrentTime()
 		local oldTimeStamp = CHAT_TIMESTAMP_FORMAT and gsub(BetterDate(CHAT_TIMESTAMP_FORMAT, locTime), "%[([^]]*)%]", "%%[%1%%]")
 		if oldTimeStamp then
 			text = gsub(text, oldTimeStamp, "")
 		end
 
-		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", realmTime or locTime)
+		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat] .. "|r", realmTime or locTime)
 		text = timeStamp .. text
 	end
 

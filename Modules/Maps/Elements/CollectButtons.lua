@@ -56,13 +56,13 @@ function Module:CreateRecycleBin()
 	bu:SetAlpha(0.6)
 	bu:SetSize(18, 18)
 	bu:ClearAllPoints()
-	if C["Minimap"].RecycleBinPosition.Value == 1 then
+	if C["Minimap"].RecycleBinPosition == 1 then
 		bu:SetPoint("BOTTOMLEFT", -8, -8)
-	elseif C["Minimap"].RecycleBinPosition.Value == 2 then
+	elseif C["Minimap"].RecycleBinPosition == 2 then
 		bu:SetPoint("BOTTOMRIGHT", 8, -8)
-	elseif C["Minimap"].RecycleBinPosition.Value == 3 then
+	elseif C["Minimap"].RecycleBinPosition == 3 then
 		bu:SetPoint("TOPLEFT", -8, 8)
-	elseif C["Minimap"].RecycleBinPosition.Value == 4 then
+	elseif C["Minimap"].RecycleBinPosition == 4 then
 		bu:SetPoint("TOPRIGHT", 8, 8)
 	else
 		bu:SetPoint("BOTTOMLEFT", -8, -8)
@@ -78,9 +78,9 @@ function Module:CreateRecycleBin()
 	local width, height = 220, 30
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
 	bin:ClearAllPoints()
-	if C["Minimap"].RecycleBinPosition.Value == 1 or C["Minimap"].RecycleBinPosition.Value == 2 then
+	if C["Minimap"].RecycleBinPosition == 1 or C["Minimap"].RecycleBinPosition == 2 then
 		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
-	elseif C["Minimap"].RecycleBinPosition.Value == 3 or C["Minimap"].RecycleBinPosition.Value == 4 then
+	elseif C["Minimap"].RecycleBinPosition == 3 or C["Minimap"].RecycleBinPosition == 4 then
 		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, -21)
 	else
 		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
