@@ -14,6 +14,7 @@ local GetContainerItemLink = C_Container.GetContainerItemLink
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTradePlayerItemLink = GetTradePlayerItemLink
 local GetTradeTargetItemLink = GetTradeTargetItemLink
+local GetAverageItemLevel = GetAverageItemLevel
 
 local inspectSlots = {
 	"Head",
@@ -35,6 +36,18 @@ local inspectSlots = {
 	"SecondaryHand",
 	"Ranged",
 }
+
+local function UpdatePlayerItemLevel()
+	local total, equipped = GetAverageItemLevel()
+	if equipped > 0 then
+		local r, g, b = K.GetILvlTextColor(equipped)
+		local characterLevelText = _G["CharacterLevelText"]
+		if characterLevelText then
+			characterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
+			characterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
+		end
+	end
+end
 
 function Module:GetSlotAnchor(index)
 	if not index then return end
@@ -233,14 +246,14 @@ local function GetItemSlotLevel(unit, index)
 end
 
 function K.GetILvlTextColor(level)
-	if level >= 397 then
-		return 1, .5, 0
-	elseif level >= 378 then
-		return .63, .2, .93
-	elseif level >= 359 then
-		return 0, .43, .87
-	elseif level >= 287 then
-		return .12, 1, 0
+	if level >= 497 then
+		return 1, 0.5, 0
+	elseif level >= 484 then
+		return 0.63, 0.2, 0.93
+	elseif level >= 471 then
+		return 0, 0.43, 0.87
+	elseif level >= 458 then
+		return 0.12, 1, 0
 	else
 		return 1, 1, 1
 	end
@@ -468,7 +481,11 @@ function Module:CreateSlotItemLevel()
 
 	-- iLvl on CharacterFrame
 	CharacterFrame:HookScript("OnShow", Module.ItemLevel_UpdatePlayer)
+	
+	hooksecurefunc("PaperDollFrame_SetLevel", UpdatePlayerItemLevel)
+	
 	K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.ItemLevel_UpdatePlayer)
+	K:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_UPDATE", UpdatePlayerItemLevel)
 
 	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)
 		if unit ~= "player" then return end
