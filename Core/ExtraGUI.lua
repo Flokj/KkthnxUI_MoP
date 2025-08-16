@@ -558,12 +558,12 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	end
 
 	local cogwheel = CreateFrame("Button", nil, widget)
-	cogwheel:SetSize(26, 26) -- Increased from 20x20 to 22x22 (2 more sizes up)
+	cogwheel:SetSize(20, 20) -- Increased from 20x20 to 22x22 (2 more sizes up)
 
 	-- Position next to the label
 	if label then
 		-- Position to the right of the label
-		cogwheel:SetPoint("LEFT", label, "RIGHT", 0, 0)
+		cogwheel:SetPoint("LEFT", label, "RIGHT", 6, 0)
 	else
 		-- Fallback: position after estimated text width
 		cogwheel:SetPoint("LEFT", widget, "LEFT", 200, 0)
@@ -575,7 +575,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 
 	-- Use the specified atlas for cogwheel with better error handling
 	local success = pcall(function()
-		icon:SetAtlas("GM-icon-settings", true)
+		icon:SetAtlas("OptionsIcon-Brown", true)
 		icon:SetSize(26, 26) -- Increased from 20x20 to 22x22
 	end)
 
