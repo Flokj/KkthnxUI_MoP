@@ -44,7 +44,7 @@ local function UpdatePlayerItemLevel()
 		local characterLevelText = _G["CharacterLevelText"]
 		if characterLevelText then
 			characterLevelText:SetFont("Fonts\\FRIZQT__.TTF", 16)
-			characterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "Ilvl" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
+			characterLevelText:SetFormattedText(string.format("|cff%02x%02x%02x" .. "iLvL" .. ": %d|r", r * 255, g * 255, b * 255, math.floor(equipped)))
 		end
 	end
 end

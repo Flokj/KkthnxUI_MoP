@@ -500,6 +500,14 @@ local function CreateChatCategory()
 		end
 	end
 
+	local function UpdateChatButtons()
+		local chatModule = K:GetModule("Chat")
+		if chatModule and chatModule.UpdateChatSize then
+			chatModule:UpdateChatButtons()
+			-- Chat button updated silently
+		end
+	end
+
 	-- GENERAL SECTION
 	local generalChatSection = GUI:AddSection(chatCategory, GENERAL)
 	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"], UpdateChatSettings)
@@ -515,10 +523,9 @@ local function CreateChatCategory()
 	GUI:CreateSwitch(appearanceChatSection, "Chat.Chatbar", "Show Chat Bars", UpdateChatSettings)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatClassColor", "Most Class Color in Chat and chat Bubbles", UpdateChatSettings)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemGem", "Show Item Gem in ChatFrames", UpdateChatSettings)
-	--GUI:CreateSwitch(appearanceChatSection, "Chat.CopyButton", "Enable Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", "Enable or disable the Copy Chat button, which allows you to copy chat text.", UpdateChatButtons)
-	--GUI:CreateSwitch(appearanceChatSection, "Chat.ConfigButton", "Enable Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons)
-	--GUI:CreateSwitch(appearanceChatSection, "Chat.RollButton", "Enable Roll Button |A:charactercreate-icon-dice:14:14|a", "Enable or disable the Roll button, which allows you to roll a random number between 1 and 100.", UpdateChatButtons)
-	-- need reviev
+	GUI:CreateSwitch(appearanceChatSection, "Chat.CopyButton", "Enable Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", "Enable or disable the Copy Chat button, which allows you to copy chat text.", UpdateChatButtons)
+	GUI:CreateSwitch(appearanceChatSection, "Chat.ConfigButton", "Enable Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons)
+	GUI:CreateSwitch(appearanceChatSection, "Chat.RollButton", "Enable Roll Button |A:charactercreate-icon-dice:14:14|a", "Enable or disable the Roll button, which allows you to roll a random number between 1 and 100.", UpdateChatButtons)
 
 	-- Timestamp Format Dropdown Options
 	local timestampOptions = {
@@ -976,8 +983,8 @@ local function CreateMiscCategory()
 
 	local function UpdateMaxZoomLevel()
 		local miscModule = K:GetModule("Misc")
-		if miscModule and miscModule.UpdateMaxZoomLevel then
-			miscModule:UpdateMaxZoomLevel()
+		if miscModule and miscModule.UpdateMaxCameraZoom then
+			miscModule:UpdateMaxCameraZoom()
 			print("|cff669DFFKkthnxUI:|r Max camera zoom level updated!")
 		end
 	end

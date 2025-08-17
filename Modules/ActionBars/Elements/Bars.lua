@@ -376,7 +376,6 @@ function Module:OnEnable()
 		"UpdateBarVisibility",
 		"UpdateAllSize",
 		"HideBlizz",
-		"CreateTotemBar",
 		"CreateBarFadeGlobal",
 	}
 
