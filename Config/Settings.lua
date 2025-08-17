@@ -282,7 +282,7 @@ C["Minimap"] = {
 	MailPulse = false,
 	QueueStatusText = false,
 	ShowRecycleBin = true,
-	Size = 210,
+	Size = 190,
 	RecycleBinPosition = 1,
 	LocationText = 3,
 }
