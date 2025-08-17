@@ -270,7 +270,7 @@ function ExtraGUI:CreateFrame()
 
 	-- Close Button using atlas icon
 	local closeButton = CreateFrame("Button", nil, titleBar)
-	closeButton:SetSize(24, 24)
+	closeButton:SetSize(32, 32)
 	closeButton:SetPoint("RIGHT", -8, 0)
 
 	-- Close button background
@@ -281,7 +281,7 @@ function ExtraGUI:CreateFrame()
 
 	-- Use atlas icon for close button
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
-	closeButton.Icon:SetSize(12, 12)
+	closeButton.Icon:SetSize(16, 16)
 	closeButton.Icon:SetPoint("CENTER")
 	closeButton.Icon:SetAtlas("UI-LFG-DeclineMark-Raid")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
@@ -575,7 +575,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 
 	-- Use the specified atlas for cogwheel with better error handling
 	local success = pcall(function()
-		icon:SetAtlas("OptionsIcon-Brown", true)
+		icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
 		icon:SetSize(26, 26) -- Increased from 20x20 to 22x22
 	end)
 
