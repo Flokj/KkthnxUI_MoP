@@ -1487,69 +1487,59 @@ function ExtraGUI:RegisterExampleConfigs()
 	self:RegisterExtraConfig("Inventory.ItemFilter", function(parent)
 		local yOffset = -10
 
-		-- Filter Warband BOE Switch
-		local warbandSwitch = self:CreateSwitch(parent, "Inventory.FilterAOE", "Filter Warband BOE", "Filter Warband bind-on-equip items", UpdateBagStatus)
+		-- Filter Ammo Switch
+		local ammoSwitch = self:CreateSwitch(parent, "Inventory.FilterAmmo", L["Filter Ammo Items"], "Filter ammo items", UpdateBagStatus)
+		ammoSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
+		-- Filter BOE Switch
+		local warbandSwitch = self:CreateSwitch(parent, "Inventory.FilterBOE", L["Filter BoE"], "Filter bind-on-equip items", UpdateBagStatus)
 		warbandSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
-		-- Filter Anima Items Switch
-		local animaSwitch = self:CreateSwitch(parent, "Inventory.FilterAnima", "Filter Anima Items", "Filter anima items into separate category", UpdateBagStatus)
-		animaSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Azerite Items Switch
-		local azeriteSwitch = self:CreateSwitch(parent, "Inventory.FilterAzerite", "Filter Azerite Items", "Filter azerite items into separate category", UpdateBagStatus)
-		azeriteSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
 		-- Filter Collection Items Switch
-		local collectionSwitch = self:CreateSwitch(parent, "Inventory.FilterCollection", "Filter Collection Items", "Filter collection items (pets, mounts, toys)", UpdateBagStatus)
+		local collectionSwitch = self:CreateSwitch(parent, "Inventory.FilterCollection", L["Filter Collection Items"], "Filter collection items (pets, mounts, toys)", UpdateBagStatus)
 		collectionSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Consumables Switch
-		local consumableSwitch = self:CreateSwitch(parent, "Inventory.FilterConsumable", "Filter Consumables", "Filter consumable items (food, potions, etc.)", UpdateBagStatus)
+		local consumableSwitch = self:CreateSwitch(parent, "Inventory.FilterConsumable", L["Filter Consumable Items"], "Filter consumable items (food, potions, etc.)", UpdateBagStatus)
 		consumableSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
+		-- Filter EquipSets Switch
+		local equipSetsSwitch = self:CreateSwitch(parent, "Inventory.FilterEquipSet", L["Filter EquipSet"], "Filter equipment sets", UpdateBagStatus)
+		equipSetsSwitch:SetPoint("TOPLEFT", 0, yOffset)
+		yOffset = yOffset - 35
+
 		-- Filter Equipment Switch
-		local equipmentSwitch = self:CreateSwitch(parent, "Inventory.FilterEquipment", "Filter Equipment", "Filter equipment items", UpdateBagStatus)
+		local equipmentSwitch = self:CreateSwitch(parent, "Inventory.FilterEquipment", L["Filter Equipment Items"], "Filter equipment items", UpdateBagStatus)
 		equipmentSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Trade Goods Switch
-		local goodsSwitch = self:CreateSwitch(parent, "Inventory.FilterGoods", "Filter Trade Goods", "Filter trade goods and crafting materials", UpdateBagStatus)
+		local goodsSwitch = self:CreateSwitch(parent, "Inventory.FilterGoods", L["Filter Goods Items"], "Filter trade goods and crafting materials", UpdateBagStatus)
 		goodsSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Junk Items Switch
-		local junkSwitch = self:CreateSwitch(parent, "Inventory.FilterJunk", "Filter Junk Items", "Filter junk items for easy selling", UpdateBagStatus)
+		local junkSwitch = self:CreateSwitch(parent, "Inventory.FilterJunk", L["Filter Junk Items"], "Filter junk items for easy selling", UpdateBagStatus)
 		junkSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Quest Items Switch
-		local questSwitch = self:CreateSwitch(parent, "Inventory.FilterQuest", "Filter Quest Items", "Filter quest items into separate category", UpdateBagStatus)
+		local questSwitch = self:CreateSwitch(parent, "Inventory.FilterQuest", L["Filter Quest Items"], "Filter quest items into separate category", UpdateBagStatus)
 		questSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Custom Items Switch
-		local customSwitch = self:CreateSwitch(parent, "Inventory.FilterCustom", "Filter Custom Items", "Filter custom defined items", UpdateBagStatus)
+		local customSwitch = self:CreateSwitch(parent, "Inventory.FilterCustom", L["Filter Custom Items"], "Filter custom defined items", UpdateBagStatus)
 		customSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Filter Legendary Items Switch
-		local legendarySwitch = self:CreateSwitch(parent, "Inventory.FilterLegendary", "Filter Legendary Items", "Filter legendary items", UpdateBagStatus)
+		local legendarySwitch = self:CreateSwitch(parent, "Inventory.FilterLegendary", L["Filter Legendary Items"], "Filter legendary items", UpdateBagStatus)
 		legendarySwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Lower Item Level Switch
-		local lowerSwitch = self:CreateSwitch(parent, "Inventory.FilterLower", "Filter Lower Item Level", "Filter items with lower item level", UpdateBagStatus)
-		lowerSwitch:SetPoint("TOPLEFT", 0, yOffset)
-		yOffset = yOffset - 35
-
-		-- Filter Primordial Stones Switch
-		local stoneSwitch = self:CreateSwitch(parent, "Inventory.FilterStone", "Filter Primordial Stones", "Filter primordial stones", UpdateBagStatus)
-		stoneSwitch:SetPoint("TOPLEFT", 0, yOffset)
 		yOffset = yOffset - 35
 
 		-- Gather Empty Slots Switch (this stays in extra config)
@@ -1560,34 +1550,30 @@ function ExtraGUI:RegisterExampleConfigs()
 		-- Reset Filters Button
 		local resetButton = self:CreateButton(parent, "Reset Filters", 120, 25, function()
 			-- Reset filter switches to default values
-			SetExtraConfigValue("Inventory.FilterAOE", true)
-			SetExtraConfigValue("Inventory.FilterAnima", true)
-			SetExtraConfigValue("Inventory.FilterAzerite", false)
+			SetExtraConfigValue("Inventory.FilterAmmo", true)
+			SetExtraConfigValue("Inventory.FilterBOE", false)			
 			SetExtraConfigValue("Inventory.FilterCollection", true)
 			SetExtraConfigValue("Inventory.FilterConsumable", true)
+			SetExtraConfigValue("Inventory.FilterEquipSet", false)
 			SetExtraConfigValue("Inventory.FilterEquipment", true)
 			SetExtraConfigValue("Inventory.FilterGoods", false)
 			SetExtraConfigValue("Inventory.FilterJunk", true)
 			SetExtraConfigValue("Inventory.FilterQuest", true)
-			SetExtraConfigValue("Inventory.FilterCustom", true)
-			SetExtraConfigValue("Inventory.FilterLegendary", true)
-			SetExtraConfigValue("Inventory.FilterLower", true)
-			SetExtraConfigValue("Inventory.FilterStone", true)
+			SetExtraConfigValue("Inventory.FilterCustom", false)
+			SetExtraConfigValue("Inventory.FilterLegendary", false)
 
 			-- Update all widgets
+			ammoSwitch:UpdateValue()
 			warbandSwitch:UpdateValue()
-			animaSwitch:UpdateValue()
-			azeriteSwitch:UpdateValue()
 			collectionSwitch:UpdateValue()
 			consumableSwitch:UpdateValue()
+			equipSetsSwitch:UpdateValue()
 			equipmentSwitch:UpdateValue()
 			goodsSwitch:UpdateValue()
 			junkSwitch:UpdateValue()
 			questSwitch:UpdateValue()
 			customSwitch:UpdateValue()
 			legendarySwitch:UpdateValue()
-			lowerSwitch:UpdateValue()
-			stoneSwitch:UpdateValue()
 			gatherEmptySwitch:UpdateValue()
 		end)
 		resetButton:SetPoint("TOPLEFT", 10, yOffset)
