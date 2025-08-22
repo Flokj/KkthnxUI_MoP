@@ -304,7 +304,7 @@ C.NameplateWhiteList = {
     -- MoP
     [113801] = true, --{ type = CROWD_CONTROL }, -- Bash (Force of Nature - Feral Treants)
     [102795] = true, --{ type = CROWD_CONTROL }, -- Bear Hug
-    [99] = true, --{ type = CROWD_CONTROL }, -- Disorienting Roar
+    --[99] = true, --{ type = CROWD_CONTROL }, -- Disorienting Roar
     [102546] = true, --{ type = CROWD_CONTROL }, -- Pounce (Incarnation)
     [114238] = true, --{ type = CROWD_CONTROL }, -- Fae Silence (Glyph of Fae Silence)
     --[113770] = true, --{ type = ROOT }, -- Entangling Roots (Force of Nature - Balance Treants)

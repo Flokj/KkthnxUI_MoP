@@ -145,7 +145,7 @@ local SPACING = 8
 local HEADER_HEIGHT = 40
 
 -- Colors (use KkthnxUI's established color system)
-local ACCENT_COLOR = { 0.36, 0.55, 0.81 }
+local ACCENT_COLOR = { K.r, K.g, K.b }
 local TEXT_COLOR = { 0.9, 0.9, 0.9, 1 }
 local BG_COLOR = C["Media"].Backdrops.ColorBackdrop
 
@@ -283,7 +283,7 @@ function ExtraGUI:CreateFrame()
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
 	closeButton.Icon:SetSize(16, 16)
 	closeButton.Icon:SetPoint("CENTER")
-	closeButton.Icon:SetAtlas("UI-LFG-DeclineMark-Raid")
+	closeButton.Icon:SetAtlas("common-icon-redx")
 	closeButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	closeButton:SetScript("OnClick", function()
@@ -487,8 +487,10 @@ function ExtraGUI:HookMainGUIClose()
 	end
 
 	-- Hook the main GUI's OnHide event
-    -- Hook without overriding existing handlers
-    mainGUI:HookScript("OnHide", function() self:Hide() end)
+	-- Hook without overriding existing handlers
+	mainGUI:HookScript("OnHide", function()
+		self:Hide()
+	end)
 
 	self.MainGUIHooked = true
 end
@@ -563,7 +565,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	-- Position next to the label
 	if label then
 		-- Position to the right of the label
-		cogwheel:SetPoint("LEFT", label, "RIGHT", 6, 0)
+		cogwheel:SetPoint("LEFT", label, "RIGHT", 10, 0)
 	else
 		-- Fallback: position after estimated text width
 		cogwheel:SetPoint("LEFT", widget, "LEFT", 200, 0)
