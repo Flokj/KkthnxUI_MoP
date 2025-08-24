@@ -565,7 +565,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	-- Position next to the label
 	if label then
 		-- Position to the right of the label
-		cogwheel:SetPoint("LEFT", label, "RIGHT", 10, 0)
+		cogwheel:SetPoint("LEFT", label, "RIGHT", 6, 0)
 	else
 		-- Fallback: position after estimated text width
 		cogwheel:SetPoint("LEFT", widget, "LEFT", 200, 0)
