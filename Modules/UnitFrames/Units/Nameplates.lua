@@ -39,8 +39,11 @@ local UnitThreatSituation = UnitThreatSituation
 local hooksecurefunc = hooksecurefunc
 
 -- Custom data
-local customUnits = {}
-local showPowerList = {}
+local customUnits = {} -- Custom unit data
+local groupRoles = {} -- Group roles for players
+local showPowerList = {} -- List of players who have their power displayed
+local isInGroup = false -- Boolean to track if the player is in a group
+local isInInstance = false -- Boolean to track if the player is in an instance
 
 -- Unit classification
 local NPClassifies = {
@@ -162,18 +165,29 @@ function Module:UpdateUnitPower()
 end
 
 -- Off-tank threat color
-local groupRoles, isInGroup, myRole = {}
+-- Function to refresh the group roles
 local function refreshGroupRoles()
+	-- Check if player is in raid or group
 	local isInRaid = IsInRaid()
 	isInGroup = isInRaid or IsInGroup()
-	table_wipe(groupRoles)
-	myRole = UnitGroupRolesAssigned("player")
 
+	-- Wipe the groupRoles table
+	table_wipe(groupRoles)
+
+	-- If player is in group
 	if isInGroup then
+		-- Get the number of players in group
 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
+
+		-- Define the unit prefix (raid or party)
 		local unit = (isInRaid and "raid") or "party"
+
+		-- Loop through each player in the group
 		for i = 1, numPlayers do
+			-- Define the unit index (e.g. raid1, party2)
 			local index = unit .. i
+
+			-- If the unit exists, add their name and role to the groupRoles table
 			if UnitExists(index) then
 				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
 			end
@@ -188,6 +202,12 @@ end
 
 function Module:UpdateGroupRoles()
 	refreshGroupRoles()
+
+	-- Unregister existing events first to prevent duplicates
+	K:UnregisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
+	K:UnregisterEvent("GROUP_LEFT", resetGroupRoles)
+
+	-- Register events
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
 end
@@ -198,7 +218,7 @@ function Module:CheckThreatStatus(unit)
 	local unitTarget = unit .. "target"
 	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
-	if myRole == "Tank" and unitRole == "TANK" then
+	if K.Role == "Tank" and unitRole == "TANK" then
 		return true, UnitThreatSituation(unitTarget, unit)
 	else
 		return false, UnitThreatSituation("player", unit)
@@ -247,13 +267,13 @@ function Module:UpdateColor(_, unit)
 			end
 		elseif isPlayer and not isFriendly and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
-		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
+		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) or C.NameplateTrashUnits[npcID] then
 			r, g, b = 0.6, 0.6, 0.6
 		else
 			r, g, b = K.UnitColor(unit)
-			if status and (C["Nameplate"].TankMode or myRole == "Tank") then
+			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
-					if myRole ~= "Tank" and revertThreat then
+					if K.Role ~= "Tank" and revertThreat then
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					else
 						if isOffTank then
@@ -265,7 +285,7 @@ function Module:UpdateColor(_, unit)
 				elseif status == 2 or status == 1 then
 					r, g, b = transColor[1], transColor[2], transColor[3]
 				elseif status == 0 then
-					if myRole ~= "Tank" and revertThreat then
+					if K.Role ~= "Tank" and revertThreat then
 						r, g, b = secureColor[1], secureColor[2], secureColor[3]
 					else
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
@@ -280,7 +300,7 @@ function Module:UpdateColor(_, unit)
 	end
 
 	self.ThreatIndicator:Hide()
-	if status and (isCustomUnit or (not C["Nameplate"].TankMode and myRole ~= "Tank")) then
+	if status and (isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank")) then
 		if status == 3 then
 			self.ThreatIndicator:SetBackdropBorderColor(1, 0, 0)
 			self.ThreatIndicator:Show()

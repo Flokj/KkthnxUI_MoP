@@ -18,6 +18,8 @@ local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
 local CreateVector2D = CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
 local GameTooltip = GameTooltip
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
 local GetTime = GetTime
 local ITEM_LEVEL = ITEM_LEVEL
 local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
@@ -589,10 +591,91 @@ do
 			return iLvlDB[link]
 		end
 	end
+
+	local pendingNPCs, nameCache, callbacks = {}, {}, {}
+	local loadingStr = "..."
+	local pendingFrame = CreateFrame("Frame")
+	pendingFrame:Hide()
+	pendingFrame:SetScript("OnUpdate", function(self, elapsed)
+		self.elapsed = (self.elapsed or 0) + elapsed
+		if self.elapsed > 1 then
+			if next(pendingNPCs) then
+				for npcID, count in pairs(pendingNPCs) do
+					if count > 2 then
+						nameCache[npcID] = UNKNOWN
+						if callbacks[npcID] then
+							callbacks[npcID](UNKNOWN)
+						end
+						pendingNPCs[npcID] = nil
+					else
+						local name = K.GetNPCName(npcID, callbacks[npcID])
+						if name and name ~= loadingStr then
+							pendingNPCs[npcID] = nil
+						else
+							pendingNPCs[npcID] = pendingNPCs[npcID] + 1
+						end
+					end
+				end
+			else
+				self:Hide()
+			end
+
+			self.elapsed = 0
+		end
+	end)
+
+	function K.GetNPCName(npcID, callback)
+		local name = nameCache[npcID]
+		if not name then
+			tip:SetOwner(UIParent, "ANCHOR_NONE")
+			tip:SetHyperlink(format("unit:Creature-0-0-0-0-%d", npcID))
+			name = _G.KKUI_ScanTooltipTextLeft1:GetText() or loadingStr
+			if name == loadingStr then
+				if not pendingNPCs[npcID] then
+					pendingNPCs[npcID] = 1
+					pendingFrame:Show()
+				end
+			else
+				nameCache[npcID] = name
+			end
+		end
+		if callback then
+			callback(name)
+			callbacks[npcID] = callback
+		end
+
+		return name
+	end
 end
 
 -- Role Updater and Chat Channel Check Functions
 do
+	local function CheckRole()
+		local tree = GetSpecialization()
+
+		if not tree then
+			K.Role = nil
+			return
+		end
+
+		local _, _, _, _, role, stat = GetSpecializationInfo(tree)
+		if role == "TANK" then
+			K.Role = "Tank"
+		elseif role == "HEALER" then
+			K.Role = "Healer"
+		elseif role == "DAMAGER" then
+			-- Check if the player is a caster class
+			if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
+				K.Role = "Caster"
+			else
+				K.Role = "Melee"
+			end
+		end
+	end
+	K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
+
 	-- Role Icons
 	local GroupRoleTex = {
 		TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",

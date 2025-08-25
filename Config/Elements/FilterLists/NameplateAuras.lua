@@ -467,18 +467,25 @@ C.NameplateWhiteList = {
 }
 
 C.NameplateBlackList = {
-	[15407] = true, -- 精神鞭笞
+    [15407] = true, -- Mind Flay
 }
 
 C.NameplateCustomUnits = {
-	--[120651] = true, -- 爆炸物
+    -- [162290] = true, -- 腐化的觅血鲨
 }
 
 C.NameplateShowPowerList = {
-	--[155432] = true, -- 魔力使者
+    -- [56792] = true, -- Temple of the Jade Serpent, Doubtful Delusion
 }
 
--- Important readings highlighted
+C.NameplateTargetNPCs = {
+    -- [165251] = true, -- Sylvan Fox
+}
+
+C.NameplateTrashUnits = {
+    -- [174773] = true, -- M+, Spiteful Shade
+}
+
 C.MajorSpells = {
-	--[47855] = true,	-- 寒冰箭
+	-- [47855] = true,	-- 寒冰箭
 }
