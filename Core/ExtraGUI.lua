@@ -567,7 +567,7 @@ function ExtraGUI:CreateCogwheelIcon(widget, configPath, optionTitle)
 	end
 
 	local cogwheel = CreateFrame("Button", nil, widget)
-	cogwheel:SetSize(20, 20) -- Increased from 20x20 to 22x22 (2 more sizes up)
+	cogwheel:SetSize(18, 18) -- Increased from 20x20 to 22x22 (2 more sizes up)
 
 	-- Position next to the label
 	if label then

@@ -1,10 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("DataText")
 
-local GetTalentInfo = C_SpecializationInfo.GetTalentInfo
 local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
-local SetSpecialization = SetSpecialization
+local SetSpecialization = C_SpecializationInfo.SetSpecialization or SetSpecialization
 
 local function addIcon(texture)
 	texture = texture and "|T" .. texture .. ":16:16:0:0:50:50:4:46:4:46|t" or ""
@@ -15,8 +14,8 @@ local currentSpecIndex, currentLootIndex, newMenu, numSpecs, numLocal
 
 local eventList = {
 	"PLAYER_ENTERING_WORLD",
-	"SPELLS_CHANGED",
 	"ACTIVE_PLAYER_SPECIALIZATION_CHANGED",
+	"PLAYER_LOOT_SPEC_UPDATED"
 }
 
 local function OnEvent()
@@ -46,18 +45,10 @@ local function OnEnter()
 	GameTooltip:AddLine(TALENTS_BUTTON, 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
-	local specID, specName, _, specIcon = GetSpecializationInfo(currentSpecIndex)
-	GameTooltip:AddLine(addIcon(specIcon) .. " " .. specName, 0.6, 0.8, 1)
---[[]
-	for t = 1, MAX_TALENT_TIERS do
-		for c = 1, 3 do
-			local _, name, icon, selected = GetTalentInfo(t, c, 1)
-			if selected then
-				GameTooltip:AddLine(addIcon(icon).." "..name, 1,1,1)
-			end
-		end
+	for i = 1, 2 do
+		local specID, specName, _, specIcon = GetSpecializationInfo(i)
+		GameTooltip:AddLine(addIcon(specIcon) .. " " .. specName, 0.6, 0.8, 1)
 	end
-]]
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle TalentFrame" .. " ", 1, 1, 1, 0.6, 0.8, 1)
@@ -68,18 +59,23 @@ end
 local OnLeave = K.HideTooltip
 
 local function selectSpec(_, specIndex)
-	if currentSpecIndex == specIndex then return end
-	SetSpecialization(specIndex)
+	if GetActiveTalentGroup() == specIndex then return end
+	SetActiveTalentGroup(specIndex)
 	DropDownList1:Hide()
 end
 
 local function checkSpec(self)
-	return currentSpecIndex == self.arg1
+	return GetActiveTalentGroup() == self.arg1
+end
+
+local function updateLootSpec()
+	OnEvent()
 end
 
 local function selectLootSpec(_, index)
 	SetLootSpecialization(index)
 	DropDownList1:Hide()
+	C_Timer.After(1, updateLootSpec) -- no event fired after SetLootSpecialization
 end
 
 local function checkLootSpec(self)
@@ -88,8 +84,7 @@ end
 
 local function refreshDefaultLootSpec()
 	if not currentSpecIndex or currentSpecIndex == 5 then return end
-	local mult = 3 + numSpecs
-	newMenu[numLocal - mult].text = format(LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or NONE)
+	newMenu[numLocal].text = format(" "..LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or NONE)
 end
 
 local seperatorMenu = {
@@ -113,22 +108,22 @@ local function BuildSpecMenu()
 	if newMenu then return end
 
 	newMenu = {
-		{ text = SPECIALIZATION, isTitle = true, notCheckable = true },
+		{ text = " " .. SPECIALIZATION, isTitle = true, notCheckable = true },
+		{ text = " " .. SPECIALIZATION_PRIMARY, arg1 = 1, func = selectSpec, checked = checkSpec },
+		{ text = " " .. SPECIALIZATION_SECONDARY, arg1 = 2, func = selectSpec, checked = checkSpec },
 		seperatorMenu,
-		{ text = SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true },
+		{ text = " " .. SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true },
 		{ text = "", arg1 = 0, func = selectLootSpec, checked = checkLootSpec },
 	}
+	numLocal = #newMenu
 
 	for i = 1, 4 do
 		local id, name = GetSpecializationInfo(i)
-		if id then
+		if id and id ~= 0 then
 			numSpecs = (numSpecs or 0) + 1
-			tinsert(newMenu, i + 1, { text = name, arg1 = i, func = selectSpec, checked = checkSpec })
-			tinsert(newMenu, { text = name, arg1 = id, func = selectLootSpec, checked = checkLootSpec })
+			tinsert(newMenu, {text = " "..name, arg1 = id, func = selectLootSpec, checked = checkLootSpec})
 		end
 	end
-
-	numLocal = #newMenu
 
 	refreshDefaultLootSpec()
 	K:RegisterEvent("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", refreshDefaultLootSpec)
@@ -140,11 +135,10 @@ local function OnMouseUp(self, btn)
 	if btn == "LeftButton" then
 		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT) return end
 		ToggleTalentFrame()
-	elseif btn == "RightButton" then
-		if InCombatLockdown() then return end
-		if GetNumSpecGroups() < 2 then return end
-		local idx = GetActiveTalentGroup()
-		SetActiveTalentGroup(idx == 1 and 2 or 1)
+	else
+		BuildSpecMenu()
+		K.LibEasyMenu.Create(newMenu, K.EasyMenu, self, -80, 100, "MENU", 1)
+		GameTooltip:Hide()
 	end
 end
 

@@ -47,28 +47,27 @@ Supported class powers:
 local _, ns = ...
 local oUF = ns.oUF
 
-local _, PlayerClass = UnitClass("player")
+local _, PlayerClass = UnitClass('player')
+
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
 
 -- sourced from Blizzard_FrameXMLBase/Constants.lua
 local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE or 1
 local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER or 3
-local SPEC_PRIEST_SHADOW = _G.SPEC_PRIEST_SHADOW or 3
-
 local SPEC_WARLOCK_AFFLICTION = _G.SPEC_WARLOCK_AFFLICTION or 1
 local SPEC_WARLOCK_DEMONOLOGY = _G.SPEC_WARLOCK_DEMONOLOGY or 2
 local SPEC_WARLOCK_DESTRUCTION = _G.SPEC_WARLOCK_DESTRUCTION or 3
+local SPEC_PRIEST_SHADOW = _G.SPEC_PRIEST_SHADOW or 3
 
 local SPELL_POWER_ENERGY = Enum.PowerType.Energy or 3
 local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints or 4
-
 local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards or 7
-local SPELL_POWER_DEMONIC_FURY = Enum.PowerType.DemonicFury or 15
-local SPELL_POWER_BURNING_EMBER = Enum.PowerType.BurningEmbers or 14
-
 local SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower or 9
 local SPELL_POWER_CHI = Enum.PowerType.Chi or 12
 local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType.ArcaneCharges or 16
 local SPELL_POWER_SHADOW_ORBS = Enum.PowerType.ShadowOrbs or 28
+local SPELL_POWER_BURNING_EMBERS = Enum.PowerType.BurningEmbers or 14
+local SPELL_POWER_DEMONIC_FURY = Enum.PowerType.DemonicFury or 15
 
 -- Holds the class specific stuff.
 local ClassPowerID, ClassPowerType
@@ -83,7 +82,7 @@ local function UpdateColor(element, powerType)
 		bar:SetStatusBarColor(r, g, b)
 
 		local bg = bar.bg
-		if bg then
+		if(bg) then
 			local mu = bg.multiplier or 1
 			bg:SetVertexColor(r * mu, g * mu, b * mu)
 		end
@@ -97,19 +96,20 @@ local function UpdateColor(element, powerType)
 	* g    - the green component of the used color (number)[0-1]
 	* b    - the blue component of the used color (number)[0-1]
 	--]]
-	if element.PostUpdateColor then
+	if(element.PostUpdateColor) then
 		element:PostUpdateColor(r, g, b)
 	end
 end
 
 local function Update(self, event, unit, powerType)
-	if event == "PLAYER_TARGET_CHANGED" then
-		unit, powerType = "player", "COMBO_POINTS"
-	elseif powerType == "ENERGY" then
-		powerType = "COMBO_POINTS" -- sometimes powerType return ENERGY for the first combo point
+	if event == 'PLAYER_TARGET_CHANGED' then
+		unit, powerType = 'player', 'COMBO_POINTS'
+	elseif powerType == 'ENERGY' then
+		powerType = 'COMBO_POINTS' -- sometimes powerType return ENERGY for the first combo point
 	end
 
-	if not (unit and (UnitIsUnit(unit, "player") and (not powerType or powerType == ClassPowerType) or unit == "vehicle" and powerType == "COMBO_POINTS")) then
+	if(not (unit and (UnitIsUnit(unit, 'player') and (not powerType or powerType == ClassPowerType)
+		or unit == 'vehicle' and powerType == 'COMBO_POINTS'))) then
 		return
 	end
 
@@ -120,44 +120,42 @@ local function Update(self, event, unit, powerType)
 
 	* self  - the ClassPower element
 	]]
-	if element.PreUpdate then
+	if(element.PreUpdate) then
 		element:PreUpdate()
 	end
 
 	local cur, max, mod, oldMax
-	if event ~= "ClassPowerDisable" then
-		local powerID = unit == "vehicle" and SPELL_POWER_COMBO_POINTS or ClassPowerID
+	if(event ~= 'ClassPowerDisable') then
+		local powerID = unit == 'vehicle' and SPELL_POWER_COMBO_POINTS or ClassPowerID
 		cur = powerID == SPELL_POWER_COMBO_POINTS and GetComboPoints(unit, 'target') or UnitPower(unit, powerID, true) -- has to use GetComboPoints in classic
 		max = UnitPowerMax(unit, powerID)
 		mod = UnitPowerDisplayMod(powerID)
+		if (ClassPowerType == 'DEMONIC_FURY') then
+			max, mod = 1, 1000
+		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
 		cur = mod == 0 and 0 or cur / mod
 
-		if ClassPowerType == "DEMONIC_FURY" and C_SpecializationInfo.GetSpecialization() == SPEC_WARLOCK_DEMONOLOGY then
-			cur = UnitPower(unit, powerID) / 1000
-			max = 1
+		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
+		if(ClassPowerType == 'SOUL_SHARDS') then
+			cur = cur - cur % 1
 		end
 
 		local numActive = cur + 0.9
-		for i = 1, #element do
-			if i <= max then
-				if i > numActive then
-					element[i]:Hide()
-					element[i]:SetValue(0)
-				else
-					element[i]:Show()
-					element[i]:SetValue(cur - i + 1)
-				end
-			else
+		for i = 1, max do
+			if(i > numActive) then
 				element[i]:Hide()
 				element[i]:SetValue(0)
+			else
+				element[i]:Show()
+				element[i]:SetValue(cur - i + 1)
 			end
 		end
 
 		oldMax = element.__max
-		if max ~= oldMax then
-			if max < oldMax then
+		if(max ~= oldMax) then
+			if(max < oldMax) then
 				for i = max + 1, oldMax do
 					element[i]:Hide()
 					element[i]:SetValue(0)
@@ -176,7 +174,7 @@ local function Update(self, event, unit, powerType)
 	* hasMaxChanged - indicates whether the maximum amount has changed since the last update (boolean)
 	* powerType     - the active power type (string)
 	--]]
-	if element.PostUpdate then
+	if(element.PostUpdate) then
 		return element:PostUpdate(cur, max, oldMax ~= max, powerType)
 	end
 end
@@ -190,22 +188,20 @@ local function Path(self, ...)
 	* unit  - the unit accompanying the event (string)
 	* ...   - the arguments accompanying the event
 	--]]
-	return (self.ClassPower.Override or Update)(self, ...)
+	return (self.ClassPower.Override or Update) (self, ...)
 end
 
 -- Pet owns the vehicle in the specifc quest
 -- https://www.wowhead.com/wotlk/quest=13414/aces-high
 local function updateUnitFrame(frame, event, unit, powerType)
-	if not frame then
-		return
-	end
+	if not frame then return end
 	if frame:IsEnabled() and frame:IsElementEnabled("ClassPower") then
 		Path(frame, event, unit, powerType)
 	end
 end
 
 local function WatchVehicleCombos(event, unit, powerType)
-	if unit == "vehicle" and powerType == "COMBO_POINTS" then
+	if unit == 'vehicle' and powerType == 'COMBO_POINTS' then
 		updateUnitFrame(_G.oUF_Player, event, unit, powerType)
 		updateUnitFrame(_G.oUF_PlayerPlate, event, unit, powerType)
 		updateUnitFrame(_G.oUF_TargetPlate, event, unit, powerType)
@@ -216,57 +212,57 @@ local function Visibility(self, event, unit)
 	local element = self.ClassPower
 	local shouldEnable
 
-	if PlayerClass == "WARLOCK" then
-		local spec = C_SpecializationInfo.GetSpecialization()
-		if spec == SPEC_WARLOCK_AFFLICTION then
-			ClassPowerID = SPELL_POWER_SOUL_SHARDS
-			ClassPowerType = "SOUL_SHARDS"
-		elseif spec == SPEC_WARLOCK_DEMONOLOGY then
-			ClassPowerID = SPELL_POWER_DEMONIC_FURY
-			ClassPowerType = "DEMONIC_FURY"
-		elseif spec == SPEC_WARLOCK_DESTRUCTION then
-			ClassPowerID = SPELL_POWER_BURNING_EMBER
-			ClassPowerType = "BURNING_EMBERS"
-		else
-			ClassPowerID = nil
-			ClassPowerType = nil
-		end
-	end
-
-	if UnitHasVehicleUI("player") then
-		unit = "vehicle"
+	if(UnitHasVehicleUI('player')) then
+		unit = 'vehicle'
 		shouldEnable = UnitPowerMax(unit, SPELL_POWER_COMBO_POINTS) == 5 -- PlayerVehicleHasComboPoints()
-	elseif ClassPowerID then
-		-- use 'player' instead of unit because 'SPELLS_CHANGED' is a unitless event
-		if not RequirePower or RequirePower == UnitPowerType("player") then
-			if not RequireSpell or IsPlayerSpell(RequireSpell) then
-				self:UnregisterEvent("SPELLS_CHANGED", Visibility)
-				shouldEnable = true
-				unit = "player"
+	elseif(ClassPowerID) then
+		if PlayerClass == 'WARLOCK' then
+			local currentSpec = GetSpecialization()
+			if currentSpec == SPEC_WARLOCK_DESTRUCTION then
+				ClassPowerID = SPELL_POWER_BURNING_EMBERS
+				ClassPowerType = 'BURNING_EMBERS'
+			elseif currentSpec == SPEC_WARLOCK_DEMONOLOGY then
+				ClassPowerID = SPELL_POWER_DEMONIC_FURY
+				ClassPowerType = 'DEMONIC_FURY'
 			else
-				self:RegisterEvent("SPELLS_CHANGED", Visibility, true)
+				ClassPowerID = SPELL_POWER_SOUL_SHARDS
+				ClassPowerType = 'SOUL_SHARDS'
 			end
-		end
+			shouldEnable = true
+		else
+			if(not RequireSpec or RequireSpec == C_SpecializationInfo.GetSpecialization()) then
+				-- use 'player' instead of unit because 'SPELLS_CHANGED' is a unitless event
+				if(not RequirePower or RequirePower == UnitPowerType('player')) then
+					if(not RequireSpell or C_SpellBook.IsSpellKnown(RequireSpell)) then
+						self:UnregisterEvent('SPELLS_CHANGED', Visibility)
+						shouldEnable = true
+						unit = 'player'
+					else
+						self:RegisterEvent('SPELLS_CHANGED', Visibility, true)
+					end
+				end
+			end
+		end	
 	end
 
 	local isEnabled = element.__isEnabled
-	local powerType = unit == "vehicle" and "COMBO_POINTS" or ClassPowerType
+	local powerType = unit == 'vehicle' and 'COMBO_POINTS' or ClassPowerType
 
-	if shouldEnable then
+	if(shouldEnable) then
 		--[[ Override: ClassPower:UpdateColor(powerType)
 		Used to completely override the internal function for updating the widgets' colors.
 
 		* self      - the ClassPower element
 		* powerType - the active power type (string)
 		--]]
-		(element.UpdateColor or UpdateColor)(element, powerType)
+		(element.UpdateColor or UpdateColor) (element, powerType)
 	end
 
-	if shouldEnable and not isEnabled then
+	if(shouldEnable and not isEnabled) then
 		ClassPowerEnable(self)
-	elseif not shouldEnable and (isEnabled or isEnabled == nil) then
+	elseif(not shouldEnable and (isEnabled or isEnabled == nil)) then
 		ClassPowerDisable(self)
-	elseif shouldEnable and isEnabled then
+	elseif(shouldEnable and isEnabled) then
 		Path(self, event, unit, powerType)
 	end
 end
@@ -279,34 +275,34 @@ local function VisibilityPath(self, ...)
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
 	--]]
-	return (self.ClassPower.OverrideVisibility or Visibility)(self, ...)
+	return (self.ClassPower.OverrideVisibility or Visibility) (self, ...)
 end
 
 local function ForceUpdate(element)
-	return VisibilityPath(element.__owner, "ForceUpdate", element.__owner.unit)
+	return VisibilityPath(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
 do
 	function ClassPowerEnable(self)
-		self:RegisterEvent("UNIT_POWER_FREQUENT", Path)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Path, true)
-		self:RegisterEvent("UNIT_MAXPOWER", Path)
+		self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
+		self:RegisterEvent('PLAYER_TARGET_CHANGED', Path, true)
+		self:RegisterEvent('UNIT_MAXPOWER', Path)
 
 		self.ClassPower.__isEnabled = true
 
-		if UnitHasVehicleUI("player") then
-			Path(self, "ClassPowerEnable", "vehicle", "COMBO_POINTS")
+		if(UnitHasVehicleUI('player')) then
+			Path(self, 'ClassPowerEnable', 'vehicle', 'COMBO_POINTS')
 
-			KkthnxUI[1]:RegisterEvent("UNIT_POWER_FREQUENT", WatchVehicleCombos)
+			KkthnxUI[1]:RegisterEvent('UNIT_POWER_FREQUENT', WatchVehicleCombos)
 		else
-			Path(self, "ClassPowerEnable", "player", ClassPowerType)
+			Path(self, 'ClassPowerEnable', 'player', ClassPowerType)
 		end
 	end
 
 	function ClassPowerDisable(self)
-		self:UnregisterEvent("UNIT_POWER_FREQUENT", Path)
-		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Path)
-		self:UnregisterEvent("UNIT_MAXPOWER", Path)
+		self:UnregisterEvent('UNIT_POWER_FREQUENT', Path)
+		self:UnregisterEvent('PLAYER_TARGET_CHANGED', Path)
+		self:UnregisterEvent('UNIT_MAXPOWER', Path)
 
 		local element = self.ClassPower
 		for i = 1, #element do
@@ -314,49 +310,53 @@ do
 		end
 
 		self.ClassPower.__isEnabled = false
-		Path(self, "ClassPowerDisable", "player", ClassPowerType)
+		Path(self, 'ClassPowerDisable', 'player', ClassPowerType)
 
-		KkthnxUI[1]:UnregisterEvent("UNIT_POWER_FREQUENT", WatchVehicleCombos)
+		KkthnxUI[1]:UnregisterEvent('UNIT_POWER_FREQUENT', WatchVehicleCombos)
 	end
 
-	if PlayerClass == "MONK" then
+	if(PlayerClass == 'MONK') then
 		ClassPowerID = SPELL_POWER_CHI
-		ClassPowerType = "CHI"
-	elseif PlayerClass == "PALADIN" then
+		ClassPowerType = 'CHI'
+	elseif(PlayerClass == 'PALADIN') then
 		ClassPowerID = SPELL_POWER_HOLY_POWER
-		ClassPowerType = "HOLY_POWER"
-	elseif PlayerClass == "ROGUE" or PlayerClass == "DRUID" then
+		ClassPowerType = 'HOLY_POWER'
+	elseif(PlayerClass == 'WARLOCK') then
+		ClassPowerID = SPELL_POWER_SOUL_SHARDS
+		ClassPowerType = 'SOUL_SHARDS'
+		RequireSpec = true
+	elseif(PlayerClass == 'ROGUE' or PlayerClass == 'DRUID') then
 		ClassPowerID = SPELL_POWER_COMBO_POINTS
-		ClassPowerType = "COMBO_POINTS"
+		ClassPowerType = 'COMBO_POINTS'
 
-		if PlayerClass == "DRUID" then
+		if(PlayerClass == 'DRUID') then
 			RequirePower = SPELL_POWER_ENERGY
 			RequireSpell = 768 -- Cat Form
 		end
-	elseif PlayerClass == "MAGE" then
+	elseif(PlayerClass == 'MAGE') then
 		ClassPowerID = SPELL_POWER_ARCANE_CHARGES
-		ClassPowerType = "ARCANE_CHARGES"
+		ClassPowerType = 'ARCANE_CHARGES'
 		RequireSpec = SPEC_MAGE_ARCANE
-	elseif PlayerClass == "PRIEST" then
+	elseif(PlayerClass == 'PRIEST') then
 		ClassPowerID = SPELL_POWER_SHADOW_ORBS
-		ClassPowerType = "SHADOW_ORBS"
+		ClassPowerType = 'SHADOW_ORBS'
 		RequireSpec = SPEC_PRIEST_SHADOW
 	end
 end
 
 local function Enable(self, unit)
 	local element = self.ClassPower
-	if element and UnitIsUnit(unit, "player") then
+	if(element and UnitIsUnit(unit, 'player')) then
 		element.__owner = self
 		element.__max = #element
 		element.ForceUpdate = ForceUpdate
 
-		if RequireSpec or RequireSpell or PlayerClass == "WARLOCK" then
-			self:RegisterEvent("PLAYER_TALENT_UPDATE", VisibilityPath, true)
+		if(RequireSpec or RequireSpell) then
+			self:RegisterEvent('PLAYER_TALENT_UPDATE', VisibilityPath, true)
 		end
 
-		if RequirePower then
-			self:RegisterEvent("UNIT_DISPLAYPOWER", VisibilityPath)
+		if(RequirePower) then
+			self:RegisterEvent('UNIT_DISPLAYPOWER', VisibilityPath)
 		end
 
 		element.ClassPowerEnable = ClassPowerEnable
@@ -364,8 +364,8 @@ local function Enable(self, unit)
 
 		for i = 1, #element do
 			local bar = element[i]
-			if bar:IsObjectType("StatusBar") then
-				if not bar:GetStatusBarTexture() then
+			if(bar:IsObjectType('StatusBar')) then
+				if(not bar:GetStatusBarTexture()) then
 					bar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 				end
 
@@ -378,13 +378,13 @@ local function Enable(self, unit)
 end
 
 local function Disable(self)
-	if self.ClassPower then
+	if(self.ClassPower) then
 		ClassPowerDisable(self)
 
 		self:UnregisterEvent('PLAYER_TALENT_UPDATE', VisibilityPath)
-		self:UnregisterEvent("UNIT_DISPLAYPOWER", VisibilityPath)
-		self:UnregisterEvent("SPELLS_CHANGED", Visibility)
+		self:UnregisterEvent('UNIT_DISPLAYPOWER', VisibilityPath)
+		self:UnregisterEvent('SPELLS_CHANGED', Visibility)
 	end
 end
 
-oUF:AddElement("ClassPower", VisibilityPath, Enable, Disable)
+oUF:AddElement('ClassPower', VisibilityPath, Enable, Disable)

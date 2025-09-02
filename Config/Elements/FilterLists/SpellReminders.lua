@@ -122,18 +122,9 @@ C.SpellReminderBuffs = {
 	},
 	WARLOCK = {
 		{	spells = {
-				[28176] = true,
-				[687] = true,
+				[109773] = true,
 			},
-			depend = 28176,
-			combat = true,
-			instance = true,
-			pvp = true,
-		},
-		{	spells = {
-				[85759] = true,
-			},
-			depend = 85759,
+			depend = 109773,
 			instance = true,
 		},
 	},

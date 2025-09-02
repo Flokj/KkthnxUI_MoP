@@ -484,6 +484,16 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 		local showChargeStar = chargedPowerPoints and chargedPowerPoints[i]
 		bar.chargeStar:SetShown(showChargeStar)
 	end
+
+	local amount = element[1].amount
+	if amount then
+		if powerType == "DEMONIC_FURY" then
+			amount:SetText(UnitPower("player", 15))
+			amount:Show()
+		else
+			amount:Hide()
+		end
+	end
 end
 
 function Module:CreateClassPower(self)
@@ -504,6 +514,7 @@ function Module:CreateClassPower(self)
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
+	local isWL = K.Class == "WARLOCK"
 	local maxBar = 6
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 
@@ -547,6 +558,10 @@ function Module:CreateClassPower(self)
 		end
 
 		bars[i] = statusbar
+	end
+
+	if isWL then
+		bars[1].amount = K.CreateFontString(bars[1], 12, "")
 	end
 
 	if isDK then
