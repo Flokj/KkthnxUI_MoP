@@ -166,8 +166,9 @@ function Module:RefreshButtonInfo()
 		for index, slotFrame in pairs(pending) do
 			local link = GetInventoryItemLink(unit, index)
 			if link then
-				local quality, level = select(3, GetItemInfo(link))
-				if quality then
+				local level = K.GetItemLevel(link, unit, index)
+				if level ~= "tooSoon" then
+					local quality = select(3, GetItemInfo(link))
 					local color = K.QualityColors[quality]
 					Module:ItemBorderSetColor(slotFrame, color.r, color.g, color.b)
 					if C["Misc"].ItemLevel and level and level > 1 and quality > 1 then
@@ -213,8 +214,9 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 		if itemTexture then
 			local link = GetInventoryItemLink(unit, index)
 			if link then
-				local quality, level = select(3, GetItemInfo(link))
-				if quality then
+				local level = K.GetItemLevel(link, unit, index)
+				if level ~= "tooSoon" then
+					local quality = select(3, GetItemInfo(link))
 					local color = K.QualityColors[quality]
 					Module:ItemBorderSetColor(slotFrame, color.r, color.g, color.b)
 					if C["Misc"].ItemLevel and level and level > 1 and quality > 1 then
@@ -240,19 +242,19 @@ local function GetItemSlotLevel(unit, index)
 	local level
 	local itemLink = GetInventoryItemLink(unit, index)
 	if itemLink then
-		level = select(4, GetItemInfo(itemLink))
+		level = K.GetItemLevel(itemLink, unit, index)
 	end
 	return tonumber(level) or 0
 end
 
 function K.GetILvlTextColor(level)
-	if level >= 497 then
+	if level >= 510 then
 		return 1, 0.5, 0
-	elseif level >= 484 then
+	elseif level >= 489 then
 		return 0.63, 0.2, 0.93
-	elseif level >= 471 then
+	elseif level >= 476 then
 		return 0, 0.43, 0.87
-	elseif level >= 458 then
+	elseif level >= 463 then
 		return 0.12, 1, 0
 	else
 		return 1, 1, 1
@@ -329,6 +331,7 @@ end
 
 local function GetItemQualityAndLevel(link)
 	local _, _, quality, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
+	level = K.GetItemLevel(link) or level
 	if quality and quality > 1 and level and level > 1 and K.iLvlClassIDs[classID] then
 		return quality, level
 	end
@@ -417,28 +420,18 @@ function Module:ItemLevel_FlyoutUpdate(bag, slot, quality)
 
 	if quality and quality <= 1 then return end
 
-	local link
+	local link, level
 	if bag then
 		link = GetContainerItemLink(bag, slot)
+		level = K.GetItemLevel(link, bag, slot)
 	else
 		link = GetInventoryItemLink("player", slot)
-	end
-	local quality, level = select(3, GetItemInfo(link))
-
-	local color = K.QualityColors[quality or 0]
-	self.iLvl:SetText(level)
-	self.iLvl:SetTextColor(color.r, color.g, color.b)
-	Module:ItemBorderSetColor(self, color.r, color.g, color.b)
-end
-
-function Module:ItemLevel_FlyoutUpdateByID(id)
-	if not self.iLvl then
-		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+		level = K.GetItemLevel(link, "player", slot)
 	end
 
-	local quality, level = select(3, GetItemInfo(id))
-	if quality and quality <= 1 then return end
-
+	if not quality then
+		quality = select(3, GetItemInfo(link))
+	end
 	local color = K.QualityColors[quality or 0]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)

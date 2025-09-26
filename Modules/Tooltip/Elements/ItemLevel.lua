@@ -125,6 +125,7 @@ function Module:GetUnitItemLevel(unit)
 						end
 
 						if unit ~= "player" then
+							level = K.GetItemLevel(itemLink) or level
 							if i < 16 then
 								total = total + level
 							elseif i == 16 then
