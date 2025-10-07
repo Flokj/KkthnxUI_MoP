@@ -1,37 +1,59 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
 local InCombatLockdown = InCombatLockdown
 local CancelSpellByName = CancelSpellByName
-local GetBuffDataByIndex = GetBuffDataByIndex
-local GetSpellLink = GetSpellLink
+local C_UnitAuras_GetBuffDataByIndex = C_UnitAuras and C_UnitAuras.GetBuffDataByIndex
+local C_Spell_GetSpellLink = C_Spell and C_Spell.GetSpellLink
+local format = string.format
+local GetTime = GetTime
 
--- Function to check for bad buffs and remove them
-local function CheckAndRemoveBadBuffs(event)
-	-- Early exit if in combat, register for PLAYER_REGEN_ENABLED to retry after combat ends
+local lastCanceledAtBySpellId = {}
+local pendingRegen = false
+
+local function CheckAndRemoveBadBuffs(event, unit)
+	if not C["Automation"].NoBadBuffs then
+		return
+	end
+
+	if unit and unit ~= "player" then
+		return
+	end
+
 	if InCombatLockdown() then
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", CheckAndRemoveBadBuffs)
+		if not pendingRegen then
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", CheckAndRemoveBadBuffs)
+			pendingRegen = true
+		end
 		return
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED", CheckAndRemoveBadBuffs)
+		pendingRegen = false
 	end
 
-	-- Loop through buffs on the player
+	if not C.CheckBadBuffs then
+		return
+	end
+
 	local index = 1
 	while true do
-		-- Get buff data for current index
-		local aura = GetBuffDataByIndex("player", index)
+		local aura = C_UnitAuras_GetBuffDataByIndex("player", index, "CANCELABLE")
 
-		-- Exit loop if no more buffs
 		if not aura then
 			break
 		end
 
-		-- Check for bad buffs and cancel them
-		if C.CheckBadBuffs[aura.name] then
+		if aura.name and C.CheckBadBuffs[aura.name] then
 			CancelSpellByName(aura.name)
-			local spellLink = GetSpellLink(aura.spellId)
-			K.Print(K.SystemColor .. "Removed Bad Buff: " .. (spellLink or aura.name) .. "|r")
+			local spellLink = C_Spell_GetSpellLink(aura.spellId)
+			local msgRemoved = L["Removed Bad Buff: %s"] or "Removed Bad Buff: %s"
+			local now = GetTime()
+			local lastAt = lastCanceledAtBySpellId[aura.spellId] or 0
+			if now - lastAt > 1.0 then
+				K.Print(K.SystemColor .. format(msgRemoved, (spellLink or aura.name)) .. "|r")
+				lastCanceledAtBySpellId[aura.spellId] = now
+			end
+			break
 		end
 
 		index = index + 1

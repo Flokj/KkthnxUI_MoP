@@ -215,7 +215,7 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
 
-	K.Mover(DurabilityDataText.Text, "DurabilityDataText", "DurabilityDataText", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
+	K.Mover(DurabilityDataText.Text, "DurabilityDT", "DurabilityDT", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 450, 6 }, 100, 18)
 end
 
 -- Manually update slots after repair to ensure data reflects changes

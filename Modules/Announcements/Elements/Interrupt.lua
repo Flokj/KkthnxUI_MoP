@@ -2,47 +2,54 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Announcements")
 
 -- Localize API functions
-local string_format = string.format
-local GetInstanceInfo = GetInstanceInfo
-local IsActiveBattlefieldArena = IsActiveBattlefieldArena
-local IsArenaSkirmish = IsArenaSkirmish
-local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
-local UnitInParty = UnitInParty
-local UnitInRaid = UnitInRaid
-local GetSpellInfo = GetSpellInfo
+local string_format, GetInstanceInfo, C_Spell_GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid = string.format, GetInstanceInfo, C_Spell.GetSpellLink, IsActiveBattlefieldArena, IsArenaSkirmish, IsInGroup, IsInRaid, IsPartyLFG, UnitInParty, UnitInRaid
+local band, bor = bit.band, bit.bor
 
 local AURA_TYPE_BUFF = AURA_TYPE_BUFF
 local infoType = {}
 
-local blackList = {
-	[(GetSpellInfo(99))] = true,		-- 夺魂咆哮
-	[(GetSpellInfo(122))] = true,		-- 冰霜新星
-	[(GetSpellInfo(1776))] = true,		-- 凿击
-	[(GetSpellInfo(1784))] = true,		-- 潜行
-	[(GetSpellInfo(5246))] = true,		-- 破胆怒吼
-	[(GetSpellInfo(8122))] = true,		-- 心灵尖啸
-	[(GetSpellInfo(31661))] = true,		-- 龙息术
-	[(GetSpellInfo(33395))] = true,		-- 冰冻术
+-- Spells to ignore for "Broken Spell" announcements (commonly break on damage or are non-actionable)
+local brokenBlackList = {
+	[99] = true,
+	[122] = true,
+	[1776] = true,
+	[1784] = true,
+	[5246] = true,
+	[8122] = true,
+	[31661] = true,
+	[33395] = true,
+	[853] = true,
+	[1776] = true,
+	[2094] = true,
+	[5246] = true,
+	[5782] = true,
+	[8122] = true,
+	[15487] = true,
+	[19386] = true,
+	[19503] = true,
+	[20066] = true,
+	[34490] = true,
 }
 
-local LOCspells = {
-	[(GetSpellInfo(853))] = true, 		-- 制裁之锤
-	[(GetSpellInfo(1776))] = true, 		-- 凿击
-	--[(GetSpellInfo(2070))] = true,		-- 闷棍
-	[(GetSpellInfo(2094))] = true, 		-- 致盲
-	[(GetSpellInfo(5246))] = true, 		-- 破胆怒吼
-	[(GetSpellInfo(5782))] = true, 		-- 恐惧
-	[(GetSpellInfo(8122))] = true, 		-- 心灵尖啸
-	--[(GetSpellInfo(14308))] = true,		-- 冰冻陷阱
-	[(GetSpellInfo(15487))] = true,		-- 沉默
-	[(GetSpellInfo(19386))] = true, 	-- 翼龙钉刺
-	[(GetSpellInfo(19503))] = true, 	-- 驱散射击
-	[(GetSpellInfo(20066))] = true, 	-- 忏悔
-	[(GetSpellInfo(34490))] = true, 	-- 沉默射击
+-- Spells to ignore for interrupt announcements (edge cases or non-standard interrupts)
+local interruptBlackList = {
+	[31935] = true, -- Avenger's Shield (Paladin)
 }
 
+-- Returns a user-facing spell reference (link if available, else localized name, else fallback id)
+local function GetSpellLinkSafe(spellID)
+	local link = C_Spell_GetSpellLink(spellID)
+	if link then
+		return link
+	end
+	local info = C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(spellID)
+	if info and info.name then
+		return info.name
+	end
+	return "SpellID:" .. tostring(spellID)
+end
+
+-- Resolves the chat channel used for announcements based on instance and settings
 local function getAlertChannel()
 	local _, instanceType = GetInstanceInfo()
 	local inPartyLFG = IsPartyLFG()
@@ -71,13 +78,15 @@ local function getAlertChannel()
 	return "EMOTE"
 end
 
+-- Enables/disables per-event announcement templates based on user settings
 function Module:InterruptAlert_Toggle()
-	infoType["SPELL_STOLEN"] = C["Announcements"].DispellAlert and L["Steal"]
-	infoType["SPELL_DISPEL"] = C["Announcements"].DispellAlert and L["Dispel"]
-	infoType["SPELL_INTERRUPT"] = C["Announcements"].InterruptAlert and L["Interrupt"]
-	infoType["SPELL_AURA_BROKEN_SPELL"] = C["Announcements"].BrokenAlert and L["Broken Spell"]
+	infoType["SPELL_STOLEN"] = C["Announcements"].DispellAlert and L["Steal"] or nil
+	infoType["SPELL_DISPEL"] = C["Announcements"].DispellAlert and L["Dispel"] or nil
+	infoType["SPELL_INTERRUPT"] = C["Announcements"].InterruptAlert and L["Interrupt"] or nil
+	infoType["SPELL_AURA_BROKEN_SPELL"] = C["Announcements"].BrokenAlert and L["Broken Spell"] or nil
 end
 
+-- Returns true if any of the announcement types are enabled
 function Module:InterruptAlert_IsEnabled()
 	for _, value in pairs(infoType) do
 		if value then
@@ -87,52 +96,50 @@ function Module:InterruptAlert_IsEnabled()
 	return false
 end
 
+-- Checks whether combat log flags indicate the source is our pet or an ally pet
 function Module:IsAllyPet(sourceFlags)
-	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
-		return true
-	end
+	return K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags
 end
 
+-- Handles CLEU events and emits formatted announcements when conditions are met
 function Module:InterruptAlert_Update(...)
-	local _, eventType, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, _, _, _, spellName, _, _, extraskillName, _, auraType = ...
+	local _, eventType, _, sourceGUID, sourceName, sourceFlags, _, _, destName, _, _, spellID, _, _, extraskillID, _, _, auraType = ...
 	if not sourceGUID or sourceName == destName then
 		return
 	end
 
-	local LoCAlert = false
-	if LoCAlert and eventType == "SPELL_AURA_APPLIED" and LOCspells[spellName] and destGUID == K.GUID then
-		local duration = select(5, AuraUtil.FindAuraByName(spellName, "player", "HARMFUL"))
-		if duration > 1.5 then
-			SendChatMessage(string_format("LoC - %s > %s (%ss %s)", sourceName .. "[" .. spellName .. "]", destName, duration, GetMinimapZoneText()), getAlertChannel())
-		end
-	elseif UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
-		local infoText = infoType[eventType]
-		if infoText then
-			local sourceSpellID, destSpellID
-			if infoText == L["Broken Spell"] then
-				if auraType and auraType == AURA_TYPE_BUFF or blackList[spellName] then
-					return
-				end
-				sourceSpellID, destSpellID = extraskillName, spellName
-			elseif infoText == L["Interrupt"] then
-				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not K.IsMyPet(sourceFlags) then
-					return
-				end
-				sourceSpellID, destSpellID = spellName, extraskillName
-			else
-				if C["Announcements"].OwnDispell and sourceName ~= K.Name and not K.IsMyPet(sourceFlags) then
-					return
-				end
-				sourceSpellID, destSpellID = spellName, extraskillName
-			end
+	local isPlayerOrAllyPet = sourceName == K.Name or Module:IsAllyPet(sourceFlags)
+	local isFromGroup = band(sourceFlags or 0, bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_AFFILIATION_RAID)) ~= 0
 
-			if sourceSpellID and destSpellID then
-				SendChatMessage(string_format(infoText, sourceName .. "[" .. sourceSpellID .. "]", destName .. "[" .. destSpellID .. "]"), getAlertChannel())
+	if isFromGroup and infoType[eventType] then
+		local infoText = infoType[eventType]
+		local sourceSpellID, destSpellID
+
+		if eventType == "SPELL_AURA_BROKEN_SPELL" then
+			if auraType == AURA_TYPE_BUFF or brokenBlackList[spellID] then
+				return
 			end
+			sourceSpellID, destSpellID = extraskillID, spellID
+		elseif eventType == "SPELL_INTERRUPT" then
+			if (C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet) or interruptBlackList[spellID] then
+				return
+			end
+			sourceSpellID, destSpellID = spellID, extraskillID
+		else
+			if C["Announcements"].OwnDispell and not isPlayerOrAllyPet then
+				return
+			end
+			sourceSpellID, destSpellID = spellID, extraskillID
+		end
+
+		if sourceSpellID and destSpellID then
+			local message = (eventType == "SPELL_AURA_BROKEN_SPELL") and string_format(infoText, sourceName, GetSpellLinkSafe(destSpellID)) or string_format(infoText, GetSpellLinkSafe(destSpellID))
+			SendChatMessage(message, getAlertChannel())
 		end
 	end
 end
 
+-- Registers/unregisters CLEU handler based on group and instance constraints
 function Module:InterruptAlert_CheckGroup()
 	if IsInGroup() and (not C["Announcements"].InstAlertOnly or IsInInstance()) then
 		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
@@ -141,6 +148,7 @@ function Module:InterruptAlert_CheckGroup()
 	end
 end
 
+-- Initializes the interrupt/dispell/broken announcements and manages lifecycle
 function Module:CreateInterruptAnnounce()
 	Module:InterruptAlert_Toggle()
 

@@ -2,13 +2,20 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
 -- Localizing Lua built-in functions
-local select = select
 local tonumber = tonumber
 local next = next
 local type = type
 local ipairs = ipairs
 local pcall = pcall
 local error = error
+local tostring = tostring
+local print = print
+local format = string.format
+local gsub = string.gsub
+local debugprofilestop = debugprofilestop
+
+-- Localizing math functions
+local atan2, cos, sin, max, min, sqrt = math.atan2, math.cos, math.sin, math.max, math.min, math.sqrt
 
 -- Localizing WoW API functions
 local CreateFrame = CreateFrame
@@ -16,6 +23,9 @@ local PlaySound = PlaySound
 local StaticPopup_Show = StaticPopup_Show
 local hooksecurefunc = hooksecurefunc
 local UIParent = UIParent
+local GetCursorPosition = GetCursorPosition
+local GetInstanceInfo = GetInstanceInfo
+local SetCVar = SetCVar
 local UnitXP = UnitXP
 local UnitXPMax = UnitXPMax
 local UnitGUID = UnitGUID
@@ -33,6 +43,7 @@ local GetItemInfo = C_Item.GetItemInfo
 local GetItemQualityColor = GetItemQualityColor
 local StaticPopupDialogs = StaticPopupDialogs
 local IsGuildMember = IsGuildMember
+local GetGuildInfo = GetGuildInfo
 
 -- Localizing WoW UI constants
 local FRIEND = FRIEND
@@ -42,6 +53,27 @@ local YES = YES
 
 -- Miscellaneous Module Registry
 local KKUI_MISC_MODULE = {}
+
+-- Lightweight profiling helpers (opt-in via C["General"].DebugProfiling)
+local kkuiProfileMarks = {}
+local function KKUI_ProfileStart(key)
+	if not (C and C["General"] and C["General"].DebugProfiling) then
+		return
+	end
+	kkuiProfileMarks[key] = debugprofilestop()
+end
+
+local function KKUI_ProfileEnd(key)
+	if not (C and C["General"] and C["General"].DebugProfiling) then
+		return
+	end
+	local startTime = kkuiProfileMarks[key]
+	if startTime then
+		local elapsed = debugprofilestop() - startTime
+		kkuiProfileMarks[key] = nil
+		print("|cFF99CCFFKkthnxUI|r:", key, format("%.2f ms", elapsed))
+	end
+end
 
 -- Register Miscellaneous Modules
 function Module:RegisterMisc(name, func)
@@ -63,7 +95,7 @@ end
 
 -- Readycheck sound on master channel
 K:RegisterEvent("READY_CHECK", function()
-	PlaySound(SOUNDKIT.READY_CHECK, "master")
+	PlaySound(SOUNDKIT.READY_CHECK, "Master")
 end)
 
 -- Modify Delete Dialog
@@ -79,6 +111,7 @@ end
 
 -- Enable Module and Initialize Miscellaneous Modules
 function Module:OnEnable()
+	KKUI_ProfileStart("Misc:OnEnable")
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
@@ -92,13 +125,13 @@ function Module:OnEnable()
 		"CreateGUIGameMenuButton",
 		"CreateMinimapButton",
 		"CreateQuickDeleteDialog",
-		"CreateQuickMenuButton",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
 		"CreateThreatbar",
 		"CreateQueueTimer",
 		"NakedIcon",
+		"CreateQuickMenuList",
 
 		--"CreateQuestSizeUpdate",
 	}
@@ -117,30 +150,32 @@ function Module:OnEnable()
 
 	enableAutoBubbles()
 	modifyDeleteDialog()
+
+	-- Keep guild invite label up-to-date
+	if self.UpdateGuildInviteString then
+		self:UpdateGuildInviteString()
+		-- K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateGuildInviteString)
+		-- K:RegisterEvent("PLAYER_GUILD_UPDATE", self.UpdateGuildInviteString)
+	end
+	KKUI_ProfileEnd("Misc:OnEnable")
 end
 
 -- Update Drag Cursor for Minimap
 local function UpdateDragCursor(self)
-	local minimapCenterX, minimapCenterY = Minimap:GetCenter()
-	local cursorX, cursorY = GetCursorPosition()
+	local mx, my = Minimap:GetCenter()
+	local px, py = GetCursorPosition()
 	local scale = Minimap:GetEffectiveScale()
-	cursorX, cursorY = cursorX / scale, cursorY / scale
+	px, py = px / scale, py / scale
 
-	local angle = atan2(cursorY - minimapCenterY, cursorX - minimapCenterX)
-	local x, y, quadrant = cos(angle), sin(angle), 1
-	if x < 0 then
-		quadrant = quadrant + 1
-	end
-	if y > 0 then
-		quadrant = quadrant + 2
-	end
+	local angle = atan2(py - my, px - mx)
+	local x, y = cos(angle), sin(angle)
 
-	local width = (Minimap:GetWidth() / 2) + 5
-	local height = (Minimap:GetHeight() / 2) + 5
-	local diagRadiusW = sqrt(2 * width ^ 2) - 10
-	local diagRadiusH = sqrt(2 * height ^ 2) - 10
-	x = max(-width, min(x * diagRadiusW, width))
-	y = max(-height, min(y * diagRadiusH, height))
+	local w = (Minimap:GetWidth() / 2) + 5
+	local h = (Minimap:GetHeight() / 2) + 5
+	local diagRadiusW = sqrt(2 * w ^ 2) - 10
+	local diagRadiusH = sqrt(2 * h ^ 2) - 10
+	x = max(-w, min(x * diagRadiusW, w))
+	y = max(-h, min(y * diagRadiusH, h))
 
 	self:ClearAllPoints()
 	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
@@ -224,9 +259,6 @@ function Module:ClickGameMenu()
 	K.NewGUI:Toggle()
 	HideUIPanel(GameMenuFrame)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	if not InCombatLockdown() then
-		HideUIPanel(GameMenuFrame)
-	end
 end
 
 function Module:CreateGUIGameMenuButton()
@@ -511,7 +543,18 @@ function Module:CustomMenu_AddFriend(rootDescription, data, name)
 	end)
 end
 
-local guildInviteString = gsub(CHAT_GUILD_INVITE_SEND, HEADER_COLON, "")
+-- Build guild invite string: "Invite to <Guild Name>" when possible
+local guildInviteString
+function Module:UpdateGuildInviteString()
+	local base = _G.COMMUNITIES_INVITE_MANAGER_LABEL or "Invite to %s"
+	local guildName = GetGuildInfo("player")
+	if guildName and guildName ~= "" then
+		guildInviteString = format(base, guildName)
+	else
+		guildInviteString = gsub("Invite To Guild", HEADER_COLON, "")
+	end
+end
+
 function Module:CustomMenu_GuildInvite(rootDescription, data, name)
 	rootDescription:CreateButton(K.InfoColor .. guildInviteString, function()
 		local fullName = data.server and data.name .. "-" .. data.server or data.name
@@ -537,7 +580,7 @@ function Module:CustomMenu_Whisper(rootDescription, data)
 	end)
 end
 
-function Module:CreateQuickMenuButton()
+function Module:CreateQuickMenuList()
 	-- if not C["Misc"].MenuButton then
 	-- 	return
 	-- end
@@ -574,7 +617,6 @@ function Module:CreateQuickMenuButton()
 				fullName = characterName .. "-" .. realmName
 			end
 		end
-
 		Module:CustomMenu_AddFriend(rootDescription, data, fullName)
 		Module:CustomMenu_GuildInvite(rootDescription, data, fullName)
 		Module:CustomMenu_CopyName(rootDescription, data, fullName)
@@ -598,5 +640,7 @@ end
 
 -- Update Max Camera Zoom
 function Module:UpdateMaxCameraZoom()
-	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
+	local value = tonumber(C["Misc"].MaxCameraZoom) or 2.6
+	value = min(max(value, 1), 3.4)
+	SetCVar("cameraDistanceMaxZoomFactor", value)
 end

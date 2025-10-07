@@ -1,7 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local oUF = K.oUF
 
-local format, floor = string.format, math.floor
+local format, floor, strfind = string.format, math.floor, string.find
 local AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL = AFK, DND, DEAD, PLAYER_OFFLINE, LEVEL
 local ALTERNATE_POWER_INDEX = ALTERNATE_POWER_INDEX or 10
 local UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer = UnitIsDeadOrGhost, UnitIsConnected, UnitIsTapDenied, UnitIsPlayer
@@ -10,6 +10,19 @@ local UnitClass, UnitReaction, UnitLevel, UnitClassification = UnitClass, UnitRe
 local UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost = UnitIsAFK, UnitIsDND, UnitIsDead, UnitIsGhost
 local GetCreatureDifficultyColor = GetCreatureDifficultyColor
 local GetSpellInfo, UnitIsFeignDeath = GetSpellInfo, UnitIsFeignDeath
+
+local IsInGroup = IsInGroup
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local UnitName = UnitName
+local GetCVarBool = GetCVarBool
+
+-- Precomputed atlas strings for role icons to avoid branching and allocations per update
+local ROLE_ATLAS = {
+	HEALER = "|A:UI-LFG-RoleIcon-Healer-Micro-GroupFinder:16:16|a",
+	TANK = "|A:UI-LFG-RoleIcon-Tank-Micro-GroupFinder:16:16|a",
+	DAMAGER = "|A:UI-LFG-RoleIcon-DPS-Micro-GroupFinder:16:16|a",
+}
 
 local FEIGN_DEATH
 local function GetFeignDeathTag()
@@ -37,8 +50,6 @@ local function FormatHealthValue(health, percentage)
 	local formattedValue = K.ShortValue(health)
 	if percentage < 100 then
 		formattedValue = formattedValue .. " - " .. GetHealthColor(percentage)
-	else
-		formattedValue = formattedValue
 	end
 	return formattedValue
 end
@@ -57,7 +68,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local percentage, currentHealth = GetUnitHealthPerc(unit)
-		if unit == "player" or unit == "target" or unit == "focus" or unit:match("party%d?$") then
+		if unit == "player" or unit == "target" or unit == "focus" or (unit and unit:sub(1, 5) == "party") then
 			return FormatHealthValue(currentHealth, percentage)
 		else
 			return GetHealthColor(percentage)
@@ -314,13 +325,12 @@ end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
+	if not IsInGroup() then return end
+	if not (UnitInParty(unit) or UnitInRaid(unit)) then return end
+
 	local role = UnitGroupRolesAssigned(unit)
-	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" and role ~= "DAMAGER") then
-		if role == "HEALER" then
-			return "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer.tga:12:12:0:0:64:64:5:59:5:59|t"
-		elseif role == "TANK" then
-			return "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank.tga:12:12:0:0:64:64:5:59:5:59|t"
-		end
+	if role and role ~= "NONE" then
+		return ROLE_ATLAS[role]
 	end
 end
 oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

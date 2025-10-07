@@ -1,11 +1,18 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("Chat")
 
+-- Localize frequently used globals
 local table_insert = table.insert
+local pairs = pairs
+local ipairs = ipairs
+local CreateFrame = CreateFrame
+local GetCVarBool = GetCVarBool
+local UIParent = UIParent
 local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
-	if chatbubble.styled then return end
+	if chatbubble.styled then
+		return
+	end
 
 	local frame = chatbubble:GetChildren()
 	if frame and not frame:IsForbidden() then
@@ -14,22 +21,27 @@ local function reskinChatBubble(chatbubble)
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -18, nil, nil, nil, nil, 14)
-		
+
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)
-		
+
 		local backdropColor = C["Media"].Backdrops.ColorBackdrop
 		bg.KKUI_Background:SetVertexColor(backdropColor[1], backdropColor[2], backdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		local str = frame.String
 		if str and str.GetTextColor then
-			local function UpdateBorderColor()
-				local r, g, b = str:GetTextColor()
-				bg.KKUI_Border:SetVertexColor(r, g, b)
-			end
-
-			frame:SetScript("OnUpdate", UpdateBorderColor)
-			UpdateBorderColor()
+			-- Throttle border color updates to reduce per-frame cost; use HookScript to avoid clobbering
+			local accum = 0
+			frame:HookScript("OnUpdate", function(_, elapsed)
+				accum = accum + (elapsed or 0)
+				if accum > 0.1 then
+					accum = 0
+					local r, g, b = str:GetTextColor()
+					bg.KKUI_Border:SetVertexColor(r, g, b)
+				end
+			end)
+			local r, g, b = str:GetTextColor()
+			bg.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			K.SetBorderColor(bg.KKUI_Border)
 		end
@@ -39,15 +51,8 @@ local function reskinChatBubble(chatbubble)
 end
 
 table_insert(C.defaultThemes, function()
-	if not C["Skins"].ChatBubbles then return end
-
-	local function findChatBubble()
-		for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
-			local frame = chatBubble:GetChildren()
-			if frame and not frame:IsForbidden() then
-				Module:HookBubble(chatBubble, frame)
-			end
-		end
+	if not C["Skins"].ChatBubbles then
+		return
 	end
 
 	local bubbleHook = CreateFrame("Frame")
@@ -74,16 +79,18 @@ table_insert(C.defaultThemes, function()
 
 	bubbleHook:SetScript("OnUpdate", function(self, elapsed)
 		self.elapsed = (self.elapsed or 0) + elapsed
+
 		if self.elapsed > 0.1 then
 			local chatBubbles = C_ChatBubbles_GetAllChatBubbles()
 			if chatBubbles then
-				for _, chatbubble in pairs(chatBubbles) do
+				for _, chatbubble in ipairs(chatBubbles) do
 					reskinChatBubble(chatbubble)
 				end
 			end
-			findChatBubble()
+
 			self:Hide()
 		end
 	end)
+
 	bubbleHook:Hide()
 end)

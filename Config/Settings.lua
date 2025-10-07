@@ -130,13 +130,15 @@ C["Announcements"] = {
 C["Automation"] = {
 	AutoDeclineDuels = false,
 	AutoInvite = false,
-	AutoOpenItems = false,
+	AutoPartySync = false,
 	AutoQuest = false,
 	AutoRelease = false,
 	AutoResurrect = false,
 	AutoResurrectThank = false,
 	AutoReward = true,
-	AutoSkipCinematic = true,
+	AutoScreenshot = false,
+	AutoSetRole = false,
+	ConfirmCinematicSkip = true,
 	AutoSummon = false,
 	NoBadBuffs = false,
 	AutoLoggingCombat = false,
@@ -590,6 +592,7 @@ C["Raid"] = {
 	AuraTrackThickness = 5,
 	HealthbarColor = 1,
 	HealthFormat = 1,
+	UseRaidForParty = false,
 }
 
 -- Worldmap

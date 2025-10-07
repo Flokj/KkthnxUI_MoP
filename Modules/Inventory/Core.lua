@@ -1110,10 +1110,12 @@ function Module:OnEnable()
 		self.bindType:SetText("")
 		if showBindOnEquip then
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if not item.bound and (BoE or BoU) then
-				local color = K.QualityColors[item.quality]
-				self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
-				self.bindType:SetTextColor(color.r, color.g, color.b)
+			if BoE or BoU then
+				if item.quality > 1 and not item.bound then
+					local color = K.QualityColors[item.quality]
+					self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
+					self.bindType:SetTextColor(color.r, color.g, color.b)
+				end
 			end
 		end
 
@@ -1138,9 +1140,9 @@ function Module:OnEnable()
 		if C["Inventory"].SpecialBagsColor then
 			local bagType = Module.BagsType[item.bagId]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
-			self.KKUI_Background:SetVertexColor(unpack(color))
+			self:SetBackdropColor(unpack(color))
 		else
-			self.KKUI_Background:SetVertexColor(1, 1, 1, 1)
+			self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
 		end
 
 		-- Hide empty tooltip

@@ -136,6 +136,10 @@ function Module:CreateTarget()
 		end
 
 		self.Portrait = Portrait
+
+		if targetPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
+		end
 	end
 
 	-- Target Debuffs

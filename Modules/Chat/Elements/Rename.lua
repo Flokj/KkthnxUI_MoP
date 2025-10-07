@@ -6,6 +6,30 @@ local BetterDate = BetterDate
 local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 
+local NUM_CHAT_WINDOWS = rawget(_G or {}, "NUM_CHAT_WINDOWS") or 10
+
+local CHAT_WHISPER_INFORM_GET_T = rawget(_G or {}, "CHAT_WHISPER_INFORM_GET")
+local CHAT_WHISPER_GET_T = rawget(_G or {}, "CHAT_WHISPER_GET")
+local CHAT_BN_WHISPER_INFORM_GET_T = rawget(_G or {}, "CHAT_BN_WHISPER_INFORM_GET")
+local CHAT_BN_WHISPER_GET_T = rawget(_G or {}, "CHAT_BN_WHISPER_GET")
+local CHAT_SAY_GET_T = rawget(_G or {}, "CHAT_SAY_GET")
+local CHAT_YELL_GET_T = rawget(_G or {}, "CHAT_YELL_GET")
+
+local CHAT_GUILD_GET_T = rawget(_G or {}, "CHAT_GUILD_GET")
+local CHAT_OFFICER_GET_T = rawget(_G or {}, "CHAT_OFFICER_GET")
+local CHAT_RAID_GET_T = rawget(_G or {}, "CHAT_RAID_GET")
+local CHAT_RAID_WARNING_GET_T = rawget(_G or {}, "CHAT_RAID_WARNING_GET")
+local CHAT_RAID_LEADER_GET_T = rawget(_G or {}, "CHAT_RAID_LEADER_GET")
+local CHAT_PARTY_GET_T = rawget(_G or {}, "CHAT_PARTY_GET")
+local CHAT_PARTY_LEADER_GET_T = rawget(_G or {}, "CHAT_PARTY_LEADER_GET")
+local CHAT_PARTY_GUIDE_GET_T = rawget(_G or {}, "CHAT_PARTY_GUIDE_GET")
+local CHAT_INSTANCE_CHAT_GET_T = rawget(_G or {}, "CHAT_INSTANCE_CHAT_GET")
+local CHAT_INSTANCE_CHAT_LEADER_GET_T = rawget(_G or {}, "CHAT_INSTANCE_CHAT_LEADER_GET")
+
+local CHAT_FLAG_AFK_T = rawget(_G or {}, "CHAT_FLAG_AFK")
+local CHAT_FLAG_DND_T = rawget(_G or {}, "CHAT_FLAG_DND")
+local CHAT_FLAG_GM_T = rawget(_G or {}, "CHAT_FLAG_GM")
+
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
 	[3] = "[%I:%M:%S %p] ",
@@ -15,16 +39,115 @@ local timestampFormat = {
 
 local function GetCurrentTime()
 	local locTime = time()
-	local realmTime = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
+	local realmCalendar = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
 
-	if realmTime then
-		realmTime.day = realmTime.monthDay
-		realmTime.min = realmTime.minute
-		realmTime.sec = date("%S") -- no sec value for realm time
-		realmTime = time(realmTime)
+	local realmTime
+	if realmCalendar then
+		realmTime = time({
+			year = realmCalendar.year,
+			month = realmCalendar.month,
+			day = realmCalendar.monthDay,
+			hour = realmCalendar.hour,
+			min = realmCalendar.minute,
+			sec = tonumber(date("%S")),
+		})
 	end
 
 	return locTime, realmTime
+end
+
+-- Non-tainting chat prefix rewrites (avoid mutating Blizzard globals)
+local rewritePatterns
+local function escapeForPattern(s)
+	return (s:gsub("([%%%^%$%(%)%.%[%]%*%+%-%?])", "%%%1"))
+end
+
+local function buildTemplatePattern(template)
+	local esc = escapeForPattern(template)
+	esc = esc:gsub("%%%%s", "(.-)")
+	return esc
+end
+
+local function initRewritePatterns()
+	if rewritePatterns then
+		return
+	end
+
+	rewritePatterns = {}
+
+	-- Whisper prefixes
+	if CHAT_WHISPER_INFORM_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_WHISPER_INFORM_GET_T)] = (L["To"] .. " %1 ")
+	end
+	if CHAT_WHISPER_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_WHISPER_GET_T)] = (L["From"] .. " %1 ")
+	end
+	if CHAT_BN_WHISPER_INFORM_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_BN_WHISPER_INFORM_GET_T)] = (L["To"] .. " %1 ")
+	end
+	if CHAT_BN_WHISPER_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_BN_WHISPER_GET_T)] = (L["From"] .. " %1 ")
+	end
+
+	-- Say / Yell prefixes
+	if CHAT_SAY_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_SAY_GET_T)] = "%1 "
+	end
+	if CHAT_YELL_GET_T then
+		rewritePatterns[buildTemplatePattern(CHAT_YELL_GET_T)] = "%1 "
+	end
+
+	if not C["Chat"].OldChatNames then
+		-- Channel tags
+		if CHAT_GUILD_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_GUILD_GET_T)] = "|Hchannel:GUILD|h[G]|h %1 "
+		end
+		if CHAT_OFFICER_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_OFFICER_GET_T)] = "|Hchannel:OFFICER|h[O]|h %1 "
+		end
+		if CHAT_RAID_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_RAID_GET_T)] = "|Hchannel:RAID|h[R]|h %1 "
+		end
+		if CHAT_RAID_WARNING_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_RAID_WARNING_GET_T)] = "[RW] %1 "
+		end
+		if CHAT_RAID_LEADER_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_RAID_LEADER_GET_T)] = "|Hchannel:RAID|h[RL]|h %1 "
+		end
+		if CHAT_PARTY_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_PARTY_GET_T)] = "|Hchannel:PARTY|h[P]|h %1 "
+		end
+		if CHAT_PARTY_LEADER_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_PARTY_LEADER_GET_T)] = "|Hchannel:PARTY|h[PL]|h %1 "
+		end
+		if CHAT_PARTY_GUIDE_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_PARTY_GUIDE_GET_T)] = "|Hchannel:PARTY|h[PG]|h %1 "
+		end
+		if CHAT_INSTANCE_CHAT_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_INSTANCE_CHAT_GET_T)] = "|Hchannel:INSTANCE|h[I]|h %1 "
+		end
+		if CHAT_INSTANCE_CHAT_LEADER_GET_T then
+			rewritePatterns[buildTemplatePattern(CHAT_INSTANCE_CHAT_LEADER_GET_T)] = "|Hchannel:INSTANCE|h[IL]|h %1 "
+		end
+		-- Flags
+		if CHAT_FLAG_AFK_T then
+			rewritePatterns[escapeForPattern(CHAT_FLAG_AFK_T)] = "[AFK] "
+		end
+		if CHAT_FLAG_DND_T then
+			rewritePatterns[escapeForPattern(CHAT_FLAG_DND_T)] = "[DND] "
+		end
+		if CHAT_FLAG_GM_T then
+			rewritePatterns[escapeForPattern(CHAT_FLAG_GM_T)] = "[GM] "
+		end
+	end
+end
+
+local function applyRewrites(text)
+	initRewritePatterns()
+	for pattern, repl in pairs(rewritePatterns) do
+		text = text:gsub(pattern, repl)
+	end
+	return text
 end
 
 function Module:SetupChannelNames(text, ...)
@@ -39,7 +162,13 @@ function Module:SetupChannelNames(text, ...)
 
 	if C["Chat"].TimestampFormat > 1 then
 		local locTime, realmTime = GetCurrentTime()
-		local oldTimeStamp = CHAT_TIMESTAMP_FORMAT and gsub(BetterDate(CHAT_TIMESTAMP_FORMAT, locTime), "%[([^]]*)%]", "%%[%1%%]")
+		local defaultTimestamp = GetCVar("showTimestamps")
+
+		if defaultTimestamp == "none" then
+			defaultTimestamp = nil
+		end
+
+		local oldTimeStamp = defaultTimestamp and gsub(BetterDate(defaultTimestamp, locTime), "%[([^]]*)%]", "%%[%1%%]")
 		if oldTimeStamp then
 			text = gsub(text, oldTimeStamp, "")
 		end
@@ -48,120 +177,26 @@ function Module:SetupChannelNames(text, ...)
 		text = timeStamp .. text
 	end
 
-	if C["Chat"].OldChatNames then
-		return self.oldAddMsg(self, text, r, g, b)
-	else
-		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
+	-- Apply safe, non-tainting rewrites instead of mutating globals
+	text = applyRewrites(text)
+
+	if not C["Chat"].OldChatNames then
+		text = string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h")
 	end
+
+	return self.oldAddMessage(self, text, r, g, b)
 end
 
 local function renameChatFrames()
-	for i = 1, _G.NUM_CHAT_WINDOWS do
+	for i = 1, NUM_CHAT_WINDOWS do
 		if i ~= 2 then
 			local chatFrame = _G["ChatFrame" .. i]
-			chatFrame.oldAddMsg = chatFrame.AddMessage
+			chatFrame.oldAddMessage = chatFrame.AddMessage
 			chatFrame.AddMessage = Module.SetupChannelNames
 		end
 	end
 end
 
-local function renameChatStrings()
-	-- Online/Offline
-	_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
-	_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
-
-	_G.BN_INLINE_TOAST_FRIEND_OFFLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has gone |cffff0000offline|r."
-	_G.BN_INLINE_TOAST_FRIEND_ONLINE = "|TInterface\\FriendsFrame\\UI-Toast-ToastIcons.tga:16:16:0:0:128:64:2:29:34:61|t%s has come |cff00ff00online|r."
-
-
-	-- Whisper
-	_G.CHAT_WHISPER_INFORM_GET = L["To"] .. " %s "
-	_G.CHAT_WHISPER_GET = L["From"] .. " %s "
-	_G.CHAT_BN_WHISPER_INFORM_GET = L["To"] .. " %s "
-	_G.CHAT_BN_WHISPER_GET = L["From"] .. " %s "
-
-	-- Say/Yell
-	_G.CHAT_SAY_GET = "%s "
-	_G.CHAT_YELL_GET = "%s "
-
-	-- Loot mods
-	_G.LOOT_ITEM = "%s + %s"
-	_G.LOOT_ITEM_MULTIPLE = "%s + % sx%d"
-	_G.LOOT_ITEM_CREATED_SELF = "+ %s"
-	_G.LOOT_ITEM_CREATED_SELF_MULTIPLE = "+ %sx%d"
-	_G.LOOT_ITEM_SELF = "+ %s"
-	_G.LOOT_ITEM_SELF_MULTIPLE = "+ %sx%d"
-	_G.LOOT_ITEM_PUSHED = "%s + %s"
-	_G.LOOT_ITEM_PUSHED_SELF = "+ %s"
-	_G.LOOT_ITEM_PUSHED_MULTIPLE = "%s + %sx%d"
-	_G.LOOT_ITEM_PUSHED_SELF_MULTIPLE = "+ %sx%d"
-	_G.CREATED_ITEM = "%s + %s"
-	_G.CREATED_ITEM_MULTIPLE = "%s + % sx%d"
-	_G.LOOT_MONEY = "%s|cff00a956+|r |cffffffff%s"
-	_G.LOOT_MONEY_SPLIT = "|cff00a956+|r |cffffffff%s"
-	_G.YOU_LOOT_MONEY = "|cff00a956+|r |cffffffff%s"
-	_G.CURRENCY_GAINED = "|cff00a956+|r |cffffffff%s"
-	_G.CURRENCY_GAINED_MULTIPLE = "|cff00a956+|r |cffffffff%s %d"
-	_G.LOOT_ROLL_STARTED ="|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s"
-	_G.LOOT_ROLL_PASSED ="|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s passed %s."
-	_G.LOOT_ROLL_PASSED_SELF ="|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:You passed: %s."
-	_G.LOOT_ROLL_ALL_PASSED = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h All passed on: %s"
-	_G.LOOT_ROLL_PASSED_AUTO = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h %s passed %s, auto."
-	_G.LOOT_ROLL_PASSED_SELF_AUTO = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h pass \"%s\", (auto)"
-	_G.LOOT_ROLL_WON = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h %s wins %s"
-	_G.LOOT_ROLL_YOU_WON = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h You won %s"
-	_G.LOOT_ROLL_ROLLED_GREED = "|HlootHistory:%1$d|h|cff9bb7c3[Loot]|r|h:%3$s \"|cff731ACCGREED|r\" %4$s: |cfff99e35%2$d|r"
-	_G.LOOT_ROLL_ROLLED_NEED = "|HlootHistory:%1$d|h|cff9bb7c3[Loot]|r|h:%3$s \"|cfffce885NEED|r\" %4$s: |cfff99e35%2$d|r"
-	_G.LOOT_ROLL_GREED = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s \"|cff731ACCGREED|r\": |cfff99e35%s|r"
-	_G.LOOT_ROLL_NEED = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s \"|cfffce885NEED|r\": |cfff99e35%s|r"
-	_G.LOOT_ROLL_GREED_SELF = "|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s \"|cff731ACCGREED|r\""
-	_G.LOOT_ROLL_NEED_SELF ="|HlootHistory:%d|h|cff9bb7c3[Loot]|r|h:%s \"|cfffce885NEED|r\""
-
-	_G.COPPER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:2:0|t"
-	_G.SILVER_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:2:0|t"
-	_G.GOLD_AMOUNT = "%d|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:2:0|t"
-
-	-- Chat mods
-	_G.ACHIEVEMENT_BROADCAST = "%s achieved \"%s\"!"
-	_G.CHAT_YOU_CHANGED_NOTICE = "|Hchannel:%d|h[%s]|h"
-	_G.ERR_SKILL_UP_SI = "|3-6(%s) |cff1eff00%d|r"
-	_G.FACTION_STANDING_DECREASED = "Отношение |3-7(%s) - %d!"
-	_G.FACTION_STANDING_INCREASED = "Отношение |3-7(%s) + %d!"
-
-	-- Chat colours
-	_G.NORMAL_QUEST_DISPLAY = "|cffffffff%s|r"
-	_G.TRIVIAL_QUEST_DISPLAY = "|cffffffff%s (low level)|r"
-
-	-- Misc
-	_G.ERR_AUCTION_SOLD_S = "|cff1eff00\"%s\"|r |cffffffffsold.|r"
-
-	if C["Chat"].OldChatNames then return end
-
-	-- Guild
-	_G.CHAT_GUILD_GET = "|Hchannel:GUILD|h[G]|h %s "
-	_G.CHAT_OFFICER_GET = "|Hchannel:OFFICER|h[O]|h %s "
-
-	-- Raid
-	_G.CHAT_RAID_GET = "|Hchannel:RAID|h[R]|h %s "
-	_G.CHAT_RAID_WARNING_GET = "[RW] %s "
-	_G.CHAT_RAID_LEADER_GET = "|Hchannel:RAID|h[RL]|h %s "
-
-	-- Party
-	_G.CHAT_PARTY_GET = "|Hchannel:PARTY|h[P]|h %s "
-	_G.CHAT_PARTY_LEADER_GET = "|Hchannel:PARTY|h[PL]|h %s "
-	_G.CHAT_PARTY_GUIDE_GET = "|Hchannel:PARTY|h[PG]|h %s "
-
-	-- Instance
-	_G.CHAT_INSTANCE_CHAT_GET = "|Hchannel:INSTANCE|h[I]|h %s "
-	_G.CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:INSTANCE|h[IL]|h %s "
-
-	-- Flags
-	_G.CHAT_FLAG_AFK = "[AFK] "
-	_G.CHAT_FLAG_DND = "[DND] "
-	_G.CHAT_FLAG_GM = "[GM] "
-end
-
 function Module:CreateChatRename()
 	renameChatFrames()
-	renameChatStrings()
 end

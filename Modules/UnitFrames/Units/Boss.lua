@@ -122,6 +122,10 @@ function Module:CreateBoss()
 		end
 
 		self.Portrait = Portrait
+
+		if bossPortraitStyle == 5 then
+			Module:ApplyPortraitAlphaFix(self)
+		end
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")

@@ -126,14 +126,16 @@
    <Script file="Announcements\Elements\Sapped.lua" />
    <!-- Automation -->
    <Script file="Automation\Core.lua" />
-   <Script file="Automation\Elements\AutoOpen.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />
    <Script file="Automation\Elements\Invite.lua" />
+   <Script file="Automation\Elements\PartySync.lua" />
    <Script file="Automation\Elements\Quest.lua" />
    <Script file="Automation\Elements\Release.lua" />
    <Script file="Automation\Elements\Resurrect.lua" />
+   <Script file="Automation\Elements\ScreenShot.lua" />
+   <Script file="Automation\Elements\SetRole.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />
    <Script file="Automation\Elements\Summon.lua" />
    <Script file="Automation\Elements\LoggingCombat.lua" />

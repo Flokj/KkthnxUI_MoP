@@ -8,9 +8,10 @@ function Module:OnEnable()
 		"CreateAutoBestReward",
 		"CreateAutoDeclineDuels",
 		"CreateAutoInvite",
-		"CreateAutoOpenItems",
 		"CreateAutoRelease",
 		"CreateAutoResurrect",
+		"CreateAutoScreenshot",
+		"CreateAutoSetRole",
 		"CreateAutoWhisperInvite",
 		"CreateSkipCinematic",
 	}

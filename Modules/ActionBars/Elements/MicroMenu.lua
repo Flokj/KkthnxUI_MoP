@@ -2,41 +2,59 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
 local insert = table.insert
-local ipairs, pairs = ipairs, pairs
+local ipairs = ipairs
 local type = type
+local _G = _G
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
+local C_Timer_NewTimer = C_Timer.NewTimer
+local UIParent = UIParent
+local MicroButtonTooltipText = MicroButtonTooltipText
+local MAINMENU_BUTTON = MAINMENU_BUTTON
 
 local MicroButtons = {}
-local updateWatcher = 0
 
 local function ResetButtonProperties(button)
 	button:ClearAllPoints()
 	button:SetAllPoints(button.__owner)
 end
 
-local function SetupMicroButtonTextures(button)
-	local function SetTextureProperties(texture)
-		texture:SetTexCoord(0.17, 0.87, 0.5, 0.908)
-		texture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-	end
+local function SetTextureProperties(button, texture)
+	texture:SetTexCoord(0.17, 0.87, 0.5, 0.908)
+	texture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+	texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
+end
 
+local function SetupMicroButtonTextures(button)
 	local highlight, normal, pushed, disabled, flash = button:GetHighlightTexture(), button:GetNormalTexture(), button:GetPushedTexture(), button:GetDisabledTexture(), button.FlashBorder
 	local flashTexture = K.MediaFolder .. "Skins\\HighlightMicroButtonWhite"
 
 	if highlight then
-		highlight:SetAlpha(0)
+		local normalTex = normal and normal.GetTexture and normal:GetTexture()
+		local normalAtlas = normal and normal.GetAtlas and normal:GetAtlas()
+		if normalAtlas then
+			highlight:SetAtlas(normalAtlas, true)
+		elseif normalTex then
+			button:SetHighlightTexture(normalTex)
+		end
+		highlight:SetBlendMode("ADD")
+		highlight:SetAlpha(0.35)
+		highlight:SetTexCoord(0.17, 0.87, 0.5, 0.908)
+		highlight:ClearAllPoints()
+		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 	end
 
 	if normal then
-		SetTextureProperties(normal)
+		SetTextureProperties(button, normal)
 	end
 
 	if pushed then
-		SetTextureProperties(pushed)
+		SetTextureProperties(button, pushed)
 	end
 
 	if disabled then
-		SetTextureProperties(disabled)
+		SetTextureProperties(button, disabled)
 	end
 
 	if flash then
@@ -72,7 +90,7 @@ local function StartFadeTimer()
 	if fadeTimer then
 		fadeTimer:Cancel()
 	end
-	fadeTimer = C_Timer.NewTimer(0.5, function()
+	fadeTimer = C_Timer_NewTimer(0.5, function()
 		local KKUI_MenuBar = _G.KKUI_MenuBar
 		if KKUI_MenuBar and not KKUI_MenuBar:IsMouseOver() then
 			KKUI_MenuBar.IsMouseOvered = nil
@@ -103,7 +121,7 @@ end
 
 local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 	local method, tooltip = unpack(data)
-	local buttonFrame = CreateFrame("Frame", "KKUI_MicroButtons", parent)
+	local buttonFrame = CreateFrame("Frame", nil, parent)
 	insert(MicroButtons, buttonFrame)
 	buttonFrame:SetSize(22, 30)
 	buttonFrame:CreateBorder()
@@ -118,9 +136,19 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 		button:SetParent(buttonFrame)
 		button.__owner = buttonFrame
 
-		hooksecurefunc(button, "SetParent", ResetButtonProperties)
-		ResetButtonProperties(button)
-		hooksecurefunc(button, "SetPoint", ResetButtonProperties)
+		local hooking = false
+		local function SafeReset()
+			if hooking then
+				return
+			end
+			hooking = true
+			ResetButtonProperties(button)
+			hooking = false
+		end
+
+		hooksecurefunc(button, "SetParent", SafeReset)
+		SafeReset()
+		hooksecurefunc(button, "SetPoint", SafeReset)
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
@@ -138,9 +166,6 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 		highlight:SetBlendMode("ADD")
 		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -24, 18)
 		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
-
-		button:SetHighlightTexture(0)
-		button.SetHighlightTexture = K.Noop
 
 		SetupMicroButtonTextures(button)
 	else
@@ -161,6 +186,14 @@ local function CreateMicroButton(parent, data, FadeMicroMenuEnabled)
 end
 
 function Module:CreateMicroMenu()
+	-- Disable KkthnxUI MicroMenu when ConsolePort is loaded
+	if C_AddOns and IsAddOnLoaded and IsAddOnLoaded("ConsolePort") then
+		if _G.KKUI_MenuBar then
+			_G.KKUI_MenuBar:Hide()
+		end
+		self:CleanupMicroMenu()
+		return
+	end
 	if not C["ActionBar"].MicroMenu then
 		-- Clean up if feature is disabled
 		if _G.KKUI_MenuBar then
@@ -261,5 +294,4 @@ end
 function Module:CleanupMicroMenu()
 	wipe(MicroButtons)
 	StopFadeTimer()
-	updateWatcher = 0
 end

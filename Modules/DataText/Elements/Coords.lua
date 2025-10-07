@@ -2,6 +2,7 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
 local string_format = string.format
+local math_max = math.max
 
 local CoordsDataText
 local coordX, coordY = 0, 0
@@ -32,6 +33,19 @@ local function OnUpdate(self, elapsed)
 			coordX, coordY = x, y
 			CoordsDataText.Text:SetText(formatCoords())
 			CoordsDataText:Show()
+
+			-- Resize container and mover to cover icon + text
+			local textW = CoordsDataText.Text:GetStringWidth() or 0
+			local textH = CoordsDataText.Text:GetLineHeight() or 12
+			local iconW = (CoordsDataText.Texture and CoordsDataText.Texture:GetWidth()) or 0
+			local iconH = (CoordsDataText.Texture and CoordsDataText.Texture:GetHeight()) or 0
+			local totalW = math_max(textW, iconW)
+			local totalH = iconH + 2 + textH
+			CoordsDataText:SetSize(math_max(totalW, 56), totalH)
+			if CoordsDataText.mover then
+				CoordsDataText.mover:SetWidth(math_max(totalW, 56))
+				CoordsDataText.mover:SetHeight(totalH)
+			end
 		else
 			coordX, coordY = 0, 0
 			CoordsDataText:Hide()
@@ -100,22 +114,25 @@ local function OnMouseUp(_, btn)
 end
 
 function Module:CreateCoordsDataText()
-	if not C["DataText"].Coords then return end
+	if not C["DataText"].Coords then
+		return
+	end
 
 	CoordsDataText = CreateFrame("Frame", nil, UIParent)
 	CoordsDataText:SetHitRectInsets(0, 0, -10, -10)
+	CoordsDataText:SetPoint("TOP", UIParent, "TOP", 0, -90)
 
-	CoordsDataText.Text = K.CreateFontString(CoordsDataText, 12)
-	CoordsDataText.Text:ClearAllPoints()
-	CoordsDataText.Text:SetPoint("TOP", UIParent, "TOP", 0, -90)
-
+	-- Icon on top
 	CoordsDataText.Texture = CoordsDataText:CreateTexture(nil, "ARTWORK")
-	CoordsDataText.Texture:SetPoint("BOTTOM", CoordsDataText, "TOP", 0, 0)
+	CoordsDataText.Texture:SetPoint("TOP", CoordsDataText, "TOP", 0, 0)
 	CoordsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp")
 	CoordsDataText.Texture:SetSize(24, 24)
 	CoordsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	CoordsDataText:SetAllPoints(CoordsDataText.Text)
+	-- Text under icon
+	CoordsDataText.Text = K.CreateFontString(CoordsDataText, 12)
+	CoordsDataText.Text:ClearAllPoints()
+	CoordsDataText.Text:SetPoint("TOP", CoordsDataText.Texture, "BOTTOM", 0, -2)
 
 	local function _OnEvent(...)
 		OnEvent(...)
@@ -131,5 +148,6 @@ function Module:CreateCoordsDataText()
 	CoordsDataText:SetScript("OnMouseUp", OnMouseUp)
 	CoordsDataText:SetScript("OnUpdate", OnUpdate)
 
-	K.Mover(CoordsDataText.Text, "CoordsDT", "CoordsDT", { "TOP", UIParent, "TOP", 0, -90 }, 72, -32)
+	-- Make the whole block (icon + text) movable
+	CoordsDataText.mover = K.Mover(CoordsDataText, "CoordsDT", "CoordsDT", { "TOP", UIParent, "TOP", 0, -90 }, 56, 24)
 end
