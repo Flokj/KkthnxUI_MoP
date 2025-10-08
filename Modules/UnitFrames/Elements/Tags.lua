@@ -21,7 +21,7 @@ local GetCVarBool = GetCVarBool
 local ROLE_ATLAS = {
 	HEALER = "|A:UI-LFG-RoleIcon-Healer-Micro-GroupFinder:16:16|a",
 	TANK = "|A:UI-LFG-RoleIcon-Tank-Micro-GroupFinder:16:16|a",
-	DAMAGER = "|A:UI-LFG-RoleIcon-DPS-Micro-GroupFinder:16:16|a",
+	--DAMAGER = "|A:UI-LFG-RoleIcon-DPS-Micro-GroupFinder:16:16|a",
 }
 
 local FEIGN_DEATH
@@ -329,7 +329,7 @@ oUF.Tags.Methods["lfdrole"] = function(unit)
 	if not (UnitInParty(unit) or UnitInRaid(unit)) then return end
 
 	local role = UnitGroupRolesAssigned(unit)
-	if role and role ~= "NONE" then
+	if role and role ~= "NONE" and role ~= "DAMAGER" then
 		return ROLE_ATLAS[role]
 	end
 end
