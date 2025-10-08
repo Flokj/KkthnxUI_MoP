@@ -122,7 +122,7 @@ local function updateAutoSell(event, ...)
 				local info = C_Container_GetContainerItemInfo(bag, slot)
 				if info and info.hyperlink and not info.isLocked and not info.hasNoValue then
 					local isJunk = (info.quality == 0) or (customJunk and customJunk[info.itemID])
-					if isJunk and not Module:IsPetTrashCurrency(info.itemID) then
+					if isJunk then
 						-- Always check transmog info; skip if unknown appearance
 						local hasTransmogInfo = C_TransmogCollection_GetItemInfo(info.hyperlink)
 						if not hasTransmogInfo then
