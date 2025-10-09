@@ -95,8 +95,9 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
 	KkthnxUIDB.ProfilePortraits = KkthnxUIDB.ProfilePortraits or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
-	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
 	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
+	KkthnxUIDB.ChangelogVersion = KkthnxUIDB.ChangelogVersion or nil
+	KkthnxUIDB.ChangelogHighlightLatest = KkthnxUIDB.ChangelogHighlightLatest or false
 end
 
 local function KKUI_CreateDefaults()

@@ -155,7 +155,6 @@ local function CreateAnnouncementsCategory()
 	-- Combat
 	local combatAnnouncementsSection = GUI:AddSection(announcementsCategory, L["Combat"])
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.SaySapped", L["Announce When Sapped"], "Automatically announces in chat when you are sapped in PvP.")
-	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.KillingBlow", L["Show Your Killing Blow Info"], "Displays a notification when you land a killing blow.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.PvPEmote", L["Auto Emote On Your Killing Blow"], "Automatically performs an emote when you land a killing blow in PvP.")
 	GUI:CreateSwitch(combatAnnouncementsSection, "Announcements.HealthAlert", L["Announce When Low On Health"], "Alerts when your health drops below a critical threshold.")
 
@@ -299,21 +298,12 @@ local function CreateAutomationCategory()
 
 	-- Miscellaneous
 	local miscSection = GUI:AddSection(category, L["Miscellaneous Options"] or "Miscellaneous Options")
-	GUI:CreateSwitch(miscSection, "Automation.AutoGoodbye", L["Say Goodbye After Dungeon Completion"], L["AutoGoodbye Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoRelease", L["Auto Release in Battlegrounds & Arenas"], L["AutoRelease Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoScreenshot", L["Auto Screenshot Achievements"], L["AutoScreenshot Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoSetRole", L["Auto Set Your Role In Groups"], L["AutoSetRole Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.ConfirmCinematicSkip", L["Quick Skip Cinematics (Key Press)"], L["ConfirmCinematicSkip Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.AutoSummon", L["Auto Accept Summon Requests"], L["AutoSummon Desc"])
 	GUI:CreateSwitch(miscSection, "Automation.NoBadBuffs", L["Automatically Remove Annoying Buffs"], L["NoBadBuffs Desc"])
-
-	-- Auto-Quest
-	--local listsSection = GUI:AddSection(category, L["Auto-Quest Lists"] or "Auto-Quest Lists")
-	--GUI:CreateButtonWidget(listsSection, "Automation.ManageAutoQuestIgnore", L["Auto-Quest Ignore NPCs"], L["Open"], "Open the manager to add or remove NPC IDs that should be ignored by auto questing (per character).", function()
-	--	if K.ExtraGUI and K.ExtraGUI.ShowExtraConfig then
-	--		K.ExtraGUI:ShowExtraConfig("Automation.AutoQuestIgnoreNPC", L["Auto-Quest Ignore NPCs"])
-	--	end
-	--end)
 end
 
 -- Boss
@@ -388,12 +378,12 @@ local function CreateChatCategory()
 	GUI:CreateSwitch(generalChatSection, "Chat.Enable", enableTextColor .. L["Enable Chat"], L["Enable Desc"])
 	GUI:CreateSwitch(generalChatSection, "Chat.Lock", L["Lock Chat"], L["Lock Desc"])
 	GUI:CreateSwitch(generalChatSection, "Chat.Background", L["Show Chat Background"], L["Background Desc"], UpdateChatBackground)
-	GUI:CreateSwitch(generalChatSection, "Chat.Chatbar", "Show Chat Bars")
+	GUI:CreateSwitch(generalChatSection, "Chat.Chatbar", "Show Chat Bars", nil, nil, true)
 	GUI:CreateSwitch(generalChatSection, "Chat.OldChatNames", L["Use Default Channel Names"], L["OldChatNames Desc"])
 
 	-- Appearance
 	local appearanceChatSection = GUI:AddSection(chatCategory, L["Appearance"])
-	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatClassColor", "Most Class Color in Chat and chat Bubbles")
+	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatClassColor", "Most Class Color in Chat and chat Bubbles", nil, nil, true)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ChatItemGem", "Show Item Gem in ChatFrames")
 	GUI:CreateSwitch(appearanceChatSection, "Chat.CopyButton", "Enable Copy Chat Button |TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:14:14|t", "Enable or disable the Copy Chat button, which allows you to copy chat text.", UpdateChatButtons)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ConfigButton", "Enable Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons)
@@ -605,10 +595,6 @@ local function CreateInventoryCategory()
 	local bankSection = GUI:AddSection(inventoryCategory, BANK)
 	GUI:CreateSlider(bankSection, "Inventory.BankPerRow", L["Bank Bags Per Row"], 1, 20, 1, L["BankPerRow Desc"], UpdateBagAnchor)
 
-	-- Other Section
-	local otherInventorySection = GUI:AddSection(inventoryCategory, OTHER)
-	GUI:CreateSwitch(otherInventorySection, "Inventory.PetTrash", L["Pet Trash Currencies"], "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk", UpdateInventorySettings)
-
 	-- Auto Repair
 	local autoRepairOptions = {
 		{ text = GUILD, value = 1 },
@@ -779,7 +765,7 @@ local function CreateMiscCategory()
 	-- Target Marking
 	local markingSection = GUI:AddSection(miscCategory, "Target Marking")
 	GUI:CreateSwitch(markingSection, "Misc.EasyMarking", L["EasyMarking by Ctrl + LeftClick"], "Allows quick marking of targets using Ctrl + Left Click")
-	GUI:CreateSwitch(markingSection, "Misc.Focuser", "Mouseover focus by Alt + LeftClick")
+	GUI:CreateSwitch(markingSection, "Misc.Focuser", "Mouseover focus by Alt + LeftClick", nil, nil, true)
 
 	-- Location Text Style
 	local easyMarkKeyOptions = {
@@ -803,11 +789,6 @@ local function CreateMiscCategory()
 	local tradeSkillSection = GUI:AddSection(miscCategory, "Trade Skill")
 	GUI:CreateSwitch(tradeSkillSection, "Misc.TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"], "Adds convenient tabs to the trade skill frame similar to the spellbook")
 
-	-- Social
-	local socialSection = GUI:AddSection(miscCategory, "Social")
-	GUI:CreateSwitch(socialSection, "Misc.EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"], "Enhances the friends and guild list with improved colors and information")
-	--GUI:CreateSwitch(socialSection, "Misc.QuickJoin", L["QuickJoin"], L["QuickJoinTip"])
-
 	-- Audio
 	local audioSection = GUI:AddSection(miscCategory, "Audio")
 	GUI:CreateSwitch(audioSection, "Misc.MuteSounds", "Mute Various Annoying Sounds In-Game", "Mutes specific annoying sound effects in the game")
@@ -815,7 +796,7 @@ local function CreateMiscCategory()
 	-- Mail
 	local mailSection = GUI:AddSection(miscCategory, "Mail")
 	GUI:CreateSwitch(mailSection, "Misc.EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox", "Enhances the mailbox with features similar to the Postal addon")
-	GUI:CreateSwitch(mailSection, "Misc.MailSaver", "Mail Saver (Save mail recipient)")
+	GUI:CreateSwitch(mailSection, "Misc.MailSaver", "Mail Saver (Save mail recipient)", nil, nil, true)
 
 	-- Questing & Dialog
 	local questingSection = GUI:AddSection(miscCategory, "Questing & Dialog")
@@ -841,7 +822,7 @@ local function CreateMiscCategory()
 	-- THREAT BAR SECTION
 	-- ========================================
 	local threatBarSection = GUI:AddSection(miscCategory, "Threat Bar")
-	GUI:CreateSwitch(threatBarSection, "Misc.ThreatEnable", "Show Threat Bar")
+	GUI:CreateSwitch(threatBarSection, "Misc.ThreatEnable", "Show Threat Bar", nil, nil, true)
 	GUI:CreateSwitch(threatBarSection, "Misc.ThreatHideSolo", "Show only in party/raid")
 	GUI:CreateSlider(threatBarSection, "Misc.ThreatHeight", "Bars height", 1, 40, 1, nil)
 	GUI:CreateSlider(threatBarSection, "Misc.ThreatWidth", "Bars width", 10, 400, 1, nil)
@@ -850,7 +831,7 @@ local function CreateMiscCategory()
 	-- Character & Inspect
 	local characterSection = GUI:AddSection(miscCategory, "Character & Inspect")
 	GUI:CreateSwitch(characterSection, "Misc.ItemLevel", L["Show Character/Inspect ItemLevel Info"], "Displays item level information on character and inspect frames")
-	GUI:CreateSwitch(characterSection, "Misc.HelmCloakToggle", "Add Helm/Cloak Toggle Buttons To Character Frame")
+	GUI:CreateSwitch(characterSection, "Misc.HelmCloakToggle", "Add Helm/Cloak Toggle Buttons To Character Frame", nil, nil, true)
 	if C["Misc"].ItemLevel then
 		GUI:CreateSwitch(characterSection, "Misc.GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"], "Shows gem and enchant information on character and inspect frames")
 	end
@@ -1274,14 +1255,14 @@ local function CreateSkinsCategory()
 	-- Blizzard Skins
 	local blizzardSkinsSection = GUI:AddSection(skinsCategory, L["Blizzard Skins"])
 	GUI:CreateSwitch(blizzardSkinsSection, "Skins.BlizzardFrames", L["Skin Some Blizzard Frames & Objects"], "Enable skinning of various Blizzard UI frames and objects")
-	GUI:CreateSwitch(blizzardSkinsSection, "Skins.TradeSkills", "Skin TradeSkills")
-	GUI:CreateSwitch(blizzardSkinsSection, "Skins.Trainers", "Skin Trainers")
+	GUI:CreateSwitch(blizzardSkinsSection, "Skins.TradeSkills", "Skin TradeSkills", nil, nil, true)
+	GUI:CreateSwitch(blizzardSkinsSection, "Skins.Trainers", "Skin Trainers", nil, nil, true)
 	GUI:CreateSwitch(blizzardSkinsSection, "Skins.ChatBubbles", L["ChatBubbles Skin"], "Apply custom styling to chat bubbles")
 	GUI:CreateSlider(blizzardSkinsSection, "Skins.ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, "Controls the transparency of chat bubble backgrounds", UpdateChatBubble)
 
 	-- AddOn Skins
 	local addonSkinsSection = GUI:AddSection(skinsCategory, L["AddOn Skins"])
-	GUI:CreateSwitch(addonSkinsSection, "Skins.AtlasLoot", "AtlasLoot Skin")
+	GUI:CreateSwitch(addonSkinsSection, "Skins.AtlasLoot", "AtlasLoot Skin", nil, nil, true)
 	GUI:CreateSwitch(addonSkinsSection, "Skins.Bartender4", L["Bartender4 Skin"], "Apply KkthnxUI styling to Bartender4 action bars")
 	GUI:CreateSwitch(addonSkinsSection, "Skins.BigWigs", L["BigWigs Skin"], "Apply KkthnxUI styling to BigWigs boss mod frames")
 	GUI:CreateSwitch(addonSkinsSection, "Skins.ButtonForge", L["ButtonForge Skin"], "Apply KkthnxUI styling to ButtonForge addon")
