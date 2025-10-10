@@ -386,7 +386,7 @@ local commandMap = {
 }
 
 -- Slash Command Handler
-SlashCmdList["KKUI"] = function(input)
+SlashCmdList["KKUI_COMMANDS"] = function(input)
 	local command, args = strsplit(" ", input, 2)
 	command = string.lower(command)
 
@@ -396,7 +396,7 @@ SlashCmdList["KKUI"] = function(input)
 		K.Print("Unknown command: " .. command)
 	end
 end
-_G.SLASH_KKUI1 = "/kk"
+_G.SLASH_KKUI_COMMANDS1 = "/kk"
 
 SlashCmdList.KKUI_PROFILE = function()
 	if K.ProfileGUI then

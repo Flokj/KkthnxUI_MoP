@@ -19,8 +19,8 @@ local GetCVarBool = GetCVarBool
 
 -- Precomputed atlas strings for role icons to avoid branching and allocations per update
 local ROLE_ATLAS = {
-	HEALER = "|A:UI-LFG-RoleIcon-Healer-Micro-GroupFinder:16:16|a",
-	TANK = "|A:UI-LFG-RoleIcon-Tank-Micro-GroupFinder:16:16|a",
+	HEALER = "|A:UI-LFG-RoleIcon-Healer-Micro-GroupFinder:12:12|a",
+	TANK = "|A:UI-LFG-RoleIcon-Tank-Micro-GroupFinder:12:12|a",
 	--DAMAGER = "|A:UI-LFG-RoleIcon-DPS-Micro-GroupFinder:16:16|a",
 }
 

@@ -15,7 +15,7 @@ local CreateFrame = CreateFrame
 local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local GameTooltip = GameTooltip
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local OPTIONS_MENU = OPTIONS_MENU
 local PlaySound = PlaySound
 local RELOADUI = RELOADUI
@@ -54,6 +54,22 @@ local menuList = {
 	},
 
 	{
+		text = "Changelog",
+		notCheckable = true,
+		func = function()
+			SlashCmdList["KKUI_CHANGELOG"]()
+		end,
+	},
+
+	{
+		text = "Commands List",
+		notCheckable = true,
+		func = function()
+			SlashCmdList["KKUI_COMMANDS"]("help")
+		end,
+	},
+
+	{
 		text = RELOADUI,
 		notCheckable = true,
 		func = function()
@@ -64,6 +80,8 @@ local menuList = {
 			ReloadUI()
 		end,
 	},
+
+	{ text = "", notClickable = true, notCheckable = true },
 
 	{
 		text = BINDING_NAME_TOGGLECOMBATLOG,
@@ -83,7 +101,7 @@ local menuList = {
 }
 
 -- Only add the Skada menu if Skada is loaded
-if IsAddOnLoaded("Skada") then
+if C_AddOns_IsAddOnLoaded("Skada") then
 	table.insert(menuList, {
 		text = "Skada",
 		hasArrow = true,
@@ -108,7 +126,7 @@ if IsAddOnLoaded("Skada") then
 	table.insert(menuList, { text = "", notClickable = true, notCheckable = true })
 end
 
-if IsAddOnLoaded("Details") then
+if C_AddOns_IsAddOnLoaded("Details") then
 	table.insert(menuList, {
 		text = "Details",
 		hasArrow = true,
@@ -151,7 +169,9 @@ end
 table.insert(menuList, { text = "|CFFFF3333" .. CLOSE .. "|r", notCheckable = true, func = function() end })
 
 local function canChangeMessage(arg1, id)
-	if id and arg1 == "" then return id end
+	if id and arg1 == "" then
+		return id
+	end
 end
 
 local function isMessageProtected(msg)
@@ -223,6 +243,10 @@ function Module:ChatCopy_CreateMenu()
 	_G.ChatFrameChannelButton:ClearAllPoints()
 	_G.ChatFrameChannelButton:SetPoint("TOP", _G.ChatFrameMenuButton, "BOTTOM", 0, -6)
 	_G.ChatFrameChannelButton:SetParent(menu)
+
+	if _G.QuickJoinToastButton then
+		_G.QuickJoinToastButton:SetParent(menu)
+	end
 
 	_G.ChatAlertFrame:ClearAllPoints()
 	_G.ChatAlertFrame:SetPoint("BOTTOMLEFT", _G.ChatFrame1Tab, "TOPLEFT", 5, 25)

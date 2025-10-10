@@ -541,6 +541,20 @@ C["Party"] = {
 	HealthbarColor = 1,
 }
 
+C["SimpleParty"] = {
+	Enable = false,
+	HealthbarColor = 1,
+	HealthHeight = 44,
+	HealthWidth = 70,
+	HorizonParty = false,
+	ManabarShow = false,
+	PowerBarShow = false,
+	RaidBuffsStyle = 2,
+	ShowHealPrediction = true,
+	Smooth = false,
+	TargetHighlight = false,
+}
+
 C["Boss"] = {
 	Castbars = true,
 	Enable = true,
