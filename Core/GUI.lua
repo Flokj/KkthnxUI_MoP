@@ -2617,7 +2617,7 @@ local function CreateMainFrame()
 	profileButton.Icon = profileButton:CreateTexture(nil, "ARTWORK")
 	profileButton.Icon:SetSize(18, 18)
 	profileButton.Icon:SetPoint("CENTER")
-	profileButton.Icon:SetAtlas("adventureguide-icon-whatsnew")
+	profileButton.Icon:SetAtlas("Class")
 	profileButton.Icon:SetVertexColor(1, 1, 1, 0.8)
 
 	profileButton:SetScript("OnClick", function()

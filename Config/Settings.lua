@@ -129,6 +129,7 @@ C["Announcements"] = {
 -- Automation
 C["Automation"] = {
 	AutoDeclineDuels = false,
+	AutoDeclinePetDuels = false,
 	AutoInvite = false,
 	AutoPartySync = false,
 	AutoQuest = false,
