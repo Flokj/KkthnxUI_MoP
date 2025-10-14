@@ -775,6 +775,7 @@ local function CreateMiscCategory()
 	-- UI Enhancements
 	local uiEnhanceSection = GUI:AddSection(miscCategory, "UI Enhancements")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.AlreadyKnown", "Highlight Already Known Items", "Highlights items you already know in various frames such as the merchant, auction house, and guild bank.")
+	GUI:CreateSwitch(uiEnhanceSection, "Misc.QuickMenuList", L["Enhanced Unit Popup Menus"], "Adds extra options to unit right-click menus such as Copy Name, Whisper, Guild Invite, and Add Friend")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.ColorPicker", L["Enhanced Color Picker"], "Enhances the default color picker with additional functionality")
 	GUI:CreateSwitch(uiEnhanceSection, "Misc.ClassColorPlus", "Enable Class Color Enhancements", "Enhances various UI elements with class-specific colors, including guild, friends, who list, and battlefield score frames.")
 

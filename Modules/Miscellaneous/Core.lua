@@ -581,9 +581,9 @@ function Module:CustomMenu_Whisper(rootDescription, data)
 end
 
 function Module:CreateQuickMenuList()
-	-- if not C["Misc"].MenuButton then
-	-- 	return
-	-- end
+	if not C["Misc"].QuickMenuList then
+		return
+	end
 
 	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
 	--	print("MENU_UNIT_"..which)

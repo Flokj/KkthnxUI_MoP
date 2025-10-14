@@ -310,6 +310,7 @@ C["Misc"] = {
 	MaxCameraZoom = 2.6,
 	MuteSounds = true,
 	QueueTimers = true,
+	QuickMenuList = true,
 	ShowWowHeadLinks = false,
 	SlotDurability = true,
 	SlotDurabilityWarning = true,
@@ -463,6 +464,7 @@ C["Unitframe"] = {
 	ShowHealPrediction = true,
 	ShowPlayerLevel = true,
 	Smooth = false,
+	HideMaxPlayerLevel = false,
 	Stagger = true,
 
 	SwingBar = false,

@@ -1208,7 +1208,7 @@ function Module:PostUpdatePlates(event, unit)
 		Module.RefreshPlateType(self, unit)
 		-- Mitigate intermittent delayed name availability
 		if self.nameText and self.plateType == "NameOnly" then
-			C_Timer.After(0, function()
+			C_Timer.After(0.25, function()
 				if self.nameText and self:IsShown() then
 					self.nameText:UpdateTag()
 				end
