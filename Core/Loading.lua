@@ -79,14 +79,6 @@ local function KKUI_VerifyDatabase()
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
 
-	if charData.FavouriteItems then
-		local customItems = charData.CustomItems
-		for itemID in pairs(charData.FavouriteItems) do
-			customItems[itemID] = 1
-		end
-		charData.FavouriteItems = nil
-	end
-
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
 	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
 	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
@@ -98,6 +90,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
 	KkthnxUIDB.ChangelogVersion = KkthnxUIDB.ChangelogVersion or nil
 	KkthnxUIDB.ChangelogHighlightLatest = KkthnxUIDB.ChangelogHighlightLatest or false
+	KkthnxUIDB.DetectedVersion = KkthnxUIDB.DetectedVersion or nil
 end
 
 local function KKUI_CreateDefaults()

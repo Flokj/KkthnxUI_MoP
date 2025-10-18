@@ -406,7 +406,6 @@ local function CreateChatCategory()
 	GUI:CreateSwitch(appearanceChatSection, "Chat.ConfigButton", "Show Config Button |TInterface\\Buttons\\UI-OptionsButton:14:14|t", "Enable or disable the Config button, which provides quick access to the configuration menu.", UpdateChatButtons, true)
 	GUI:CreateSwitch(appearanceChatSection, "Chat.RollButton", "Show Roll Button |A:charactercreate-icon-dice:14:14|a", "Enable or disable the Roll button, which allows you to roll a random number between 1 and 100.", UpdateChatButtons, true)
 
-
 	-- Timestamp Format
 	local timestampOptions = {
 		{ text = "Disable", value = 1 },
@@ -505,6 +504,7 @@ local function CreateGeneralCategory()
 	GUI:CreateSwitch(generalGeneralSection, "General.MoveBlizzardFrames", L["Move Blizzard Frames"], L["MoveBlizzardFrames Desc"])
 	GUI:CreateSwitch(generalGeneralSection, "General.NoErrorFrame", L["Disable Blizzard Error Frame Combat"], "Prevents error messages from appearing during combat")
 	GUI:CreateSwitch(generalGeneralSection, "General.NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"], L["NoTutorialButtons Desc"])
+	GUI:CreateSwitch(generalGeneralSection, "General.VersionCheck", L["Enable Version Check"], "Checks for newer versions of KkthnxUI when joining guild or group (requires reload)")
 
 	-- Button Glow Mode
 	local glowModeOptions = {
@@ -1123,7 +1123,12 @@ local function CreatePartyCategory()
 	GUI:CreateDropdown(colorsPartySection, "Party.HealthbarColor", L["Health Color Format"], healthColorOptions, "Choose how health bars are colored on party frames")
 end
 
--- SimpleParty (Raid-style compact party frames)
+--[[
+	SimpleParty (Raid-style compact party frames)
+	NOTE: SimpleParty settings have been moved to ExtraGUI (accessed via cogwheel on Party.Enable)
+	This category is deprecated and kept for reference only.
+]]
+--[[ DEPRECATED: Moved to ExtraGUI - Accessible via Party.Enable cogwheel
 local function CreateSimplePartyCategory()
 	local simplePartyIcon = "Interface\\Icons\\Spell_ChargePositive"
 	local simplePartyCategory = GUI:AddCategory("Simple Party", simplePartyIcon)
@@ -1174,6 +1179,8 @@ local function CreateSimplePartyCategory()
 	}
 	GUI:CreateDropdown(colorsSimplePartySection, "SimpleParty.RaidBuffsStyle", L["Buff Style"], raidBuffsStyleOptions, "Choose the buff display style for simple party frames", nil, true)
 end
+--]]
+-- END DEPRECATED SimpleParty category
 
 -- Raid Category
 local function CreateRaidCategory()
@@ -1773,7 +1780,7 @@ CreateMinimapCategory()
 CreateMiscCategory()
 CreateNameplateCategory()
 CreatePartyCategory()
-CreateSimplePartyCategory()
+-- CreateSimplePartyCategory() -- DEPRECATED: Moved to ExtraGUI (accessible via Party.Enable cogwheel)
 CreateRaidCategory()
 CreateSkinsCategory()
 CreateTooltipCategory()

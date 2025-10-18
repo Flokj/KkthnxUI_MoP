@@ -9,7 +9,6 @@ local string_format = string.format
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
-local table_wipe = table.wipe
 local tonumber = tonumber
 local type = type
 local unpack = unpack
@@ -71,13 +70,18 @@ do
 				return format("%.0f", n)
 			end
 		else
-			return format("%.0f", n)
+			return string_format("%d%s", val, suffix)
 		end
 	end
 
 	function K.Round(number, idp)
-		if type(number) ~= "number" then return end
-		if idp ~= nil and type(idp) ~= "number" then return end
+		if type(number) ~= "number" then
+			return
+		end
+
+		if idp ~= nil and type(idp) ~= "number" then
+			return
+		end
 
 		idp = idp or 0
 		local mult = 10 ^ idp
@@ -169,7 +173,10 @@ do
 		target = target or {}
 		seen = seen or {}
 
-		if seen[source] then return seen[source] end
+		if seen[source] then
+			return seen[source]
+		end
+
 		seen[source] = target
 
 		for key, value in pairs(source) do
@@ -187,12 +194,12 @@ do
 		variable = variable or ""
 
 		if cleanup then
-			wipe(list)
+			table.wipe(list)
 		end
 
 		for word in gmatch(variable, "%S+") do
-			word = tonumber(word) or word -- Convert to number if possible
-			list[word] = true
+			local converted = tonumber(word) or word -- Convert to number if possible
+			list[converted] = true
 		end
 	end
 end
@@ -202,17 +209,20 @@ do
 	-- Gradient Frame
 	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
 	function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
-		-- set the size of the frame
 		self:SetSize(w, h)
-		-- set the frame strata
 		self:SetFrameStrata("BACKGROUND")
-		-- create the gradient texture
 		local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
-		-- set the texture to cover the entire frame
 		gradientFrame:SetAllPoints()
-		-- set the texture to the white 8x8 texture
 		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
-		-- set the gradient type and colors
+		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
+	end
+
+	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
+	function K.CreateGradientFrame(frame)
+		local gradientFrame = frame:CreateTexture(nil, "BACKGROUND")
+		gradientFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -2)
+		gradientFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -0, 2)
+		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
 		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 
@@ -270,7 +280,7 @@ do
 	function K.UnitColor(unit)
 		local r, g, b = 1, 1, 1
 
-		if UnitIsPlayer(unit) then
+		if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
 			local class = select(2, UnitClass(unit))
 			if class then
 				r, g, b = K.ColorClass(class)
@@ -305,7 +315,9 @@ do
 	end
 
 	function K.CheckAddOnState(addon)
-		if type(addon) ~= "string" then return false end
+		if type(addon) ~= "string" then
+			return false
+		end
 
 		return K.AddOns[string_lower(addon)] or false
 	end
@@ -500,7 +512,7 @@ do
 		if not K.ScanTooltip.gems then
 			K.ScanTooltip.gems = {}
 		else
-			table_wipe(K.ScanTooltip.gems)
+			table.wipe(K.ScanTooltip.gems)
 		end
 
 		for i = 1, 5 do
@@ -548,7 +560,7 @@ do
 			if not K.ScanTooltip.slotInfo then
 				K.ScanTooltip.slotInfo = {}
 			else
-				table_wipe(K.ScanTooltip.slotInfo)
+				table.wipe(K.ScanTooltip.slotInfo)
 			end
 
 			local slotInfo = K.ScanTooltip.slotInfo
@@ -766,7 +778,9 @@ do
 	function K.GetAnchors(frame)
 		local x, y = frame:GetCenter()
 
-		if not x or not y then return "CENTER" end
+		if not x or not y then
+			return "CENTER"
+		end
 
 		local hhalf = (x > UIParent:GetWidth() * 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
 		local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
@@ -774,17 +788,21 @@ do
 		return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 	end
 
-
 	function K.HideTooltip()
-		if GameTooltip:IsForbidden() then return end
+		if GameTooltip:IsForbidden() then
+			return
+		end
+
 		GameTooltip:Hide()
 	end
 
 	local function tooltipOnEnter(self)
-		if GameTooltip:IsForbidden() then return end
+		if GameTooltip:IsForbidden() then
+			return
+		end
 
 		-- Set the GameTooltip's owner and relative position to the 'self' object.
-		GameTooltip:SetOwner(self, self.anchor)
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
 
@@ -814,7 +832,9 @@ do
 	end
 
 	function K.AddTooltip(self, anchor, text, color)
-		if not self then return end
+		if not self then
+			return
+		end
 
 		self.anchor = anchor
 		self.text = text
@@ -860,7 +880,9 @@ do
 
 		self:SetScript("OnDragStop", function()
 			frame:StopMovingOrSizing()
-			if not saved then return end
+			if not saved then
+				return
+			end
 
 			local orig, _, tar, x, y = frame:GetPoint()
 			if KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name] then
@@ -921,7 +943,9 @@ end
 -- Interface Option Functions
 do
 	function K.HideInterfaceOption(self)
-		if not self then return end
+		if not self then
+			return
+		end
 
 		self:SetAlpha(0)
 		self:SetScale(0.0001)
@@ -982,16 +1006,22 @@ do
 	local mapRects = {}
 	local tempVec2D = CreateVector2D(0, 0)
 	function K.GetPlayerMapPos(mapID)
-		if not mapID then return end
+		if not mapID then
+			return
+		end
 
 		tempVec2D.x, tempVec2D.y = UnitPosition("player")
-		if not tempVec2D.x then return end
+		if not tempVec2D.x then
+			return
+		end
 
 		local mapRect = mapRects[mapID]
 		if not mapRect then
 			local pos1 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
 			local pos2 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
-			if not pos1 or not pos2 then return end
+			if not pos1 or not pos2 then
+				return
+			end
 
 			mapRect = { pos1, pos2 }
 			mapRect[2]:Subtract(mapRect[1])

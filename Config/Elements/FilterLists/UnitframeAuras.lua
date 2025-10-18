@@ -1,10 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local function Priority(priorityOverride)
+local function Priority(priorityOverride, stackThreshold)
 	return {
 		enable = true,
 		priority = priorityOverride or 0,
-		stackThreshold = 0,
+		stackThreshold = stackThreshold or 0,
 	}
 end
 
