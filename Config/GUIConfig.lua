@@ -604,6 +604,7 @@ local function CreateInventoryCategory()
 	GUI:CreateSwitch(bagsSection, "Inventory.DeleteButton", L["Bags Delete Button"], "Shows a delete button for easy item deletion")
 	GUI:CreateSwitch(bagsSection, "Inventory.ReverseSort", L["Reverse the Sorting"], L["ReverseSort Desc"], UpdateBagSortOrder)
 	GUI:CreateSwitch(bagsSection, "Inventory.ShowNewItem", L["Show New Item Glow"], "Highlights newly acquired items with a glow effect")
+	GUI:CreateSwitch(bagsSection, "Inventory.UpgradeIcon", L["Show Upgrade Icon"], "Displays an icon on items that are upgrades for your character")
 	GUI:CreateSwitch(bagsSection, "Inventory.SpecialBagsColor", "Color Special Bags", "Color Special Bags:|n- |cffabda74Hunter's Quiver or Ammo Pouch|r|n- |cff8787edWarlock's Soul Pouch|r|n- |cffc800c8Enchanting Mageweave Pouch|r|n- |cff008000Herbalist's Herb Pouch|r", UpdateInventorySettings)
 	GUI:CreateSlider(bagsSection, "Inventory.BagsPerRow", L["Bags Per Row"], 1, 20, 1, L["BagsPerRow Desc"], UpdateBagAnchor)
 

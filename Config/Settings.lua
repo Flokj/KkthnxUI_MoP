@@ -179,6 +179,7 @@ C["Inventory"] = {
 	ReverseSort = false,
 	ShowNewItem = true,
 	SpecialBagsColor = false,
+	UpgradeIcon = true,
 	GrowthDirection = 1,
 	SortDirection = 2,
 	AutoRepair = 2,
