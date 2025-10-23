@@ -29,53 +29,24 @@ local UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink = UnitGUID, IsShiftKeyD
 local quests, choiceQueue = {}
 
 -- Minimap checkbox
-local isCheckButtonCreated
+local created
 local function setupCheckButton()
-	if isCheckButtonCreated then
+	if created then
 		return
 	end
-
-	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
-	AutoQuestCheckButton:SetFrameLevel(WorldMapFrame:GetFrameLevel() + 2)
-	AutoQuestCheckButton:ClearAllPoints()
-	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
-		if LeaMapsDB["ShowCoords"] == "On" then
-			AutoQuestCheckButton:SetPoint("BOTTOMLEFT", 22, 44)
-		else
-			AutoQuestCheckButton:SetPoint("BOTTOMLEFT", 22, 26)
-		end
-	else
-		AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
-	end
-	AutoQuestCheckButton:SetSize(24, 24)
-
-	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
-	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
-
-	if C_AddOns.IsAddOnLoaded("Leatrix_Maps") and LeaMapsDB and LeaMapsDB["UseDefaultMap"] == "Off" then
-		AutoQuestCheckButton.text:SetTextColor(1, 1, 1)
-	else
-		AutoQuestCheckButton.text:SetTextColor(1.0, 0.82, 0)
-	end
-
-	AutoQuestCheckButton:SetHitRectInsets(0, 0 - AutoQuestCheckButton.text:GetWidth(), 0, 0)
-	AutoQuestCheckButton:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
-	AutoQuestCheckButton:SetScript("OnClick", function(self)
+	local mono = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
+	mono:SetHitRectInsets(-5, -5, -5, -5)
+	mono:SetPoint("TOPRIGHT", -140, 0)
+	mono:SetSize(24, 24)
+	mono:SetFrameLevel(999)
+	mono.text = K.CreateFontString(mono, 12, "Auto Quest", "", "system", "LEFT", 24, 0)
+	mono:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
+	mono:SetScript("OnClick", function(self)
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
-	AutoQuestCheckButton.title = "Auto Quest"
-	K.AddTooltip(AutoQuestCheckButton, "ANCHOR_BOTTOMLEFT", "|nWhen enabled, quests and dialogs will be interacted with automatically.|n|nIf a gossip window has only one option, it will be automatically selected.|n|nHold the SHIFT key to temporarily pause automation.|n|nTo block an NPC from being auto-interacted with, hold the ALT key and click their name on the Gossip or Quest frame.", "info", "Auto Quest", true)
+	K.AddTooltip(mono, "ANCHOR_BOTTOMLEFT", "Automatically interact with quests.|n|nSingle-option gossip will be selected automatically.|n|nHold SHIFT to temporarily pause automation.|n|nTo block an NPC from auto-interaction, hold ALT and click their name in the Gossip or Quest frame.", "info", true)
 
-	local QuestToggle = _G.Questie_Toggle
-	if QuestToggle then
-		QuestToggle:ClearAllPoints()
-		QuestToggle:SetHeight(22)
-		QuestToggle:SetPoint("LEFT", WorldMapZoomOutButton, "RIGHT", 5, 0)
-		QuestToggle.SetPoint = K.Noop
-	end
-
-	isCheckButtonCreated = true
+	created = true
 end
 WorldMapFrame:HookScript("OnShow", setupCheckButton)
 
@@ -315,8 +286,7 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 	if choices <= 1 then
 		GetQuestReward(1)
 	elseif choices > 1 then
-		local bestValue = 0
-		local bestIndex
+		local bestValue, bestIndex = 0
 
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)
@@ -341,33 +311,15 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 	end
 end)
 
-local function AttemptAutoComplete(event, questID)
-	if UnitIsDeadOrGhost("player") then
-		QuickQuest:Register("PLAYER_REGEN_ENABLED", function()
-			AttemptAutoComplete("PLAYER_REGEN_ENABLED", questID)
-		end)
-		return
-	else
-		C_Timer.After(1, function()
-			AttemptAutoComplete(nil, questID)
-		end)
-	end
+local function AttemptAutoComplete(event)
+	C_Timer.After(1, AttemptAutoComplete)
 
-	if event == "PLAYER_REGEN_ENABLED" then
-		QuickQuest:UnregisterEvent(event)
-	end
-
-	if questID then
-		local questIndex = GetQuestLogIndexByID(questID)
-		if questIndex and GetQuestLogIsAutoComplete(questIndex) then
-			ShowQuestComplete(questIndex)
-		end
+	if(event == "PLAYER_REGEN_ENABLED") then
+		QuickQuest:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 end
-
-QuickQuest:Register("QUEST_AUTOCOMPLETE", function(_, questID)
-	AttemptAutoComplete("QUEST_AUTOCOMPLETE", questID)
-end)
+QuickQuest:Register("PLAYER_LOGIN", AttemptAutoComplete)
+QuickQuest:Register("QUEST_AUTOCOMPLETE", AttemptAutoComplete)
 
 -- Handle ignore list
 local function UpdateIgnoreList()
@@ -390,8 +342,8 @@ local function UnitQuickQuestStatus(self)
 	if not self.__ignore then
 		local frame = CreateFrame("Frame", nil, self)
 		frame:SetSize(100, 14)
-		frame:SetPoint("TOP", self, "BOTTOM", 0, -2)
-		K.AddTooltip(frame, "ANCHOR_RIGHT", "You no longer auto interact quests with current NPC. You can hold key ALT and click the name above to undo this.", "info", true)
+		frame:SetPoint("TOP", self, "BOTTOM", 0, -6)
+		K.AddTooltip(frame, "ANCHOR_RIGHT", L["AutoQuest Ignored Tooltip"], "info", true)
 		K.CreateFontString(frame, 14, IGNORED):SetTextColor(1, 0, 0)
 
 		self.__ignore = frame
@@ -417,19 +369,17 @@ local function ToggleQuickQuestStatus(self)
 
 	self.__ignore:SetShown(not self.__ignore:IsShown())
 	local npcID = GetNPCID()
-	if npcID then
-		if self.__ignore:IsShown() then
-			if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
-				KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
-			else
-				KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = true
-			end
+	if self.__ignore:IsShown() then
+		if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
 		else
-			if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
-				KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = false
-			else
-				KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
-			end
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = true
+		end
+	else
+		if C["AutoQuestData"].IgnoreQuestNPC[npcID] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = false
+		else
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC[npcID] = nil
 		end
 	end
 
@@ -440,6 +390,7 @@ QuestNpcNameFrame:HookScript("OnShow", UnitQuickQuestStatus)
 QuestNpcNameFrame:HookScript("OnMouseDown", ToggleQuickQuestStatus)
 local frame = GossipFrame.TitleContainer
 if frame then
+	GossipFrameCloseButton:SetFrameLevel(frame:GetFrameLevel() + 1) -- fix clicking on gossip close button
 	frame:HookScript("OnShow", UnitQuickQuestStatus)
 	frame:HookScript("OnMouseDown", ToggleQuickQuestStatus)
 end

@@ -403,7 +403,7 @@ function Module:RaidTool_CreateMenu(parent)
 	end)
 
 	StaticPopupDialogs["Group_Disband"] = {
-		text = L["Raid Disbanding"],
+		text = L["Disband Info"] or "Are you sure you want to disband the group?",
 		button1 = YES,
 		button2 = NO,
 		OnAccept = function()
@@ -412,7 +412,7 @@ function Module:RaidTool_CreateMenu(parent)
 				return
 			end
 			if IsInRaid() then
-				SendChatMessage(L["Raid Disbanding Info"], "RAID")
+				SendChatMessage("Disband Process", "RAID")
 				for i = 1, GetNumGroupMembers() do
 					local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
 					if online and name ~= K.Name then

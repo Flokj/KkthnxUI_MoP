@@ -358,16 +358,20 @@ end
 --	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
 --end
 
--- TradeFrame hook
+-- TradeFrame Hook
 function Module:CreateTradeTargetInfo()
 	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
 	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
+		-- Color recipient name with NPC color
 		local r, g, b = K.UnitColor("NPC")
-		TradeFrameRecipientNameText:SetTextColor(r, g, b)
+		TradeFrameRecipientNameText:SetTextColor(r or 1, g or 1, b or 1)
+
+		-- Simple, reliable GUID fetch
 		local guid = UnitGUID("NPC")
 		if not guid then
+			infoText:SetText("|cffff0000" .. L["Stranger"])
 			return
 		end
 		local text = "|cffff0000" .. L["Stranger"]

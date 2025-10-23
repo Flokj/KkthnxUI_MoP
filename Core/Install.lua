@@ -251,6 +251,7 @@ local generalMessageGroups = {
 	"PARTY",
 	"PARTY_LEADER",
 	"RAID",
+	"PING",
 	"RAID_LEADER",
 	"RAID_WARNING",
 	"INSTANCE_CHAT",

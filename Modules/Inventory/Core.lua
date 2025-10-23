@@ -315,6 +315,10 @@ end
 
 local function ToggleBackpacks(self)
 	local parent = self.__owner
+	if not parent.BagBar then
+		return
+	end
+
 	K.TogglePanel(parent.BagBar)
 	if parent.BagBar:IsShown() then
 		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
