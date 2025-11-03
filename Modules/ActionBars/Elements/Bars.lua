@@ -389,7 +389,11 @@ function Module:OnEnable()
 		end
 	end
 
-	Module:ReassignBindings()
+	if C_PetBattles.IsInBattle() then
+		Module:ClearBindings()
+	else
+		Module:ReassignBindings()
+	end
 	K:RegisterEvent("UPDATE_BINDINGS", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_CLOSE", Module.ReassignBindings)
 	K:RegisterEvent("PET_BATTLE_OPENING_DONE", Module.ClearBindings)

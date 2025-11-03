@@ -1,20 +1,33 @@
 local K = KkthnxUI[1]
 
+-- Unregister talent event
+do
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
+end
+
 -- Fix blizz bug in addon list
-local _AddonTooltip_Update = AddonTooltip_Update
-function AddonTooltip_Update(owner)
-	if not owner then
-		return
+do
+	local _AddonTooltip_Update = AddonTooltip_Update
+	function AddonTooltip_Update(owner)
+		if not owner then
+			return
+		end
+		if owner:GetID() < 1 then
+			return
+		end
+		_AddonTooltip_Update(owner)
 	end
-	if owner:GetID() < 1 then
-		return
-	end
-	_AddonTooltip_Update(owner)
 end
 
 -- Fix Drag Collections taint
 do
-	local done
+	local done = false
 	local function setupMisc(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
 			-- Fix undragable issue
@@ -75,3 +88,91 @@ do
 
 	K:RegisterEvent("ADDON_LOADED", setupMisc)
 end
+
+-- Fix blizz guild news hyperlink error
+do
+	local function fixGuildNews(event, addon)
+		if addon ~= "Blizzard_GuildUI" then
+			return
+		end
+
+		local _GuildNewsButton_OnEnter = GuildNewsButton_OnEnter
+		function GuildNewsButton_OnEnter(self)
+			if not (self.newsInfo and self.newsInfo.whatText) then
+				return
+			end
+			_GuildNewsButton_OnEnter(self)
+		end
+
+		K:UnregisterEvent(event, fixGuildNews)
+	end
+
+	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
+end
+
+-- Fix guild news jam
+do
+	local lastTime, timeGap = 0, 1.5
+	local function updateGuildNews(self, event)
+		if event == "PLAYER_ENTERING_WORLD" then
+			QueryGuildNews()
+		else
+			if self:IsVisible() then
+				local nowTime = GetTime()
+				if nowTime - lastTime > timeGap then
+					CommunitiesGuildNews_Update(self)
+					lastTime = nowTime
+				end
+			end
+		end
+	end
+
+	CommunitiesFrameGuildDetailsFrameNews:SetScript("OnEvent", updateGuildNews)
+end
+
+-- Fix Professions drag taint in combat
+do
+	local done
+	local function setupMisc(event, addon)
+		if event == "ADDON_LOADED" and addon == "Blizzard_ProfessionsBook" then
+			ProfessionsBookFrame:HookScript("OnShow", function()
+				if not done then
+					if InCombatLockdown() then
+						K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+					else
+						K.CreateMoverFrame(ProfessionsBookFrame)
+					end
+					done = true
+				end
+			end)
+			K:UnregisterEvent(event, setupMisc)
+		elseif event == "PLAYER_REGEN_ENABLED" then
+			K.CreateMoverFrame(ProfessionsBookFrame)
+			K:UnregisterEvent(event, setupMisc)
+		end
+	end
+
+	K:RegisterEvent("ADDON_LOADED", setupMisc)
+end
+
+-- Fix errors in mop
+TalentMicroButtonAlert.MicroButton = CreateFrame("Frame")
+TalentMicroButtonAlert.MicroButton.EvaluateAlertVisibility = function() end
+
+-- Fix gossip icon desaturation
+local function handleQuestGossip(button)
+	local icon = button.Icon
+	if not icon then return end
+
+	icon:SetDesaturated(false)
+
+	local data = button:GetElementData()
+	local info = data and data.info
+	if info and not info.isComplete then
+		icon:SetDesaturated(true)
+	end
+end
+
+hooksecurefunc(GossipFrame.GreetingPanel.ScrollBox, "Update", function(self)
+	self:ForEachFrame(handleQuestGossip)
+end)

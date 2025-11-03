@@ -146,22 +146,6 @@ function Module:SetupCVars()
 		SetCVar(cvar, value)
 	end
 
-	if C_AddOns.IsAddOnLoaded("Questie") and QuestieLoader then
-		_QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
-		_QuestieTooltips = QuestieLoader:ImportModule("QuestieTooltips")
-
-		local _QuestieEventHandler = QuestieLoader:ImportModule("QuestEventHandler")
-		if _QuestieEventHandler and _QuestieEventHandler.private then
-			hooksecurefunc(_QuestieEventHandler.private, "UpdateAllQuests", function()
-				for _, plate in pairs(C_NamePlate.GetNamePlates()) do
-					if plate.unitFrame then
-						Module.UpdateQuestIndicator(plate.unitFrame)
-					end
-				end
-			end)
-		end
-	end
-
 	Module:UpdateClickableSize()
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
@@ -591,98 +575,6 @@ function Module:UpdateQuestUnit(_, unit)
 	end
 end
 
-function Module:UpdateForQuestie(npcID)
-	local data = _QuestieTooltips.lookupByKey and _QuestieTooltips.lookupByKey["m_" .. npcID]
-	if data then
-		local foundObjective, progressText
-		for _, tooltip in pairs(data) do
-			if not tooltip.npc then
-				local questID = tooltip.questId
-				if questID then
-					if _QuestiePlayer.currentQuestlog[questID] then
-						foundObjective = true
-
-						if tooltip.objective and tooltip.objective.Needed then
-							progressText = tooltip.objective.Needed - tooltip.objective.Collected
-							if progressText == 0 then
-								foundObjective = nil
-							end
-							break
-						end
-					end
-				end
-			end
-		end
-
-		if foundObjective then
-			self.questIcon:Show()
-			self.questCount:SetText(progressText)
-		end
-	end
-end
-
-function Module:UpdateCodexQuestUnit(name)
-	if name and CodexMap.tooltips[name] then
-		for _, meta in pairs(CodexMap.tooltips[name]) do
-			local questData = meta["quest"]
-			local quests = CodexDB.quests.loc
-
-			if questData then
-				for questIndex = 1, GetNumQuestLogEntries() do
-					local _, _, _, header, _, _, _, questId = GetQuestLogTitle(questIndex)
-					if not header and quests[questId] and questData == quests[questId].T then
-						local objectives = GetNumQuestLeaderBoards(questIndex)
-						local foundObjective, progressText = nil
-						if objectives then
-							for i = 1, objectives do
-								local text, type = GetQuestLogLeaderBoard(i, questIndex)
-								if type == "monster" then
-									local _, _, monsterName, objNum, objNeeded = strfind(text, Codex:SanitizePattern(QUEST_MONSTERS_KILLED))
-									if meta["spawn"] == monsterName then
-										progressText = objNeeded - objNum
-										foundObjective = true
-										break
-									end
-								elseif table.getn(meta["item"]) > 0 and type == "item" and meta["dropRate"] then
-									local _, _, itemName, objNum, objNeeded = strfind(text, Codex:SanitizePattern(QUEST_OBJECTS_FOUND))
-									for _, item in pairs(meta["item"]) do
-										if item == itemName then
-											progressText = objNeeded - objNum
-											foundObjective = true
-											break
-										end
-									end
-								end
-							end
-						end
-
-						if foundObjective and progressText > 0 then
-							self.questIcon:Show()
-							self.questCount:SetText(progressText)
-						elseif not foundObjective then
-							self.questIcon:Show()
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function Module:UpdateQuestIndicator()
-	if not C["Nameplate"].QuestIndicator then return end
-
-	self.questIcon:Hide()
-	self.questCount:SetText("")
-	if isInInstance then return end
-
-	if CodexMap then
-		Module.UpdateCodexQuestUnit(self, self.unitName)
-	elseif _QuestieTooltips and _QuestiePlayer then
-		Module.UpdateForQuestie(self, self.npcID)
-	end
-end
-
 function Module:AddQuestIcon(self)
 	if not C["Nameplate"].QuestIndicator then return end
 
@@ -698,8 +590,7 @@ function Module:AddQuestIcon(self)
 
 	self.questIcon = qicon
 	self.questCount = count
-	--self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
-	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestIndicator, true)
+	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)
@@ -1221,8 +1112,8 @@ function Module:PostUpdatePlates(event, unit)
 	if event ~= "NAME_PLATE_UNIT_REMOVED" then
 		Module.UpdateUnitPower(self)
 		Module.UpdateTargetChange(self)
+		Module.UpdateQuestUnit(self, event, unit)
 		Module.UpdateUnitClassify(self, unit)
-		Module.UpdateQuestIndicator(self)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateTargetClassPower()
 

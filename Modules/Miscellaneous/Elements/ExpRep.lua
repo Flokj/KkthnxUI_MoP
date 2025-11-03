@@ -131,29 +131,6 @@ local function OnExpBarEnter(self)
 		GameTooltip:AddDoubleLine(altKeyText .. KEY_PLUS .. K.RightButton, sendExperienceText)
 	end
 
-	if K.Class == "HUNTER" and UnitExists("pet") then
-		local currPetXP, nextPetXP = GetPetExperience()
-
-		if nextPetXP and nextPetXP > 0 then
-			-- Calculate XP metrics
-			local remainPetXP = nextPetXP - currPetXP
-			local percentPetXP = (currPetXP / nextPetXP) * 100
-			local remainPetFraction = remainPetXP / nextPetXP
-			local remainPetPercent = remainPetFraction * 100
-			local remainPetBars = remainPetFraction * 20
-
-			-- Add pet XP tooltip details
-			if not XPIsLevelMax() then
-				GameTooltip:AddLine(" ")
-			end
-
-			GameTooltip:AddDoubleLine("|cff0070ff" .. PET .. " " .. COMBAT_XP_GAIN .. "|r", format("%s %d", LEVEL, UnitLevel("pet")))
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(L["XP"], string.format("%s / %s (%.2f%%)", K.ShortValue(currPetXP), K.ShortValue(nextPetXP), percentPetXP), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Remaining"], string.format("%s (%.2f%% - %.2f " .. L["Bars"] .. ")", K.ShortValue(remainPetXP), remainPetPercent, remainPetBars), 1, 1, 1)
-		end
-	end
-
 	if GetWatchedFactionInfo() then
 		if not XPIsLevelMax() then
 			GameTooltip:AddLine(" ")
