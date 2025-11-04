@@ -46,8 +46,11 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 
 	for i = 1, 2 do
-		local specID, specName, _, specIcon = GetSpecializationInfo(i)
-		GameTooltip:AddLine(addIcon(specIcon) .. " " .. specName, 0.6, 0.8, 1)
+		local specIndex = GetSpecialization(nil, nil, i)
+		if specIndex then
+			local _, specName, _, specIcon = GetSpecializationInfo(specIndex)
+			GameTooltip:AddLine(addIcon(specIcon) .. " " .. specName, 0.6, 0.8, 1)
+		end
 	end
 
 	GameTooltip:AddLine(" ")

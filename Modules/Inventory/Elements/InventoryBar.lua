@@ -14,7 +14,6 @@ local buttonList = {}
 local bagBar
 local bagPosition
 
--- Bag Bar Mouseover Handlers
 function Module:BagBar_OnEnter()
 	return C["Inventory"].BagBarMouseover and K.UIFrameFadeIn(bagBar, 0.2, bagBar:GetAlpha(), 1)
 end
@@ -23,31 +22,10 @@ function Module:BagBar_OnLeave()
 	return C["Inventory"].BagBarMouseover and K.UIFrameFadeOut(bagBar, 0.2, bagBar:GetAlpha(), 0)
 end
 
--- Bag Bar Event Handler
 function Module:BagBar_OnEvent(event)
 	bagBar:UnregisterEvent(event)
 end
 
--- Key Ring Tooltip Handlers
-function Module:KeyRing_OnEnter()
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:AddLine(_G.KEYRING, 1, 1, 1)
-		GameTooltip:Show()
-	end
-
-	Module:BagBar_OnEnter()
-end
-
-function Module:KeyRing_OnLeave()
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-	end
-
-	Module:BagBar_OnEnter()
-end
-
--- Skin Bag Button
 function Module:SkinBag(bag)
 	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
@@ -67,7 +45,6 @@ function Module:SkinBag(bag)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
--- Set Size and Position of Bag Bar
 function Module:SetSizeAndPositionBagBar()
 	if not bagBar then
 		return
@@ -133,28 +110,29 @@ function Module:SetSizeAndPositionBagBar()
 	Module:UpdateMainButtonCount()
 end
 
--- Update Main Button Count
 function Module:UpdateMainButtonCount()
 	local mainCount = buttonList[1].Count
 	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
 	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
 end
 
--- Update Bag Button Textures
 function Module:BagButton_UpdateTextures()
 	local pushed = self:GetPushedTexture()
-	pushed:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+	pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+	pushed:SetDesaturated(true)
+	pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
+	pushed:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+	pushed:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
 	pushed:SetBlendMode("ADD")
-	pushed:SetAllPoints()
 
 	if self.SlotHighlightTexture then
-		self.SlotHighlightTexture:SetTexture(self:IsObjectType("CheckButton") and "Interface\\Buttons\\CheckButtonHilight" or "Interface\\Buttons\\ButtonHilight-Square")
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self.SlotHighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+		self.SlotHighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
 		self.SlotHighlightTexture:SetBlendMode("ADD")
-		self.SlotHighlightTexture:SetAllPoints()
 	end
 end
 
--- Create Inventory Bar
 function Module:CreateInventoryBar()
 	if not C["ActionBar"].Enable then
 		return
@@ -168,7 +146,7 @@ function Module:CreateInventoryBar()
 	if C["ActionBar"].MicroMenu then
 		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 40 }
 	else
-		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
+		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 50 }
 	end
 	bagBar:SetScript("OnEnter", Module.BagBar_OnEnter)
 	bagBar:SetScript("OnLeave", Module.BagBar_OnLeave)

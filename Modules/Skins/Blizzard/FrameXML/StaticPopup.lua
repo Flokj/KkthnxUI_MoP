@@ -49,7 +49,11 @@ tinsert(C.defaultThemes, function()
 
 		frame:StripTextures()
 		for j = 1, 4 do
-			_G["StaticPopup" .. i .. "Button" .. j]:SkinButton()
+			local button = _G["StaticPopup" .. i .. "Button" .. j]
+			if button then
+				button:StripTextures()
+				button:SkinButton()
+			end
 		end
 		frame:CreateBorder()
 		close:SkinCloseButton()

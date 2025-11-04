@@ -17,10 +17,8 @@ local list = {
 	},
 	["Target Aura"] = {
 		{ AuraID = 1130,  UnitID = "target" },
-		{ AuraID = 88691, UnitID = "target" },
 		{ AuraID = 1513,  UnitID = "target", Caster = "player" },
 		{ AuraID = 1978,  UnitID = "target", Caster = "player" },
-		{ AuraID = 88453, UnitID = "target", Caster = "player" },
 		{ AuraID = 19503, UnitID = "target", Caster = "player" },
 		{ AuraID = 5116,  UnitID = "target", Caster = "player" },
 		{ AuraID = 3674,  UnitID = "target", Caster = "player" },
@@ -30,7 +28,6 @@ local list = {
 		{ AuraID = 82654, UnitID = "target", Caster = "player" },
 		{ AuraID = 5116,  UnitID = "target", Caster = "player" },
 		{ AuraID = 20736, UnitID = "target", Caster = "player" },
-		{ AuraID = 2974,  UnitID = "target", Caster = "player" },
 		{ AuraID = 24394, UnitID = "target", Caster = "pet"	 },
 	},
 	["Special Aura"] = {
@@ -40,7 +37,6 @@ local list = {
 		{ AuraID = 19577, UnitID = "player" },
 		{ AuraID = 53220, UnitID = "player" },
 		{ AuraID = 56453, UnitID = "player" },
-		{ AuraID = 94007, UnitID = "player" },
 		{ AuraID = 82921, UnitID = "player" },
 		{ AuraID = 19263, UnitID = "player" },
 		{ AuraID = 64420, UnitID = "player" },
