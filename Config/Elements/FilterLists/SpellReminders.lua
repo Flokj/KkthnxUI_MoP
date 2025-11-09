@@ -6,8 +6,6 @@ C.SpellReminderBuffs = {
 		{	spells = {
 				[1459] = true,
 				[8096] = true,
-				[79058] = true,
-				[61024] = true,
 				[61316] = true,
 				--[46302] = true,
 			},
@@ -44,9 +42,10 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{	spells = {
-				[48168] = true,
+				[588] = true,
+				[73413] = true,
 			},
-			depend = 48168,
+			depend = 588,
 			combat = true,
 			instance = true,
 			pvp = true,
@@ -71,9 +70,7 @@ C.SpellReminderBuffs = {
 	WARRIOR = {
 		{	spells = {
 				[6673] = true,
-				[8076] = true,
 				[57330] = true,
-				[93435] = true,	
 			},
 			texture = C_Spell.GetSpellTexture(6673),
 			depend = 6673,
@@ -104,17 +101,9 @@ C.SpellReminderBuffs = {
 	HUNTER = {
 		{	spells = {
 				[13165] = true,
-				[61846] = true,
+				[5118] = true,
 			},
 			depend = 13165,
-			combat = true,
-			instance = true,
-			pvp = true,
-		},
-		{	spells = {
-				[19506] = true,
-			},
-			depend = 19506,
 			combat = true,
 			instance = true,
 			pvp = true,
@@ -131,9 +120,7 @@ C.SpellReminderBuffs = {
 	DEATHKNIGHT = {
 		{	spells = {
 				[57330] = true,
-				[8076] = true,
 				[6673] = true,
-				[93435] = true,
 			},
 			texture = C_Spell.GetSpellTexture(57330),
 			depend = 57330,
