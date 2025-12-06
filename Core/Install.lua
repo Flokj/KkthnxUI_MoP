@@ -10,15 +10,9 @@ local Module = K:NewModule("Installer")
 
 -- Basic Lua functions
 local _G = _G
-local pairs = pairs
-local ipairs = ipairs
-local type = type
-local tostring = tostring
-local tonumber = tonumber
 
 -- Table functions
 local tinsert = table.insert
-local tremove = table.remove
 local wipe = wipe
 
 -- String functions
@@ -29,6 +23,7 @@ local CreateFrame = CreateFrame
 local UIParent = UIParent
 
 -- Chat Functions and Variables
+local CHAT_FRAMES = CHAT_FRAMES
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
 local ChatFrame_AddChannel = ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
@@ -44,11 +39,9 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
 local FCF_StopDragging = FCF_StopDragging
-local CHAT_FRAMES = CHAT_FRAMES
 
 -- Game and System Settings
 local C_Timer = C_Timer
-local GetCVarBool = GetCVarBool
 local InCombatLockdown = InCombatLockdown
 local PlaySound = PlaySound
 local ReloadUI = ReloadUI

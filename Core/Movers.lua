@@ -4,7 +4,11 @@ local Module = K:NewModule("Mover")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
+local pairs = pairs
+local table_insert = table.insert
+local table_remove = table.remove
 local table_wipe = table.wipe
+local type = type
 local unpack = unpack
 
 local CANCEL = CANCEL
@@ -36,9 +40,13 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	end
 
 	local key = "Mover"
-	if isAuraWatch then key = "AuraWatchMover" end
+	if isAuraWatch then
+		key = "AuraWatchMover"
+	end
 
-	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
+	-- Use a unique name to avoid global collisions, or keep anonymous if preferred
+	local uniqueName = "KKUI_Mover_" .. tostring(value or "Anon")
+	local mover = CreateFrame("Button", uniqueName, UIParent)
 	mover:SetWidth(width or (self.GetWidth and self:GetWidth() or 50)) -- Default to 50 if self:GetWidth is unavailable
 	mover:SetHeight(height or (self.GetHeight and self:GetHeight() or 50)) -- Default to 50 if self:GetHeight is unavailable
 	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 38 / 255, 125 / 255, 206 / 255, 80 / 255 })
@@ -125,7 +133,9 @@ function Module:CalculateMoverPoints(mover, trimX, trimY)
 end
 
 function Module:UpdateTrimFrame()
-	if not f then return end
+	if not f then
+		return
+	end
 
 	local x, y = Module:CalculateMoverPoints(self)
 	f.__x:SetText(x)
@@ -231,7 +241,9 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 
 -- Mover Console
 local function CreateConsole()
-	if f then return end
+	if f then
+		return
+	end
 
 	f = CreateFrame("Frame", nil, UIParent)
 	f:SetPoint("CENTER", 0, 150)
@@ -404,7 +416,10 @@ local function CreateConsole()
 end
 
 _G.SlashCmdList["KKUI_MOVEUI"] = function()
-	if InCombatLockdown() then UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT) return end
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
+		return
+	end
 	CreateConsole()
 	Module:UnlockElements()
 end

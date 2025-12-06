@@ -14,7 +14,7 @@ local type = type
 -- WoW API Functions
 local Ambiguate = Ambiguate
 local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
 local ChatFrame_SendTell = ChatFrame_SendTell
@@ -39,7 +39,6 @@ local CHAT_OPTIONS = CHAT_OPTIONS
 local FCF_SavePositionAndDimensions = FCF_SavePositionAndDimensions
 local GeneralDockManager = GeneralDockManager
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
-local QuickJoinToastButton = QuickJoinToastButton
 local SOUNDKIT = SOUNDKIT
 local UIParent = UIParent
 
@@ -54,9 +53,18 @@ local whisperEvents = {
 
 local function getGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
-	if instanceType == "pvp" then return "/bg " end
-	if IsInRaid() then return "/ra " end
-	if IsInGroup() then return "/p " end
+	if instanceType == "pvp" then
+		return "/bg "
+	end
+
+	if IsInRaid() then
+		return "/ra "
+	end
+
+	if IsInGroup() then
+		return "/p "
+	end
+
 	return "/s "
 end
 
@@ -145,10 +153,27 @@ function Module:TabSetAlpha(alpha)
 	end
 end
 
+local function updateChatAnchor(self, _, _, _, x, y)
+	if not C["Chat"].Lock then
+		return
+	end
+
+	if not (x == 7 and y == 11) then
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
+		self:SetSize(C["Chat"].Width, C["Chat"].Height)
+	end
+end
+
 local isScaling = false
 function Module:UpdateChatSize()
-	if not C["Chat"].Lock then return end
-	if isScaling then return end
+	if not C["Chat"].Lock then
+		return
+	end
+
+	if isScaling then
+		return
+	end
 	isScaling = true
 
 	if ChatFrame1:IsMovable() then
@@ -185,7 +210,9 @@ local function UpdateEditboxFont(editbox)
 end
 
 function Module:SkinChat()
-	if not self or self.styled then return end
+	if not self or self.styled then
+		return
+	end
 
 	local name = self:GetName()
 	local font, fontSize, fontStyle = self:GetFont()
@@ -296,15 +323,21 @@ local cycles = {
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
-	if not C["Chat"].Enable then return end
+	if not C["Chat"].Enable then
+		return
+	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
+	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
+		return
+	end
 
 	local editBox = ChatEdit_ChooseBoxForSend()
 	local chatType = editBox:GetAttribute("chatType")
 	local editBoxBorder = editBox.KKUI_Border
 
-	if not chatType then return end
+	if not chatType then
+		return
+	end
 
 	-- Increase inset on right side to make room for character count text
 	local insetLeft, insetRight, insetTop, insetBottom = editBox:GetTextInsets()
@@ -340,11 +373,17 @@ function Module:SwitchToChannel(chatType)
 end
 
 function Module:UpdateTabChannelSwitch()
-	if not C["Chat"].Enable then return end
+	if not C["Chat"].Enable then
+		return
+	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
+		return
+	end
 
-	if string_sub(self:GetText(), 1, 1) == "/" then return end
+	if string_sub(self:GetText(), 1, 1) == "/" then
+		return
+	end
 
 	local isShiftKeyDown = IsShiftKeyDown()
 	local currentType = self:GetAttribute("chatType")
@@ -376,9 +415,13 @@ hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
-	if not C["Chat"].Enable then return end
+	if not C["Chat"].Enable then
+		return
+	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
+		return
+	end
 
 	if dir > 0 then
 		if IsShiftKeyDown() then
@@ -397,29 +440,6 @@ function Module:QuickMouseScroll(dir)
 	end
 end
 hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
-
---	Alt Click to Invite player
-function AltClickInvite(link)
-	if IsAltKeyDown() then
-		local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
-		local player = link:match("^player:([^:]+)")
-		local bplayer = link:match("^BNplayer:([^:]+)")
-		if player then
-			C_PartyInfo.InviteUnit(player)
-		elseif bplayer then
-			local _, value = strmatch(link, "(%a+):(.+)")
-			local _, bnID = strmatch(value, "([^:]*):([^:]*):")
-			if not bnID then return end
-			local accountInfo = C_BattleNet.GetAccountInfoByID(bnID)
-			if accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW and CanCooperateWithGameAccount(accountInfo) then
-				BNInviteFriend(accountInfo.gameAccountInfo.gameAccountID)
-			end
-		end
-		ChatEdit_OnEscapePressed(ChatFrameEditBox) -- Secure hook opens whisper, so closing it.
-	end
-end
-
-hooksecurefunc("SetItemRef", AltClickInvite)
 
 -- Sticky whisper
 function Module:ChatWhisperSticky()
@@ -467,27 +487,16 @@ function Module:PlayWhisperSound(event, _, author)
 	if whisperEvents[event] then
 		local name = Ambiguate(author, "none")
 		local currentTime = GetTime()
-		if Module.MuteCache[name] == currentTime then return end
+
+		if Module.MuteCache[name] == currentTime then
+			return
+		end
 
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
 		end
-		self.soundTimer = currentTime + 5
-	end
-end
 
--- ProfanityFilter
-function Module:ToggleLanguageFilter()
-	if C["Chat"].Freedom then
-		if GetCVar("portal") == "CN" then
-			ConsoleExec("portal TW")
-		end
-		SetCVar("profanityFilter", 0)
-	else
-		if sideEffectFixed then
-			ConsoleExec("portal CN")
-		end
-		SetCVar("profanityFilter", 1)
+		self.soundTimer = currentTime + 5
 	end
 end
 
@@ -507,9 +516,13 @@ function Module:HandleMinimizedFrame()
 end
 
 function Module:OnEnable()
-	if not C["Chat"].Enable then return end
+	if not C["Chat"].Enable then
+		return
+	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then return end
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
+		return
+	end
 
 	for i = 1, NUM_CHAT_WINDOWS do
 		Module.SkinChat(_G["ChatFrame" .. i])
@@ -560,7 +573,6 @@ function Module:OnEnable()
 		"CreateEmojis",
 		"CreateChatClassColor",
 		"CreateChatbar",
-		"ToggleLanguageFilter",
 	}
 
 	for _, funcName in ipairs(loadChatModules) do
@@ -577,6 +589,7 @@ function Module:OnEnable()
 	if C["Chat"].Lock then
 		Module:UpdateChatSize()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
+		hooksecurefunc(ChatFrame1, "SetPoint", updateChatAnchor)
 		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
 		FCF_SavePositionAndDimensions(ChatFrame1)
 	end
@@ -599,5 +612,19 @@ function Module:OnEnable()
 				fontSizeSubmenu:CreateRadio((format(FONT_SIZE_TEMPLATE, i)), IsSelected, SetSelected, i)
 			end
 		end)
+	end
+
+	-- ProfanityFilter
+	if not BNFeaturesEnabledAndConnected() then
+		return
+	end
+
+	if C["Chat"].Freedom then
+		if GetCVar("portal") == "CN" then
+			ConsoleExec("portal TW")
+		end
+		SetCVar("profanityFilter", 0)
+	else
+		SetCVar("profanityFilter", 1)
 	end
 end

@@ -159,9 +159,6 @@ local function KKUI_OnEvent(_, event, addonName)
 			KKUI_VerifyDatabase()
 			KKUI_LoadVariables()
 			K:SetupUIScale(true)
-
-			-- Initialize subsystems once
-			KKUI_EnableModulesOnce()
 		end)
 
 		if not success then

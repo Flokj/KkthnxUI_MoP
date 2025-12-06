@@ -178,6 +178,7 @@
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\Skada.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Addons\Hekili.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!--Include file="Skins\Addons\BugSack.lua" /> -->
 </Ui>

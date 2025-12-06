@@ -98,12 +98,21 @@ local NPClassifies = {
 function Module:UpdatePlateCVars()
 	if InCombatLockdown() then return end
 
+	local curTop, curBottom = GetCVar("nameplateOtherTopInset"), GetCVar("nameplateOtherBottomInset")
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.10)
-		SetCVar("nameplateOtherBottomInset", 0.12)
-	elseif GetCVar("nameplateOtherTopInset") == "0.10" and GetCVar("nameplateOtherBottomInset") == "0.12" then
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
+		if curTop ~= "0.10" then
+			SetCVar("nameplateOtherTopInset", 0.10)
+		end
+		if curBottom ~= "0.12" then
+			SetCVar("nameplateOtherBottomInset", 0.12)
+		end
+	else
+		if curTop == "0.12" then
+			SetCVar("nameplateOtherTopInset", -1)
+		end
+		if curBottom == "0.12" then
+			SetCVar("nameplateOtherBottomInset", -1)
+		end
 	end
 
 	local settings = {
@@ -119,7 +128,11 @@ function Module:UpdatePlateCVars()
 	}
 
 	for cvar, value in pairs(settings) do
-		SetCVar(cvar, value)
+		local cur = GetCVar(cvar)
+		local want = tostring(value)
+		if cur ~= want then
+			SetCVar(cvar, value)
+		end
 	end
 end
 
@@ -1248,18 +1261,23 @@ function Module:CreateTargetPlate()
 end
 
 function Module:UpdateTargetClassPower()
-	local plate = _G.oUF_TargetPlate
-	if not plate then return end
+	local plate = oUF_TargetPlate
+	if not plate then
+		return
+	end
 
 	local bar = plate.ClassPowerBar
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
-	if nameplate then
+	if nameplate and nameplate.unitFrame then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
 		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 20)
 		bar:Show()
 	else
 		bar:Hide()
+		-- Reset parent back to the original holder to avoid dangling references on recycled plates
+		bar:SetParent(plate)
+		bar:ClearAllPoints()
 	end
 end
 
