@@ -7,6 +7,11 @@ local CanDispel = {
 		["Curse"] = true,
 		["Poison"] = true,
 	},
+	["MONK"] = {
+		["Magic"] = true,
+		["Poison"] = true,
+		["Disease"] = true,
+	},
 	["PALADIN"] = {
 		["Magic"] = false,
 		["Poison"] = true,
@@ -23,8 +28,9 @@ local CanDispel = {
 	["MAGE"] = {
 		["Curse"] = true,
 	},
-	["WARLOCK"] = {
-		["Magic"] = true,
+	["EVOKER"] = {
+		["Magic"] = false,
+		["Poison"] = true,
 	},
 }
 
@@ -50,20 +56,18 @@ local function GetDebuffType(unit, filter)
 		i = i + 1
 	end
 end
-local function CheckPetSpells()
-	if IsSpellKnown(19505, true) then
-		return true
-	end
-end
 
--- Check for certain talents to see if we can dispel magic or not
-local function CheckDispel(_, event, arg1)
-	if event == "UNIT_PET" then
-		if arg1 == "player" and K.Class == "WARLOCK" then
-			dispellist.Magic = CheckPetSpells()
-		end
-	elseif event == "CHARACTER_POINTS_CHANGED" and arg1 > 0 then
-		return -- Not interested in gained points from leveling
+local function CheckSpec()
+	if K.Class == "DRUID" then
+		dispellist.Magic = GetSpecialization() == 4
+	elseif K.Class == "MONK" then
+		dispellist.Magic = GetSpecialization() == 2
+	elseif K.Class == "PALADIN" then
+		dispellist.Magic = GetSpecialization() == 1
+	elseif K.Class == "SHAMAN" then
+		dispellist.Magic = GetSpecialization() == 3
+	elseif K.Class == "EVOKER" then
+		dispellist.Magic = GetSpecialization() == 2
 	end
 end
 
@@ -103,6 +107,8 @@ local function Enable(object)
 
 	-- Make sure aura scanning is active for this object
 	object:RegisterEvent("UNIT_AURA", Update)
+	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
+	CheckSpec()
 
 	if not object.DebuffHighlightUseTexture then
 		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
@@ -115,14 +121,9 @@ end
 local function Disable(object)
 	if object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
+		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	end
 end
-
-local frame = CreateFrame("Frame")
-frame:SetScript("OnEvent", CheckDispel)
-frame:RegisterEvent("UNIT_PET", CheckDispel)
-frame:RegisterEvent("PLAYER_TALENT_UPDATE")
-frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 
 oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
 
