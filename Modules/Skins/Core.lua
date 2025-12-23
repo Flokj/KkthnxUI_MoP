@@ -1,9 +1,8 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Skins")
 
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local table_wipe = table.wipe
-
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
 -- Tables to store default themes, registered themes and other skins
 C.defaultThemes = {}
@@ -17,12 +16,12 @@ end
 
 -- Function to load skins from a given list
 function Module:LoadSkins(skinList)
-	if type(skinList) ~= "table" or not next(skinList) then
+	if not next(skinList) then
 		return
 	end
 
 	for addonName, skinFunction in pairs(skinList) do
-		local isLoaded, isFinished = IsAddOnLoaded(addonName)
+		local isLoaded, isFinished = C_AddOns_IsAddOnLoaded(addonName)
 		if isLoaded and isFinished then
 			if type(skinFunction) == "function" then
 				skinFunction()
@@ -34,14 +33,18 @@ end
 
 -- Function to load default skins
 function Module:LoadDefaultSkins()
-	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then return end
+	if C_AddOns_IsAddOnLoaded("AuroraClassic") or C_AddOns_IsAddOnLoaded("Aurora") then
+		return
+	end
 
 	for _, defaultSkinFunction in pairs(C.defaultThemes) do
-		defaultSkinFunction()
+		xpcall(defaultSkinFunction, geterrorhandler())
 	end
 	table_wipe(C.defaultThemes)
 
-	if not C["Skins"].BlizzardFrames then table_wipe(C.themes) end
+	if not C["Skins"].BlizzardFrames then
+		table_wipe(C.themes)
+	end
 
 	Module:LoadSkins(C.themes)
 	Module:LoadSkins(C.otherSkins)
@@ -49,13 +52,13 @@ function Module:LoadDefaultSkins()
 	K:RegisterEvent("ADDON_LOADED", function(_, addonName)
 		local blizzardSkinFunction = C.themes[addonName]
 		if blizzardSkinFunction then
-			blizzardSkinFunction()
+			xpcall(blizzardSkinFunction, geterrorhandler())
 			C.themes[addonName] = nil
 		end
 
 		local otherSkinFunction = C.otherSkins[addonName]
 		if otherSkinFunction then
-			otherSkinFunction()
+			xpcall(otherSkinFunction, geterrorhandler())
 			C.otherSkins[addonName] = nil
 		end
 	end)
