@@ -63,8 +63,12 @@ local function escapeForPattern(s)
 end
 
 local function buildTemplatePattern(template)
+	local startAnchor = "^"
+	if GetLocale() == "ruRU" then
+		startAnchor = ""
+	end
 	-- Anchor at start so we only rewrite the leading prefix once
-	local esc = "^" .. escapeForPattern(template)
+	local esc = startAnchor .. escapeForPattern(template)
 	-- Replace %s placeholders with non-greedy capture to tolerate links/names
 	esc = esc:gsub("%%%%s", "(.-)")
 	return esc
