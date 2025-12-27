@@ -1,12 +1,44 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+-- [[
+--  KkthnxUI: Character Frame Skin
+--  Purpose: Reskins the player character paper doll, equipment slots, and stats pane.
+--  Performance: Optimized ScrollBox iteration and global caching.
+--  Maintainer: WoW AddOn Forge
+-- ]]
 
+local K, C = KkthnxUI[1], KkthnxUI[2]
+local Module = K:GetModule("Skins")
+
+-- Cache Lua Globals
 local _G = _G
-local next = next
+local ipairs = ipairs
+local select = select
+local table_insert = table.insert
+
+-- Cache WoW API
+local CreateFrame = CreateFrame
+local GetInventoryItemLink = GetInventoryItemLink
+local InCombatLockdown = InCombatLockdown
 local hooksecurefunc = hooksecurefunc
 
-local GetInventoryItemQuality = GetInventoryItemQuality
-local GetItemQualityColor = C_Item.GetItemQualityColor
+-- Constants
+local SLOT_SIZE = 36
+local FONT_SIZE_RANK = 13
+local FONT_SIZE_ILVL = 18
 
+-- Colors
+local WHITE_COLOR = { r = 1, g = 1, b = 1 }
+local ORANGE_COLOR = { r = 1, g = 0.5, b = 0 }
+local GOLD_BORDER_COLOR = { 255 / 255, 223 / 255, 0 / 255 }
+local GREY_QUALITY_R = K.QualityColors[0].r
+
+-- Paths & Atlases
+local DRESSING_ROOM_PATH = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom"
+local MARBLE_TEXTURE = "Interface\\FrameGeneral\\UI-Background-Marble"
+local LEAVE_ITEM_TEXTURE = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent"
+
+-- ----------------------------------------------------------------------------
+-- Helper Functions
+-- ----------------------------------------------------------------------------
 local function replaceBlueColor(bar, r, g, b)
 	if r == 0 and g == 0 and b > 0.99 then
 		bar:SetStatusBarColor(0, 0.6, 1, 0.5)
@@ -53,19 +85,196 @@ local function PaperDollItemSlotButtonUpdate(frame)
 	end
 end
 
-tinsert(C.defaultThemes, function()
-	if not C["Skins"].BlizzardFrames then return end
+local function UpdateIconBorderColor(slot, r, g, b)
+	local border = slot.KKUI_Border
+	if not border then
+		return
+	end
 
-	PaperDollFrame:StripTextures()
+	-- Normalize invalid/grey/white colors to pure white for consistent border styling
+	if not r or r == GREY_QUALITY_R or (r > 0.99 and g > 0.99 and b > 0.99) then
+		border:SetVertexColor(WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b)
+	else
+		border:SetVertexColor(r, g, b)
+	end
+end
 
-	K.ReskinModelControl(CharacterModelScene)
-	CharacterModelScene:DisableDrawLayer("BACKGROUND")
-	CharacterModelScene:DisableDrawLayer("BORDER")
-	CharacterModelScene:DisableDrawLayer("OVERLAY")
+local function ResetIconBorderColor(slot, texture)
+	if not texture and slot.KKUI_Border then
+		K.SetBorderColor(slot.KKUI_Border)
+	end
+end
+
+local function ToggleIconBorder(slot, show)
+	if not show and slot.KKUI_Border then
+		ResetIconBorderColor(slot)
+	end
+end
+
+local function StyleEquipmentSlot(slotName)
+	local slot = _G[slotName]
+	if not slot or slot.KKUI_Styled then
+		return
+	end
+
+	-- Cache slot elements
+	local icon = slot.icon
+	local iconBorder = slot.IconBorder
+	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
+	local ignoreTexture = slot.ignoreTexture
+
+	-- Apply Skin
+	slot:StripTextures()
+	slot:SetSize(SLOT_SIZE, SLOT_SIZE)
+
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	icon:SetAllPoints()
+
+	iconBorder:SetAlpha(0)
+	slot:CreateBorder()
+
+	cooldown:SetAllPoints()
+
+	if not slot.KKUI_SlotHighlight then
+		slot.KKUI_SlotHighlight = CreateFrame("Frame", nil, slot, "BackdropTemplate")
+		slot.KKUI_SlotHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 8 })
+		slot.KKUI_SlotHighlight:SetPoint("TOPLEFT", slot, -4, 4)
+		slot.KKUI_SlotHighlight:SetPoint("BOTTOMRIGHT", slot, 4, -4)
+		slot.KKUI_SlotHighlight:Hide()
+	end
+
+	local popout = slot.popoutButton
+	popout:SetNormalTexture(0)
+	popout:SetHighlightTexture(0)
+
+	local arrow = popout:CreateTexture(nil, "OVERLAY")
+	arrow:SetSize(14, 14)
+	if slot.verticalFlyout then
+		K.SetupArrow(arrow, "down")
+		arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
+	else
+		K.SetupArrow(arrow, "right")
+		arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
+	end
+	popout.arrow = arrow
+
+	colourPopout(popout)
+	popout:HookScript("OnEnter", clearPopout)
+	popout:HookScript("OnLeave", colourPopout)
+
+	if ignoreTexture then
+		ignoreTexture:SetTexture(LEAVE_ITEM_TEXTURE)
+	end
+
+	-- Hook Overrides
+	hooksecurefunc("PaperDollItemSlotButton_Update", PaperDollItemSlotButtonUpdate)
+
+	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
+		UpdateIconBorderColor(slot, r, g, b)
+	end)
+
+	hooksecurefunc(iconBorder, "Hide", function()
+		ResetIconBorderColor(slot)
+	end)
+
+	hooksecurefunc(iconBorder, "SetShown", function(_, show)
+		ToggleIconBorder(slot, show)
+	end)
+
+	slot.KKUI_Styled = true
+end
+
+local function StyleSidebarTab(tab)
+	if not tab then
+		return
+	end
+
+	if not tab.bg then
+		-- Create background frame
+		local bg = CreateFrame("Frame", nil, tab)
+		bg:SetAllPoints(tab)
+		bg:SetFrameLevel(tab:GetFrameLevel())
+		bg:CreateBorder(nil, nil, nil, nil, nil, GOLD_BORDER_COLOR)
+
+		-- Adjust existing elements
+		if tab.Icon then
+			tab.Icon:SetAllPoints(bg)
+		end
+		if tab.Hider then
+			tab.Hider:SetAllPoints(bg)
+			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
+		end
+
+		if tab.Highlight then
+			tab.Highlight:SetPoint("TOPLEFT", bg, "TOPLEFT", 1, -1)
+			tab.Highlight:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -1, 1)
+			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
+		end
+
+		if tab.TabBg then
+			tab.TabBg:SetAlpha(0)
+		end
+
+		tab.bg = bg
+	end
+
+	if not tab.regionStyled then
+		local region = select(1, tab:GetRegions())
+		if region and region:GetObjectType() == "Texture" then
+			region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+			tab.regionStyled = true
+		end
+	end
+end
+
+local function UpdateSidebarTabs()
+	local index = 1
+	local tab = _G["PaperDollSidebarTab" .. index]
+	while tab do
+		StyleSidebarTab(tab)
+		index = index + 1
+		tab = _G["PaperDollSidebarTab" .. index]
+	end
+end
+
+local function StyleTitleManagerPaneChild(child)
+	if not child.styled then
+		child:DisableDrawLayer("BACKGROUND")
+		child.styled = true
+	end
+end
+
+local function HandleTitleManagerScrollBox(scrollBox)
+	if scrollBox and scrollBox.ForEachFrame then
+		scrollBox:ForEachFrame(StyleTitleManagerPaneChild)
+	end
+end
+
+-- ----------------------------------------------------------------------------
+-- Main Theme Registration
+-- ----------------------------------------------------------------------------
+
+table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+	if CharacterFrame and CharacterFrame.KKUI_Skinned then
+		return
+	end
+
+	-- Clean up CharacterModelScene
+	if CharacterModelScene then
+		K.ReskinModelControl(CharacterModelScene)
+		CharacterModelScene:DisableDrawLayer("BACKGROUND")
+		CharacterModelScene:DisableDrawLayer("BORDER")
+		CharacterModelScene:DisableDrawLayer("OVERLAY")
+		CharacterModelScene:StripTextures(true)
+	end
 
 	local expandButton = CharacterFrameExpandButton
 	expandButton:ClearAllPoints()
-	expandButton:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", 10, -5)
+	expandButton:SetScale(1.2)
+	expandButton:SetPoint("TOP", CharacterTrinket1Slot, "BOTTOM", 0, -10)
 	if expandButton then
 		K.ReskinArrow(expandButton, "right")
 
@@ -83,92 +292,102 @@ tinsert(C.defaultThemes, function()
 		end)
 	end
 
-	for _, slot in next, { _G.PaperDollItemsFrame:GetChildren() } do
-		if slot:IsObjectType("Button") and slot.Count then
-			local name = slot:GetName()
-			local icon = _G[name .. "IconTexture"]
+	-- Style Slots
+	local equipmentSlots = {
+		"CharacterBackSlot",
+		"CharacterChestSlot",
+		"CharacterFeetSlot",
+		"CharacterFinger0Slot",
+		"CharacterFinger1Slot",
+		"CharacterHandsSlot",
+		"CharacterHeadSlot",
+		"CharacterLegsSlot",
+		"CharacterMainHandSlot",
+		"CharacterNeckSlot",
+		"CharacterSecondaryHandSlot",
+		"CharacterShirtSlot",
+		"CharacterShoulderSlot",
+		"CharacterTabardSlot",
+		"CharacterTrinket0Slot",
+		"CharacterTrinket1Slot",
+		"CharacterWaistSlot",
+		"CharacterWristSlot",
+	}
 
-			slot:StripTextures()
-			slot:CreateBorder()
-			slot:StyleButton()
+	for _, slotName in ipairs(equipmentSlots) do
+		StyleEquipmentSlot(slotName)
+	end
 
-			if not slot.KKUI_SlotHighlight then
-				slot.KKUI_SlotHighlight = CreateFrame("Frame", nil, slot, "BackdropTemplate")
-				slot.KKUI_SlotHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 8 })
-				slot.KKUI_SlotHighlight:SetPoint("TOPLEFT", slot, -4, 4)
-				slot.KKUI_SlotHighlight:SetPoint("BOTTOMRIGHT", slot, 4, -4)
-				slot.KKUI_SlotHighlight:Hide()
-			end
+	-- Hooks
+	if CharacterFrame and not CharacterFrame.KKUI_Hooks then
+		-- Character Frame Size & Background Hook
+		local playerClassTexture = DRESSING_ROOM_PATH .. K.Class
+		hooksecurefunc(CharacterFrame, "UpdateSize", function()
+			local inset = CharacterFrame.Inset
+			local bg = inset and inset.Bg
 
-			local popout = slot.popoutButton
-			popout:SetNormalTexture(0)
-			popout:SetHighlightTexture(0)
+			if CharacterFrame.activeSubframe == "PaperDollFrame" then
+				if CharacterFrame.Expanded then
+					CharacterFrame:SetSize(640, 431)
+				else
+					CharacterFrame:SetSize(440, 431)
+				end
+				if inset then
+					inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
+				end
 
-			local arrow = popout:CreateTexture(nil, "OVERLAY")
-			arrow:SetSize(14, 14)
-			if slot.verticalFlyout then
-				K.SetupArrow(arrow, "down")
-				arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
+				if bg then
+					bg:SetTexture(playerClassTexture)
+					bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+					bg:SetHorizTile(false)
+					bg:SetVertTile(false)
+				end
+
+				if CharacterFrame.Background then
+					CharacterFrame.Background:Hide()
+				end
 			else
-				K.SetupArrow(arrow, "right")
-				arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
+				if bg then
+					bg:SetTexture(MARBLE_TEXTURE)
+					bg:SetTexCoord(0, 1, 0, 1)
+					bg:SetHorizTile(true)
+					bg:SetVertTile(true)
+				end
+
+				if CharacterFrame.Background then
+					CharacterFrame.Background:Show()
+				end
 			end
-			popout.arrow = arrow
+		end)
 
-			colourPopout(popout)
-			popout:HookScript("OnEnter", clearPopout)
-			popout:HookScript("OnLeave", colourPopout)
+		-- Sidebar Tabs Hook
+		hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", UpdateSidebarTabs)
 
-			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			icon:SetAllPoints()
-		end
-	end
-
-	local CharacterHeadSlot = _G.CharacterHeadSlot
-	CharacterHeadSlot:ClearAllPoints()
-	CharacterHeadSlot:SetPoint('TOPLEFT', _G.PaperDollItemsFrame, 'TOPLEFT', 16, -70)
-
-	local CharacterHandsSlot = _G.CharacterHandsSlot
-	CharacterHandsSlot:ClearAllPoints()
-	CharacterHandsSlot:SetPoint('LEFT', _G.CharacterHeadSlot, 'RIGHT', 230, 0)
-
-	hooksecurefunc("PaperDollItemSlotButton_Update", PaperDollItemSlotButtonUpdate)
-
-	hooksecurefunc("PaperDollFrame_SetLevel", function()
-		local classDisplayName, class = UnitClass("player")
-		local raceDisplayName = UnitRace("player")
-		local classColor = RAID_CLASS_COLORS[class]
-		local classColorString = format("ff%.2x%.2x%.2x", classColor.r * 255, classColor.g * 255, classColor.b * 255)
-	end)
-
-	if PaperDollSidebarTabs.DecorRight then
-		PaperDollSidebarTabs.DecorRight:Hide()
-	end
-
-	for i = 1, #PAPERDOLL_SIDEBARS do
-		local tab = _G["PaperDollSidebarTab"..i]
-
-		if i == 1 then
-			for i = 1, 4 do
-				local region = select(i, tab:GetRegions())
-				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-				region.SetTexCoord = K.Noop
-			end
+		-- Title Pane ScrollBox Hook (Optimized)
+		if PaperDollFrame.TitleManagerPane and PaperDollFrame.TitleManagerPane.ScrollBox then
+			hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", HandleTitleManagerScrollBox)
 		end
 
-		tab.bg = CreateFrame("Frame", nil, tab)
-		tab.bg:SetAllPoints(tab.icon)
-		tab.bg:SetFrameLevel(tab:GetFrameLevel())
-		tab.bg:CreateBorder()
-		tab.bg:SetPoint("TOPLEFT", 2, 1)
-		tab.bg:SetPoint("BOTTOMRIGHT", 0, 2)
+		CharacterFrame.KKUI_Hooks = true
+	end
 
-		tab.Icon:SetAllPoints(tab.bg)
-		tab.Hider:SetAllPoints(tab.bg)
-		tab.Highlight:SetAllPoints(tab.bg)
-		tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
-		tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
-		tab.TabBg:SetAlpha(0)
+	-- Adjust Positions (Only if not in combat to be safe, though usually safe during loading)
+	if not InCombatLockdown() then
+		if CharacterFrame.Inset then
+			CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
+			CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
+			CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+			CharacterSecondaryHandSlot:ClearAllPoints()
+			CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
+
+			CharacterModelScene:SetSize(300, 360)
+			CharacterModelScene:ClearAllPoints()
+			CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 64, -3)		
+		end
+
+		if CharacterLevelText then
+			CharacterLevelText:SetFontObject(K.UIFont)
+		end
 	end
 
 	CharacterStatsPane:StripTextures()
@@ -196,18 +415,6 @@ tinsert(C.defaultThemes, function()
 			end
 		end)
 	end
-
-	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
-		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local child = select(i, self.ScrollTarget:GetChildren())
-			if not child.styled then
-				child:DisableDrawLayer("BACKGROUND")
-				child.Check:SetAtlas("checkmark-minimal")
-
-				child.styled = true
-			end
-		end
-	end)
 
 	-- Update the appearance of faction reputation bars
 	local function UpdateFactionSkins()
@@ -240,5 +447,9 @@ tinsert(C.defaultThemes, function()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		hooksecurefunc(bar, "SetStatusBarColor", replaceBlueColor)
 		bar:GetStatusBarTexture():SetDrawLayer("BORDER")
+	end
+
+	if CharacterFrame then
+		CharacterFrame.KKUI_Skinned = true
 	end
 end)
