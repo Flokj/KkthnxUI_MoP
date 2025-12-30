@@ -1,6 +1,8 @@
 local K = KkthnxUI[1]
 local oUF = K.oUF
 
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+
 local CanDispel = {
 	["DRUID"] = {
 		["Magic"] = false,
