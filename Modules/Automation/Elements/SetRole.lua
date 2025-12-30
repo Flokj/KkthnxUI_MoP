@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 -- WoW API functions
-local GetSpecialization = GetSpecialization
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
 local GetSpecializationRole = GetSpecializationRole
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
