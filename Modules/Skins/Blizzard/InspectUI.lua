@@ -1,9 +1,7 @@
--- [[
---  KkthnxUI: Inspect Frame Skin
---  Purpose: Reskins the inspection frame, equipment slots, and model viewer.
---  Performance: Cached texture paths and optimized tab switching logic.
---  Maintainer: WoW AddOn Forge
--- ]]
+-- Inspect Frame Skin
+-- Purpose: Reskins the inspection frame, equipment slots, and model viewer.
+-- Performance: Cached texture paths and optimized tab switching logic.
+-- Maintainer: WoW AddOn Forge
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
@@ -61,10 +59,7 @@ for classID, classFile in pairs(K.ClassList) do
 	ClassTextures[classFile] = DRESSING_ROOM_PATH .. classFile
 end
 
--- ----------------------------------------------------------------------------
 -- Helper Functions
--- ----------------------------------------------------------------------------
-
 local function UpdateInspectItemBorder(slot)
 	if not slot or not slot.hasItem then
 		if slot.KKUI_Border then
@@ -173,10 +168,7 @@ local function ApplyInspectFrameLayout()
 	end
 end
 
--- ----------------------------------------------------------------------------
 -- Main Theme Registration
--- ----------------------------------------------------------------------------
-
 C.themes["Blizzard_InspectUI"] = function()
 	if not C["Skins"].BlizzardFrames then
 		return

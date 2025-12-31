@@ -80,9 +80,7 @@ function K.GetTexture(texture)
 	return defaultTexture
 end
 
--- ====================================================
 -- ENHANCED TEXTURE SYSTEM FOR NEW GUI
--- ====================================================
 
 -- Function to get all available statusbar textures with proper formatting for dropdowns
 function K.GetAllStatusbarTextures()
@@ -208,9 +206,7 @@ function K.PrintAvailableTextures()
 	print("|cff669DFFKkthnxUI:|r Total textures available:", #allTextures)
 end
 
--- ====================================================
 -- ENHANCED BORDER SYSTEM FOR NEW GUI
--- ====================================================
 
 -- Function to get all available border styles with proper formatting for dropdowns
 function K.GetAllBorderStyles()

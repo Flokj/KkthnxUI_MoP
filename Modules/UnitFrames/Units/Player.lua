@@ -536,6 +536,7 @@ function Module:CreatePlayer()
 		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
 	end
 	self.LeaderIndicator = LeaderIndicator
+	LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(16, 16)

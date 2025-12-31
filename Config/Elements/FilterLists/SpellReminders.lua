@@ -1,7 +1,45 @@
 local C = KkthnxUI[2]
 
--- Reminder Buffs Checklist
 C.SpellReminderBuffs = {
+	ITEMS = {
+		--[=[
+		{
+			itemID = 190384, -- 9.0 Permanent Attribute Rune
+			spells = {
+				[393438] = true, -- Dragon Empowerment Rune itemID 201325
+				[367405] = true, -- Permanent Rune buff
+			},
+			instance = true,
+			disable = true, -- Disabled until a new rune comes out
+		},
+		{
+			itemID = 194307, -- Nest Guardian's Promise
+			spells = {
+				[394457] = true,
+			},
+			equip = true,
+			instance = true,
+			inGroup = true,
+		},
+		
+		{   itemID = 178742, -- Bottled Toxin Trinket
+			spells = {
+				[345545] = true,
+			},
+			equip = true,
+			instance = true,
+			combat = true,
+		},
+		{   itemID = 190958, -- Ultimate Arcanum
+			spells = {
+				[368512] = true,
+			},
+			equip = true,
+			instance = true,
+			inGroup = true,
+		},
+		]=]
+	},
 	MAGE = {
 		{	spells = {
 				[1459] = true,

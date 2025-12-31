@@ -1,9 +1,7 @@
--- [[
---  KkthnxUI: Character Frame Skin
---  Purpose: Reskins the player character paper doll, equipment slots, and stats pane.
---  Performance: Optimized ScrollBox iteration and global caching.
---  Maintainer: WoW AddOn Forge
--- ]]
+-- Character Frame Skin
+-- Purpose: Reskins the player character paper doll, equipment slots, and stats pane.
+-- Performance: Optimized ScrollBox iteration and global caching.
+-- Maintainer: WoW AddOn Forge
 
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
@@ -36,9 +34,7 @@ local DRESSING_ROOM_PATH = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingR
 local MARBLE_TEXTURE = "Interface\\FrameGeneral\\UI-Background-Marble"
 local LEAVE_ITEM_TEXTURE = "Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent"
 
--- ----------------------------------------------------------------------------
 -- Helper Functions
--- ----------------------------------------------------------------------------
 local function replaceBlueColor(bar, r, g, b)
 	if r == 0 and g == 0 and b > 0.99 then
 		bar:SetStatusBarColor(0, 0.6, 1, 0.5)
@@ -250,10 +246,7 @@ local function HandleTitleManagerScrollBox(scrollBox)
 	end
 end
 
--- ----------------------------------------------------------------------------
 -- Main Theme Registration
--- ----------------------------------------------------------------------------
-
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return

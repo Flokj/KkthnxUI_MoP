@@ -95,6 +95,11 @@ function Module:ResetHeaderPoints(header)
 	end
 end
 
+-- Reason: K:RegisterEvent callbacks do not preserve ":" method self; wrapper ensures Module is used.
+Module._DeferredUpdateAllHeaders = Module._DeferredUpdateAllHeaders or function()
+	Module:UpdateAllHeaders()
+end
+
 function Module:UpdateAllHeaders()
 	if not self.headers or #self.headers == 0 then
 		return
@@ -102,11 +107,21 @@ function Module:UpdateAllHeaders()
 	-- Avoid protected attribute changes in combat; defer until out of combat
 	if InCombatLockdown() then
 		self._pendingHeaderUpdate = true
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateAllHeaders)
+
+		-- Reason: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat
+		if not self._pendingHeaderUpdateRegistered then
+			self._pendingHeaderUpdateRegistered = true
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAllHeaders)
+		end
 		return
 	elseif self._pendingHeaderUpdate then
 		self._pendingHeaderUpdate = nil
-		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateAllHeaders)
+
+		-- Reason: Unregister wrapper after deferred update
+		if self._pendingHeaderUpdateRegistered then
+			self._pendingHeaderUpdateRegistered = nil
+			K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateAllHeaders)
+		end
 	end
 
 	for _, header in pairs(self.headers) do
@@ -248,8 +263,20 @@ function Module:PostUpdatePvPIndicator(unit, status)
 	end
 end
 
+function Module.PostUpdateLeaderIndicator(element, isLeader, isInLFGInstance)
+	if isLeader then
+		if isInLFGInstance then
+			element:SetAtlas("Ping_Chat_Assist")
+		else
+			element:SetTexture([[Interface\GroupFrame\UI-Group-LeaderIcon]])
+		end
+	end
+end
+
 function Module:UpdateThreat(_, unit)
-	if unit ~= self.unit then return end
+	if unit ~= self.unit then
+		return
+	end
 
 	-- Get the current threat status of the unit
 	local status = UnitThreatSituation(unit)
@@ -270,11 +297,15 @@ function Module:UpdateThreat(_, unit)
 	end
 
 	-- Update the border color based on threat status
+	-- Reason: Some styles may not build the expected border object; avoid nil errors
+	if not borderObject then
+		return
+	end
+
+	-- Reason: Guard oUF threat table access
 	if status and status > 1 then
 		local r, g, b = GetThreatStatusColor(status)
-		if borderObject then
-			borderObject:SetVertexColor(r, g, b)
-		end
+		borderObject:SetVertexColor(r, g, b)
 	else
 		K.SetBorderColor(borderObject)
 	end
@@ -305,12 +336,12 @@ end
 
 -- Function that plays a sound when the player changes their focus
 function Module:PLAYER_FOCUS_CHANGED()
-	CreateTargetSound(_, "focus")
+	CreateTargetSound(nil, "focus")
 end
 
 -- Function that plays a sound when the player changes their target
 function Module:PLAYER_TARGET_CHANGED()
-	CreateTargetSound(_, "target")
+	CreateTargetSound(nil, "target")
 end
 
 function Module:UNIT_FACTION(unit)
@@ -392,7 +423,9 @@ end
 
 function Module:ToggleCastBarLatency(frame)
 	frame = frame or _G.oUF_Player
-	if not frame then return end
+	if not frame then
+		return
+	end
 
 	if C["Unitframe"].CastbarLatency then
 		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
@@ -404,77 +437,179 @@ function Module:ToggleCastBarLatency(frame)
 	end
 end
 
--- Cache the result of auraIconSize calculation
+-- Auras Helpers (oUF-style callbacks)
+
+-- Lua / WoW API locals (Reason: faster lookups + avoids repeated global table indexing)
+local math_ceil = math.ceil
+local math_floor = math.floor
+local next = next
+
+local CreateFrame = CreateFrame
+local UnitIsPlayer = UnitIsPlayer
+local hooksecurefunc = hooksecurefunc
+
+-- Aura Icon Size Cache
+
+-- Cache the result of aura icon size calculations
+-- Reason: Avoid recalculating the same size every update (layout can call this a lot)
 local auraIconSizeCache = {}
 
-function Module.auraIconSize(w, n, s)
-	if not auraIconSizeCache[w] then
-		auraIconSizeCache[w] = {}
+local function QuantizePixel(value)
+	-- Reason: widths/spacings can be floats; quantizing prevents infinite cache growth
+	if not value or value <= 0 then
+		return 0
+	end
+	return math_floor(value + 0.5)
+end
+
+function Module.auraIconSize(width, iconsPerRow, spacing)
+	-- Reason: size depends on width + iconsPerRow + spacing; all must be part of the cache key
+	local w = QuantizePixel(width)
+	local n = iconsPerRow or 0
+	local s = QuantizePixel(spacing or 0)
+
+	if n <= 0 then
+		return 0
 	end
 
-	if not auraIconSizeCache[w][n] then
-		auraIconSizeCache[w][n] = (w - (n - 1) * s) / n
+	local byW = auraIconSizeCache[w]
+	if not byW then
+		byW = {}
+		auraIconSizeCache[w] = byW
 	end
 
-	return auraIconSizeCache[w][n]
+	local key = n .. ":" .. s
+	local cached = byW[key]
+	if not cached then
+		cached = (w - (n - 1) * s) / n
+		byW[key] = cached
+	end
+
+	return cached
 end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
 	local iconsPerRow = element.iconsPerRow
-	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
-	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
+	local spacing = element.spacing or 0
 
-	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= ((size + element.spacing) * maxLines) then
+	-- Reason: When iconsPerRow is set we auto-calc the size, otherwise use element.size
+	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, spacing) or element.size
+
+	-- Reason: Need CEIL, not ROUND, or the container can be too short and clip last row
+	local maxLines = iconsPerRow and math_ceil((maxAuras or 0) / iconsPerRow) or 2
+	if maxLines < 1 then
+		maxLines = 1
+	end
+
+	local newH = (size + spacing) * maxLines
+
+	-- Reason: Only apply changes when something actually differs to reduce layout churn
+	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= newH then
 		element.size = size
 		element:SetWidth(width)
-		element:SetHeight((size + element.spacing) * maxLines)
+		element:SetHeight(newH)
 	end
 end
 
+-- Texture Cropping
+
 function Module:UpdateIconTexCoord(width, height)
-	local ratio = height / width
-	local mult = (1 - ratio) / 2
-	self.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+	-- Reason: This is hooked to SetSize; keep it safe + handle both aspect directions
+	if not width or not height or width <= 0 or height <= 0 then
+		return
+	end
+
+	local icon = self.icon
+	if not icon then
+		return
+	end
+
+	-- Crop to center-square regardless of aspect ratio
+	if width > height then
+		-- Crop left/right
+		local ratio = height / width
+		local mult = (1 - ratio) * 0.5
+		icon:SetTexCoord(K.TexCoords[1] + mult, K.TexCoords[2] - mult, K.TexCoords[3], K.TexCoords[4])
+	elseif height > width then
+		-- Crop top/bottom
+		local ratio = width / height
+		local mult = (1 - ratio) * 0.5
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+	else
+		-- Perfect square
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	end
 end
 
+-- Button Setup
+
 function Module.PostCreateIcon(element, button)
-	local fontSize = element.fontSize or element.size * 0.5
+	local fontSize = element.fontSize or (element.size * 0.5)
+
+	-- Reason: Parent overlay frame lets us raise text/indicators above icon/cooldown reliably
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
 
 	button.count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 
-	button.cd.noOCC = true
-	button.cd.noCooldownCount = true
-	button.cd:SetReverse(true)
-	button.cd:SetHideCountdownNumbers(true)
-
-	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	button.cd:ClearAllPoints()
-	if element.__owner.mystyle == "nameplate" then
-		button.cd:SetAllPoints()
-		button:CreateShadow(true)
-		button.stealable:SetAtlas("communities-create-avatar-border-selected")
-	else
-		button.cd:SetPoint("TOPLEFT", 1, -1)
-		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
-		button:CreateBorder()
-		button.stealable:SetAtlas("Forge-ColorSwatchSelection")
+	-- Cooldown config (if present)
+	if button.cd then
+		button.cd.noOCC = true
+		button.cd.noCooldownCount = true
+		button.cd:SetReverse(true)
+		button.cd:SetHideCountdownNumbers(true)
 	end
 
-	button.overlay:SetTexture(nil)
-	button.stealable:SetParent(parentFrame)
+	-- Icon baseline
+	if button.icon then
+		button.icon:SetAllPoints()
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	end
 
+	-- Nameplate vs Unitframe styling
+	local style = element.__owner and element.__owner.mystyle
+	if style == "nameplate" then
+		if button.cd then
+			button.cd:SetAllPoints()
+		end
+		if button.CreateShadow then
+			button:CreateShadow(true)
+		end
+	else
+		if button.cd then
+			button.cd:SetPoint("TOPLEFT", 1, -1)
+			button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		end
+		if button.CreateBorder then
+			button:CreateBorder()
+		end
+	end
+
+	-- Reason: Some templates may not have Overlay; avoid nil errors
+	if button.overlay then
+		button.overlay:SetTexture(nil)
+	end
+
+	-- Stealable indicator (optional)
+	if button.stealable then
+		button.stealable:SetParent(parentFrame)
+		button.stealable:SetAtlas("bags-newitem")
+		button.stealable:Hide() -- Reason: Prevent “sticky” display between reused buttons
+	end
+
+	-- Timer text (duration)
 	if not button.timer then
 		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 	end
 
+	-- Keep texcoords correct when size changes
+	-- Reason: Some auras may not be perfectly square; we crop them cleanly
 	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 end
 
+-- Dispel/steal highlight types
+-- Reason: Match your original intent; "" included for some server/tooltip variations
 local dispellType = {
 	["Magic"] = true,
 	[""] = true,
@@ -490,88 +625,126 @@ local function UpdateStealableIndicator(button, unit, debuffType)
 	end
 end
 
+-- Button Update
 function Module.PostUpdateIcon(element, unit, button, _, _, duration, expiration, debuffType)
-	local style = element.__owner.mystyle
+	local owner = element.__owner
+	local style = owner and owner.mystyle
+
+	-- Reason: Original code always set identical values; keep it simple
 	local size = element.size
+	button:SetSize(size, size)
 
-	-- Set button size based on style
-	button:SetSize(size, style == "nameplate" and size or size)
-
-	-- Update appearance based on harmful status and style
-	if button.isDebuff and filteredStyle and filteredStyle[style] and not button.isPlayer then
-		button.icon:SetDesaturated(true)
-	else
-		button.icon:SetDesaturated(false)
+	-- Desaturation rules (harmful + filteredStyle)
+	-- Reason: filteredStyle must exist in your file; guard so missing table doesn't hard error
+	if button.icon then
+		if button.isDebuff and filteredStyle and filteredStyle[style] and not button.isPlayer then
+			button.icon:SetDesaturated(true)
+		else
+			button.icon:SetDesaturated(false)
+		end
 	end
 
-	-- Update border color based on debuff type
+	-- Border coloring (debuff type)
+	-- Reason: oUF nameplate buttons may use Shadow border; unitframes use KKUI_Border
 	if button.isDebuff then
-		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
-		if style == "nameplate" then
-			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
-		else
-			button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
+		local color
+		if oUF and oUF.colors and oUF.colors.debuff then
+			color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
 		end
-	else
-		if style == "nameplate" then
-			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-		else
-			K.SetBorderColor(button.KKUI_Border)
-		end
-	end
 
-	-- Update the stealable indicator
-	UpdateStealableIndicator(button, unit, debuffType)
-
-	-- Handle cooldown and timer display
-	if duration and duration > 0 then
-		button.expiration = expiration
-		button:SetScript("OnUpdate", K.CooldownOnUpdate)
-		button.timer:Show()
-	else
-		button:SetScript("OnUpdate", nil)
-		button.timer:Hide()
-	end
-end
-
-function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
-	-- Update Dot status if debuffs changed
-	if debuffsChanged then
-		element.hasTheDot = nil
-		-- Check if any player debuff matches Dot spell list
-		if C["Nameplate"].ColorByDot then
-			for _, data in next, element.allDebuffs do
-				if data.isPlayerAura and C["Nameplate"].DotSpellList.Spells[data.spellId] then
-					element.hasTheDot = true
-					break
+		if color then
+			if style == "nameplate" then
+				if button.Shadow and button.Shadow.SetBackdropBorderColor then
+					button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
+				end
+			else
+				if button.KKUI_Border and button.KKUI_Border.SetVertexColor then
+					button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 				end
 			end
 		end
+	else
+		if style == "nameplate" then
+			if button.Shadow and button.Shadow.SetBackdropBorderColor then
+				button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			end
+		else
+			if button.KKUI_Border then
+				K.SetBorderColor(button.KKUI_Border)
+			end
+		end
+	end
+
+	-- Stealable indicator
+	-- Reason: Must explicitly hide when not applicable or it can “stick” on reused buttons
+	if button.stealable then
+		if dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isDebuff then
+			button.stealable:Show()
+		else
+			button.stealable:Hide()
+		end
+	end
+
+	-- Cooldown/timer
+	if duration and duration > 0 then
+		button.expiration = expiration
+		button:SetScript("OnUpdate", K.CooldownOnUpdate)
+		if button.timer then
+			button.timer:Show()
+		end
+	else
+		button:SetScript("OnUpdate", nil)
+		if button.timer then
+			button.timer:Hide()
+		end
 	end
 end
 
+--========================================================--
+-- Custom Filter
+--========================================================--
+
 function Module.CustomFilter(element, unit, button, name, _, _, debuffType, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
-	local style = element.__owner.mystyle
+	local owner = element.__owner
+	local style = owner and owner.mystyle
+
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
-	if style == "nameplate" then
-		-- Nameplate specific filtering
-		if element.__owner.plateType == "NameOnly" then
-			return C.NameplateWhiteList[spellID]
-		elseif C.NameplateBlackList[spellID] then
-			return false
-		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and (not button.isDebuff) then
-			return true
-		elseif C.NameplateWhiteList[spellID] then
-			return true
-		else
-			local auraFilter = C["Nameplate"].AuraFilter
-			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and button.isPlayer)
+	-- Nameplates / Boss / Arena filtering rules
+	if style == "nameplate" or style == "boss" or style == "arena" then
+		-- NameOnly plates use whitelist only
+		-- Reason: Reduce clutter on name-only plates
+		if owner and owner.plateType == "NameOnly" then
+			return C.NameplateWhiteList[spellID] == true
 		end
-	else
-		-- General unit frame filtering
-		return (showDebuffType and button.isPlayer) or (not showDebuffType and name)
+
+		-- Blacklist always blocks
+		if C.NameplateBlackList[spellID] then
+			return false
+		end
+
+		-- Dispell/steal show
+		-- Reason: Highlight purgeable buffs on enemies (not player units)
+		if (element.showStealableBuffs and isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and (not button.isDebuff) then
+			return true
+		end
+
+		-- Whitelist always shows
+		if C.NameplateWhiteList[spellID] then
+			return true
+		end
+
+		-- Aura filter modes
+		local auraFilter = C["Nameplate"].AuraFilter
+		return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and button.isPlayer)
 	end
+
+	-- Unitframes: strict boolean returns
+	-- Reason: Don’t return strings (truthy) — keep it explicit + predictable
+	if showDebuffType then
+		return button.isPlayer == true
+	end
+	return name ~= nil
 end
 
 -- Post Update Runes
@@ -933,8 +1106,7 @@ function Module:CreateUnits()
 		Module:TogglePlayerPlate()
 	end
 
-	-- Fake nameplate for target class power
-	do
+	do -- Fake nameplate for target class power
 		oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
 		oUF:SetActiveStyle("TargetPlate")
 		oUF:Spawn("player", "oUF_TargetPlate", true)
@@ -949,19 +1121,16 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("FocusTarget", Module.CreateFocusTarget)
 		oUF:RegisterStyle("Pet", Module.CreatePet)
 
-		-- Spawn Player Frame
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
 		Player:SetSize(C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6)
 		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -370, 580 }, Player:GetWidth(), Player:GetHeight())
 
-		-- Spawn Target Frame
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
 		Target:SetSize(C["Unitframe"].TargetHealthWidth, C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6)
 		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", -370, 460 }, Target:GetWidth(), Target:GetHeight())
 
-		-- Spawn Target of Target Frame
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
@@ -969,7 +1138,6 @@ function Module:CreateUnits()
 			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 16, 22 }, TargetOfTarget:GetWidth(), TargetOfTarget:GetHeight())
 		end
 
-		-- Spawn Pet Frame
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
 		Pet:SetSize(C["Unitframe"].PetHealthWidth, C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6)
@@ -986,6 +1154,11 @@ function Module:CreateUnits()
 			FocusTarget:SetSize(C["Unitframe"].FocusTargetHealthWidth, C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6)
 			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FocusTarget:GetWidth(), FocusTarget:GetHeight())
 		end
+
+		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
+		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
+		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
+
 		Module:UpdateTextScale()
 	end
 
@@ -1058,7 +1231,7 @@ function Module:CreateUnits()
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
-				"xoffset", partyXOffset,
+				"xOffset", partyXOffset,
 				"yOffset", partyYOffset,
 				"groupFilter", "1",
 				"groupingOrder", "TANK,HEALER,DAMAGER,NONE",
@@ -1098,7 +1271,7 @@ function Module:CreateUnits()
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
-				"xoffset", partyXOffset,
+				"xOffset", partyXOffset,
 				"yOffset", partyYOffset,
 				"groupFilter", "1",
 				"groupingOrder", partyGroupingOrder,
@@ -1134,7 +1307,7 @@ function Module:CreateUnits()
 				"showSolo", true,
 				"showParty", true,
 				"showRaid", false,
-				"xoffset", partypetXOffset,
+				"xOffset", partypetXOffset,
 				"yOffset", partypetYOffset,
 				"point", "BOTTOM",
 				"columnAnchorPoint", "LEFT",
@@ -1254,7 +1427,7 @@ function Module:CreateUnits()
 			local raidtank = oUF:SpawnHeader(
 				"oUF_MainTank", nil, "raid",
 				"showRaid", true,
-				"xoffset", 6,
+				"xOffset", 6,
 				"yOffset", -6,
 				"groupFilter", "MAINTANK",
 				"point", horizonTankRaid and "LEFT" or "TOP",
@@ -1322,15 +1495,30 @@ function Module:OnEnable()
 end
 
 -- Live update SimpleParty width/height from GUI without reload
+-- Reason: K:RegisterEvent callbacks do not preserve ":" method self; wrapper ensures Module is used.
+Module._DeferredUpdateSimplePartySize = Module._DeferredUpdateSimplePartySize or function()
+	Module:UpdateSimplePartySize()
+end
+
 function Module:UpdateSimplePartySize()
 	-- Defer in combat
 	if InCombatLockdown() then
 		self._pendingSimplePartySize = true
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateSimplePartySize)
+
+		-- Reason: Use wrapper to preserve ':' self + avoid duplicate registrations while spam-called in combat
+		if not self._pendingSimplePartySizeRegistered then
+			self._pendingSimplePartySizeRegistered = true
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateSimplePartySize)
+		end
 		return
 	elseif self._pendingSimplePartySize then
 		self._pendingSimplePartySize = nil
-		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.UpdateSimplePartySize)
+
+		-- Reason: Unregister wrapper after deferred update
+		if self._pendingSimplePartySizeRegistered then
+			self._pendingSimplePartySizeRegistered = nil
+			K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module._DeferredUpdateSimplePartySize)
+		end
 	end
 
 	if not C["Party"].Enable or not C["SimpleParty"].Enable then

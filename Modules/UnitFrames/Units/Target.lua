@@ -392,6 +392,7 @@ function Module:CreateTarget()
 		LeaderIndicator:SetPoint("TOPRIGHT", Health, 0, 10)
 	end
 	self.LeaderIndicator = LeaderIndicator
+	LeaderIndicator.PostUpdate = Module.PostUpdateLeaderIndicator
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetSize(16, 16)

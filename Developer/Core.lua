@@ -1,5 +1,4 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
--- local Module = K:NewModule("Developer")
+local K = KkthnxUI[1]
 
 K.Devs = {
 	["Неотжал-Пламегор"] = true,
@@ -12,4 +11,10 @@ K.isDeveloper = isDeveloper()
 
 if not K.isDeveloper then
 	return
+end
+
+function K.AddToDevTool(data, name)
+	if DevTool then
+		DevTool:AddData(data, name)
+	end
 end
