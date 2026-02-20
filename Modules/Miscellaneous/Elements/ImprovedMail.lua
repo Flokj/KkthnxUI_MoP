@@ -236,7 +236,7 @@ function Module:ContactList_Refresh()
 	wipe(contactListByRealm)
 
 	for fullname, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
-		local name, realm = strsplit("-", fullname)
+		local name, realm = strmatch(fullname, "^(.-)%-(.*)$")
 		if realm then
 			if not contactListByRealm[realm] then contactListByRealm[realm] = {} end
 			contactListByRealm[realm][name] = color

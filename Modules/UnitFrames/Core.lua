@@ -860,7 +860,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 		end
 	end
 
-	for i = 1, 6 do
+	for i = 1, 10 do
 		local bar = element[i]
 		if not bar.chargeStar then
 			break
@@ -900,7 +900,7 @@ function Module:CreateClassPower(self)
 
 	local isDK = K.Class == "DEATHKNIGHT"
 	local isWL = K.Class == "WARLOCK"
-	local maxBar = 6
+	local maxBar = isDK and 6 or 10
 	local bars, bar = {}, CreateFrame("Frame", "$parentClassPowerBar", self)
 
 	bar:SetSize(barWidth, barHeight)
