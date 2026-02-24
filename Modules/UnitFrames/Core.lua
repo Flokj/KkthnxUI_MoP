@@ -1086,7 +1086,6 @@ function Module:CreateUnits()
 
 	if C["Nameplate"].Enable then
 		Module:SetupCVars()
-		Module:BlockAddons()
 		Module:CreateUnitTable()
 		Module:CreatePowerUnitTable()
 		Module:UpdateGroupRoles()

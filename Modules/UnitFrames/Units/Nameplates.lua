@@ -140,29 +140,6 @@ function Module:SetupCVars()
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
-function Module:BlockAddons()
-	if not _G.DBM or not _G.DBM.Nameplate then
-		return
-	end
-
-	if DBM.Options then
-		DBM.Options.DontShowNameplateIcons = true
-		DBM.Options.DontShowNameplateIconsCD = true
-		DBM.Options.DontShowNameplateIconsCast = true
-	end
-
-	local function showAurasForDBM(_, _, _, spellID)
-		if not tonumber(spellID) then
-			return
-		end
-
-		if not C.NameplateWhiteList[spellID] then
-			C.NameplateWhiteList[spellID] = true
-		end
-	end
-	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
-end
-
 function Module:CreateUnitTable()
 	table_wipe(customUnits)
 	if not C["Nameplate"].CustomUnitColor then
