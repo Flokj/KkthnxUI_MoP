@@ -34,7 +34,8 @@ function Module:HideBlizBuff()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", function(_, isLogin, isReload)
 		if isLogin or isReload then
 			K.HideInterfaceOption(_G.BuffFrame)
-			K.HideInterfaceOption(_G.TemporaryEnchantFrame)
+			K.HideInterfaceOption(_G.DebuffFrame)
+			BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
 		end
 	end)
 end
