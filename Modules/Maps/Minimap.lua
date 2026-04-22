@@ -133,11 +133,6 @@ function Module:ReskinRegions()
 		MiniMapLFGFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -2)
 		MiniMapLFGFrameBorder:Hide()
 	end
-	if LFGMinimapFrame then
-		LFGMinimapFrame:ClearAllPoints()
-		LFGMinimapFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -2)
-		LFGMinimapFrameBorder:Hide()
-	end
 
 	-- Difficulty Flags
 	local function handleFlag(diff)
@@ -530,9 +525,6 @@ function Module:OnEnable()
 	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", { "TOPRIGHT", UIParent, "TOPRIGHT", -4, -4 })
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("TOPRIGHT", minimapMover)
-	hooksecurefunc(MinimapCluster, "SetPoint", function(frame)
-		frame:SetAllPoints(Minimap)
-	end)
 	Minimap.mover = minimapMover
 
 	if _G.QueueStatusMinimapButton then
@@ -554,7 +546,6 @@ function Module:OnEnable()
 		"MiniMapWorldMapButton",
 		"MiniMapMailBorder",
 		"GameTimeFrame",
-		"MinimapToggleButton",
 	}
 
 	for _, v in pairs(frames) do
@@ -563,18 +554,7 @@ function Module:OnEnable()
 			K.HideInterfaceOption(_G[v])
 		end
 	end
-
-	if MinimapCluster then
-		MinimapCluster:EnableMouse(false)		
-		MinimapCluster:ClearAllPoints()
-		MinimapCluster:SetAllPoints(Minimap)
-		if MinimapCluster and MinimapCluster.KillEditMode then
-			MinimapCluster:KillEditMode()
-		end
-		if MinimapCluster.BorderTop then
-			MinimapCluster.BorderTop:Hide()
-		end
-	end
+	MinimapCluster:EnableMouse(false)
 
 	-- Add Elements
 	local loadMinimapModules = {

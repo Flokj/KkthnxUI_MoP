@@ -556,7 +556,7 @@ end
 
 function Module:CustomMenu_Whisper(rootDescription, data)
 	rootDescription:CreateButton(K.InfoColor .. WHISPER, function()
-		ChatFrameUtil.SendTell(data.name)
+		ChatFrame_SendTell(data.name)
 	end)
 end
 

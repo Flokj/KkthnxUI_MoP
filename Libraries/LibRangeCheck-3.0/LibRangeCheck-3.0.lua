@@ -1244,7 +1244,7 @@ function lib:OnEvent(event, ...)
 	end
 end
 
-function lib:LEARNED_SPELL_IN_SKILL_LINE()
+function lib:LEARNED_SPELL_IN_TAB()
 	self:scheduleInit()
 end
 
@@ -1384,7 +1384,7 @@ function lib:activate()
 		local frame = CreateFrame("Frame")
 		self.frame = frame
 
-		frame:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE")
+		frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
 		frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 		frame:RegisterEvent("SPELLS_CHANGED")
 

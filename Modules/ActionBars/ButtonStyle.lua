@@ -248,7 +248,10 @@ function Module:ReskinBars()
 
 	-- extra action button
 	Module:StyleActionButton(ExtraActionButton1)
-	
+	--spell flyout
+	SpellFlyoutBackgroundEnd:SetTexture(nil)
+	SpellFlyoutHorizontalBackground:SetTexture(nil)
+	SpellFlyoutVerticalBackground:SetTexture(nil)
 	local function checkForFlyoutButtons()
 		local i = 1
 		local button = _G["SpellFlyoutButton"..i]

@@ -4,7 +4,7 @@ local Module = K:GetModule("ActionBar")
 local tinsert = tinsert
 
 local margin, padding = 6, 0
-local num = NUM_STANCE_SLOTS or 10
+local num = NUM_STANCE_SLOTS
 
 -- Update the stance bar's size, layout, and button positions
 function Module:UpdateStanceBar()
@@ -44,9 +44,15 @@ function Module:CreateStancebar()
 	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar5, "TOPLEFT", 0, margin })
 	Module.movers[11] = frame.mover
 
+	-- StanceBar
+	StanceBarFrame:SetParent(frame)
+	StanceBarFrame:EnableMouse(false)
+	StanceBarLeft:SetTexture(nil)
+	StanceBarMiddle:SetTexture(nil)
+	StanceBarRight:SetTexture(nil)
+
 	for i = 1, num do
 		local button = _G["StanceButton" .. i]
-		button:SetParent(frame)
 		tinsert(buttonList, button)
 		tinsert(Module.buttons, button)
 	end

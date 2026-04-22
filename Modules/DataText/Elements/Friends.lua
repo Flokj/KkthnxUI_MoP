@@ -45,8 +45,8 @@ local MailFrameTab_OnClick = MailFrameTab_OnClick
 local SendMailNameEditBox = SendMailNameEditBox
 local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatFrameUtil.SendBNetTell = ChatFrameUtil.SendBNetTell
-local ChatFrameUtil.SendTell = ChatFrameUtil.SendTell
+local ChatFrame_SendBNetTell = ChatFrame_SendBNetTell
+local ChatFrame_SendTell = ChatFrame_SendTell
 local SELECTED_DOCK_FRAME = SELECTED_DOCK_FRAME
 
 -- Textures / Atlases
@@ -544,9 +544,9 @@ local function buttonOnClick(self, button)
 		end
 	else
 		if self.isBNet then
-			ChatFrameUtil.SendBNetTell(self.data[2])
+			ChatFrame_SendBNetTell(data[2])
 		else
-			ChatFrameUtil.SendTell(self.data[1], SELECTED_DOCK_FRAME)
+			ChatFrame_SendTell(data[1], SELECTED_DOCK_FRAME)
 		end
 	end
 end

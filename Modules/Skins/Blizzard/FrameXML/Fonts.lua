@@ -9,24 +9,11 @@ local GetKkthnxUIFontStyle = select(3, _G.KkthnxUIFont:GetFont())
 local unifiedBlizzFonts = false
 
 local function ReskinFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
-	if not obj then
-		return
-	end
-
-	if style == "NONE" or not style then
-		style = ""
-	end
-
+	if not obj then return end
+	if style == "NONE" or not style then style = "" end
 	obj:SetFont(font, size, style)
-
-	if sr and sg and sb then
-		obj:SetShadowColor(sr, sg, sb, sa)
-	end
-
-	if sox and soy then
-		obj:SetShadowOffset(sox, soy)
-	end
-
+	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb, sa) end
+	if sox and soy then obj:SetShadowOffset(sox, soy) end
 	if r and g and b then
 		obj:SetTextColor(r, g, b)
 	elseif r then
@@ -37,9 +24,7 @@ end
 local lastFont = {}
 local chatFontHeights = { 12, 13, 14, 15, 16, 17, 18, 19, 20 }
 table_insert(C.defaultThemes, function()
-	if not C["Skins"].BlizzardFrames then
-		return
-	end
+	if not C["Skins"].BlizzardFrames then return end
 
 	local NORMAL = GetKkthnxUIFont
 	local NUMBER = GetKkthnxUIFont
