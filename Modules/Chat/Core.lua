@@ -17,7 +17,6 @@ local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
 local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatFrameUtil.SendTell = ChatFrameUtil.SendTell
 local ConsoleExec = ConsoleExec
 local CreateFrame = CreateFrame
 local GetCVar = GetCVar

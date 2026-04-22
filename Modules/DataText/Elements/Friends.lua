@@ -45,8 +45,6 @@ local MailFrameTab_OnClick = MailFrameTab_OnClick
 local SendMailNameEditBox = SendMailNameEditBox
 local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatFrameUtil.SendBNetTell = ChatFrameUtil.SendBNetTell
-local ChatFrameUtil.SendTell = ChatFrameUtil.SendTell
 local SELECTED_DOCK_FRAME = SELECTED_DOCK_FRAME
 
 -- Textures / Atlases
