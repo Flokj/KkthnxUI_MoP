@@ -112,9 +112,13 @@ function Module:UpdateClickableSize()
 		return
 	end
 
+	-- REASON: Adjust the interactive area of the nameplates based on UI scale and settings.
 	local uiScale = C["General"].UIScale
-	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * uiScale, C["Nameplate"].PlateHeight * uiScale)
+	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
+	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
+
+	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
 end
 
 function Module:SetupCVars()
