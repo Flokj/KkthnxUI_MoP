@@ -30,12 +30,6 @@ do
 	local done = false
 	local function setupMisc(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
-			-- Fix undragable issue
-			local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
-			checkBox.Label:ClearAllPoints()
-			checkBox.Label:SetPoint("LEFT", checkBox, "RIGHT", 2, 1)
-			checkBox.Label:SetWidth(152)
-
 			CollectionsJournal:HookScript("OnShow", function()
 				if not done then
 					if InCombatLockdown() then

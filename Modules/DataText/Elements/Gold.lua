@@ -12,7 +12,7 @@ local wipe = wipe
 -- WoW API / Globals (Retail)
 local Ambiguate = Ambiguate
 local BreakUpLargeNumbers = BreakUpLargeNumbers
-local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
+local CalculateTotalNumberOfFreeBagSlots = C_Container.CalculateTotalNumberOfFreeBagSlots
 local CreateFrame = CreateFrame
 local DropDownList1 = DropDownList1
 local GameTooltip = GameTooltip

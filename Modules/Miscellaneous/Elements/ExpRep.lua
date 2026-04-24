@@ -21,7 +21,6 @@ local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
 local IsRestrictedAccount = IsRestrictedAccount
 local IsTrialAccount = IsTrialAccount
 local IsVeteranTrialAccount = IsVeteranTrialAccount
-local IsWatchingHonorAsXP = IsWatchingHonorAsXP
 local IsXPUserDisabled = IsXPUserDisabled
 local SendChatMessage = SendChatMessage
 local UnitXP = UnitXP
@@ -43,11 +42,6 @@ local C_Reputation_GetFactionParagonInfo = C_Reputation and C_Reputation.GetFact
 local C_Reputation_IsFactionParagon = C_Reputation and C_Reputation.IsFactionParagon
 local C_Reputation_IsMajorFaction = C_Reputation and C_Reputation.IsMajorFaction
 
--- Azerite (legacy; guard for modern clients)
-local C_AzeriteItem_FindActiveAzeriteItem = C_AzeriteItem and C_AzeriteItem.FindActiveAzeriteItem
-local C_AzeriteItem_GetAzeriteItemXPInfo = C_AzeriteItem and C_AzeriteItem.GetAzeriteItemXPInfo
-local C_AzeriteItem_GetPowerLevel = C_AzeriteItem and C_AzeriteItem.GetPowerLevel
-
 -- Constants
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local UNKNOWN = _G.UNKNOWN
@@ -57,7 +51,6 @@ local CurrentXP, XPToLevel, PercentRested, PercentXP, RemainXP, RemainTotal, Rem
 local RestedXP = 0
 
 local CurrentHonor, MaxHonor, CurrentLevel, PercentHonor, RemainingHonor
-local CurrentAzerite, MaxAzerite, AzeriteLevel, PercentAzerite
 
 local barDisplayString = ""
 local currentMode = "none" -- "xp" | "rep" | "honor" | "azerite"
@@ -87,14 +80,6 @@ local function SetBar(bar, minVal, maxVal, value)
 	bar:SetValue(value)
 end
 
-local function IsAzeriteAvailable()
-	if not C_AzeriteItem_FindActiveAzeriteItem then
-		return false
-	end
-
-	local itemLoc = C_AzeriteItem_FindActiveAzeriteItem()
-	return itemLoc and itemLoc.IsEquipmentSlot and itemLoc:IsEquipmentSlot()
-end
 
 local function PickFactionColor(reaction)
 	local kk = K.Colors and K.Colors.faction and K.Colors.faction[reaction]
@@ -314,39 +299,6 @@ local function HandleHonor(bar, event, unit)
 	bar.text:SetText(barDisplayString)
 end
 
-local function HandleAzerite(bar)
-	currentMode = "azerite"
-
-	CurrentAzerite, MaxAzerite, AzeriteLevel, PercentAzerite = nil, nil, nil, nil
-
-	if not IsAzeriteAvailable() then
-		return
-	end
-
-	local itemLoc = C_AzeriteItem_FindActiveAzeriteItem()
-	if not itemLoc then
-		return
-	end
-
-	local cur, maxV = C_AzeriteItem_GetAzeriteItemXPInfo(itemLoc)
-	local lvl = C_AzeriteItem_GetPowerLevel(itemLoc)
-	if not maxV or maxV <= 0 then
-		return
-	end
-
-	CurrentAzerite = cur or 0
-	MaxAzerite = maxV
-	AzeriteLevel = lvl or 0
-	PercentAzerite = (MaxAzerite > 0) and ((CurrentAzerite / MaxAzerite) * 100) or 0
-
-	bar:SetStatusBarColor(0.901, 0.8, 0.601, 1)
-	SetBar(bar, 0, MaxAzerite, CurrentAzerite)
-
-	bar:Show()
-	bar.restBar:Hide()
-	bar.text:SetText(string_format("%s - %s (%.1f%%) [%s]", K.ShortValue(CurrentAzerite), K.ShortValue(MaxAzerite), PercentAzerite, AzeriteLevel))
-end
-
 -- Tooltip Sections (consistent formatting)
 local function AddXPTooltip()
 	GameTooltip:AddDoubleLine("|cff0070ff" .. COMBAT_XP_GAIN .. "|r", string_format("%s %d", LEVEL, K.Level))
@@ -484,29 +436,6 @@ local function AddHonorTooltip(addSpacingBefore)
 	GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPct, remainBars, L["Bars"]), 1, 1, 1)
 end
 
-local function AddAzeriteTooltip(addSpacingBefore)
-	if addSpacingBefore then
-		GameTooltip:AddLine(" ")
-	end
-
-	GameTooltip:AddDoubleLine("|cff00bdfc" .. (AZERITE_POWER or "Azerite") .. "|r", LEVEL .. " " .. (AzeriteLevel or 0))
-	GameTooltip:AddLine(" ")
-
-	local cur = CurrentAzerite or 0
-	local maxV = MaxAzerite or 1
-	local pct = PercentAzerite or 0
-	local remaining = (maxV - cur)
-	if remaining < 0 then
-		remaining = 0
-	end
-
-	GameTooltip:AddDoubleLine(AZERITE_POWER or "Azerite", string_format(" %s - %s (%.1f%%)", K.ShortValue(cur), K.ShortValue(maxV), pct), 1, 1, 1)
-
-	local remainFrac = (maxV > 0) and (remaining / maxV) or 0
-	local remainPct = remainFrac * 100
-	local remainBars = remainFrac * 20
-	GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %.2f %s)", K.ShortValue(remaining), remainPct, remainBars, L["Bars"]), 1, 1, 1)
-end
 
 -- Frame Scripts
 local function UpdateBarSize(bar)
@@ -541,16 +470,6 @@ local function OnExpBarEvent(self, event, unit)
 		return
 	end
 
-	if IsWatchingHonorAsXP() then
-		HandleHonor(self, event, unit)
-		return
-	end
-
-	if IsAzeriteAvailable() then
-		HandleAzerite(self)
-		return
-	end
-
 	currentMode = "none"
 	self:Hide()
 	self.text:SetText("")
@@ -572,14 +491,6 @@ local function OnExpBarEnter(self)
 
 	-- Rep shows even while leveling if watched; spacing depends on whether XP block exists
 	local addedRep = AddWatchedRepTooltip(addedXP)
-
-	if IsWatchingHonorAsXP() then
-		AddHonorTooltip(addedXP or addedRep)
-	end
-
-	if IsAzeriteAvailable() then
-		AddAzeriteTooltip(addedXP or addedRep or IsWatchingHonorAsXP())
-	end
 
 	GameTooltip:Show()
 end
@@ -605,15 +516,6 @@ local function BuildPartyMessage()
 		local remaining = RemainingHonor or 0
 		local remainFrac = (MaxHonor > 0) and (remaining / MaxHonor) or 0
 		return string_format("Honor: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d", K.ShortValue(CurrentHonor), K.ShortValue(MaxHonor), PercentHonor or 0, K.ShortValue(remaining), remainFrac * 100, remainFrac * 20, CurrentLevel or 0)
-	end
-
-	if currentMode == "azerite" and CurrentAzerite and MaxAzerite then
-		local remaining = MaxAzerite - CurrentAzerite
-		if remaining < 0 then
-			remaining = 0
-		end
-		local remainFrac = (MaxAzerite > 0) and (remaining / MaxAzerite) or 0
-		return string_format("Azerite: %s-%s (%.1f%%) Remaining: %s (%.2f%% - %.2f bars) Level: %d", K.ShortValue(CurrentAzerite), K.ShortValue(MaxAzerite), PercentAzerite or 0, K.ShortValue(remaining), remainFrac * 100, remainFrac * 20, AzeriteLevel or 0)
 	end
 
 	return nil
@@ -651,9 +553,6 @@ local ExpRep_EventList = {
 	"UPDATE_FACTION",
 	"QUEST_FINISHED",
 	"COMBAT_TEXT_UPDATE",
-	"MAJOR_FACTION_RENOWN_LEVEL_CHANGED",
-	"MAJOR_FACTION_UNLOCKED",
-	"HONOR_XP_UPDATE",
 	"PLAYER_FLAGS_CHANGED",
 	"PLAYER_EQUIPMENT_CHANGED",
 	"UI_SCALE_CHANGED",

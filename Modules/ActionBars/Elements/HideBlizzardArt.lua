@@ -80,6 +80,10 @@ function Module:HideBlizz()
 		frame:SetParent(K.UIFrameHider)
 	end
 
+	K.HideInterfaceOption(MainActionBar)
+	MainActionBar:ClearAllPoints()
+	MainActionBar:SetPoint("BOTTOMLEFT", UIParent, -100, -100)
+
 	for _, frame in next, framesToDisable do
 		frame:UnregisterAllEvents()
 		DisableAllScripts(frame)

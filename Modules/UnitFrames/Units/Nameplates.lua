@@ -20,8 +20,6 @@ local IsInInstance = IsInInstance
 local UnitCanAttack = UnitCanAttack
 local C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 local C_NamePlate_GetNamePlates = C_NamePlate.GetNamePlates
-local C_NamePlate_SetNamePlateEnemySize = C_NamePlate.SetNamePlateEnemySize
-local C_NamePlate_SetNamePlateFriendlySize = C_NamePlate.SetNamePlateFriendlySize
 local CreateFrame = CreateFrame
 local GetNumGroupMembers = GetNumGroupMembers
 local GetNumSubgroupMembers = GetNumSubgroupMembers
@@ -112,13 +110,12 @@ function Module:UpdateClickableSize()
 		return
 	end
 
-	-- REASON: Adjust the interactive area of the nameplates based on UI scale and settings.
-	local uiScale = C["General"].UIScale
-	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
-	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
+	local hitInset = 10000 -- some large number that will ensure we have full coverage
+	local enemyInset = C["Nameplate"].EnemyThru and hitInset or -hitInset
+	C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Enemy, enemyInset, enemyInset, enemyInset, enemyInset)
+	local friendlyInset = C["Nameplate"].FriendlyThru and hitInset or -hitInset
+	C_NamePlateManager.SetNamePlateHitTestInsets(Enum.NamePlateType.Friendly, friendlyInset, friendlyInset, friendlyInset, friendlyInset)
 
-	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
 end
 
 function Module:SetupCVars()
@@ -141,7 +138,6 @@ function Module:SetupCVars()
 	end
 
 	Module:UpdateClickableSize()
-	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
 function Module:CreateUnitTable()

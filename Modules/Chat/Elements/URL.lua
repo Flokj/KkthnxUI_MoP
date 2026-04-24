@@ -42,10 +42,6 @@ local function highlightURL(_, url)
 end
 
 function Module:SearchForURL(text, ...)
-	if not text or K.IsSecretValue(text) then
-		return self:addMsg(text, ...)
-	end
-
 	-- REASON: Scans the message text using multiple regex patterns for IP addresses, websites, and emails.
 	foundURL = false
 
@@ -95,7 +91,7 @@ function Module:SetItemRefHook(link, ...)
 	-- REASON: Intercepts custom 'url' hyperlinks and copies the URL into the active chat editbox.
 	local linkType, linkValue = string_match(link, "(%a+):(.+)")
 	if linkType == "url" then
-		local eb = _G.LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName() .. "EditBox"]
+		local eb = ChatEdit_ChooseBoxForSend()
 		if eb then
 			eb:Show()
 			eb:SetText(linkValue)

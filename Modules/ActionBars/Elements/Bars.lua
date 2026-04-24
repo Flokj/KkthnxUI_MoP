@@ -150,9 +150,9 @@ function Module:UpdateButtonConfig(i)
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
 	local hotkey = self.buttonConfig.text.hotkey
-	hotkey.font.font = K.UIFontOutline
-	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	hotkey.font.flags = K.UIFontOutlineStyle
+	--hotkey.font.font = K.UIFontOutline
+	--hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	--hotkey.font.flags = K.UIFontOutlineStyle
 	hotkey.position.anchor = "TOPRIGHT"
 	hotkey.position.relAnchor = false
 	hotkey.position.offsetX = 0
@@ -160,9 +160,9 @@ function Module:UpdateButtonConfig(i)
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count
-	count.font.font = K.UIFontOutline
-	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	count.font.flags = K.UIFontOutlineStyle
+	--count.font.font = K.UIFontOutline
+	--count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	--count.font.flags = K.UIFontOutlineStyle
 	count.position.anchor = "BOTTOMRIGHT"
 	count.position.relAnchor = false
 	count.position.offsetX = 2
@@ -170,9 +170,9 @@ function Module:UpdateButtonConfig(i)
 	count.justifyH = "RIGHT"
 
 	local macro = self.buttonConfig.text.macro
-	macro.font.font = K.UIFontOutline
-	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	macro.font.flags = K.UIFontOutlineStyle
+	--macro.font.font = K.UIFontOutline
+	--macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	--macro.font.flags = K.UIFontOutlineStyle
 	macro.position.anchor = "BOTTOM"
 	macro.position.relAnchor = false
 	macro.position.offsetX = 0

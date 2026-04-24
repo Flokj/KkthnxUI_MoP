@@ -22,7 +22,6 @@ local UIParent = UIParent
 
 -- Chat Functions and Variables
 local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
-local ChatFrame_AddChannel = ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
 local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
@@ -317,9 +316,9 @@ function Module:ForceChatSettings()
 	FCF_SetLocked(Trade, true)
 	FCF_DockFrame(Trade)
 	ChatFrame_RemoveAllMessageGroups(Trade)
-	ChatFrame_AddChannel(Trade, TRADE)
-	ChatFrame_AddChannel(Trade, GENERAL)
-	ChatFrame_AddChannel(Trade, L["Services"])
+	Trade:AddChannel(TRADE)
+	Trade:AddChannel(GENERAL)
+	Trade:AddChannel(L["Services"])
 
 	-- Configure Loot Window
 	local Loot = FCF_OpenNewWindow(L["Loot"])

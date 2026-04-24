@@ -227,6 +227,31 @@ function Module:CreateMinimapButton()
 	Module:ToggleMinimapButton()
 end
 
+-- Game Menu Setup
+local gameMenuLastButtons = {
+	[_G.GAMEMENU_OPTIONS] = 1,
+	[_G.BLIZZARD_STORE] = 2,
+}
+
+function Module:PositionGameMenuButton()
+	local anchorIndex = (C_StorePublic.IsEnabled and C_StorePublic.IsEnabled() and 2) or 1
+	for button in GameMenuFrame.buttonPool:EnumerateActive() do
+		local text = button:GetText()
+		GameMenuFrame.MenuButtons[text] = button
+		local lastIndex = gameMenuLastButtons[text]
+		if lastIndex == anchorIndex and GameMenuFrame.KkthnxUI then
+			GameMenuFrame.KkthnxUI:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -30)
+		elseif not lastIndex then
+			local point, anchor, point2, x, y = button:GetPoint()
+			button:SetPoint(point, anchor, point2, x, y - 36)
+		end
+	end
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 36)
+	if GameMenuFrame.KkthnxUI then
+		GameMenuFrame.KkthnxUI:SetFormattedText(K.Title)
+	end
+end
+
 function Module:ClickGameMenu()
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
@@ -238,29 +263,19 @@ function Module:ClickGameMenu()
 end
 
 function Module:CreateGUIGameMenuButton()
-	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate")
-	gameMenuButton:SetHeight(26)
-	gameMenuButton:SetText(K.Title)
-	gameMenuButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
-
-	gameMenuButton.Left:SetDesaturated(1)
-	gameMenuButton.Middle:SetDesaturated(1)
-	gameMenuButton.Right:SetDesaturated(1)
-
-	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", gameMenuButton, "BOTTOM", 0, -21)
-		GameMenuButtonStore:SetPoint("TOP", GameMenuButtonHelp, "BOTTOM", 0, -6)
-		GameMenuButtonMacros:SetPoint("TOP", GameMenuButtonOptions, "BOTTOM", 0, -6)
-		GameMenuButtonAddons:SetPoint("TOP", GameMenuButtonMacros, "BOTTOM", 0, -6)
-		GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -6)
-		self:SetHeight(self:GetHeight() + gameMenuButton:GetHeight() + 22)
-		if self:GetScale() ~= 1.2 then
-			self:SetScale(1.2)
-		end
+	if GameMenuFrame.KkthnxUI then
+		return
+	end
+	local button = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "MainMenuFrameButtonTemplate")
+	button:SetScript("OnClick", function()
+		Module:ClickGameMenu()
 	end)
 
-	gameMenuButton:SetScript("OnClick", function()
-		Module:ClickGameMenu()
+	button:SkinButton()
+	GameMenuFrame.KkthnxUI = button
+	GameMenuFrame.MenuButtons = {}
+	hooksecurefunc(GameMenuFrame, "Layout", function()
+		Module:PositionGameMenuButton()
 	end)
 end
 

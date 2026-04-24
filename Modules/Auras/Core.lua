@@ -63,7 +63,7 @@ function Module:BuildBuffFrame()
 
 	-- Movers
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
-	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
+	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.MinimapCluster, "TOPLEFT", -6, 0 })
 	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
