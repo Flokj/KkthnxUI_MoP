@@ -72,19 +72,15 @@ local function isItemAmmo(item)
 	end
 end
 
-K.iLvlClassIDs = {
-	[LE_ITEM_CLASS_ARMOR] = true,
-	[LE_ITEM_CLASS_WEAPON] = true,
-}
-function Module:IsItemHasLevel(item)
-	return K.iLvlClassIDs[item.classID]
+local function CheckEquip(item)
+	return item.link and item.quality > LE_ITEM_QUALITY_COMMON and item.ilvl
 end
 
 local function isItemEquipment(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterEquipment then return end
 
-	return item.link and item.quality > LE_ITEM_QUALITY_COMMON and Module:IsItemHasLevel(item)
+	return CheckEquip(item)
 end
 
 local consumableIDs = {
@@ -159,7 +155,7 @@ end
 local function isItemBOE(item)
 	if not C["Inventory"].ItemFilter then return end
 	if not C["Inventory"].FilterBOE then return end
-	return item.bindOn and item.bindOn == "equip" and Module:IsItemHasLevel(item)
+	return item.bindOn and item.bindOn == "equip" and CheckEquip(item)
 end
 
 function Module:GetFilters()

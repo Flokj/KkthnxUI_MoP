@@ -102,7 +102,7 @@ function Module:Bind_Create()
 	end
 
 	if not C_AddOns.IsAddOnLoaded("Blizzard_MacroUI") then
-		hooksecurefunc("LoadAddOn", Module.Bind_RegisterMacro)
+		hooksecurefunc(C_AddOns, "LoadAddOn", Module.Bind_RegisterMacro)
 	else
 		Module.Bind_RegisterMacro("Blizzard_MacroUI")
 	end

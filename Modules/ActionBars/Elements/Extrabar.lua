@@ -15,17 +15,17 @@ function Module:CreateExtrabar()
 	frame:SetHeight(size + 2 * padding)
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", -200, 120 })
 
+	ExtraAbilityContainer:SetScript("OnShow", nil)
+	ExtraAbilityContainer:SetScript("OnUpdate", nil)
+	ExtraAbilityContainer.OnUpdate = nil -- remove BaseLayoutMixin.OnUpdate
+	ExtraAbilityContainer.IsLayoutFrame = nil -- dont let it get readded
+
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", frame)
-	ExtraActionBarFrame.ignoreFramePositionManager = true
-	ExtraActionBarFrame:SetParent(frame)
-
-	hooksecurefunc(ExtraActionBarFrame, "SetParent", function(self, parent)
-		if parent == MainMenuBar then
-			self:SetParent(frame)
-		end
-	end)
+	ExtraActionBarFrame.ignoreInLayout = true
+	ExtraActionBarFrame:SetIgnoreParentScale(true)
+	ExtraActionBarFrame:SetScale(UIParent:GetScale())
 
 	local button = ExtraActionButton1
 	tinsert(buttonList, button)

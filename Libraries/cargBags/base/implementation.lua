@@ -18,10 +18,10 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
+local K = KkthnxUI[1]
 local cargBags = ns.cargBags
 
 local GetContainerNumSlots = C_Container and C_Container.GetContainerNumSlots or GetContainerNumSlots
-local GetContainerItemInfo = C_Container and C_Container.GetContainerItemInfo or GetContainerItemInfo
 
 --[[!
 	@class Implementation
@@ -319,6 +319,17 @@ local defaultItem = cargBags:NewItemTable()
 	@param i <table> [optional]
 	@return i <table>
 ]]
+
+local iLvlClassIDs = {
+	[Enum.ItemClass.Gem] = Enum.ItemGemSubclass.Artifactrelic,
+	[Enum.ItemClass.Armor] = 0,
+	[Enum.ItemClass.Weapon] = 0,
+}
+local function isItemHasLevel(item)
+	local index = iLvlClassIDs[item.classID]
+	return index and (index == 0 or index == item.subClassID)
+end
+
 function Implementation:GetCustomItemInfo(bagID, slotID, i)
 	i = i or defaultItem
 	for k in pairs(i) do
@@ -340,8 +351,12 @@ function Implementation:GetCustomItemInfo(bagID, slotID, i)
 		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		i.name, _, _, i.level, i.minLevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = C_Item.GetItemInfo(i.link)
+		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = C_Item.GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
+
+		if isItemHasLevel(i) then
+			i.ilvl = K.GetItemLevel(i.link, i.bagId ~= -1 and i.bagId, i.slotId)
+		end
 
 		if i.id == PET_CAGE then
 			local petID, petLevel, petName = strmatch(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")

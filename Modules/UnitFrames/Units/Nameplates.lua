@@ -708,7 +708,7 @@ function Module:CreatePlates()
 
 	self:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
 	self:SetPoint("CENTER")
-	self:SetScale(C["General"].UIScale)
+	--self:SetScale(C["General"].UIScale)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()

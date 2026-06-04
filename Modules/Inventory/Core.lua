@@ -1050,7 +1050,7 @@ function Module:OnEnable()
 	}
 
 	local function isItemNeedsLevel(item)
-		return item.link and item.quality > 1 and Module:IsItemHasLevel(item)
+		return item.link and item.quality > 1 and item.ilvl
 	end
 
 	local function UpdateCanIMogIt(self, item)
@@ -1145,8 +1145,11 @@ function Module:OnEnable()
 		end
 
 		self.iLvl:SetText("")
-		if showItemLevel and isItemNeedsLevel(item) then
-			local level = item.level
+		if showItemLevel then
+			local level = item.level -- ilvl for keystone and battlepet
+			if not level and isItemNeedsLevel(item) then
+				level = item.ilvl
+			end
 			if level then
 				local color = K.QualityColors[item.quality]
 				self.iLvl:SetText(level)
