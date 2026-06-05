@@ -12,7 +12,6 @@ local wipe = wipe
 -- WoW API / Globals (Retail)
 local Ambiguate = Ambiguate
 local BreakUpLargeNumbers = BreakUpLargeNumbers
-local CalculateTotalNumberOfFreeBagSlots = C_Container.CalculateTotalNumberOfFreeBagSlots
 local CreateFrame = CreateFrame
 local DropDownList1 = DropDownList1
 local GameTooltip = GameTooltip
@@ -75,6 +74,18 @@ local menuList = {
 		end,
 	},
 }
+
+local function CalculateTotalNumberOfFreeBagSlots()
+	local totalFree, freeSlots, bagFamily = 0;
+	for i = 0, 4 do
+		freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
+		if ( bagFamily == 0 ) then
+			totalFree = totalFree + freeSlots;
+		end
+	end
+
+	return totalFree;
+end
 
 local function getClassIcon(class)
 	local coords = CLASS_ICON_TCOORDS[class]

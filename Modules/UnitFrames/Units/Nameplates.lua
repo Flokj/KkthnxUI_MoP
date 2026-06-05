@@ -91,7 +91,8 @@ function Module:UpdatePlateCVars()
 		nameplateMaxAlpha = C["Nameplate"].MinAlpha,
 		nameplateOverlapV = C["Nameplate"].VerticalSpacing,
 		nameplateNotSelectedAlpha = 1,
-		nameplateShowOnlyNames =  0,
+		nameplateShowOnlyNameForFriendlyPlayerUnits =  0,
+		nameplateUseClassColorForFriendlyPlayerUnitNames =  0,
 		nameplateShowFriendlyNPCs = 1,
 		ClampTargetNameplateToScreen = 1,
 	}
